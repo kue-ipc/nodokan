@@ -31,6 +31,12 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # i18n
 gem 'rails-i18n', '~> 6.0.0'
 
+# Devise
+gem 'devise'
+gem 'devise-i18n'
+gem 'devise_ldap_authenticatable'
+gem 'pundit'
+
 # Rails Admin
 gem 'rails_admin', '~> 2.0'
 gem 'rails_admin-i18n'
