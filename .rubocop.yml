@@ -36,10 +36,24 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 11
 
-# Custome
+# for version 0.80
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+# Custom
 
 Bundler/OrderedGems:
   Enabled: false
+
+Layout/LineLength:
+  Max: 120
 
 Style/Documentation:
   Enabled: false
@@ -49,3 +63,6 @@ Style/FrozenStringLiteralComment:
 
 Style/SymbolArray:
   EnforcedStyle: brackets
+
+Rails/FilePath:
+  EnforcedStyle: arguments
