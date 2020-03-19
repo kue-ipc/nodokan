@@ -2,7 +2,7 @@ require:
   - rubocop-rails
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 2.6
   Exclude:
     - 'bin/**/*'
     - 'node_modules/**/*'
