@@ -1,0 +1,51 @@
+require:
+  - rubocop-rails
+
+AllCops:
+  TargetRubyVersion: 2.7
+  Exclude:
+    - 'bin/**/*'
+    - 'node_modules/**/*'
+    - 'db/schema.rb'
+
+# Loose Metrics
+Metrics/AbcSize:
+  Max: 23
+
+Metrics/BlockLength:
+  Max: 38
+
+Metrics/BlockNesting:
+  Max: 5
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/CyclomaticComplexity:
+  Max: 9
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/ModuleLength:
+  Max: 150
+
+Metrics/ParameterLists:
+  Max: 8
+
+Metrics/PerceivedComplexity:
+  Max: 11
+
+# Custome
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
