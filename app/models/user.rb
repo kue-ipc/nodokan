@@ -4,8 +4,17 @@ class User < ApplicationRecord
   # :registerable, :recoverable, :rememberable, :validatable
   devise :ldap_authenticatable
 
+  enum role: {
+    user: 0,
+    admin: 1,
+    guest: 2,
+    remnant: 3
+  }
+
   def ldap_before_save
     sync_ldap!
+    # The first user is the admin.
+    admin! if User.count.zero?
   end
 
   def ldap_entry
@@ -22,9 +31,12 @@ class User < ApplicationRecord
   end
 
   def sync_ldap!
-    return unless ldap_entry
-
-    self.email = ldap_mail
-    self.fullname = ldap_display_name
+    if ldap_entry
+      user! if remnant?
+      self.email = ldap_mail
+      self.fullname = ldap_display_name
+    else
+      remnant!
+    end
   end
 end
