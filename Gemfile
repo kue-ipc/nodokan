@@ -37,7 +37,12 @@ gem 'rails-i18n', '~> 6.0.0'
 gem 'devise'
 gem 'devise-i18n'
 gem 'devise_ldap_authenticatable'
+
+# Pundit
 gem 'pundit'
+
+# Paper Trail
+gem 'paper_trail'
 
 # Rails Admin
 gem 'rails_admin', '~> 2.0'
