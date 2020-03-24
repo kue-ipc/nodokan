@@ -38,6 +38,9 @@ gem 'devise'
 gem 'devise-i18n'
 gem 'devise_ldap_authenticatable'
 
+# Rolify
+gem 'rolify'
+
 # Pundit
 gem 'pundit'
 

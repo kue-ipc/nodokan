@@ -219,6 +219,7 @@ GEM
       actionpack (>= 5.0)
       railties (>= 5.0)
     rexml (3.2.4)
+    rolify (5.2.0)
     rubocop (0.80.1)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
@@ -316,6 +317,7 @@ DEPENDENCIES
   rails-i18n (~> 6.0.0)
   rails_admin (~> 2.0)
   rails_admin-i18n
+  rolify
   rubocop
   rubocop-rails
   sass-rails (>= 6)
