@@ -43,6 +43,7 @@ gem 'pundit'
 
 # Paper Trail
 gem 'paper_trail'
+gem 'paper_trail-association_tracking'
 
 # Rails Admin
 gem 'rails_admin', '~> 2.0'
