@@ -1,2 +1,19 @@
 ja:
-  app_name: Nodekan
+  pages:
+    admin: 管理
+    top: ホーム
+
+  actions:
+    close: 閉じる
+    sign_in: ログイン
+    sign_out: ログアウト
+
+  messages:
+    require_javascript: |
+      JavaScriptが無効のため、正常に動作させることができません。
+      このWebシステムへのアクセスにはJavaScriptが必要です。JavaScriptを有効にしてください。
+    require_modern_browser: |
+      レガシブラウザーを使用しているため、正常に動作させることができません。
+      このWebシステムへのアクセスには最新のモダンブラウザーが必要です。
+      Internet Explorer等のレガシブラウザーは使用できません。
+      Microsoft Edge、Mozilla Firefox、Google Chrome、Apple Safari等のモダンブラウザーを使用してください。

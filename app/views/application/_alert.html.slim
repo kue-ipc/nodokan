@@ -6,17 +6,17 @@ noscript
   .alert.alert-danger.alertdismissible.fade.show role="alert"
     = t(:require_modern_browser, scope: :messages)
 javascript:
-  if (!window.Promise == null) document.getElementById('require-modern-browser').classList.remove('d-none');
+  if (window.Promise == null) document.getElementById('require-modern-browser').classList.remove('d-none');
 
 - if alert
   - [*alert].each do |msg|
     .alert.alert-danger.alertdismissible.fade.show role="alert"
       = msg
-      button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
+      button.close type="button" data-dismiss="alert" aria-label=h(t('actions.close'))
         span aria-hidden="true" &times
 - if notice
   - [*notice].each do |msg|
     .alert.alert-success.alertdismissible.fade.show role="alert"
       = msg
-      button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
+      button.close type="button" data-dismiss="alert" aria-label=h(t('actions.close'))
         span aria-hidden="true" &times
