@@ -1,14 +1,17 @@
 doctype html
 html
   head
-    title
-      | Nodokan
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    title = (Settings.site.title || 'Nodokan')
     = csrf_meta_tags
     = csp_meta_tag
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   body
-    - if user_signed_in?
-      = link_to destroy_user_session_path, method: :delete do
-        |  ログアウト 
-    = yield
+    = render 'header'
+    .container-fluid
+      = yield :heading
+      = render 'alert'
+      = yield
+    = render 'footer'

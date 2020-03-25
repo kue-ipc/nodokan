@@ -1,0 +1,12 @@
+header.mb-2
+  nav.navbar.navbar-light.bg-light
+    = link_to t(:nodokan), '/', class: 'navbar-brand'
+    - if user_signed_in?
+      ul.navbar-nav.flex-row
+        li.nav-item.px-1
+          span.navbar-text
+            = current_user.username
+        li.nav-item.px-1
+          = link_to destroy_user_session_path, method: :delete, class: 'nav-link', title: t('.sign_out'),
+              'data-toggle': 'tooltip' do
+            = icon('fas', 'sign-out-alt')
