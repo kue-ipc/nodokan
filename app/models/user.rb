@@ -11,6 +11,8 @@ class User < ApplicationRecord
     remnant: 3
   }
 
+  has_many :nodes, as: :owner, dependent: :nullify
+
   def ldap_before_save
     sync_ldap!
     # The first user is the admin.
