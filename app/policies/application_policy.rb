@@ -34,22 +34,6 @@ class ApplicationPolicy
     @user.admin?
   end
 
-  def dashboard?
-    index?
-  end
-
-  def export?
-    index?
-  end
-
-  def history?
-    show?
-  end
-
-  def show_in_app?
-    show?
-  end
-
   class Scope
     attr_reader :user, :scope
 
