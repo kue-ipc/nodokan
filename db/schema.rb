@@ -12,14 +12,11 @@
 
 ActiveRecord::Schema.define(version: 2020_03_25_053557) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
-  create_table "nodes", force: :cascade do |t|
+  create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.string "owner_type"
     t.bigint "owner_id"
-    t.datetime "confirmed_at"
+    t.timestamp "confirmed_at"
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -27,7 +24,7 @@ ActiveRecord::Schema.define(version: 2020_03_25_053557) do
     t.index ["owner_type", "owner_id"], name: "index_nodes_on_owner_type_and_owner_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
     t.string "fullname"
@@ -38,7 +35,7 @@ ActiveRecord::Schema.define(version: 2020_03_25_053557) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  create_table "version_associations", force: :cascade do |t|
+  create_table "version_associations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "version_id"
     t.string "foreign_key_name", null: false
     t.integer "foreign_key_id"
@@ -47,14 +44,14 @@ ActiveRecord::Schema.define(version: 2020_03_25_053557) do
     t.index ["version_id"], name: "index_version_associations_on_version_id"
   end
 
-  create_table "versions", force: :cascade do |t|
+  create_table "versions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.string "event", null: false
     t.string "whodunnit"
-    t.text "object"
+    t.text "object", size: :long
     t.datetime "created_at"
-    t.text "object_changes"
+    t.text "object_changes", size: :long
     t.integer "transaction_id"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"

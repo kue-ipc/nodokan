@@ -1,2 +1,6 @@
 site:
   title: null
+database:
+  username: root
+  password: pass
+  host: localhost
