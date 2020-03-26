@@ -17,7 +17,7 @@ class SubnetworksControllerTest < ActionDispatch::IntegrationTest
 
   test "should create subnetwork" do
     assert_difference('Subnetwork.count') do
-      post subnetworks_url, params: { subnetwork: { name: @subnetwork.name, network_type_id: @subnetwork.network_type_id, vlan: @subnetwork.vlan } }
+      post subnetworks_url, params: { subnetwork: { name: @subnetwork.name, network_category_id: @subnetwork.network_category_id, vlan: @subnetwork.vlan } }
     end
 
     assert_redirected_to subnetwork_url(Subnetwork.last)
@@ -34,7 +34,7 @@ class SubnetworksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update subnetwork" do
-    patch subnetwork_url(@subnetwork), params: { subnetwork: { name: @subnetwork.name, network_type_id: @subnetwork.network_type_id, vlan: @subnetwork.vlan } }
+    patch subnetwork_url(@subnetwork), params: { subnetwork: { name: @subnetwork.name, network_category_id: @subnetwork.network_category_id, vlan: @subnetwork.vlan } }
     assert_redirected_to subnetwork_url(@subnetwork)
   end
 

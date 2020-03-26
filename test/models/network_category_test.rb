@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class NetworkTypeTest < ActiveSupport::TestCase
+class NetworkCategoryTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -2,10 +2,10 @@
 
 one:
   name: MyString
-  network_type: one
+  network_category: one
   vlan: 1
 
 two:
   name: MyString
-  network_type: two
+  network_category: two
   vlan: 1

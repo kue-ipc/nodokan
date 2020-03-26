@@ -1,6 +1,6 @@
-class CreateNetworkTypes < ActiveRecord::Migration[6.0]
+class CreateNetworkCategories < ActiveRecord::Migration[6.0]
   def change
-    create_table :network_types do |t|
+    create_table :network_categories do |t|
       t.string :name, null: false
       t.boolean :dhcp, null: false, default: false
       t.boolean :auth, null: false, default: false
@@ -8,7 +8,6 @@ class CreateNetworkTypes < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-
-    add_index :network_types, :name, unique: true
+    add_index :network_categories, :name, unique: true
   end
 end

@@ -34,14 +34,14 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
     t.index ["subnetwork_id"], name: "index_ipv6_networks_on_subnetwork_id"
   end
 
-  create_table "network_types", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "network_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "dhcp", default: false, null: false
     t.boolean "auth", default: false, null: false
     t.boolean "managed", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_network_types_on_name", unique: true
+    t.index ["name"], name: "index_network_categories_on_name", unique: true
   end
 
   create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -58,12 +58,12 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
 
   create_table "subnetworks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
-    t.bigint "network_type_id", null: false
+    t.bigint "network_category_id", null: false
     t.integer "vlan"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_subnetworks_on_name", unique: true
-    t.index ["network_type_id"], name: "index_subnetworks_on_network_type_id"
+    t.index ["network_category_id"], name: "index_subnetworks_on_network_category_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -101,5 +101,5 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
 
   add_foreign_key "ipv4_networks", "subnetworks"
   add_foreign_key "ipv6_networks", "subnetworks"
-  add_foreign_key "subnetworks", "network_types"
+  add_foreign_key "subnetworks", "network_categories"
 end

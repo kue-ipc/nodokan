@@ -69,6 +69,6 @@ class SubnetworksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def subnetwork_params
-      params.require(:subnetwork).permit(:name, :network_type_id, :vlan)
+      params.require(:subnetwork).permit(:name, :network_category_id, :vlan)
     end
 end
