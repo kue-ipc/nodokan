@@ -1,0 +1,25 @@
+h1 Listing subnetworks
+
+table
+  thead
+    tr
+      th Name
+      th Network type
+      th Vlan
+      th
+      th
+      th
+
+  tbody
+    - @subnetworks.each do |subnetwork|
+      tr
+        td = subnetwork.name
+        td = subnetwork.network_type
+        td = subnetwork.vlan
+        td = link_to 'Show', subnetwork
+        td = link_to 'Edit', edit_subnetwork_path(subnetwork)
+        td = link_to 'Destroy', subnetwork, data: { confirm: 'Are you sure?' }, method: :delete
+
+br
+
+= link_to 'New Subnetwork', new_subnetwork_path

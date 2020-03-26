@@ -1,0 +1,15 @@
+p#notice = notice
+
+p
+  strong Name:
+  = @subnetwork.name
+p
+  strong Network type:
+  = @subnetwork.network_type
+p
+  strong Vlan:
+  = @subnetwork.vlan
+
+=> link_to 'Edit', edit_subnetwork_path(@subnetwork)
+'|
+=< link_to 'Back', subnetworks_path

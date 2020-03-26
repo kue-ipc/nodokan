@@ -1,0 +1,2 @@
+class NetworkType < ApplicationRecord
+end

@@ -1,0 +1,18 @@
+= form_for @subnetwork do |f|
+  - if @subnetwork.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@subnetwork.errors.count, "error")} prohibited this subnetwork from being saved:"
+      ul
+        - @subnetwork.errors.full_messages.each do |message|
+          li = message
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :network_type
+    = f.text_field :network_type
+  .field
+    = f.label :vlan
+    = f.number_field :vlan
+  .actions = f.submit
