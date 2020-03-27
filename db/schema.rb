@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_27_004540) do
+ActiveRecord::Schema.define(version: 2020_03_27_020243) do
+
+  create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.integer "type"
+    t.string "maker"
+    t.string "product_name"
+    t.string "model_number"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["maker"], name: "index_hardwares_on_maker"
+    t.index ["model_number"], name: "index_hardwares_on_model_number"
+    t.index ["product_name"], name: "index_hardwares_on_product_name"
+  end
 
   create_table "ipv4_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
@@ -104,9 +116,25 @@ ActiveRecord::Schema.define(version: 2020_03_27_004540) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "location_type"
     t.bigint "location_id"
+    t.bigint "hardware_id"
+    t.bigint "operating_system_id"
+    t.bigint "security_software_id"
+    t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["location_type", "location_id"], name: "index_nodes_on_location_type_and_location_id"
     t.index ["name"], name: "index_nodes_on_name"
+    t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
     t.index ["owner_type", "owner_id"], name: "index_nodes_on_owner_type_and_owner_id"
+    t.index ["security_software_id"], name: "index_nodes_on_security_software_id"
+  end
+
+  create_table "operating_systems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.integer "category"
+    t.string "name"
+    t.date "eol"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_operating_systems_on_name", unique: true
   end
 
   create_table "places", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -119,6 +147,25 @@ ActiveRecord::Schema.define(version: 2020_03_27_004540) do
     t.index ["area"], name: "index_places_on_area"
     t.index ["building"], name: "index_places_on_building"
     t.index ["room"], name: "index_places_on_room"
+  end
+
+  create_table "security_softwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_security_softwares_on_name", unique: true
+  end
+
+  create_table "subnetwork_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "subnetwork_id", null: false
+    t.bigint "user_id", null: false
+    t.boolean "assignable"
+    t.boolean "managable"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["subnetwork_id"], name: "index_subnetwork_users_on_subnetwork_id"
+    t.index ["user_id"], name: "index_subnetwork_users_on_user_id"
   end
 
   create_table "subnetworks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -138,6 +185,8 @@ ActiveRecord::Schema.define(version: 2020_03_27_004540) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "role", default: 0, null: false
+    t.bigint "default_subnetwork_id"
+    t.index ["default_subnetwork_id"], name: "index_users_on_default_subnetwork_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -171,5 +220,11 @@ ActiveRecord::Schema.define(version: 2020_03_27_004540) do
   add_foreign_key "network_connections", "network_interfaces"
   add_foreign_key "network_connections", "subnetworks"
   add_foreign_key "network_interfaces", "nodes"
+  add_foreign_key "nodes", "hardwares"
+  add_foreign_key "nodes", "operating_systems"
+  add_foreign_key "nodes", "security_softwares"
+  add_foreign_key "subnetwork_users", "subnetworks"
+  add_foreign_key "subnetwork_users", "users"
   add_foreign_key "subnetworks", "network_categories"
+  add_foreign_key "users", "subnetworks", column: "default_subnetwork_id"
 end

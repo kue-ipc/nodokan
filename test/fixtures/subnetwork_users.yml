@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  subnetwork: 
+  user: one
+  assignable: false
+  managable: false
+
+two:
+  subnetwork: 
+  user: two
+  assignable: false
+  managable: false
