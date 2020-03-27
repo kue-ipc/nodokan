@@ -1,0 +1,2 @@
+class SecuritySoftware < ApplicationRecord
+end
