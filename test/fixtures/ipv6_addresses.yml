@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  network_connection: one
+  dhcp: false
+  reserved: false
+  ip_address: MyString
+  mac_address: MyString
+  duid: MyString
+
+two:
+  network_connection: two
+  dhcp: false
+  reserved: false
+  ip_address: MyString
+  mac_address: MyString
+  duid: MyString
