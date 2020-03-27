@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_26_051206) do
+ActiveRecord::Schema.define(version: 2020_03_27_004540) do
+
+  create_table "ipv4_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "network_connection_id", null: false
+    t.boolean "dhcp"
+    t.boolean "reserved"
+    t.string "ip_address"
+    t.string "mac_address"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ip_address"], name: "index_ipv4_addresses_on_ip_address"
+    t.index ["mac_address"], name: "index_ipv4_addresses_on_mac_address"
+    t.index ["network_connection_id"], name: "index_ipv4_addresses_on_network_connection_id"
+  end
 
   create_table "ipv4_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
@@ -21,6 +34,20 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["address"], name: "index_ipv4_networks_on_address"
     t.index ["subnetwork_id"], name: "index_ipv4_networks_on_subnetwork_id"
+  end
+
+  create_table "ipv6_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "network_connection_id", null: false
+    t.boolean "dhcp"
+    t.boolean "reserved"
+    t.string "ip_address"
+    t.string "mac_address"
+    t.string "duid"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ip_address"], name: "index_ipv6_addresses_on_ip_address"
+    t.index ["mac_address"], name: "index_ipv6_addresses_on_mac_address"
+    t.index ["network_connection_id"], name: "index_ipv6_addresses_on_network_connection_id"
   end
 
   create_table "ipv6_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -44,6 +71,29 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
     t.index ["name"], name: "index_network_categories_on_name", unique: true
   end
 
+  create_table "network_connections", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "network_interface_id", null: false
+    t.bigint "subnetwork_id", null: false
+    t.boolean "mac_address_randomization"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["network_interface_id"], name: "index_network_connections_on_network_interface_id"
+    t.index ["subnetwork_id"], name: "index_network_connections_on_subnetwork_id"
+  end
+
+  create_table "network_interfaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "node_id", null: false
+    t.string "name"
+    t.integer "interface_type"
+    t.string "mac_address"
+    t.string "duid"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["duid"], name: "index_network_interfaces_on_duid"
+    t.index ["mac_address"], name: "index_network_interfaces_on_mac_address"
+    t.index ["node_id"], name: "index_network_interfaces_on_node_id"
+  end
+
   create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.string "owner_type"
@@ -52,8 +102,23 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "location_type"
+    t.bigint "location_id"
+    t.index ["location_type", "location_id"], name: "index_nodes_on_location_type_and_location_id"
     t.index ["name"], name: "index_nodes_on_name"
     t.index ["owner_type", "owner_id"], name: "index_nodes_on_owner_type_and_owner_id"
+  end
+
+  create_table "places", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.string "area"
+    t.string "building"
+    t.integer "floor"
+    t.string "room"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["area"], name: "index_places_on_area"
+    t.index ["building"], name: "index_places_on_building"
+    t.index ["room"], name: "index_places_on_room"
   end
 
   create_table "subnetworks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -99,7 +164,12 @@ ActiveRecord::Schema.define(version: 2020_03_26_051206) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
+  add_foreign_key "ipv4_addresses", "network_connections"
   add_foreign_key "ipv4_networks", "subnetworks"
+  add_foreign_key "ipv6_addresses", "network_connections"
   add_foreign_key "ipv6_networks", "subnetworks"
+  add_foreign_key "network_connections", "network_interfaces"
+  add_foreign_key "network_connections", "subnetworks"
+  add_foreign_key "network_interfaces", "nodes"
   add_foreign_key "subnetworks", "network_categories"
 end
