@@ -5,3 +5,29 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+NetworkCategory.create([
+  {
+    name: 'グローバルネットワーク',
+    dhcp: false,
+    auth: false,
+    global: true
+  },
+  {
+    name: 'DMZネットワーク',
+    dhcp: false,
+    auth: false,
+    global: false
+  },
+  {
+    name: '学内ネットワーク',
+    dhcp: false,
+    auth: false,
+  },
+  {
+    name: '認証ネットワーク',
+    dhcp: true,
+    auth: true,
+  },
+])
+

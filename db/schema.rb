@@ -77,7 +77,7 @@ ActiveRecord::Schema.define(version: 2020_03_27_020243) do
     t.string "name", null: false
     t.boolean "dhcp", default: false, null: false
     t.boolean "auth", default: false, null: false
-    t.boolean "managed", default: false, null: false
+    t.boolean "global", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_network_categories_on_name", unique: true

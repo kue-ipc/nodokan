@@ -4,10 +4,10 @@ one:
   name: MyString
   dhcp: false
   auth: false
-  managed: false
+  global: false
 
 two:
   name: MyString
   dhcp: false
   auth: false
-  managed: false
+  global: false

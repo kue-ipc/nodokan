@@ -4,7 +4,7 @@ class CreateNetworkCategories < ActiveRecord::Migration[6.0]
       t.string :name, null: false
       t.boolean :dhcp, null: false, default: false
       t.boolean :auth, null: false, default: false
-      t.boolean :managed, null: false, default: false
+      t.boolean :global, null: false, default: false
 
       t.timestamps
     end
