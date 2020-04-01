@@ -2,6 +2,7 @@
   "name": "nodokan",
   "private": true,
   "dependencies": {
+    "@babel/preset-react": "^7.9.4",
     "@hyperapp/http": "^0.0.2",
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
