@@ -13,7 +13,7 @@
 ActiveRecord::Schema.define(version: 2020_03_27_020243) do
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "type"
+    t.integer "category"
     t.string "maker"
     t.string "product_name"
     t.string "model_number"

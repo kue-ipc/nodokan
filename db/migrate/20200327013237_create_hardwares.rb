@@ -1,7 +1,7 @@
 class CreateHardwares < ActiveRecord::Migration[6.0]
   def change
     create_table :hardwares do |t|
-      t.integer :type
+      t.integer :category
       t.string :maker
       t.string :product_name
       t.string :model_number
