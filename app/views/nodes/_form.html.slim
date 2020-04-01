@@ -11,12 +11,24 @@
     = f.text_field :name
   .field
     = f.label :owner
-    = f.select :owner_type
-    = f.text_field :owner
-  .field
-    = f.label :confirmed_at
-    = f.datetime_select :confirmed_at
+    = f.text_field :owner_type
+    = f.number_field :owner_id
   .field
     = f.label :note
     = f.text_area :note
+  .field
+    = f.fields_for :location, @node.location do |fields|
+      .field
+        = fields.label :area
+        = fields.text_field :area
+      .field
+        = fields.label :building
+        = fields.text_field :building
+      .field
+        = fields.label :floor
+        = fields.number_field :floor
+      .field
+        = fields.label :room
+        = fields.number_field :room
+
   .actions = f.submit
