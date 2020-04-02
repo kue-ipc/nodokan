@@ -8,26 +8,73 @@
 
 NetworkCategory.create([
   {
-    name: 'グローバルネットワーク',
+    name: 'WAN',
     dhcp: false,
     auth: false,
     global: true
   },
   {
-    name: 'DMZネットワーク',
+    name: 'DMZ',
     dhcp: false,
     auth: false,
-    global: false
+    global: true
   },
   {
-    name: '学内ネットワーク',
+    name: '学内',
     dhcp: false,
-    auth: false,
+    auth: false
   },
   {
-    name: '認証ネットワーク',
+    name: '認証',
     dhcp: true,
-    auth: true,
+    auth: true
   },
+  {
+    name: '公衆',
+    dhcp: true,
+    auth: false
+  }
 ])
 
+Subnetwork.create([
+  {
+    name: 'サーバー',
+    network_category: NetworkCategory.find_by_name('学内'),
+    vlan: 101
+  },
+  {
+    name: 'クライアント',
+    network_category: NetworkCategory.find_by_name('学内'),
+    vlan: 102
+  }
+])
+
+Ipv4Network.create([
+  {
+    subnetwork: Subnetwork.find_by_name('サーバー'),
+    address: '192.168.1.0',
+    subnet_mask: '255.255.255.0',
+    default_gateway: '192.168.1.254'
+  },
+  {
+    subnetwork: Subnetwork.find_by_name('クライアント'),
+    address: '192.168.2.0',
+    subnet_mask: '255.255.255.0',
+    default_gateway: '192.168.2.254'
+  }
+])
+
+OperatingSystem.create([
+  {
+    category: :windows,
+    name: 'Windows 10',
+    eol: nil,
+    description: 'Windows 10のすべてのエディションとすべてのバージョン'
+  },
+  {
+    category: :mac,
+    name: 'macOS 10.15 Catalina',
+    eol: Time.new(2022, 9, 30),
+    description: '最新のMacです。'
+  }
+])
