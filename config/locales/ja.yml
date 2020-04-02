@@ -17,3 +17,15 @@ ja:
       このWebシステムへのアクセスには最新のモダンブラウザーが必要です。
       Internet Explorer等のレガシブラウザーは使用できません。
       Microsoft Edge、Mozilla Firefox、Google Chrome、Apple Safari等のモダンブラウザーを使用してください。
+
+  date:
+    formats:
+      default: "%Y年%m月%d日(%a)"
+      long: "%Y/%m/%d"
+      short: "%m/%d"
+
+  time:
+    formats:
+      default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
+      long: "%Y/%m/%d %H:%M:%S"
+      short: "%m/%d %H:%M"
