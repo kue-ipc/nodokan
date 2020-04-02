@@ -10,14 +10,17 @@
     = f.label :name
     = f.text_field :name
   .field
-    = f.label :owner
-    = f.text_field :owner_type
-    = f.number_field :owner_id
+    = f.label :hostname
+    = f.text_field :hostname
+  .field
+    = f.label :domain
+    = f.text_field :domain
   .field
     = f.label :note
     = f.text_area :note
   .field
-    = f.fields_for :location, @node.location do |fields|
+    - place = @node.location || Place.new
+    = f.fields_for :place, place do |fields|
       .field
         = fields.label :area
         = fields.text_field :area
@@ -29,6 +32,57 @@
         = fields.number_field :floor
       .field
         = fields.label :room
-        = fields.number_field :room
+        = fields.text_field :room
+
+  .field
+    = f.fields_for :hardware, @node.hardware do |fields|
+      .field
+        = fields.label :category
+        = fields.text_field :category
+      .field
+        = fields.label :maker
+        = fields.text_field :maker
+      .field
+        = fields.label :product_name
+        = fields.text_field :product_name
+      .field
+        = fields.label :model_number
+        = fields.text_field :model_number
+
+  .field
+    = f.fields_for :operating_system, @node.operating_system do |fields|
+      .field
+        = fields.label :category
+        = fields.text_field :category
+      .field
+        = fields.label :name
+        = fields.text_field :name
+
+  .field
+    = f.fields_for :security_software, @node.security_software do |fields|
+      .field
+        = fields.label :name
+        = fields.text_field :name
+
+  .field
+    - if @node.network_interfaces == 0
+      - network_interfaces = @node.network_interfaces
+    - else
+      - network_interfaces = [NetworkInterface.new]
+    = f.fields_for :network_interfaces, network_interfaces do |fields|
+      .field
+        = fields.label :name
+        = fields.text_field :name
+      .field
+        = fields.label :interface
+        = fields.text_field :name
+
+    / = fields.collection_select(:subnetworks, Subnetwork.all, :id, :name)
+    / = f.fields_for :network_interfaces, network_interfaces do |fields|
+    /   .field
+    /     = fields.label :subnetwork
+    /     = fields.collection_select(:subnetworks, Subnetwork.all, :id, :name)
+
+
 
   .actions = f.submit

@@ -69,6 +69,47 @@ class NodesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def node_params
-      params.require(:node).permit(:name, :owner_id, :confirmed_at, :note)
+      premitted_params = params.require(:node).permit(
+        :name,
+        :hostname,
+        :domain,
+        :note,
+        place: [
+          :area,
+          :building,
+          :floor,
+          :room
+        ],
+        hardware: [
+          :category,
+          :maker,
+          :product_name,
+          :model_number
+        ],
+        operating_system: [
+          :category,
+          :name
+        ],
+        security_software: [
+          :name
+        ],
+        network_interfaces_attributes: [
+          :name,
+          :mac_address,
+          :duid
+        ]
+      )
+      pp premitted_params[:place]
+      place = Place.find_or_create_by(premitted_params[:place])
+      hardware = Hardware.find_or_create_by(premitted_params[:hardware])
+      operating_system = OperatingSystem.find_or_create_by(premitted_params[:operating_system])
+      security_software = SecuritySoftware.find_or_create_by(premitted_params[:security_software])
+      premitted_params.permit(:name, :hostname, :domain, :note).merge(
+        {
+          location: place,
+          hardware: hardware,
+          operating_system: operating_system,
+          security_software: security_software
+        })
     end
 end

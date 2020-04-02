@@ -8,4 +8,5 @@ class Node < ApplicationRecord
   belongs_to :security_software, optional: true
 
   has_many :network_interfaces
+  accepts_nested_attributes_for :network_interfaces
 end
