@@ -96,14 +96,35 @@ class NodesController < ApplicationController
         network_interfaces_attributes: [
           :name,
           :mac_address,
-          :duid
+          :duid,
+          {
+            network_connections_attributes: [
+              :subnetwork_id,
+              :macaddress_randomization,
+              {
+                ipv4_addresses_attributes: [
+                  :dhcp,
+                  :reserved,
+                  :ip_address,
+                  :mac_address
+                ],
+                ipv6_addresses_attributes: [
+                  :dhcp,
+                  :reserved,
+                  :ip_address,
+                  :duid
+                ]
+              }
+            ]
+          }
         ]
       )
-      pp premitted_params[:place]
+
       place = Place.find_or_create_by(premitted_params[:place])
       hardware = Hardware.find_or_create_by(premitted_params[:hardware])
       operating_system = OperatingSystem.find_or_create_by(premitted_params[:operating_system])
       security_software = SecuritySoftware.find_or_create_by(premitted_params[:security_software])
+
       premitted_params.permit(:name, :hostname, :domain, :note).merge(
         {
           location: place,

@@ -7,6 +7,6 @@ class Node < ApplicationRecord
   belongs_to :operating_system, optional: true
   belongs_to :security_software, optional: true
 
-  has_many :network_interfaces
-  accepts_nested_attributes_for :network_interfaces
+  has_many :network_interfaces, dependent: :destroy
+  accepts_nested_attributes_for :network_interfaces, allow_destroy: true
 end

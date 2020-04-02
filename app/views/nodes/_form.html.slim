@@ -73,9 +73,6 @@
       .field
         = fields.label :name
         = fields.text_field :name
-      .field
-        = fields.label :interface
-        = fields.text_field :name
 
     / = fields.collection_select(:subnetworks, Subnetwork.all, :id, :name)
     / = f.fields_for :network_interfaces, network_interfaces do |fields|
