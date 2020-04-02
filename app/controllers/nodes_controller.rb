@@ -125,7 +125,7 @@ class NodesController < ApplicationController
       operating_system = OperatingSystem.find_or_create_by(premitted_params[:operating_system])
       security_software = SecuritySoftware.find_or_create_by(premitted_params[:security_software])
 
-      premitted_params.permit(:name, :hostname, :domain, :note).merge(
+      premitted_params.permit(:name, :hostname, :domain, :note, network_interfaces_attributes: {}).merge(
         {
           location: place,
           hardware: hardware,
