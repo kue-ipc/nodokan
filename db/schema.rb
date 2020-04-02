@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_27_020243) do
+ActiveRecord::Schema.define(version: 2020_04_02_005830) do
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "category"
@@ -119,6 +119,8 @@ ActiveRecord::Schema.define(version: 2020_03_27_020243) do
     t.bigint "hardware_id"
     t.bigint "operating_system_id"
     t.bigint "security_software_id"
+    t.string "hostname"
+    t.string "domain"
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["location_type", "location_id"], name: "index_nodes_on_location_type_and_location_id"
     t.index ["name"], name: "index_nodes_on_name"
