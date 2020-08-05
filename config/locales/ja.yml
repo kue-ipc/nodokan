@@ -29,3 +29,66 @@ ja:
       default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
       long: "%Y/%m/%d %H:%M:%S"
       short: "%m/%d %H:%M"
+
+  activerecord:
+    models:
+      hardware: ハードウェア
+      ipv4_address: IPv4 アドレス
+      ipv4_network: IPv4 ネットワーク
+      ipv6_address: IPv6 アドレス
+      ipv6_network: IPv6 ネットワーク
+      network_category: ネットワークカテゴリー
+      network_connection: ネットワーク接続
+      network_interface: ネットワークインターフェース
+      node: 端末
+      operating_system: オペレーティングシステム(OS)
+      place: 設置場所
+      security_software: セキュリティソフトウェア
+      subnetwork: サブネットワーク
+      subnetwork_user: ユーザーのサブネットワーク
+    attributes:
+      hardware:
+        category: カテゴリー
+        maker: 製造業者
+        product_name: 製品名
+        model_number: 型番
+      ipv4_address:
+        network_connection: ネットワーク接続
+        dhcp: DHCP(自動取得)
+        reserved: DHCP予約
+        ip_address: IPアドレス
+        mac_address: MACアドレス
+      ipv4_network:
+        subnetwork: サブネットワーク
+        address: ネットワークアドレス
+        subnet_mask: サブネットマスク
+        default_gateway: デフォルトゲートウェイ
+      operating_system:
+        category: カテゴリー
+        name: 名前
+        eol: サポート終了日
+        description: 詳細
+      subnetwork:
+        name: 名前
+        network_category: ネットワークカテゴリー
+        vlan: VLAN番号
+      security_software:
+        name: 名前
+        description: 詳細
+      network_interface:
+        node: 端末
+        name: 名前
+        interface_type: インターフェースタイプ
+        mac_address: MACアドレス
+        duid: DUID(DHCP固有識別子)
+      network_category:
+        name: 名前
+        dhcp: DHCP
+        auth: 認証
+        global: グローバル
+      network_connection:
+        network_interface: ネットワークインターフェース
+        subnetwork: サブネットワーク
+        mac_address_randomization: MACアドレスのランダム化
+
+
