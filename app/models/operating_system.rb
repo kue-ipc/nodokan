@@ -1,5 +1,5 @@
 class OperatingSystem < ApplicationRecord
-  has_many :node, dependent: :restrict_with_error
+  has_many :nodes, dependent: :restrict_with_error
 
   enum category: {
     windows: 0,

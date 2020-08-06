@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_02_005830) do
+ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "category"
@@ -24,53 +24,27 @@ ActiveRecord::Schema.define(version: 2020_04_02_005830) do
     t.index ["product_name"], name: "index_hardwares_on_product_name"
   end
 
-  create_table "ipv4_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
-    t.boolean "dhcp"
-    t.boolean "reserved"
-    t.string "ip_address"
-    t.string "mac_address"
+    t.integer "config"
+    t.integer "ip_version"
+    t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["ip_address"], name: "index_ipv4_addresses_on_ip_address"
-    t.index ["mac_address"], name: "index_ipv4_addresses_on_mac_address"
-    t.index ["network_connection_id"], name: "index_ipv4_addresses_on_network_connection_id"
+    t.index ["address"], name: "index_ip_addresses_on_address"
+    t.index ["network_connection_id"], name: "index_ip_addresses_on_network_connection_id"
   end
 
-  create_table "ipv4_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "ip_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
-    t.string "address", null: false
-    t.string "subnet_mask"
-    t.string "default_gateway"
+    t.integer "ip_version"
+    t.string "address"
+    t.integer "mask"
+    t.string "gateway"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ipv4_networks_on_address"
-    t.index ["subnetwork_id"], name: "index_ipv4_networks_on_subnetwork_id"
-  end
-
-  create_table "ipv6_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "network_connection_id", null: false
-    t.boolean "dhcp"
-    t.boolean "reserved"
-    t.string "ip_address"
-    t.string "mac_address"
-    t.string "duid"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["ip_address"], name: "index_ipv6_addresses_on_ip_address"
-    t.index ["mac_address"], name: "index_ipv6_addresses_on_mac_address"
-    t.index ["network_connection_id"], name: "index_ipv6_addresses_on_network_connection_id"
-  end
-
-  create_table "ipv6_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "subnetwork_id", null: false
-    t.string "address", null: false
-    t.integer "prefix_length"
-    t.string "default_gateway"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ipv6_networks_on_address"
-    t.index ["subnetwork_id"], name: "index_ipv6_networks_on_subnetwork_id"
+    t.index ["address"], name: "index_ip_networks_on_address"
+    t.index ["subnetwork_id"], name: "index_ip_networks_on_subnetwork_id"
   end
 
   create_table "network_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -215,10 +189,8 @@ ActiveRecord::Schema.define(version: 2020_04_02_005830) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
-  add_foreign_key "ipv4_addresses", "network_connections"
-  add_foreign_key "ipv4_networks", "subnetworks"
-  add_foreign_key "ipv6_addresses", "network_connections"
-  add_foreign_key "ipv6_networks", "subnetworks"
+  add_foreign_key "ip_addresses", "network_connections"
+  add_foreign_key "ip_networks", "subnetworks"
   add_foreign_key "network_connections", "network_interfaces"
   add_foreign_key "network_connections", "subnetworks"
   add_foreign_key "network_interfaces", "nodes"

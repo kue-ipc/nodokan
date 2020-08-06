@@ -2,12 +2,14 @@
 
 one:
   subnetwork: one
+  ip_version: 1
   address: MyString
-  prefix_length: 1
-  default_gateway: MyString
+  mask: 1
+  gateway: MyString
 
 two:
   subnetwork: two
+  ip_version: 1
   address: MyString
-  prefix_length: 1
-  default_gateway: MyString
+  mask: 1
+  gateway: MyString

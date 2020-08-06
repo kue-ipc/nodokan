@@ -33,10 +33,8 @@ ja:
   activerecord:
     models:
       hardware: ハードウェア
-      ipv4_address: IPv4 アドレス
-      ipv4_network: IPv4 ネットワーク
-      ipv6_address: IPv6 アドレス
-      ipv6_network: IPv6 ネットワーク
+      ip_address: IPアドレス
+      ip_network: IPネットワーク
       network_category: ネットワークカテゴリー
       network_connection: ネットワーク接続
       network_interface: ネットワークインターフェース

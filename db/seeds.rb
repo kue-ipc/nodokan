@@ -49,18 +49,18 @@ Subnetwork.create([
   }
 ])
 
-Ipv4Network.create([
+IpNetwork.create([
   {
     subnetwork: Subnetwork.find_by_name('サーバー'),
     address: '192.168.1.0',
-    subnet_mask: '255.255.255.0',
-    default_gateway: '192.168.1.254'
+    mask: 24,
+    gateway: '192.168.1.254'
   },
   {
     subnetwork: Subnetwork.find_by_name('クライアント'),
     address: '192.168.2.0',
-    subnet_mask: '255.255.255.0',
-    default_gateway: '192.168.2.254'
+    mask: 24,
+    gateway: '192.168.2.254'
   }
 ])
 
