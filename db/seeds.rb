@@ -52,12 +52,14 @@ Subnetwork.create([
 IpNetwork.create([
   {
     subnetwork: Subnetwork.find_by_name('サーバー'),
+    ip_version: 4,
     address: '192.168.1.0',
     mask: 24,
     gateway: '192.168.1.254'
   },
   {
     subnetwork: Subnetwork.find_by_name('クライアント'),
+    ip_version: 4,
     address: '192.168.2.0',
     mask: 24,
     gateway: '192.168.2.254'
