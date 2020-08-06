@@ -2,8 +2,8 @@ class CreateNetworkInterfaces < ActiveRecord::Migration[6.0]
   def change
     create_table :network_interfaces do |t|
       t.references :node, null: false, foreign_key: true
+      t.integer :interface_type, null: false, default: 0
       t.string :name
-      t.integer :interface_type
       t.string :mac_address
       t.string :duid
 

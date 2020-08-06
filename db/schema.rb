@@ -13,9 +13,9 @@
 ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "category"
-    t.string "maker"
-    t.string "product_name"
+    t.integer "category", null: false
+    t.string "maker", null: false
+    t.string "product_name", null: false
     t.string "model_number"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   create_table "network_connections", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_interface_id", null: false
     t.bigint "subnetwork_id", null: false
-    t.boolean "mac_address_randomization"
+    t.boolean "mac_address_randomization", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_interface_id"], name: "index_network_connections_on_network_interface_id"
@@ -69,8 +69,8 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   create_table "network_interfaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "node_id", null: false
+    t.integer "interface_type", default: 0, null: false
     t.string "name"
-    t.integer "interface_type"
     t.string "mac_address"
     t.string "duid"
     t.datetime "created_at", precision: 6, null: false
@@ -81,31 +81,33 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   end
 
   create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "user_id", null: false
     t.string "name", null: false
-    t.string "owner_type"
-    t.bigint "owner_id"
+    t.string "hostname"
+    t.string "domain"
+    t.bigint "hardware_id"
+    t.bigint "operating_system_id"
+    t.bigint "security_software_id"
+    t.string "location_type"
+    t.bigint "location_id"
     t.timestamp "confirmed_at"
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "location_type"
-    t.bigint "location_id"
-    t.bigint "hardware_id"
-    t.bigint "operating_system_id"
-    t.bigint "security_software_id"
-    t.string "hostname"
-    t.string "domain"
+    t.index ["domain"], name: "index_nodes_on_domain"
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
+    t.index ["hostname", "domain"], name: "fqdn"
+    t.index ["hostname"], name: "index_nodes_on_hostname"
     t.index ["location_type", "location_id"], name: "index_nodes_on_location_type_and_location_id"
     t.index ["name"], name: "index_nodes_on_name"
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
-    t.index ["owner_type", "owner_id"], name: "index_nodes_on_owner_type_and_owner_id"
     t.index ["security_software_id"], name: "index_nodes_on_security_software_id"
+    t.index ["user_id"], name: "index_nodes_on_user_id"
   end
 
   create_table "operating_systems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "category"
-    t.string "name"
+    t.integer "category", null: false
+    t.string "name", null: false
     t.date "eol"
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
@@ -126,7 +128,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   end
 
   create_table "security_softwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -136,8 +138,9 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   create_table "subnetwork_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
     t.bigint "user_id", null: false
-    t.boolean "assignable"
-    t.boolean "managable"
+    t.boolean "assignable", null: false
+    t.boolean "managable", null: false
+    t.boolean "default", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subnetwork_id"], name: "index_subnetwork_users_on_subnetwork_id"
@@ -147,22 +150,24 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   create_table "subnetworks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "network_category_id", null: false
-    t.integer "vlan"
+    t.integer "vlan", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_subnetworks_on_name", unique: true
     t.index ["network_category_id"], name: "index_subnetworks_on_network_category_id"
+    t.index ["vlan"], name: "index_subnetworks_on_vlan", unique: true
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
     t.string "fullname"
+    t.integer "role", default: 0, null: false
+    t.boolean "deleted", default: false, null: false
+    t.datetime "remember_created_at"
+    t.string "remember_token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "role", default: 0, null: false
-    t.bigint "default_subnetwork_id"
-    t.index ["default_subnetwork_id"], name: "index_users_on_default_subnetwork_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -197,8 +202,8 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   add_foreign_key "nodes", "hardwares"
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "security_softwares"
+  add_foreign_key "nodes", "users"
   add_foreign_key "subnetwork_users", "subnetworks"
   add_foreign_key "subnetwork_users", "users"
   add_foreign_key "subnetworks", "network_categories"
-  add_foreign_key "users", "subnetworks", column: "default_subnetwork_id"
 end
