@@ -26,8 +26,8 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
-    t.integer "config"
-    t.integer "ip_version"
+    t.integer "config", null: false
+    t.integer "ip_version", null: false
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -37,9 +37,9 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   create_table "ip_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
-    t.integer "ip_version"
-    t.string "address"
-    t.integer "mask"
+    t.integer "ip_version", default: 4, null: false
+    t.string "address", null: false
+    t.integer "mask", null: false
     t.string "gateway"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -164,8 +164,6 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.string "fullname"
     t.integer "role", default: 0, null: false
     t.boolean "deleted", default: false, null: false
-    t.datetime "remember_created_at"
-    t.string "remember_token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
