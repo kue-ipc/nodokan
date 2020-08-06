@@ -2,3 +2,8 @@ h1 Pages#top
 p Find me in app/views/pages/top.html.slim
 
 = link_to Node.model_name.human, nodes_path
+
+- @subnetworks.each do |subnetwork|
+  p
+    = subnetwork.name
+

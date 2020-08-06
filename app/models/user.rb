@@ -13,6 +13,14 @@ class User < ApplicationRecord
 
   has_many :nodes, as: :owner, dependent: :nullify
 
+  has_many :subnetwork_users, dependent: :destroy
+  has_many :assignable_subnetwork_users, -> { where(assignable: true) }, class_name: 'SubnetworkUser'
+  has_many :managable_subnetwork_users, -> { where(managable: true) }, class_name: 'SubnetworkUser'
+
+  has_many :subnetworks, through: :subnetwork_users
+  has_many :assignable_subnetworks, through: :assignable_subnetwork_users, source: :subnetwork
+  has_many :managable_subnetworks, through: :managable_subnetwork_users, source: :subnetwork
+
   def ldap_before_save
     sync_ldap!
     # The first user is the admin.
