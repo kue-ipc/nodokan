@@ -14,7 +14,7 @@ table
     - @subnetworks.each do |subnetwork|
       tr
         td = subnetwork.name
-        td = subnetwork.network_category
+        td = subnetwork.network_category.name
         td = subnetwork.vlan
         td = link_to 'Show', subnetwork
         td = link_to 'Edit', edit_subnetwork_path(subnetwork)

@@ -14,7 +14,22 @@ class NodesController < ApplicationController
 
   # GET /nodes/new
   def new
-    @node = Node.new
+    @node = Node.new(
+      location: Place.new,
+      hardware: Hardware.new,
+      operating_system: OperatingSystem.new,
+      network_interfaces: [
+        NetworkInterface.new(
+          network_connections: [
+            NetworkConnection.new(
+              ip_addresses: [
+                IpAddress.new
+              ]
+            )
+          ]
+        )
+      ]
+    )
   end
 
   # GET /nodes/1/edit

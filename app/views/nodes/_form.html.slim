@@ -1,80 +1,119 @@
+- if @node.errors.any?
+  #error_explanation
+    h2 = "#{pluralize(@node.errors.count, "error")} prohibited this node from being saved:"
+    ul
+      - @node.errors.full_messages.each do |message|
+        li = message
+
+- col_left = ['col-sm-2']
+- col_right = ['col-sm-10']
+
 = form_with model: @node do |f|
-  - if @node.errors.any?
-    #error_explanation
-      h2 = "#{pluralize(@node.errors.count, "error")} prohibited this node from being saved:"
-      ul
-        - @node.errors.full_messages.each do |message|
-          li = message
+  .field.form-group.row
+    = f.label :name, class: ['col-from-label'] + col_left
+    diw class=col_right
+      = f.text_field :name, class: 'form-control', required: true
+  .field.form-group.row
+    = f.label :hostname, class: ['col-from-label'] + col_left
+    diw class=col_right
+      .form-row
+        .col-sm-3
+          = f.text_field :hostname, class: 'form-control', pattern: "[a-z-]*"
+        .col-sm-1.pt-2.text-center
+          span .
+        .col-sm-8
+          = f.text_field :domain, class: 'form-control col-auto', \
+            placeholder: 'ドメイン名(任意)'
+  .row
+    = f.label :location, class: ['col-from-label'] + col_left
+    diw class=(col_right + ['form-row'])
+      = f.fields_for :place, @node.location do |fields|
+        .field.form-group.col-sm-3
+          = fields.label :area
+          = fields.text_field :area, class: 'form-control', list: 'area-list'
+          datalist#area-list
+            option value="Aキャンパス"
+            option value="B学校"
+        .field.form-group.col-sm-4
+          = fields.label :building
+          = fields.text_field :building, class: 'form-control'
+        .field.form-group.col-sm-1
+          = fields.label :floor
+          = fields.number_field :floor, class: 'form-control'
+        .field.form-group.col-sm-4
+          = fields.label :room
+          = fields.text_field :room, class: 'form-control'
 
-  .field
-    = f.label :name
-    = f.text_field :name
-  .field
-    = f.label :hostname
-    = f.text_field :hostname
-  .field
-    = f.label :domain
-    = f.text_field :domain
-  .field
-    = f.label :note
-    = f.text_area :note
-  .field
-    - place = @node.location || Place.new
-    = f.fields_for :place, place do |fields|
-      .field
-        = fields.label :area
-        = fields.text_field :area
-      .field
-        = fields.label :building
-        = fields.text_field :building
-      .field
-        = fields.label :floor
-        = fields.number_field :floor
-      .field
-        = fields.label :room
-        = fields.text_field :room
+  .row
+    div class=col_left
+      | ハードウェア情報
+    diw class=col_right
+      .row.rounded.mx-1.mb-2.border
+        = f.fields_for :hardware, @node.hardware do |fields|
+          .field.form-group.col-sm-3
+            = fields.label :category
+            = fields.select :category, \
+              Hardware.categories.transform_keys {|key| t(key, scope: [:activerecord, :enums, :hardware, :categories])}, \
+              {}, class: 'custom-select'
+          .field.form-group.col-sm-3
+            = fields.label :maker
+            = fields.text_field :maker, class: 'form-control'
+          .field.form-group.col-sm-3
+            = fields.label :product_name
+            = fields.text_field :product_name, class: 'form-control'
+          .field.form-group.col-sm-3
+            = fields.label :model_number
+            = fields.text_field :model_number, class: 'form-control'
 
-  .field
-    = f.fields_for :hardware, @node.hardware do |fields|
-      .field
-        = fields.label :category
-        = fields.text_field :category
-      .field
-        = fields.label :maker
-        = fields.text_field :maker
-      .field
-        = fields.label :product_name
-        = fields.text_field :product_name
-      .field
-        = fields.label :model_number
-        = fields.text_field :model_number
+  .row
+    = f.label :operating_system, class: ['col-from-label'] + col_left
+    diw class=(col_right + ['form-row'])
+      = f.fields_for :operating_system, @node.operating_system do |fields|
+        .field.form-group.col-sm-3
+          = fields.select :category, \
+            OperatingSystem.categories.transform_keys {|key| t(key, scope: [:activerecord, :enums, :operating_system, :categories])}, \
+            {}, class: 'custom-select'
+        .field.form-group.col-sm-9
+          = fields.text_field :name, class: 'form-control'
 
-  .field
-    = f.fields_for :operating_system, @node.operating_system do |fields|
-      .field
-        = fields.label :category
-        = fields.text_field :category
-      .field
-        = fields.label :name
-        = fields.text_field :name
+  = f.fields_for :security_software, \
+    (@node.security_software || SecuritySoftware.new) do |fields|
+    .field.form-group.row
+      = fields.label :name, class: ['col-from-label'] + col_left
+      div class=col_right
+        = fields.text_field :name, class: 'form-control'
 
-  .field
-    = f.fields_for :security_software, @node.security_software do |fields|
-      .field
-        = fields.label :name
-        = fields.text_field :name
-
-  .field
-    - if @node.network_interfaces == 0
-      - network_interfaces = @node.network_interfaces
-    - else
-      - network_interfaces = [NetworkInterface.new]
-    = f.fields_for :network_interfaces, network_interfaces do |fields|
-      .field
-        = fields.label :name
-        = fields.text_field :name
+  .row
+    = f.label :network_interface, class: ['col-from-label'] + col_left
+    diw class=(col_right + ['form-row'])
+      = f.fields_for :network_interfaces, @node.network_interfaces do |fields|
+        .row.rounded.mx-1.mb-2.border
+          .field.form-group.col-sm-3
+            = fields.label :interface_type
+            = fields.select :interface_type, \
+              NetworkInterface.interface_types.transform_keys {|key| t(key, scope: [:activerecord, :enums, :network_interface, :interface_types])}, \
+              {}, class: 'custom-select'
+          .field.form-group.col-sm-9
+            = fields.label :name
+            = fields.text_field :name, class: 'form-control'
+          .field.form-group.col-sm-6
+            = fields.label :mac_address
+            = fields.text_field :mac_address, class: 'form-control', \
+              pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
+              placeholder: '00-00-5E-00-53-00'
+          .field.form-group.col-sm-6
+            = fields.label :duid
+            = fields.text_field :duid, class: 'form-control',
+              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+              placeholder: '00-03-00-01-00-00-5E-00-53-00'
+          / = field.fields_for :network_connections do |nc_fields|
+          /   = nc_fields.checkbox :mac_address_randomization
 
 
 
+  .field.form-group.row
+    = f.label :note, class: ['col-from-label'] + col_left
+    diw class=col_right
+      = f.text_area :note, class: 'form-control'
 
   .actions = f.submit

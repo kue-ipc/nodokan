@@ -1,10 +1,11 @@
 class SubnetworksController < ApplicationController
   before_action :set_subnetwork, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_subnetwork, only: [:index]
 
   # GET /subnetworks
   # GET /subnetworks.json
   def index
-    @subnetworks = Subnetwork.all
+    @subnetworks = policy_scope(Subnetwork).all
   end
 
   # GET /subnetworks/1
@@ -65,10 +66,15 @@ class SubnetworksController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_subnetwork
       @subnetwork = Subnetwork.find(params[:id])
+      authorize @subnetwork
     end
 
     # Only allow a list of trusted parameters through.
     def subnetwork_params
       params.require(:subnetwork).permit(:name, :network_category_id, :vlan)
+    end
+
+    def authorize_subnetwork
+      authorize Subnetwork
     end
 end

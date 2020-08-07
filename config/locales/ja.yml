@@ -50,17 +50,9 @@ ja:
         maker: 製造業者
         product_name: 製品名
         model_number: 型番
-      ipv4_address:
+      ip_address:
         network_connection: ネットワーク接続
-        dhcp: DHCP(自動取得)
-        reserved: DHCP予約
-        ip_address: IPアドレス
-        mac_address: MACアドレス
-      ipv4_network:
-        subnetwork: サブネットワーク
-        address: ネットワークアドレス
-        subnet_mask: サブネットマスク
-        default_gateway: デフォルトゲートウェイ
+        address: IPアドレス
       operating_system:
         category: カテゴリー
         name: 名前
@@ -88,5 +80,66 @@ ja:
         network_interface: ネットワークインターフェース
         subnetwork: サブネットワーク
         mac_address_randomization: MACアドレスのランダム化
+      node:
+        name: 端末名
+        hostname: ホスト名
+        domain: ドメイン名
+        note: 備考
+        location: 設置場所
+        hardware: 機器情報
+        operating_system: OS
+        security_software: セキュリティソフトウェア
+        network_interface: ネットワークインターフェース
+      place:
+        area: 拠点(キャンパス)
+        building: 建屋
+        floor: 階
+        room: 部屋
+      hardware:
+        category: 種別
+        maker: 製造業者
+        product_name: 製品名
+        model_number: 型番
+      operating_system:
+        category: 種別
+        name: OS名
+      security_software:
+        name: ソフトウェア名
+      network_interface:
+        name: インターフェース名
+        interface_type: 接続形態
+        mac_address: MACアドレス(ハードウェアアドレス)
+        duid: DUID(DHPv6固有識別子)
+    enums:
+      hardware:
+        categories:
+          desktop: デスクトップPC
+          laptop: ノートPC
+          tablet: タブレット
+          mobile: 携帯/スマートフォン
+          server: サーバー
+          network: ネットワーク機器
+          virtual: 仮想マシン
+          other: その他
+      operating_system:
+        categories:
+          window: Windows
+          mac: Mac
+          ios: iOS(iPadOS/watchOS含む)
+          android: Android
+          linux: Linux
+          bsd: BSD系
+          unix: UNIX(System V系)
+          dedicated: 専用OS
+          other: その他
+    enums:
+      network_interface:
+        interface_types:
+          wired: 有線
+          wireless: 無線
+          virtul: 仮想
+          bluetooth: Bluetooth
+          dialup: 電話回線
+          other: その他
 
 

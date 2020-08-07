@@ -1,5 +1,5 @@
 class Node < ApplicationRecord
-  belongs_to :user, optinoal: true
+  belongs_to :user
 
   belongs_to :location, polymorphic: true, optional: true
   has_many :nodes, as: :location, dependent: :nullify
