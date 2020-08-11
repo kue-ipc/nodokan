@@ -116,12 +116,13 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   end
 
   create_table "places", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "area"
-    t.string "building"
-    t.integer "floor"
-    t.string "room"
+    t.string "area", default: "", null: false
+    t.string "building", default: "", null: false
+    t.integer "floor", default: 0, null: false
+    t.string "room", default: "", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["area", "building", "floor", "room"], name: "index_places_on_area_and_building_and_floor_and_room", unique: true
     t.index ["area"], name: "index_places_on_area"
     t.index ["building"], name: "index_places_on_building"
     t.index ["room"], name: "index_places_on_room"
