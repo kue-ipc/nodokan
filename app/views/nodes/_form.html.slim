@@ -8,7 +8,7 @@
 
 p 【必須】の項目は入力が必須です。
 
-= form_with model: @node do |f|
+= form_for @node do |f|
   .rounded.border.p-2.mb-2
     h4 端末基本情報
     .form-row
@@ -50,14 +50,14 @@ p 【必須】の項目は入力が必須です。
     h4 ハードウェア情報
     .form-row
       = f.fields_for :hardware, @node.hardware do |fields|
-        .form-group.col-md-3
+        .form-group.col-md-2
           = fields.label :category
           = fields.select :category, t_enums(Hardware, :categories),
-                          {prompt: true}, class: 'custom-select'
+                          {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-3
           = fields.label :maker
           = fields.text_field :maker, class: 'form-control'
-        .form-group.col-md-3
+        .form-group.col-md-4
           = fields.label :product_name
           = fields.text_field :product_name, class: 'form-control'
         .form-group.col-md-3
@@ -77,14 +77,14 @@ p 【必須】の項目は入力が必須です。
           = fields.text_field :name, class: 'form-control'
       .form-group.col-md-6
         = f.label :security_software
-        = f.collection_select :security_software, SecuritySoftware.all, :id, :name, \
+        = f.collection_select :security_software_id, SecuritySoftware.all, :id, :name, \
                               {prompt: true}, \
                               class: 'custom-select'
 
   .rounded.border.p-2.mb-2
     h4 ネットワーク接続情報
     - count = 0
-    = f.fields_for :network_interfaces, @node.network_interfaces do |fields|
+    = f.fields_for :network_interfaces do |fields|
       .rounded.border.p-2.mb-2.
         - count += 1
         h6
@@ -95,7 +95,7 @@ p 【必須】の項目は入力が必須です。
             = fields.label :interface_type
             = fields.select :interface_type, \
                             t_enums(NetworkInterface, :interface_types), \
-                            {prompt: true}, class: 'custom-select'
+                            {}, class: 'custom-select'
           .form-group.col-md-9
             = fields.label :name
             = fields.text_field :name, class: 'form-control'
@@ -117,16 +117,16 @@ p 【必須】の項目は入力が必須です。
             = fields.fields_for :network_connections do |nc_fields|
               tr
                 td
-                  = nc_fields.collection_select :subnetwork, Subnetwork.all, \
+                  = nc_fields.collection_select :subnetwork_id, Subnetwork.all, \
                                                 :id, :name, \
-                                                {prompt: true}, \
-                                                class: 'custom-select'
+                                                {}, class: 'custom-select'
                 = nc_fields.fields_for :ip_addresses do |ip_fields|
                   td
                     = ip_fields.select :config, \
                                        t_enums(IpAddress, :configs), \
-                                       {prompt: true}, class: 'custom-select'
+                                       {}, class: 'custom-select'
                   td
+                    = ip_fields.hidden_field :ip_version
                     = ip_fields.text_field :address, \
                                            class: 'form-control-plaintext', \
                                            readonly: true

@@ -11,7 +11,7 @@ class User < ApplicationRecord
     remnant: 3
   }
 
-  has_many :nodes, as: :owner, dependent: :nullify
+  has_many :nodes, dependent: :nullify
 
   has_many :subnetwork_users, dependent: :destroy
   has_many :assignable_subnetwork_users, -> { where(assignable: true) }, class_name: 'SubnetworkUser'

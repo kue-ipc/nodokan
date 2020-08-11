@@ -4,7 +4,7 @@ table
   thead
     tr
       th Name
-      th Owner
+      th User
       th Confirmed at
       th Note
       th
@@ -15,7 +15,7 @@ table
     - @nodes.each do |node|
       tr
         td = node.name
-        td = node.owner
+        td = node.user.username
         td = node.confirmed_at
         td = node.note
         td = link_to 'Show', node

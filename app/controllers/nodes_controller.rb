@@ -23,7 +23,7 @@ class NodesController < ApplicationController
           network_connections: [
             NetworkConnection.new(
               ip_addresses: [
-                IpAddress.new
+                IpAddress.new(ip_version: 4)
               ]
             )
           ]
@@ -84,11 +84,12 @@ class NodesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def node_params
-      premitted_params = params.require(:node).permit(
+      permitted_params = params.require(:node).permit(
         :name,
         :hostname,
         :domain,
         :note,
+        :security_software_id,
         place: [
           :area,
           :building,
@@ -105,47 +106,39 @@ class NodesController < ApplicationController
           :category,
           :name
         ],
-        security_software: [
-          :name
-        ],
         network_interfaces_attributes: [
           :name,
+          :interface_type,
           :mac_address,
-          :duid,
           {
             network_connections_attributes: [
               :subnetwork_id,
-              :macaddress_randomization,
               {
-                ipv4_addresses_attributes: [
-                  :dhcp,
-                  :reserved,
-                  :ip_address,
-                  :mac_address
+                ip_addresses_attributes: [
+                  :config,
+                  :ip_version,
+                  :address
                 ],
-                ipv6_addresses_attributes: [
-                  :dhcp,
-                  :reserved,
-                  :ip_address,
-                  :duid
-                ]
               }
             ]
           }
         ]
       )
 
-      place = Place.find_or_create_by(premitted_params[:place])
-      hardware = Hardware.find_or_create_by(premitted_params[:hardware])
-      operating_system = OperatingSystem.find_or_create_by(premitted_params[:operating_system])
-      security_software = SecuritySoftware.find_or_create_by(premitted_params[:security_software])
+      place = Place.find_or_create_by(permitted_params[:place])
+      hardware = if permitted_params[:hardware][:category].present?
+        Hardware.find_or_create_by(permitted_params[:hardware])
+      end
+      operating_system = if permitted_params[:operating_system][:category].present?
+        OperatingSystem.find_or_create_by(permitted_params[:operating_system])
+      end
 
-      premitted_params.permit(:name, :hostname, :domain, :note, network_interfaces_attributes: {}).merge(
+      permitted_params.except(:place, :hardware, :operating_system).merge(
         {
           location: place,
           hardware: hardware,
           operating_system: operating_system,
-          security_software: security_software
+          user_id: current_user.id
         })
     end
 end
