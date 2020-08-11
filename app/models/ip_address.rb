@@ -7,8 +7,8 @@ class IpAddress < ApplicationRecord
   }
 
   enum config: {
-    static: 0,
-    dhcp: 1,
+    manual: 0,
+    auto: 1,
     reserved: 2,
   }
 end

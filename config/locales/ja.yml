@@ -93,7 +93,7 @@ ja:
       place:
         area: 拠点(キャンパス)
         building: 建屋
-        floor: 階
+        floor: フロア
         room: 部屋
       hardware:
         category: 種別
@@ -132,14 +132,19 @@ ja:
           unix: UNIX(System V系)
           dedicated: 専用OS
           other: その他
-    enums:
       network_interface:
         interface_types:
           wired: 有線
           wireless: 無線
-          virtul: 仮想
+          virtual: 仮想
           bluetooth: Bluetooth
           dialup: 電話回線
+          vpn: VPN
           other: その他
+      ip_address:
+        configs:
+          manual: 手動(固定IP)
+          auto: 自動(動的IP)
+          reserved: 自動(予約済み固定IP)
 
 

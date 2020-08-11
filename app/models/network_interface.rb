@@ -9,6 +9,7 @@ class NetworkInterface < ApplicationRecord
     virtual: 2,
     bluetooth: 3,
     dialup: 4,
+    vpn: 5,
     other: 255
   }
 
