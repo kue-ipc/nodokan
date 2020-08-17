@@ -45,6 +45,9 @@ ja:
       subnetwork: サブネットワーク
       subnetwork_user: ユーザーのサブネットワーク
     attributes:
+      user:
+        username: ユーザー名
+        password: パスワード
       hardware:
         category: カテゴリー
         maker: 製造業者
