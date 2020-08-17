@@ -94,8 +94,11 @@ class NodesController < ApplicationController
           network_connections: inter.network_connections.map do |conn|
             NetworkConnection.new(
               subnetwork_id: conn.subnetwork_id,
-              ip_addresses: conn.ip_addresses do |ip|
-                IpAddress.new(config: ip.config)
+              ip_addresses: conn.ip_addresses.map do |ip|
+                IpAddress.new(
+                  config: ip.config,
+                  ip_version: ip.ip_version
+                )
               end
             )
           end
