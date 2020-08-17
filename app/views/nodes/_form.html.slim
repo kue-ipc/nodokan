@@ -26,7 +26,7 @@ p 【必須】の項目は入力が必須です。
     h4 設置場所
     small.text-muted 候補に無い場合は、そのまま名前を入力してください。
     .form-row
-      = f.fields_for :place, @node.location do |fields|
+      = f.fields_for :place, @node.location || Place.new do |fields|
         .form-group.col-md-3
           = fields.label :area
           = fields.text_field :area, class: 'form-control', list: 'area-list'
@@ -49,7 +49,7 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     h4 ハードウェア情報
     .form-row
-      = f.fields_for :hardware, @node.hardware do |fields|
+      = f.fields_for :hardware, @node.hardware || Hardware.new do |fields|
         .form-group.col-md-2
           = fields.label :category
           = fields.select :category, t_enums(Hardware, :categories),
@@ -67,7 +67,7 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     h4 ソフトウェア情報
     .form-row
-      = f.fields_for :operating_system, @node.operating_system do |fields|
+      = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |fields|
         .form-group.col-md-2
           = fields.label :category
           = fields.select :category, t_enums(OperatingSystem, :categories), \
@@ -85,11 +85,15 @@ p 【必須】の項目は入力が必須です。
     h4 ネットワーク接続情報
     - count = 0
     = f.fields_for :network_interfaces do |fields|
+      = fields.hidden_field :id
       .rounded.border.p-2.mb-2.
         - count += 1
         h6
           => count
           | 番目のネットワークインターフェース
+        .custom-control.custom-checkbox
+          = fields.check_box :_destroy, class: 'custom-control-input'
+          = fields.label :_destroy, '削除', class: 'custom-control-label'
         .form-row
           .form-group.col-md-3
             = fields.label :interface_type
@@ -117,11 +121,13 @@ p 【必須】の項目は入力が必須です。
             = fields.fields_for :network_connections do |nc_fields|
               tr
                 td
+                  = nc_fields.hidden_field :id
                   = nc_fields.collection_select :subnetwork_id, Subnetwork.all, \
                                                 :id, :name, \
                                                 {}, class: 'custom-select'
                 = nc_fields.fields_for :ip_addresses do |ip_fields|
                   td
+                    = ip_fields.hidden_field :id
                     = ip_fields.select :config, \
                                        t_enums(IpAddress, :configs), \
                                        {}, class: 'custom-select'

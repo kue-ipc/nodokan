@@ -136,14 +136,20 @@ class NodesController < ApplicationController
           :name
         ],
         network_interfaces_attributes: [
+          :id,
+          :_destroy,
           :name,
           :interface_type,
           :mac_address,
           {
             network_connections_attributes: [
+              :id,
+              :_destroy,
               :subnetwork_id,
               {
                 ip_addresses_attributes: [
+                  :id,
+                  :_destroy,
                   :config,
                   :ip_version,
                   :address
