@@ -4,4 +4,8 @@ class NodePolicy < ApplicationPolicy
       scope.all
     end
   end
+
+  def copy?
+    show? && new?
+  end
 end

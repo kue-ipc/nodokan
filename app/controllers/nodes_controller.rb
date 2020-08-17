@@ -1,5 +1,6 @@
 class NodesController < ApplicationController
   before_action :set_node, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_node, only: [:index]
 
   # GET /nodes
   # GET /nodes.json
@@ -76,10 +77,38 @@ class NodesController < ApplicationController
     end
   end
 
+  # GET /nodes/1/copy
+  def copy
+    @original_node = Node.find(params[:id])
+    authorize @original_node
+    @node = Node.new(
+      domain: @original_node.domain,
+      location: @original_node.location,
+      hardware: @original_node.hardware,
+      operating_system: @original_node.operating_system,
+      security_software_id: @original_node.security_software_id,
+      network_interfaces: @original_node.network_interfaces.map do |inter|
+        NetworkInterface.new(
+          name: inter.name,
+          interface_type: inter.interface_type,
+          network_connections: inter.network_connections.map do |conn|
+            NetworkConnection.new(
+              subnetwork_id: conn.subnetwork_id,
+              ip_addresses: conn.ip_addresses do |ip|
+                IpAddress.new(config: ip.config)
+              end
+            )
+          end
+        )
+      end
+    )
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_node
       @node = Node.find(params[:id])
+      authorize @node
     end
 
     # Only allow a list of trusted parameters through.
@@ -140,5 +169,9 @@ class NodesController < ApplicationController
           operating_system: operating_system,
           user_id: current_user.id
         })
+    end
+
+    def authorize_node
+      authorize Node
     end
 end

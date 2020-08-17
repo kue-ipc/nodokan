@@ -17,9 +17,9 @@ p 【必須】の項目は入力が必須です。
         = f.text_field :name, class: 'form-control', required: true
       .form-group.col-md-3
         = f.label :hostname
-        = f.text_field :hostname, class: 'form-control', pattern: "[a-z-]*"
+        = f.text_field :hostname, class: 'form-control', pattern: "[0-9A-Za-z-]*"
       .form-group.col-md-5
-        = f.label :domain
+        = f.label :domain, pattern: "[.0-9A-Za-z-]*"
         = f.text_field :domain, class: 'form-control'
 
   .rounded.border.p-2.mb-2

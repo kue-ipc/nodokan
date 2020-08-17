@@ -1,6 +1,6 @@
 class NetworkInterface < ApplicationRecord
   belongs_to :node
-  has_many :network_connections
+  has_many :network_connections, dependent: :destroy
   has_many :subnetworks, through: :network_connections
   accepts_nested_attributes_for :network_connections, allow_destroy: true
 

@@ -1,9 +1,16 @@
 Rails.application.routes.draw do
-  resources :subnetworks
-  resources :nodes
   root to: 'pages#top'
   get 'about', to: 'pages#about'
+
+  resources :subnetworks
+  resources :nodes do
+    member do
+      get 'copy'
+    end
+  end
+
   devise_for :users
+
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
