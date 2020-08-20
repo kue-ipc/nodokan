@@ -11,6 +11,8 @@ class CreateHardwares < ActiveRecord::Migration[6.0]
     add_index :hardwares, :maker
     add_index :hardwares, :product_name
     add_index :hardwares, :model_number
-    add_index :hardwares, [:category, :maker, :product_name, :model_number], unique: true
+    add_index :hardwares, [:category, :maker, :product_name, :model_number],
+              name: :hardware_model,
+              unique: true
   end
 end
