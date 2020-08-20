@@ -86,22 +86,21 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.string "name", null: false
     t.string "hostname"
     t.string "domain"
+    t.bigint "place_id"
     t.bigint "hardware_id"
     t.bigint "operating_system_id"
     t.bigint "security_software_id"
-    t.string "location_type"
-    t.bigint "location_id"
-    t.timestamp "confirmed_at"
     t.text "note"
+    t.timestamp "confirmed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["domain"], name: "index_nodes_on_domain"
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["hostname", "domain"], name: "fqdn"
     t.index ["hostname"], name: "index_nodes_on_hostname"
-    t.index ["location_type", "location_id"], name: "index_nodes_on_location_type_and_location_id"
     t.index ["name"], name: "index_nodes_on_name"
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
+    t.index ["place_id"], name: "index_nodes_on_place_id"
     t.index ["security_software_id"], name: "index_nodes_on_security_software_id"
     t.index ["user_id"], name: "index_nodes_on_user_id"
   end
@@ -141,9 +140,9 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   create_table "subnetwork_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
     t.bigint "user_id", null: false
-    t.boolean "assignable", null: false
-    t.boolean "managable", null: false
-    t.boolean "default", null: false
+    t.boolean "assignable", default: false, null: false
+    t.boolean "managable", default: false, null: false
+    t.boolean "default", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subnetwork_id"], name: "index_subnetwork_users_on_subnetwork_id"
@@ -202,6 +201,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   add_foreign_key "network_interfaces", "nodes"
   add_foreign_key "nodes", "hardwares"
   add_foreign_key "nodes", "operating_systems"
+  add_foreign_key "nodes", "places"
   add_foreign_key "nodes", "security_softwares"
   add_foreign_key "nodes", "users"
   add_foreign_key "subnetwork_users", "subnetworks"

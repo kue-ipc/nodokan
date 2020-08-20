@@ -26,7 +26,7 @@ p 【必須】の項目は入力が必須です。
     h4 設置場所
     small.text-muted 候補に無い場合は、そのまま名前を入力してください。
     .form-row
-      = f.fields_for :place, @node.location || Place.new do |fields|
+      = f.fields_for :place, @node.place || Place.new do |fields|
         .form-group.col-md-3
           = fields.label :area
           = fields.text_field :area, class: 'form-control', list: 'area-list'

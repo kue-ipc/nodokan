@@ -66,6 +66,8 @@ Metrics/CyclomaticComplexity:
 
 Metrics/MethodLength:
   Max: 15
+  Exclude:
+    - 'db/migrate/*.rb'
 
 Metrics/ModuleLength:
   Max: 150
@@ -99,6 +101,9 @@ Layout/FirstArrayElementIndentation:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+
+Rails/BulkChangeTable:
+  Enabled: false
 
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true

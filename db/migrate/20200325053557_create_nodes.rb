@@ -7,14 +7,14 @@ class CreateNodes < ActiveRecord::Migration[6.0]
       t.string :hostname
       t.string :domain
 
+      t.references :place, foreign_key: true
       t.references :hardware, foreign_key: true
-
       t.references :operating_system, foreign_key: true
       t.references :security_software, foreign_key: true
 
-      t.references :location, polymorphic: true
-      t.timestamp :confirmed_at
       t.text :note
+
+      t.timestamp :confirmed_at
 
       t.timestamps
     end

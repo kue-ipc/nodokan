@@ -16,7 +16,7 @@ class NodesController < ApplicationController
   # GET /nodes/new
   def new
     @node = Node.new(
-      location: Place.new,
+      place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
       network_interfaces: [
@@ -83,7 +83,7 @@ class NodesController < ApplicationController
     authorize @original_node
     @node = Node.new(
       domain: @original_node.domain,
-      location: @original_node.location,
+      place: @original_node.place,
       hardware: @original_node.hardware,
       operating_system: @original_node.operating_system,
       security_software_id: @original_node.security_software_id,
@@ -174,7 +174,7 @@ class NodesController < ApplicationController
 
       permitted_params.except(:place, :hardware, :operating_system).merge(
         {
-          location: place,
+          place: place,
           hardware: hardware,
           operating_system: operating_system,
           user_id: current_user.id,
