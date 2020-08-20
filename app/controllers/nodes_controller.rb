@@ -5,7 +5,7 @@ class NodesController < ApplicationController
   # GET /nodes
   # GET /nodes.json
   def index
-    @nodes = Node.all
+    @nodes = policy_scope(Node).all
   end
 
   # GET /nodes/1

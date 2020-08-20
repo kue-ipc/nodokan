@@ -1,0 +1,32 @@
+<%== "\u{feff}" -%>
+<%- require 'csv' -%>
+id,user,name,hostname,domain,[place]area,[place]building,[place]floor,[place]room,[hardware]category,[hardware]maker,[hardware]product_name,[hardware]model_number,[os]category,[os]name,security_sofware,[nic]interface_type,[nic]name,[nic]mac_address,[nic]subnetwork,[nic]address,[nic]config,[nic]address,note
+<%- @nodes.each do |node| -%>
+<%==
+[
+  node.id,
+  node.user.username,
+  node.name,
+  node.hostname,
+  node.domain,
+  node.location.area,
+  node.location.building,
+  node.location.floor,
+  node.location.room,
+  node.hardware.category,
+  node.hardware.maker,
+  node.hardware.product_name,
+  node.hardware.model_number,
+  node.operating_system.category,
+  node.operating_system.name,
+  node.security_software.name,
+  node.network_interfaces.first.interface_type,
+  node.network_interfaces.first.name,
+  node.network_interfaces.first.mac_address,
+  node.network_interfaces.first.network_connections.first.subnetwork.name,
+  node.network_interfaces.first.network_connections.first.ip_addresses.first.config,
+  node.network_interfaces.first.network_connections.first.ip_addresses.first.address,
+  node.note
+].to_csv
+-%>
+<%- end -%>
