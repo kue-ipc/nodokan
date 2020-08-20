@@ -11,7 +11,6 @@ class NetworkInterface < ApplicationRecord
     bluetooth: 3,
     dialup: 4,
     vpn: 5,
-    other: 255
+    other: 255,
   }
-
 end

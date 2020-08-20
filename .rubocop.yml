@@ -25,7 +25,7 @@ Style/Documentation:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
-  Enabled: true
+  Enabled: false
 
 Style/SymbolArray:
   EnforcedStyle: brackets
@@ -93,6 +93,12 @@ Style/WordArray:
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
 
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true

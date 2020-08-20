@@ -9,6 +9,6 @@ class Hardware < ApplicationRecord
     server: 4,
     network: 5,
     virtual: 6,
-    other: 255
+    other: 255,
   }
 end

@@ -1,1 +1,1 @@
-json.partial! "subnetworks/subnetwork", subnetwork: @subnetwork
+json.partial! 'subnetworks/subnetwork', subnetwork: @subnetwork

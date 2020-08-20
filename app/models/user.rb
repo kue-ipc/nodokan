@@ -8,7 +8,7 @@ class User < ApplicationRecord
     user: 0,
     admin: 1,
     guest: 2,
-    remnant: 3
+    remnant: 3,
   }
 
   has_many :nodes, dependent: :nullify

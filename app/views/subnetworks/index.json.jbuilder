@@ -1,1 +1,1 @@
-json.array! @subnetworks, partial: "subnetworks/subnetwork", as: :subnetwork
+json.array! @subnetworks, partial: 'subnetworks/subnetwork', as: :subnetwork

@@ -11,68 +11,68 @@ NetworkCategory.create([
     name: 'WAN',
     dhcp: false,
     auth: false,
-    global: true
+    global: true,
   },
   {
     name: 'DMZ',
     dhcp: false,
     auth: false,
-    global: true
+    global: true,
   },
   {
     name: '学内',
     dhcp: false,
-    auth: false
+    auth: false,
   },
   {
     name: '認証',
     dhcp: true,
-    auth: true
+    auth: true,
   },
   {
     name: '公衆',
     dhcp: true,
-    auth: false
+    auth: false,
   }
 ])
 
 Subnetwork.create([
   {
     name: 'サーバー',
-    network_category: NetworkCategory.find_by_name('学内'),
-    vlan: 101
+    network_category: NetworkCategory.find_by(name: '学内'),
+    vlan: 101,
   },
   {
     name: 'クライアント',
-    network_category: NetworkCategory.find_by_name('学内'),
-    vlan: 102
+    network_category: NetworkCategory.find_by(name: '学内'),
+    vlan: 102,
   },
   {
     name: 'DMZ',
-    network_category: NetworkCategory.find_by_name('DMZ'),
+    network_category: NetworkCategory.find_by(name: 'DMZ'),
     vlan: 200,
   },
   {
     name: 'Wi-Fi',
-    network_category: NetworkCategory.find_by_name('公衆'),
-    vlan: 201
+    network_category: NetworkCategory.find_by(name: '公衆'),
+    vlan: 201,
   }
 ])
 
 IpNetwork.create([
   {
-    subnetwork: Subnetwork.find_by_name('サーバー'),
+    subnetwork: Subnetwork.find_by(name: 'サーバー'),
     ip_version: 4,
     address: '192.168.1.0',
     mask: 24,
-    gateway: '192.168.1.254'
+    gateway: '192.168.1.254',
   },
   {
-    subnetwork: Subnetwork.find_by_name('クライアント'),
+    subnetwork: Subnetwork.find_by(name: 'クライアント'),
     ip_version: 4,
     address: '192.168.2.0',
     mask: 24,
-    gateway: '192.168.2.254'
+    gateway: '192.168.2.254',
   }
 ])
 
@@ -105,95 +105,95 @@ OperatingSystem.create([
   {
     category: :windows,
     name: 'Windows Enterprise 2019 LTSC',
-    eol: Time.new(2029, 1, 9),
+    eol: Time.zone.local(2029, 1, 9),
   },
   {
     category: :windows,
     name: 'Windows Enterprise 2016 LTSB',
-    eol: Time.new(2026, 10, 13),
+    eol: Time.zone.local(2026, 10, 13),
   },
   {
     category: :windows,
     name: 'Windows Enterprise 2015 LTSB',
-    eol: Time.new(2025, 10, 14),
+    eol: Time.zone.local(2025, 10, 14),
   },
   {
     category: :windows,
     name: 'Windows 8.1',
-    eol: Time.new(2023, 1, 10),
+    eol: Time.zone.local(2023, 1, 10),
   },
   {
     category: :windows,
     name: 'Windows 8',
-    eol: Time.new(2016, 1, 12),
-    description: 'Windows 8.1へアップデート可能です。'
+    eol: Time.zone.local(2016, 1, 12),
+    description: 'Windows 8.1へアップデート可能です。',
   },
   {
     category: :windows,
     name: 'Windows 7',
-    eol: Time.new(2020, 1, 14),
+    eol: Time.zone.local(2020, 1, 14),
   },
   {
     category: :windows,
     name: 'Windows 7 ESU',
-    eol: Time.new(2023, 1, 10),
-    description: '有償の「Windows 7 Extended Security Update」に参加している場合に限ります。'
+    eol: Time.zone.local(2023, 1, 10),
+    description: '有償の「Windows 7 Extended Security Update」に参加している場合に限ります。',
   },
   {
     category: :windows,
     name: 'Windows Vista',
-    eol: Time.new(2017, 4, 11),
+    eol: Time.zone.local(2017, 4, 11),
   },
   {
     category: :windows,
     name: 'Windows XP',
-    eol: Time.new(2014, 4, 8),
+    eol: Time.zone.local(2014, 4, 8),
   },
   {
     category: :windows,
     name: 'Windows Server SAC',
     eol: nil,
-    description: '半期チャンネル(SAC)で提供されるWindows Serverです。'
+    description: '半期チャンネル(SAC)で提供されるWindows Serverです。',
   },
   {
     category: :windows,
     name: 'Windows Server 2019',
-    eol: Time.new(2029, 1, 9),
+    eol: Time.zone.local(2029, 1, 9),
   },
   {
     category: :windows,
     name: 'Windows Server 2016',
-    eol: Time.new(2027, 1, 12),
+    eol: Time.zone.local(2027, 1, 12),
   },
   {
     category: :windows,
     name: 'Windows Server 2012 R2',
-    eol: Time.new(2015, 10, 10),
+    eol: Time.zone.local(2015, 10, 10),
   },
   {
     category: :windows,
     name: 'Windows Server 2012',
-    eol: Time.new(2023, 10, 10),
+    eol: Time.zone.local(2023, 10, 10),
   },
   {
     category: :windows,
     name: 'Windows Server 2008 R2',
-    eol: Time.new(2020, 1, 14),
+    eol: Time.zone.local(2020, 1, 14),
   },
   {
     category: :windows,
     name: 'Windows Server 2008',
-    eol: Time.new(2020, 1, 14),
+    eol: Time.zone.local(2020, 1, 14),
   },
   {
     category: :windows,
     name: 'Windows Server 2003 R2',
-    eol: Time.new(2015, 7, 14),
+    eol: Time.zone.local(2015, 7, 14),
   },
   {
     category: :windows,
     name: 'Windows Server 2003',
-    eol: Time.new(2015, 7, 14),
+    eol: Time.zone.local(2015, 7, 14),
   },
   {
     category: :mac,
@@ -214,17 +214,17 @@ OperatingSystem.create([
   {
     category: :mac,
     name: 'macOS 10.12 Sierra',
-    eol: Time.new(2019, 9, 26),
+    eol: Time.zone.local(2019, 9, 26),
   },
   {
     category: :mac,
     name: 'OS X 10.11 El Capitan',
-    eol: Time.new(2018, 7, 9),
+    eol: Time.zone.local(2018, 7, 9),
   },
   {
     category: :mac,
     name: 'OS X 10.10 Yosemite',
-    eol: Time.new(2017, 7, 19),
+    eol: Time.zone.local(2017, 7, 19),
   },
   {
     category: :ios,
@@ -241,67 +241,67 @@ OperatingSystem.create([
   {
     category: :linux,
     name: 'Red Hat Enterprise Linux 8',
-    eol: Time.new(2029, 5, 1),
+    eol: Time.zone.local(2029, 5, 1),
   },
   {
     category: :ios,
     name: 'Red Hat Enterprise Linux 7',
-    eol: Time.new(2024, 6, 30),
+    eol: Time.zone.local(2024, 6, 30),
   },
   {
     category: :ios,
     name: 'Red Hat Enterprise Linux 6',
-    eol: Time.new(2020, 11, 30),
+    eol: Time.zone.local(2020, 11, 30),
   },
   {
     category: :ios,
     name: 'Red Hat Enterprise Linux 6 ELS',
-    eol: Time.new(2024, 6, 30),
-    description: '追加費用がかかるELS契約がある場合のみ。'
+    eol: Time.zone.local(2024, 6, 30),
+    description: '追加費用がかかるELS契約がある場合のみ。',
   },
   {
     category: :linux,
     name: 'CentOS 8',
-    eol: Time.new(2029, 5, 1),
+    eol: Time.zone.local(2029, 5, 1),
   },
   {
     category: :linux,
     name: 'CentOS 7',
-    eol: Time.new(2024, 6, 30),
+    eol: Time.zone.local(2024, 6, 30),
   },
   {
     category: :linux,
     name: 'CentOS 6',
-    eol: Time.new(2020, 11, 30),
+    eol: Time.zone.local(2020, 11, 30),
   },
   {
     category: :linux,
     name: 'Ubuntu 20.04 LTS',
-    eol: Time.new(2025, 4, 1),
+    eol: Time.zone.local(2025, 4, 1),
   },
   {
     category: :linux,
     name: 'Ubuntu 18.04 LTS',
-    eol: Time.new(2023, 4, 1),
+    eol: Time.zone.local(2023, 4, 1),
   },
   {
     category: :linux,
     name: 'Ubuntu 16.04 LTS',
-    eol: Time.new(2021, 4, 1),
-  },
+    eol: Time.zone.local(2021, 4, 1),
+  }
 ])
 
 SecuritySoftware.create([
   {
     name: 'Windows Defender (Win10のみ)',
-    description: 'Windows 10 標準のセキュリティ対策ソフトウェア'
+    description: 'Windows 10 標準のセキュリティ対策ソフトウェア',
   },
   {
     name: 'macOS ランタイムプロテクション (macOSのみ)',
-    description: 'macOS 標準の保護機能'
+    description: 'macOS 標準の保護機能',
   },
   {
     name: 'ClamAV (Linuxディストリビューションパッケージ)',
-    description: 'ディストリビューションのパッケージとして提供さているClamAV'
-  },
+    description: 'ディストリビューションのパッケージとして提供さているClamAV',
+  }
 ])

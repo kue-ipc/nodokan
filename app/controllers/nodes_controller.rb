@@ -108,6 +108,7 @@ class NodesController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_node
       @node = Node.find(params[:id])
@@ -158,17 +159,17 @@ class NodesController < ApplicationController
                   :address
                 ],
               }
-            ]
+            ],
           }
         ]
       )
 
       place = Place.find_or_create_by(permitted_params[:place])
       hardware = if permitted_params[:hardware][:category].present?
-        Hardware.find_or_create_by(permitted_params[:hardware])
+                   Hardware.find_or_create_by(permitted_params[:hardware])
       end
       operating_system = if permitted_params[:operating_system][:category].present?
-        OperatingSystem.find_or_create_by(permitted_params[:operating_system])
+                           OperatingSystem.find_or_create_by(permitted_params[:operating_system])
       end
 
       permitted_params.except(:place, :hardware, :operating_system).merge(
@@ -176,8 +177,9 @@ class NodesController < ApplicationController
           location: place,
           hardware: hardware,
           operating_system: operating_system,
-          user_id: current_user.id
-        })
+          user_id: current_user.id,
+        }
+      )
     end
 
     def authorize_node

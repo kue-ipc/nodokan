@@ -10,6 +10,6 @@ class OperatingSystem < ApplicationRecord
     bsd: 5,
     unix: 6,
     dedicated: 7,
-    other: 255
+    other: 255,
   }
 end

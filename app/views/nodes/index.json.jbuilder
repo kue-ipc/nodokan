@@ -1,1 +1,1 @@
-json.array! @nodes, partial: "nodes/node", as: :node
+json.array! @nodes, partial: 'nodes/node', as: :node
