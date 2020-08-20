@@ -14,11 +14,12 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "category", null: false
-    t.string "maker", null: false
-    t.string "product_name", null: false
-    t.string "model_number"
+    t.string "maker", default: "", null: false
+    t.string "product_name", default: "", null: false
+    t.string "model_number", default: "", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["category", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
     t.index ["maker"], name: "index_hardwares_on_maker"
     t.index ["model_number"], name: "index_hardwares_on_model_number"
     t.index ["product_name"], name: "index_hardwares_on_product_name"
@@ -112,7 +113,8 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_operating_systems_on_name", unique: true
+    t.index ["category", "name"], name: "index_operating_systems_on_category_and_name", unique: true
+    t.index ["name"], name: "index_operating_systems_on_name"
   end
 
   create_table "places", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
