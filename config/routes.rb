@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       get 'copy'
     end
   end
+  resources :operating_systems, only: [:index]
 
   devise_for :users
 

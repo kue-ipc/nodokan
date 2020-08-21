@@ -6,6 +6,8 @@ class CreateHardwares < ActiveRecord::Migration[6.0]
       t.string :product_name, null: false, default: ''
       t.string :model_number, null: false, default: ''
 
+      t.integer :nodes_count, null: false, default: 0
+
       t.timestamps
     end
     add_index :hardwares, :maker

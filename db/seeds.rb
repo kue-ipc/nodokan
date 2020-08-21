@@ -244,17 +244,17 @@ OperatingSystem.create([
     eol: Time.zone.local(2029, 5, 1),
   },
   {
-    category: :ios,
+    category: :linux,
     name: 'Red Hat Enterprise Linux 7',
     eol: Time.zone.local(2024, 6, 30),
   },
   {
-    category: :ios,
+    category: :linux,
     name: 'Red Hat Enterprise Linux 6',
     eol: Time.zone.local(2020, 11, 30),
   },
   {
-    category: :ios,
+    category: :linux,
     name: 'Red Hat Enterprise Linux 6 ELS',
     eol: Time.zone.local(2024, 6, 30),
     description: '追加費用がかかるELS契約がある場合のみ。',

@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.string "maker", default: "", null: false
     t.string "product_name", default: "", null: false
     t.string "model_number", default: "", null: false
+    t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["category", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
@@ -110,6 +111,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.string "name", null: false
     t.date "eol"
     t.text "description"
+    t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["category", "name"], name: "index_operating_systems_on_category_and_name", unique: true
@@ -121,6 +123,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.string "building", default: "", null: false
     t.integer "floor", default: 0, null: false
     t.string "room", default: "", null: false
+    t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["area", "building", "floor", "room"], name: "index_places_on_area_and_building_and_floor_and_room", unique: true
@@ -132,6 +135,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
   create_table "security_softwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
+    t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_security_softwares_on_name", unique: true

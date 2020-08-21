@@ -6,6 +6,8 @@ class CreatePlaces < ActiveRecord::Migration[6.0]
       t.integer :floor, null: false, default: 0
       t.string :room, null: false, default: ''
 
+      t.integer :nodes_count, null: false, default: 0
+
       t.timestamps
     end
     add_index :places, :area

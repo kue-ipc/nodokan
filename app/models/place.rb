@@ -1,3 +1,3 @@
 class Place < ApplicationRecord
-  has_many :nodes, as: :location, dependent: :nullify
+  has_many :nodes, dependent: :restrict_with_error
 end

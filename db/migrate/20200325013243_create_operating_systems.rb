@@ -6,6 +6,8 @@ class CreateOperatingSystems < ActiveRecord::Migration[6.0]
       t.date :eol
       t.text :description
 
+      t.integer :nodes_count, null: false, default: 0
+
       t.timestamps
     end
     add_index :operating_systems, :name

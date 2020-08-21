@@ -4,6 +4,8 @@ class CreateSecuritySoftwares < ActiveRecord::Migration[6.0]
       t.string :name, null: false
       t.text :description
 
+      t.integer :nodes_count, null: false, default: 0
+
       t.timestamps
     end
     add_index :security_softwares, :name, unique: true
