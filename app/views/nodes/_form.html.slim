@@ -74,7 +74,8 @@ p 【必須】の項目は入力が必須です。
                           {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-4
           = fields.label :name
-          = fields.text_field :name, class: 'form-control'
+          = fields.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
+          datalist#node_operating_system_name-list
       .form-group.col-md-6
         = f.label :security_software
         = f.collection_select :security_software_id, SecuritySoftware.all, :id, :name, \
@@ -145,3 +146,5 @@ p 【必須】の項目は入力が必須です。
         = f.text_area :note, class: 'form-control'
 
   = f.submit class: 'btn btn-primary'
+
+/ = javascript_pack_tag 'datalist', 'data-turbolinks-track': 'reload'

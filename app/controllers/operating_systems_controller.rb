@@ -3,8 +3,12 @@ class OperatingSystemsController < ApplicationController
 
   def index
     category = params[:category]
-    if OperatingSystem.categories.include?(category)
-      @operating_systems = policy_scope(OperatingSystem).where(category: category)
+    if category
+      if OperatingSystem.categories.include?(category)
+        @operating_systems = policy_scope(OperatingSystem).where(category: category)
+      else
+        @operating_sysetms = []
+      end
     else
       @operating_systems = policy_scope(OperatingSystem).all
     end
