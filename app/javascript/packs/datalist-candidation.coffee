@@ -39,7 +39,17 @@ class DatalistCandidation
   subscriptions: (state) =>
     [@watchAttr, {attr}] for attr in @inputList
 
-  getData: (url) =>
+  clearList: (state) =>
+    {
+      state...
+      list: []
+    }
+
+  getData: (attrs) =>
+    if (0 for {value} in attrs when !value? || value == '').length > 0
+      return [(dispatch, props) => dispatch(@clearList, props), {}]
+
+    url = @createUrl(attrs)
     request
       url: url
       expect: 'json'
@@ -49,7 +59,7 @@ class DatalistCandidation
     app({
       init: [
         @initialState
-        @getData(@createUrl(@initialState.attrs))
+        @getData(@initialState.attrs)
       ]
       view: @view
       node: @appNode
@@ -87,7 +97,7 @@ class DatalistCandidation
         state...
         attrs: newAttrs
       }
-      @getData(@createUrl(newAttrs))
+      @getData(newAttrs)
     ]
 
 for node in document.getElementsByClassName('datalist-canadidaiton')

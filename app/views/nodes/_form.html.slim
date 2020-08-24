@@ -87,6 +87,7 @@ p 【必須】の項目は入力が必須です。
     h4 ネットワーク接続情報
     - count = 0
     = f.fields_for :network_interfaces do |fields|
+      - pp fields.class
       = fields.hidden_field :id
       .rounded.border.p-2.mb-2.
         - count += 1
