@@ -11,5 +11,6 @@ class OperatingSystem < ApplicationRecord
     unix: 6,
     dedicated: 7,
     other: 255,
+    unknown: -1,
   }
 end

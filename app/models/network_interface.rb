@@ -12,5 +12,6 @@ class NetworkInterface < ApplicationRecord
     dialup: 4,
     vpn: 5,
     other: 255,
+    unknown: -1,
   }
 end

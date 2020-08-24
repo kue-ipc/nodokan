@@ -1,12 +1,11 @@
 class SubnetworkPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      if user.admin?
+      # if user.admin?
         scope.all
-      else
-        scope.include(:subnetwork_user)
-          .where(subnetwork_user: {user: user})
-      end
+      # else
+      #   scope.where(subnetwork_user: {user: user})
+      # end
     end
   end
 

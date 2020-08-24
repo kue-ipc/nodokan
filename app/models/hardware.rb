@@ -10,5 +10,6 @@ class Hardware < ApplicationRecord
     network: 5,
     virtual: 6,
     other: 255,
+    unknown: -1,
   }
 end
