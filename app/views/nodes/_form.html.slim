@@ -24,7 +24,7 @@ p 【必須】の項目は入力が必須です。
 
   .rounded.border.p-2.mb-2
     h4 設置場所
-    small.text-muted 候補に無い場合は、そのまま名前を入力してください。
+    small.text-muted 候補に現れない場合は、そのまま名称を入力してください。管理者によって名称が統合される場合があります。
     .form-row
       = f.fields_for :place, @node.place || Place.new do |fields|
         .form-group.col-md-3
@@ -48,6 +48,8 @@ p 【必須】の項目は入力が必須です。
 
   .rounded.border.p-2.mb-2
     h4 ハードウェア情報
+    small.form-text.text-muted
+      | 前の項目を埋めると候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |fields|
         .form-group.col-md-2
@@ -67,7 +69,7 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     h4 ソフトウェア情報
     small.form-text.text-muted
-      | 種別を選択するとOS名入力時に候補が表示されます。候補に現れない場合は、名前を入れてください。
+      | 種別を選択するとOS名入力時に候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
       = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |fields|
         .form-group.col-md-2
@@ -80,7 +82,7 @@ p 【必須】の項目は入力が必須です。
       .form-group.col-md-6
         = f.label :security_software
         = f.collection_select :security_software_id, SecuritySoftware.all, :id, :name, \
-                              {prompt: true}, \
+                              {prompt: '(未選択)'}, \
                               class: 'custom-select'
 
   .rounded.border.p-2.mb-2
