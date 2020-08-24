@@ -66,6 +66,8 @@ p 【必須】の項目は入力が必須です。
 
   .rounded.border.p-2.mb-2
     h4 ソフトウェア情報
+    small.form-text.text-muted
+      | 種別を選択するとOS名入力時に候補が表示されます。候補に現れない場合は、名前を入れてください。
     .form-row
       = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |fields|
         .form-group.col-md-2
@@ -75,7 +77,6 @@ p 【必須】の項目は入力が必須です。
         .form-group.col-md-4
           = fields.label :name
           = fields.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
-          datalist#node_operating_system_name-list
       .form-group.col-md-6
         = f.label :security_software
         = f.collection_select :security_software_id, SecuritySoftware.all, :id, :name, \
@@ -147,4 +148,13 @@ p 【必須】の項目は入力が必須です。
 
   = f.submit class: 'btn btn-primary'
 
-/ = javascript_pack_tag 'datalist', 'data-turbolinks-track': 'reload'
+- operating_system_datalist_params = {\
+    parent: 'node', \
+    name: 'operating_system', \
+    target: 'name', \
+    inputList: ['category'], \
+    url: '/operating_systems.json', \
+  }
+#node_operating_system_name-app.datalist-canadidaiton data-params=operating_system_datalist_params.to_json
+
+= javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
