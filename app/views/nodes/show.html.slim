@@ -1,6 +1,16 @@
 p#notice = notice
 
 p
+  | 内容に違いがある場合は「編集」ボタンから編集を行ってください。
+  | 内容に問題がない場合は、確認を行ってください。
+
+= link_to '確認', '#'
+=> link_to 'Edit', edit_node_path(@node)
+'|
+= link_to 'Edit', edit_node_path(@node)
+= link_to 'Destroy', @node, data: { confirm: 'Are you sure?' }, method: :delete
+
+p
   strong Name:
   = @node.name
 p
@@ -10,6 +20,27 @@ p
   strong Note:
   = @node.note
 
-=> link_to 'Edit', edit_node_path(@node)
-'|
 =< link_to 'Back', nodes_path
+
+
+p
+  | 端末について下記を確認し、問題ないければ「確認終了」を押してください。
+form
+  .custom-control.custom-checkbox
+    input.custom-control-input#check1 type="checkbox"
+    label.custom-control-label for="check1"
+      | 端末が存在し、登録された内容通りであることを確認しました。
+  .custom-control.custom-checkbox
+    input.custom-control-input#check1 type="checkbox"
+    label.custom-control-label for="check2"
+      | OSのアップデートを実施し、未適用の更新が存在しないことを確認しました。
+  .custom-control.custom-checkbox
+    input.custom-control-input#check1 type="checkbox"
+    label.custom-control-label for="check2"
+      | OSの自動更新が有効であることを確認しました。または、一ヶ月に1回以上の頻度でアップデートを実施する計画がスケジューリングされていることを確認しました。
+      | ウイルス定義が最新であることを確認しました。
+      | 1週間以内でフルスキャンを実施し、ウイルス等のマルウェアが検知されなかったことを確認しました。
+
+
+
+

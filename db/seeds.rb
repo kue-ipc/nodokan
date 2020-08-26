@@ -168,7 +168,7 @@ OperatingSystem.create([
   {
     category: :windows,
     name: 'Windows Server 2012 R2',
-    eol: Time.zone.local(2015, 10, 10),
+    eol: Time.zone.local(2023, 10, 10),
   },
   {
     category: :windows,

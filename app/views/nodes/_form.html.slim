@@ -79,6 +79,15 @@ p 【必須】の項目は入力が必須です。
         .form-group.col-md-4
           = fields.label :name
           = fields.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
+          - operating_system_datalist_params = {\
+              parent: 'node', \
+              name: 'operating_system', \
+              target: 'name', \
+              inputList: ['category'], \
+              url: '/operating_systems.json', \
+            }
+          #node_operating_system_name-app.datalist-canadidaiton data-params=operating_system_datalist_params.to_json
+
       .form-group.col-md-6
         = f.label :security_software
         = f.collection_select :security_software_id, SecuritySoftware.all, :id, :name, \
@@ -150,14 +159,5 @@ p 【必須】の項目は入力が必須です。
         = f.text_area :note, class: 'form-control'
 
   = f.submit class: 'btn btn-primary'
-
-- operating_system_datalist_params = {\
-    parent: 'node', \
-    name: 'operating_system', \
-    target: 'name', \
-    inputList: ['category'], \
-    url: '/operating_systems.json', \
-  }
-#node_operating_system_name-app.datalist-canadidaiton data-params=operating_system_datalist_params.to_json
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'

@@ -1,14 +1,18 @@
 h1 Listing nodes
 
-table
+p
+  | 1年に1度、端末の確認を行ってください。
+
+table.table
   thead
     tr
-      th Name
+      th = Node.human_attribute_name(:name)
       th User
-      th Confirmed at
+      th 場所
+      th 製品名
+      th IPアドレス
+      th 確認日
       th Note
-      th
-      th
       th
 
   tbody
@@ -16,11 +20,24 @@ table
       tr
         td = node.name
         td = node.user.username
-        td = node.confirmed_at
-        td = node.note
+        td = node.place&.room
+        td = node.hardware&.product_name
+        td = node.network_interfaces.first&.network_connections&.first&.ip_addresses&.first&.address
+        td
+          - if node.confirmed_at
+            - if node.confirmed_at <= Time.current.months_ago(13)
+              span.text-danager
+                = node.confirmed_at
+            - elsif node.confirmed_at <= Time.current.yeras_ago(11)
+              span.text-warning
+                = node.confirmed_at
+              span.text-success
+                = node.confirmed_at
+            - else
+          - else
+            span.text-danger 未確認
+
         td = link_to 'Show', node
-        td = link_to 'Edit', edit_node_path(node)
-        td = link_to 'Destroy', node, data: { confirm: 'Are you sure?' }, method: :delete
 
 br
 
