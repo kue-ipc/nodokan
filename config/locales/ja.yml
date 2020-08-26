@@ -146,8 +146,8 @@ ja:
           other: その他
       ip_address:
         configs:
-          manual: 手動(固定IP)
-          auto: 自動(動的IP)
-          reserved: 自動(予約済み固定IP)
+          static: 固定(手動設定)
+          dynamic: 動的(DHCP自動取得)
+          reserved: 予約(DHCP自動取得)
 
 

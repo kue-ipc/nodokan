@@ -1,9 +1,5 @@
 class IpAddress < ApplicationRecord
-  belongs_to :network_connection
+  include IpConfig
 
-  enum config: {
-    manual: 0,
-    auto: 1,
-    reserved: 2,
-  }
+  belongs_to :network_connection
 end

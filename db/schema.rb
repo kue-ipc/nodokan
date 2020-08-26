@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_06_015540) do
+ActiveRecord::Schema.define(version: 2020_08_25_073413) do
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "category", null: false
@@ -47,6 +47,17 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["address"], name: "index_ip_networks_on_address"
     t.index ["subnetwork_id"], name: "index_ip_networks_on_subnetwork_id"
+  end
+
+  create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "subnetwork_id", null: false
+    t.integer "ip_version", null: false
+    t.string "begin_address", null: false
+    t.string "end_address", null: false
+    t.integer "config", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["subnetwork_id"], name: "index_ip_pools_on_subnetwork_id"
   end
 
   create_table "network_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -200,6 +211,7 @@ ActiveRecord::Schema.define(version: 2020_08_06_015540) do
 
   add_foreign_key "ip_addresses", "network_connections"
   add_foreign_key "ip_networks", "subnetworks"
+  add_foreign_key "ip_pools", "subnetworks"
   add_foreign_key "network_connections", "network_interfaces"
   add_foreign_key "network_connections", "subnetworks"
   add_foreign_key "network_interfaces", "nodes"
