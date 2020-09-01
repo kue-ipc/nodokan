@@ -8,15 +8,29 @@ default: &default
   host: <%= Settings.database.host.to_json %>
 
 development:
-  <<: *default
-  database: nodokan_development
+  primary:
+    <<: *default
+    database: nodokan_development
+  radius:
+    <<: *default
+    database: radius
 
 test:
-  <<: *default
-  database: nodokan_test
+  primary:
+    <<: *default
+    database: nodokan_test
+  radius:
+    <<: *default
+    database: radius
 
 production:
-  <<: *default
-  database: nodokan
-  username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
-  password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
+  primary:
+    <<: *default
+    database: nodokan
+    username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
+    password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
+  radius:
+    <<: *default
+    database: radius
+    username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
+    password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
