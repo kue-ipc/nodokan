@@ -2,6 +2,14 @@
 
 この資料は未完成です。
 
+```/etc/sysctl.conf
+fs.inotify.max_user_watches = 524288
+```
+
+```
+sudo sysctl -p
+```
+
 ### MraiaDB
 
 ```
@@ -32,7 +40,42 @@ sudo dnf install freeradius-ldap
 
 /etc/raddb/mods-config/sql/main/mysql
 
-CREATE DATABES 
+
+mysql -u root -p
+```
+CREATE DATABASE radius;
+```
+
+
+本番ではパスワードを適当に変える。(ファイルのデフォルトはradpass)
+
+```
+mysql -u root -p < setup.sql
+mysql -u root -p radius < schema.sql
+```
+
+```
+cd /etc/raddb/mods-enabled
+ln -s ../mods-available/sql .
+chown -h root:radiusd sql
+
+```/etc/raddb/mods-available/sql
+sql {
+        driver = "rlm_sql_mysql"
+        dialect = "mysql"
+        server = "localhost"
+        port = 3306
+        login = "radius"
+        password = "radpass"
+        radius_db = "radius"
+        # 後はデフォルト
+}
+```
+
+ldapとのダブル認証
+
+ldapは"authentication"でチェックされるようにする？
+
 
 ### Kea
 
@@ -54,9 +97,34 @@ sudo dnf update --nobest
 
 を付ける必要がある。
 
+本番ではパスワードを適当に変える。
+
+mysql -u root -p
+```
+CREATE DATABASE kea;
+CREATE USER 'kea'@'localhost' IDENTIFIED BY 'keapass';
+GRANT ALL ON kea.* TO 'kea'@'localhost';
+```
+
+```
+kea-admin db-init mysql -u kea -p keapass -n kea
+```
+
 ### Ruby
 
 sudo dnf module install ruby:2.6/common
+sudo dnf install rubygem-bundler
+sudo dnf install ruby-devel
+
+sudo dnf install rubygem-mysql2
+
+ffi
+mysql2
+
+bundle install --path vendor/bundle
+
+sudo dnf install zlib-devel
+sudo dnf install mariadb-devel
 
 ### Node.js
 
