@@ -6,18 +6,18 @@ authorizations: &AUTHORIZATIONS
   host: localhost
   port: 389
   attribute: uid
-  base: ou=Users,dc=example,dc=jp
-  admin_user: cn=admin,dc=example,dc=jp
-  admin_password: pass
+  base: ou=people,dc=example,dc=jp
+  admin_user: cn=admin
+  admin_password: admin_password
   ssl: false
   allow_unauthenticated_bind: false
-  group_base: ou=Groups,dc=example,dc=jp
+  group_base: ou=groups,dc=example,dc=jp
   ## Requires config.ldap_check_group_membership in devise.rb be true
   # Can have multiple values, must match all to be authorized
   required_groups:
     # If only a group name is given, membership will be checked against "uniqueMember"
-    - cn=admin,ou=Groups,dc=example,dc=jp
-    - cn=user,ou=Groups,dc=example,dc=jp
+    - cn=admin,ou=groups,dc=example,dc=jp
+    - cn=user,ou=groups,dc=example,dc=jp
     # If an array is given, the first element will be the attribute to check against, the second the group name
     # - ["moreMembers", "cn=users,ou=groups,dc=test,dc=com"]
   ## Requires config.ldap_check_attributes in devise.rb to be true

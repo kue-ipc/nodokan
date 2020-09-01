@@ -130,9 +130,21 @@ sudo dnf install mariadb-devel
 
 sudo dnf module install nodejs:12/common
 
+### Yarn
+
+```
+curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
+sudo dnf install yarn
+```
+
 ### 389 Directory Server
 
 sudo dnf module install 389-directory-server:stable/default
+
+```
+dscreate from-file ds389.inf
+ldapadd -x -h localhost -p 389 -D "cn=admin" -w admin_password -f example.ldif
+```
 
 ### nginx
 
