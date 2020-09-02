@@ -83,7 +83,7 @@ ldapは"authentication"でチェックされるようにする？
 
 ```
 curl -1sLf \
-  'https://dl.cloudsmith.io/public/isc/kea-1-7/cfg/setup/bash.rpm.sh' \
+  'https://dl.cloudsmith.io/public/isc/kea-1-8/cfg/setup/bash.rpm.sh' \
   | sudo -E bash
 
 sudo dnf install isc-kea
