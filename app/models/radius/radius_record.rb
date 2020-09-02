@@ -12,9 +12,9 @@ module Radius
       end
 
       def ignore_dangerous_attribute_methods
-        @no_dangerous_attribute_methods ||= %w[
+        @ignore_dangerous_attribute_methods ||= %w[
           attribute
-        ].flat_map {|s| list_attribute_methods(s) }
+        ].flat_map { |attr_name| list_attribute_methods(attr_name) }
       end
 
       def list_attribute_methods(attr_name)
