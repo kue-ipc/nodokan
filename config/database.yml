@@ -14,9 +14,11 @@ development:
   radius:
     <<: *default
     database: radius
+    migrations_paths: db/radius_migrate
   kea:
     <<: *default
     database: kea
+    migrations_paths: db/kea_migrate
 
 test:
   primary:
@@ -25,9 +27,11 @@ test:
   radius:
     <<: *default
     database: radius
+    migrations_paths: db/radius_migrate
   kea:
     <<: *default
     database: kea
+    migrations_paths: db/kea_migrate
 
 production:
   primary:
@@ -38,10 +42,12 @@ production:
   radius:
     <<: *default
     database: radius
+    migrations_paths: db/radius_migrate
     username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
     password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
   kea:
     <<: *default
     database: kea
+    migrations_paths: db/kea_migrate
     username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
     password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
