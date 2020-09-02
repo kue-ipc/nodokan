@@ -1,4 +1,5 @@
-# ldapadd -x -h localhost -p 389 -D "cn=admin" -w admin_password -f example.ldif
+# OpenLdap
+# ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password -f user_group.ldif
 
 version: 1
 

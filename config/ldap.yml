@@ -7,7 +7,7 @@ authorizations: &AUTHORIZATIONS
   port: 389
   attribute: uid
   base: ou=people,dc=example,dc=jp
-  admin_user: cn=admin
+  admin_user: cn=admin,dc=example,dc=jp
   admin_password: admin_password
   ssl: false
   allow_unauthenticated_bind: false

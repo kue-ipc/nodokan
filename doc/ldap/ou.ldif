@@ -1,0 +1,15 @@
+# OpenLdap
+# ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password -f ou.ldif
+
+version: 1
+
+dn: ou=groups,dc=example,dc=jp
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
+
+dn: ou=people,dc=example,dc=jp
+objectClass: organizationalUnit
+objectClass: top
+ou: people
+
