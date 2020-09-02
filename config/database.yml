@@ -3,51 +3,28 @@ default: &default
   adapter: mysql2
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= Settings.database.username.to_json %>
-  password: <%= Settings.database.password.to_json %>
+  username: <%= (Rails.application.credentials.dig(:database, :username) || Settings.database.username).to_json %>
+  password: <%= (Rails.application.credentials.dig(:database, :password) || Settings.database.password).to_json %>
   host: <%= Settings.database.host.to_json %>
 
 development:
-  primary:
-    <<: *default
-    database: nodokan_development
-  radius:
-    <<: *default
-    database: radius
-    migrations_paths: db/radius_migrate
-  kea:
-    <<: *default
-    database: kea
-    migrations_paths: db/kea_migrate
+  <<: *default
+  database: nodokan_development
 
 test:
-  primary:
-    <<: *default
-    database: nodokan_test
-  radius:
-    <<: *default
-    database: radius
-    migrations_paths: db/radius_migrate
-  kea:
-    <<: *default
-    database: kea
-    migrations_paths: db/kea_migrate
+  <<: *default
+  database: nodokan_test
 
 production:
-  primary:
-    <<: *default
-    database: nodokan
-    username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
-    password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
-  radius:
-    <<: *default
-    database: radius
-    migrations_paths: db/radius_migrate
-    username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
-    password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
-  kea:
-    <<: *default
-    database: kea
-    migrations_paths: db/kea_migrate
-    username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
-    password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
+  <<: *default
+  database: nodokan
+
+# FreeRADIUS Database (RADIUS)
+radius:
+  <<: *default
+  database: radius
+
+# ISC KEA Database (DHCP)
+kea:
+  <<: *default
+  database: kea
