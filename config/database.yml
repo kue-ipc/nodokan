@@ -14,6 +14,9 @@ development:
   radius:
     <<: *default
     database: radius
+  kea:
+    <<: *default
+    database: kea
 
 test:
   primary:
@@ -22,6 +25,9 @@ test:
   radius:
     <<: *default
     database: radius
+  kea:
+    <<: *default
+    database: kea
 
 production:
   primary:
@@ -32,5 +38,10 @@ production:
   radius:
     <<: *default
     database: radius
+    username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
+    password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
+  kea:
+    <<: *default
+    database: kea
     username: <%= Rails.application.credentials.dig(:database, :username).to_json %>
     password: <%= Rails.application.credentials.dig(:database, :password).to_json %>
