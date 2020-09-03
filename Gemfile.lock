@@ -155,6 +155,7 @@ GEM
       tilt
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
+    ipaddress (0.8.3)
     jbuilder (2.10.0)
       activesupport (>= 5.0.0)
     jquery-rails (4.4.0)
@@ -218,7 +219,7 @@ GEM
       yard (~> 0.9.11)
     pry-rails (0.3.9)
       pry (>= 0.10.4)
-    public_suffix (4.0.5)
+    public_suffix (4.0.6)
     puma (4.3.5)
       nio4r (~> 2.0)
     pundit (2.1.0)
@@ -286,7 +287,7 @@ GEM
       actionpack (>= 5.0)
       railties (>= 5.0)
     rexml (3.2.4)
-    rubocop (0.89.1)
+    rubocop (0.90.0)
       parallel (~> 1.10)
       parser (>= 2.7.1.1)
       rainbow (>= 2.2.2, < 4.0)
@@ -384,6 +385,7 @@ DEPENDENCIES
   devise-i18n
   devise_ldap_authenticatable
   font-awesome-sass (~> 5.12.0)
+  ipaddress
   jbuilder (~> 2.7)
   listen (>= 3.0.5, < 3.2)
   mysql2 (>= 0.4.4)

@@ -76,28 +76,30 @@ def register_node(data)
   end
 end
 
-csv_file = File.join(Rails.root, 'util', 'data', 'nodes.csv')
-backup_csv_file = csv_file + '.' + Time.now.strftime("%Y%m%d-%H%M%S")
+if $0 == __FILE__
+  csv_file = File.join(Rails.root, 'util', 'data', 'nodes.csv')
+  backup_csv_file = csv_file + '.' + Time.now.strftime("%Y%m%d-%H%M%S")
 
-FileUtils.copy_file(csv_file, backup_csv_file)
-node_datas = CSV.read(csv_file, encoding: 'BOM|UTF-8', headers: :first_row)
+  FileUtils.copy_file(csv_file, backup_csv_file)
+  node_datas = CSV.read(csv_file, encoding: 'BOM|UTF-8', headers: :first_row)
 
-File.open(csv_file, 'wb:UTF-8') do |io|
-  io.write "\u{feff}"
-  io.puts node_datas.headers.to_csv
-  node_datas.each.with_index do |data, idx|
-    if data['id'] =~ /\A\d+\z/
-      $logger.info("#{idx}: [skip] already registered as #{id}")
-      next
+  File.open(csv_file, 'wb:UTF-8') do |io|
+    io.write "\u{feff}"
+    io.puts node_datas.headers.to_csv
+    node_datas.each.with_index do |data, idx|
+      if data['id'] =~ /\A\d+\z/
+        $logger.info("#{idx}: [skip] already registered as #{id}")
+        next
+      end
+
+      result = register_node(data)
+      data['id'] = result
+    rescue => e
+      $logger.error(e.message)
+      data['id'] = 'E'
+      data['note'] = e.message
+    ensure
+      io.puts data.to_csv
     end
-
-    result = register_node(data)
-    data['id'] = result
-  rescue => e
-    $logger.error(e.message)
-    data['id'] = 'E'
-    data['note'] = e.message
-  ensure
-    io.puts data.to_csv
   end
 end

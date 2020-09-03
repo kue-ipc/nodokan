@@ -5,12 +5,16 @@ class SubnetworksController < ApplicationController
   # GET /subnetworks
   # GET /subnetworks.json
   def index
-    @subnetworks = policy_scope(Subnetwork).all
+    @subnetworks = policy_scope(Subnetwork)
+      .includes(:network_category, :ip_networks)
+      .all
   end
 
   # GET /subnetworks/1
   # GET /subnetworks/1.json
   def show
+    @nodes = Node.includes(:place, :user, :hardware, network_interfaces: {network_connections: :ip_addresses})
+      .where(network_interfaces: {id: @subnetwork.network_interface_ids})
   end
 
   # GET /subnetworks/new

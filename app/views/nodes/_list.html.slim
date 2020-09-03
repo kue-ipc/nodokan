@@ -1,0 +1,39 @@
+table.table.table-hover
+  thead
+    tr
+      th scope="col" #
+      th scope="col" = Node.human_attribute_name(:name)
+      th scope="col" User
+      th scope="col" 場所
+      th scope="col" 製品名
+      th scope="col" IPアドレス
+      th scope="col" 確認日
+
+  tbody
+    - @nodes.each do |node|
+      tr
+        th.text-nowrap scope="row "
+          = link_to node.id, node
+        td  = node.name
+        td.text-nowrap = node.user.username
+        td = node.place&.room
+        td = node.hardware&.product_name
+        td.text-nowrap
+          - addresses = node.network_interfaces.flat_map do |network_interface|
+            - network_interface.network_connections.flat_map do |network_connection|
+              - network_connection.ip_addresses.flat_map do |ip_address|
+                - ip_address.address
+          = addresses.join('\n')
+        td.text-nowrap
+          - if node.confirmed_at
+            - if node.confirmed_at <= Time.current.months_ago(13)
+              span.text-danager
+                = node.confirmed_at
+            - elsif node.confirmed_at <= Time.current.yeras_ago(11)
+              span.text-warning
+                = node.confirmed_at
+              span.text-success
+                = node.confirmed_at
+            - else
+          - else
+            span.text-danger 未確認

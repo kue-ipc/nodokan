@@ -5,7 +5,10 @@ class NodesController < ApplicationController
   # GET /nodes
   # GET /nodes.json
   def index
-    @nodes = policy_scope(Node).all
+    @nodes = policy_scope(Node)
+      .includes(:user, :place, :hardware,
+               network_interfaces: {network_connections: :ip_addresses})
+      .all
   end
 
   # GET /nodes/1

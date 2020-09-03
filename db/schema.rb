@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
   create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
     t.integer "config", null: false
-    t.integer "ip_version", null: false
+    t.integer "family", null: false
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -39,9 +39,8 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
 
   create_table "ip_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
-    t.integer "ip_version", default: 4, null: false
+    t.integer "family", default: 4, null: false
     t.string "address", null: false
-    t.integer "mask", null: false
     t.string "gateway"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -51,9 +50,9 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
 
   create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
-    t.integer "ip_version", null: false
-    t.string "begin_address", null: false
-    t.string "end_address", null: false
+    t.integer "family", null: false
+    t.string "first", null: false
+    t.string "last", null: false
     t.integer "config", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

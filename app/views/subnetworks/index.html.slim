@@ -14,8 +14,21 @@ table
     - @subnetworks.each do |subnetwork|
       tr
         td = subnetwork.name
-        td = subnetwork.network_category.name
+        td
+          = subnetwork.network_category.name
+          - if subnetwork.network_category.global?
+            span.badge.badge-danger<>
+              | 外部
+          - if subnetwork.network_category.auth?
+            span.badge.badge-primary<>
+              | 認証
+          - if subnetwork.network_category.dhcp?
+            span.badge.badge-secondary<>
+              | DHCP
+
         td = subnetwork.vlan
+        td = subnetwork.ip_networks.find { |net| net.ip_version == 4 }&.ip_address&.to_string
+        td = subnetwork.ip_networks.find { |net| net.ip_version == 6 }&.ip_address&.to_string
         td = link_to 'Show', subnetwork
         td = link_to 'Edit', edit_subnetwork_path(subnetwork)
         td = link_to 'Destroy', subnetwork, data: { confirm: 'Are you sure?' }, method: :delete

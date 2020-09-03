@@ -6,7 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-NetworkCategory.create([
+NetworkCategory.count.zero? && NetworkCategory.create([
   {
     name: 'WAN',
     dhcp: false,
@@ -36,7 +36,7 @@ NetworkCategory.create([
   }
 ])
 
-Subnetwork.create([
+Subnetwork.count.zero? && Subnetwork.create([
   {
     name: 'サーバー',
     network_category: NetworkCategory.find_by(name: '学内'),
@@ -59,24 +59,22 @@ Subnetwork.create([
   }
 ])
 
-IpNetwork.create([
+IpNetwork.count.zero? && IpNetwork.create([
   {
     subnetwork: Subnetwork.find_by(name: 'サーバー'),
-    ip_version: 4,
-    address: '192.168.1.0',
-    mask: 24,
+    family: :ipv4,
+    address: '192.168.1.0/24',
     gateway: '192.168.1.254',
   },
   {
     subnetwork: Subnetwork.find_by(name: 'クライアント'),
-    ip_version: 4,
-    address: '192.168.2.0',
-    mask: 24,
+    family: :ipv4,
+    address: '192.168.2.0/24',
     gateway: '192.168.2.254',
   }
 ])
 
-OperatingSystem.create([
+OperatingSystem.count.zero? && OperatingSystem.create([
   {
     category: :windows,
     name: 'Windows 10 Home',
@@ -291,7 +289,7 @@ OperatingSystem.create([
   }
 ])
 
-SecuritySoftware.create([
+SecuritySoftware.count.zero? && SecuritySoftware.create([
   {
     name: 'Windows Defender (Win10のみ)',
     description: 'Windows 10 標準のセキュリティ対策ソフトウェア',
