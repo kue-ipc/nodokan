@@ -35,6 +35,9 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # IP Address
 gem 'ipaddress'
 
+# Attribute Normalizer
+gem 'attribute_normalizer'
+
 # Config
 gem 'config'
 

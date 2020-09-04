@@ -43,7 +43,10 @@ def register_node(data)
     )
   end
 
-  ip_addr = IPAddr.new(data['network[address]'])
+  ip_addr =
+    if data['network[address]'] && !data['network[address]'].empty?
+      IPAddr.new(data['network[address]'])
+    end
 
   subnetwork = Subnetwork.find_by_vlan(data['network[vlan]'])
   if subnetwork.nil?
@@ -61,8 +64,8 @@ def register_node(data)
           ip_addresses: [
             IpAddress.new(
               config: data['network[config]'],
-              ip_version: (if ip_addr.ipv4? then 4 else 6 end),
-              address: ip_addr.to_s,
+              family: (if ip_addr&.ipv6? then :ipv6 else :ipv4 end),
+              address: ip_addr&.to_s,
             )
           ]
         )
@@ -88,7 +91,7 @@ if $0 == __FILE__
     io.puts node_datas.headers.to_csv
     node_datas.each.with_index do |data, idx|
       if data['id'] =~ /\A\d+\z/
-        $logger.info("#{idx}: [skip] already registered as #{id}")
+        $logger.info("#{idx}: [skip] already registered as #{idx}")
         next
       end
 

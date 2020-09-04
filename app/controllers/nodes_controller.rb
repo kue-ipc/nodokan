@@ -27,7 +27,7 @@ class NodesController < ApplicationController
           network_connections: [
             NetworkConnection.new(
               ip_addresses: [
-                IpAddress.new(ip_version: 4)
+                IpAddress.new(family: :ivp4)
               ]
             )
           ]
@@ -100,7 +100,7 @@ class NodesController < ApplicationController
               ip_addresses: conn.ip_addresses.map do |ip|
                 IpAddress.new(
                   config: ip.config,
-                  ip_version: ip.ip_version
+                  family: ip.family
                 )
               end
             )
@@ -158,7 +158,7 @@ class NodesController < ApplicationController
                   :id,
                   :_destroy,
                   :config,
-                  :ip_version,
+                  :family,
                   :address
                 ],
               }

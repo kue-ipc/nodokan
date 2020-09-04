@@ -27,8 +27,8 @@ table
               | DHCP
 
         td = subnetwork.vlan
-        td = subnetwork.ip_networks.find { |net| net.ip_version == 4 }&.ip_address&.to_string
-        td = subnetwork.ip_networks.find { |net| net.ip_version == 6 }&.ip_address&.to_string
+        td = subnetwork.ip_networks.find { |net| net.ipv4? }&.ip_address&.to_string
+        td = subnetwork.ip_networks.find { |net| net.ipv6? }&.ip_address&.to_string
         td = link_to 'Show', subnetwork
         td = link_to 'Edit', edit_subnetwork_path(subnetwork)
         td = link_to 'Destroy', subnetwork, data: { confirm: 'Are you sure?' }, method: :delete

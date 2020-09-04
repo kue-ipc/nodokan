@@ -146,7 +146,7 @@ p 【必須】の項目は入力が必須です。
                                        t_enums(IpAddress, :configs), \
                                        {}, class: 'custom-select'
                   td
-                    = ip_fields.hidden_field :ip_version
+                    = ip_fields.hidden_field :family
                     = ip_fields.text_field :address, \
                                            class: 'form-control-plaintext', \
                                            readonly: true
