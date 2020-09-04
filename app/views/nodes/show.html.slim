@@ -4,6 +4,22 @@ p
   | 内容に違いがある場合は「編集」ボタンから編集を行ってください。
   | 内容に問題がない場合は、確認を行ってください。
 
+dl
+  dt = Node.human_attribute_name(:name)
+  dd = @node.name
+  dt = Node.human_attribute_name(:fqdn)
+  dd = @node.fqdn
+  dt = Node.human_attribute_name(:place)
+  dd = @node.place&.name
+  dt = Node.human_attribute_name(:hardware)
+  dd = @node.hardware&.name
+  dt = Node.human_attribute_name(:operating_system)
+  dd = @node.operating_system&.name
+  dt = Node.human_attribute_name(:network_interfaces)
+  dd = @node.network_interfaces
+
+
+
 = link_to '確認', '#'
 => link_to 'Edit', edit_node_path(@node)
 '|

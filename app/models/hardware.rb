@@ -12,4 +12,10 @@ class Hardware < ApplicationRecord
     other: 255,
     unknown: -1,
   }
+
+  def name
+    category.to_s + ' ' +
+    [maker, product_name].select(&:present?).join(' ')
+  end
+
 end
