@@ -1,0 +1,43 @@
+h1 Listing confirmations
+
+table
+  thead
+    tr
+      th User
+      th Node
+      th Existence
+      th Registered content
+      th Os update
+      th Ms upadte
+      th Store update
+      th Soft update,
+      th Updated date
+      th Securiy software
+      th Security software name
+      th Securiyt software update
+      th
+      th
+      th
+
+  tbody
+    - @confirmations.each do |confirmation|
+      tr
+        td = confirmation.user
+        td = confirmation.node
+        td = confirmation.existence
+        td = confirmation.registered_content
+        td = confirmation.os_update
+        td = confirmation.ms_upadte
+        td = confirmation.store_update
+        td = confirmation.soft_update,
+        td = confirmation.updated_date
+        td = confirmation.securiy_software
+        td = confirmation.security_software_name
+        td = confirmation.securiyt_software_update
+        td = link_to 'Show', confirmation
+        td = link_to 'Edit', edit_confirmation_path(confirmation)
+        td = link_to 'Destroy', confirmation, data: { confirm: 'Are you sure?' }, method: :delete
+
+br
+
+= link_to 'New Confirmation', new_confirmation_path

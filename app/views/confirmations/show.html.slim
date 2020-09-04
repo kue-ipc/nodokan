@@ -1,0 +1,42 @@
+p#notice = notice
+
+p
+  strong User:
+  = @confirmation.user
+p
+  strong Node:
+  = @confirmation.node
+p
+  strong Existence:
+  = @confirmation.existence
+p
+  strong Registered content:
+  = @confirmation.registered_content
+p
+  strong Os update:
+  = @confirmation.os_update
+p
+  strong Ms upadte:
+  = @confirmation.ms_upadte
+p
+  strong Store update:
+  = @confirmation.store_update
+p
+  strong Soft update,:
+  = @confirmation.soft_update,
+p
+  strong Updated date:
+  = @confirmation.updated_date
+p
+  strong Securiy software:
+  = @confirmation.securiy_software
+p
+  strong Security software name:
+  = @confirmation.security_software_name
+p
+  strong Securiyt software update:
+  = @confirmation.securiyt_software_update
+
+=> link_to 'Edit', edit_confirmation_path(@confirmation)
+'|
+=< link_to 'Back', confirmations_path

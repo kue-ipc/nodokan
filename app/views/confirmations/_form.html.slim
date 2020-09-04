@@ -1,0 +1,45 @@
+= form_for @confirmation do |f|
+  - if @confirmation.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@confirmation.errors.count, "error")} prohibited this confirmation from being saved:"
+      ul
+        - @confirmation.errors.full_messages.each do |message|
+          li = message
+
+  .field
+    = f.label :user
+    = f.text_field :user
+  .field
+    = f.label :node
+    = f.text_field :node
+  .field
+    = f.label :existence
+    = f.number_field :existence
+  .field
+    = f.label :registered_content
+    = f.number_field :registered_content
+  .field
+    = f.label :os_update
+    = f.number_field :os_update
+  .field
+    = f.label :ms_upadte
+    = f.number_field :ms_upadte
+  .field
+    = f.label :store_update
+    = f.number_field :store_update
+  .field
+    = f.label :soft_update,
+    = f.text_field :soft_update,
+  .field
+    = f.label :updated_date
+    = f.date_select :updated_date
+  .field
+    = f.label :securiy_software
+    = f.number_field :securiy_software
+  .field
+    = f.label :security_software_name
+    = f.text_field :security_software_name
+  .field
+    = f.label :securiyt_software_update
+    = f.number_field :securiyt_software_update
+  .actions = f.submit

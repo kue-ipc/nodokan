@@ -10,7 +10,6 @@ class CreateNodes < ActiveRecord::Migration[6.0]
       t.references :place, foreign_key: true
       t.references :hardware, foreign_key: true
       t.references :operating_system, foreign_key: true
-      t.references :security_software, foreign_key: true
 
       t.text :note
 
@@ -21,6 +20,6 @@ class CreateNodes < ActiveRecord::Migration[6.0]
     add_index :nodes, :name
     add_index :nodes, :hostname
     add_index :nodes, :domain
-    add_index :nodes, [:hostname, :domain], name: :fqdn
+    add_index :nodes, [:hostname, :domain], name: :fqdn, unique: true
   end
 end

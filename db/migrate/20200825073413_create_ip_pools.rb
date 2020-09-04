@@ -7,6 +7,8 @@ class CreateIpPools < ActiveRecord::Migration[6.0]
       t.string :last, null: false
       t.integer :config, null: false
 
+      t.integer :ip_address_count, null: false, default: 0
+
       t.timestamps
     end
   end
