@@ -10,7 +10,7 @@ class CreateOperatingSystems < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-    add_index :operating_systems, :name
-    add_index :operating_systems, [:category, :name], unique: true
+    add_index :operating_systems, :category
+    add_index :operating_systems, :name, unique: true
   end
 end

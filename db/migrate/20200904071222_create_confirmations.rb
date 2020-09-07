@@ -3,16 +3,15 @@ class CreateConfirmations < ActiveRecord::Migration[6.0]
     create_table :confirmations do |t|
       t.references :user, null: false, foreign_key: true
       t.references :node, null: false, foreign_key: true
-      t.integer :existence
-      t.integer :registered_content
-      t.integer :os_update
-      t.integer :ms_upadte
-      t.integer :store_update
-      t.string :soft_update,
-      t.date :updated_date
-      t.integer :securiy_software
-      t.string :security_software_name
-      t.integer :securiyt_software_update
+      t.integer :existence, null: false
+      t.integer :content, null: false
+      t.integer :os_update, null: false
+      t.integer :ms_upadte, null: false
+      t.integer :store_update, null: false
+      t.integer :soft_update, null: false
+      t.integer :securiyt_update, null: false
+      t.date :updated_date, null: false
+      t.references :securiy_software, foreign_key: true
 
       t.timestamps
     end

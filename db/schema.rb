@@ -10,7 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_25_073413) do
+ActiveRecord::Schema.define(version: 2020_09_04_071222) do
+
+  create_table "confirmations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "node_id", null: false
+    t.integer "existence", null: false
+    t.integer "registered_content", null: false
+    t.integer "os_update", null: false
+    t.integer "ms_upadte", null: false
+    t.integer "store_update", null: false
+    t.integer "soft_update", null: false
+    t.integer "securiyt_update", null: false
+    t.date "updated_date", null: false
+    t.integer "securiy_software", null: false
+    t.string "security_software_name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["node_id"], name: "index_confirmations_on_node_id"
+    t.index ["user_id"], name: "index_confirmations_on_user_id"
+  end
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.integer "category", null: false
@@ -28,12 +47,14 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
 
   create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
+    t.bigint "ip_pool_id"
     t.integer "config", null: false
     t.integer "family", null: false
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["address"], name: "index_ip_addresses_on_address"
+    t.index ["ip_pool_id"], name: "index_ip_addresses_on_ip_pool_id"
     t.index ["network_connection_id"], name: "index_ip_addresses_on_network_connection_id"
   end
 
@@ -54,6 +75,7 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
     t.string "first", null: false
     t.string "last", null: false
     t.integer "config", null: false
+    t.integer "ip_address_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["subnetwork_id"], name: "index_ip_pools_on_subnetwork_id"
@@ -100,19 +122,17 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
     t.bigint "place_id"
     t.bigint "hardware_id"
     t.bigint "operating_system_id"
-    t.bigint "security_software_id"
     t.text "note"
     t.timestamp "confirmed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["domain"], name: "index_nodes_on_domain"
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
-    t.index ["hostname", "domain"], name: "fqdn"
+    t.index ["hostname", "domain"], name: "fqdn", unique: true
     t.index ["hostname"], name: "index_nodes_on_hostname"
     t.index ["name"], name: "index_nodes_on_name"
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
     t.index ["place_id"], name: "index_nodes_on_place_id"
-    t.index ["security_software_id"], name: "index_nodes_on_security_software_id"
     t.index ["user_id"], name: "index_nodes_on_user_id"
   end
 
@@ -144,8 +164,6 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
 
   create_table "security_softwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "name", null: false
-    t.text "description"
-    t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_security_softwares_on_name", unique: true
@@ -208,6 +226,9 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
+  add_foreign_key "confirmations", "nodes"
+  add_foreign_key "confirmations", "users"
+  add_foreign_key "ip_addresses", "ip_pools"
   add_foreign_key "ip_addresses", "network_connections"
   add_foreign_key "ip_networks", "subnetworks"
   add_foreign_key "ip_pools", "subnetworks"
@@ -217,7 +238,6 @@ ActiveRecord::Schema.define(version: 2020_08_25_073413) do
   add_foreign_key "nodes", "hardwares"
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "places"
-  add_foreign_key "nodes", "security_softwares"
   add_foreign_key "nodes", "users"
   add_foreign_key "subnetwork_users", "subnetworks"
   add_foreign_key "subnetwork_users", "users"
