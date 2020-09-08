@@ -69,6 +69,6 @@ class ConfirmationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def confirmation_params
-      params.require(:confirmation).permit(:user_id, :node_id, :existence, :registered_content, :os_update, :ms_upadte, :store_update, :soft_update,, :updated_date, :securiy_software, :security_software_name, :securiyt_software_update)
+      params.require(:confirmation).permit(:user_id, :node_id, :existence, :registered_content, :os_update, :ms_upadte, :store_update, :soft_update, :updated_date, :securiy_software, :security_software_name, :securiyt_software_update)
     end
 end

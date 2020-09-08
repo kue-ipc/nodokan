@@ -1,14 +1,46 @@
 p#notice = notice
 
-p
-  strong Name:
-  = @subnetwork.name
-p
-  strong Network category:
-  = @subnetwork.network_category.name
-p
-  strong Vlan:
-  = @subnetwork.vlan
+h2 = Subnetwork.model_name.human
+
+dl.row
+  dt.col-sm-5.col-md-4.col-lg-3 = Subnetwork.human_attribute_name(:name)
+  dd.col-sm-7.col-md-8.col-lg-9 = @subnetwork.name
+  dt.col-sm-5.col-md-4.col-lg-3 = Subnetwork.human_attribute_name(:network_category)
+  dd.col-sm-7.col-md-8.col-lg-9
+    = @subnetwork.network_category.name
+    - if @subnetwork.network_category.global?
+      span.badge.badge-danger<>
+        | 外部
+    - if @subnetwork.network_category.auth?
+      span.badge.badge-primary<>
+        | 認証
+    - if @subnetwork.network_category.dhcp?
+      span.badge.badge-secondary<>
+        | DHCP
+  dt.col-sm-5.col-md-4.col-lg-3 = Subnetwork.human_attribute_name(:vlan)
+  dd.col-sm-7.col-md-8.col-lg-9 = @subnetwork.vlan
+
+- @subnetwork.ip_networks.each do |ip_network|
+  dl.row
+    dt.col-sm-5.col-md-4.col-lg-3 = IpNetwork.human_attribute_name(:family)
+    dd.col-sm-7.col-md-8.col-lg-9 = ip_network.family
+    dt.col-sm-5.col-md-4.col-lg-3 = IpNetwork.human_attribute_name(:address)
+    dd.col-sm-7.col-md-8.col-lg-9 = ip_network.ip_address.to_string
+    dt.col-sm-5.col-md-4.col-lg-3 = Subnetwork.human_attribute_name(:gateway)
+    dd.col-sm-7.col-md-8.col-lg-9 = ip_network.gateway
+  - ip_network.ip_pools.each do |ip_pool|
+    dl.row
+      dt.col-sm-5.col-md-4.col-lg-3 = IpPool.human_attribute_name(:config)
+      dd.col-sm-7.col-md-8.col-lg-9 = ip_pool.config
+      dt.col-sm-5.col-md-4.col-lg-3 = IpPool.human_attribute_name(:first)
+      dd.col-sm-7.col-md-8.col-lg-9 = ip_pool.first_address.to_string
+      dt.col-sm-5.col-md-4.col-lg-3 = IpPool.human_attribute_name(:last)
+      dd.col-sm-7.col-md-8.col-lg-9 = ip_pool.last_address.to_string
+    = ip_pool.size
+
+
+
+
 
 == render 'nodes/list'
 

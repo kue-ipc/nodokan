@@ -6,6 +6,6 @@ class IpAddress < ApplicationRecord
   belongs_to :ip_pool
 
   def ip_address
-    IPAddress(address)
+    @ip_address ||= IPAddress(address)
   end
 end

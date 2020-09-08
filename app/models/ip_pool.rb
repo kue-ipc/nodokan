@@ -6,10 +6,14 @@ class IpPool < ApplicationRecord
   has_many :ip_addresses, dependent: :nullify
 
   def first_address
-    IPAddress(first)
+    @first_address ||= IPAddress(first)
   end
 
   def last_address
-    IPAddress(last)
+    @last_address ||= IPAddress(last)
+  end
+
+  def size
+    @size ||= (last_address - first_address + 1)
   end
 end
