@@ -1,7 +1,7 @@
 class Hardware < ApplicationRecord
   has_many :node, dependent: :restrict_with_error
 
-  enum category: {
+  enum device_type: {
     desktop: 0,
     laptop: 1,
     tablet: 2,

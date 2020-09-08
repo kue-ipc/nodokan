@@ -15,31 +15,33 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
   create_table "confirmations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "node_id", null: false
+    t.bigint "security_software_id"
     t.integer "existence", null: false
-    t.integer "registered_content", null: false
+    t.integer "content", null: false
     t.integer "os_update", null: false
     t.integer "ms_upadte", null: false
     t.integer "store_update", null: false
     t.integer "soft_update", null: false
-    t.integer "securiyt_update", null: false
+    t.integer "security_update", null: false
+    t.integer "security_scan", null: false
     t.date "updated_date", null: false
-    t.integer "securiy_software", null: false
-    t.string "security_software_name"
+    t.boolean "approved"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["node_id"], name: "index_confirmations_on_node_id"
+    t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
     t.index ["user_id"], name: "index_confirmations_on_user_id"
   end
 
   create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "category", null: false
+    t.integer "device_type", null: false
     t.string "maker", default: "", null: false
     t.string "product_name", default: "", null: false
     t.string "model_number", default: "", null: false
     t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["category", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
+    t.index ["device_type", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
     t.index ["maker"], name: "index_hardwares_on_maker"
     t.index ["model_number"], name: "index_hardwares_on_model_number"
     t.index ["product_name"], name: "index_hardwares_on_product_name"
@@ -48,37 +50,37 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
   create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
     t.bigint "ip_pool_id"
+    t.integer "family", default: 2, null: false
     t.integer "config", null: false
-    t.integer "family", null: false
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ip_addresses_on_address"
+    t.index ["address"], name: "index_ip_addresses_on_address", unique: true
     t.index ["ip_pool_id"], name: "index_ip_addresses_on_ip_pool_id"
     t.index ["network_connection_id"], name: "index_ip_addresses_on_network_connection_id"
   end
 
   create_table "ip_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "subnetwork_id", null: false
-    t.integer "family", default: 4, null: false
+    t.integer "family", default: 2, null: false
     t.string "address", null: false
     t.string "gateway"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ip_networks_on_address"
+    t.index ["address"], name: "index_ip_networks_on_address", unique: true
     t.index ["subnetwork_id"], name: "index_ip_networks_on_subnetwork_id"
   end
 
   create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "subnetwork_id", null: false
-    t.integer "family", null: false
+    t.bigint "ip_network_id", null: false
+    t.integer "family", default: 2, null: false
+    t.integer "config", null: false
     t.string "first", null: false
     t.string "last", null: false
-    t.integer "config", null: false
     t.integer "ip_address_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["subnetwork_id"], name: "index_ip_pools_on_subnetwork_id"
+    t.index ["ip_network_id"], name: "index_ip_pools_on_ip_network_id"
   end
 
   create_table "network_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -137,15 +139,15 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
   end
 
   create_table "operating_systems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.integer "category", null: false
+    t.integer "os_category", null: false
     t.string "name", null: false
     t.date "eol"
     t.text "description"
     t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["category", "name"], name: "index_operating_systems_on_category_and_name", unique: true
-    t.index ["name"], name: "index_operating_systems_on_name"
+    t.index ["name"], name: "index_operating_systems_on_name", unique: true
+    t.index ["os_category"], name: "index_operating_systems_on_os_category"
   end
 
   create_table "places", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -163,10 +165,16 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
   end
 
   create_table "security_softwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.integer "state", null: false
+    t.integer "os_category", null: false
     t.string "name", null: false
+    t.boolean "approved"
+    t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_security_softwares_on_name", unique: true
+    t.index ["name"], name: "index_security_softwares_on_name"
+    t.index ["state", "os_category", "name"], name: "index_security_softwares_on_state_and_os_category_and_name", unique: true
+    t.index ["state", "os_category"], name: "index_security_softwares_on_state_and_os_category"
   end
 
   create_table "subnetwork_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -227,11 +235,12 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
   end
 
   add_foreign_key "confirmations", "nodes"
+  add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "confirmations", "users"
   add_foreign_key "ip_addresses", "ip_pools"
   add_foreign_key "ip_addresses", "network_connections"
   add_foreign_key "ip_networks", "subnetworks"
-  add_foreign_key "ip_pools", "subnetworks"
+  add_foreign_key "ip_pools", "ip_networks"
   add_foreign_key "network_connections", "network_interfaces"
   add_foreign_key "network_connections", "subnetworks"
   add_foreign_key "network_interfaces", "nodes"

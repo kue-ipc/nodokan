@@ -56,16 +56,6 @@ class Confirmation < ApplicationRecord
     unknown: 255,
   }, _prefix: true
 
-  enum security_software: {
-    os: 0,
-    distrbuted: 1,
-    purchased: 2,
-    free: 3,
-    unnecessary: 4,
-    not_installed: 5,
-    unknown: 255,
-  }, _prefix: true
-
   def approved?
     result = true
 
