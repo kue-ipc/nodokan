@@ -1,0 +1,39 @@
+p#notice = notice
+
+p
+  strong Name:
+  = @network.name
+p
+  strong Vlan:
+  = @network.vlan
+p
+  strong Dhcp:
+  = @network.dhcp
+p
+  strong Auth:
+  = @network.auth
+p
+  strong Closed:
+  = @network.closed
+p
+  strong Ip address:
+  = @network.ip_address
+p
+  strong Ip prefix:
+  = @network.ip_prefix
+p
+  strong Ip gateway:
+  = @network.ip_gateway
+p
+  strong Ip6 address:
+  = @network.ip6_address
+p
+  strong Ip6 prefix:
+  = @network.ip6_prefix
+p
+  strong Ip6 gateway:
+  = @network.ip6_gateway
+
+=> link_to 'Edit', edit_network_path(@network)
+'|
+=< link_to 'Back', networks_path
