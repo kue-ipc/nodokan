@@ -1,0 +1,1 @@
+﻿id,name,network_category,vlan,ip_network[address],ip_network[gateway],ip_pools[static][first],ip_pools[static][last],ip_pools[dynamic][first],ip_pools[dynamic][last],ip_pools[reserved][first],ip_pools[reserved][last]

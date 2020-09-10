@@ -10,6 +10,6 @@ class CreateIpAddresses < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-    add_index :ip_addresses, :address, unique: true
+    add_index :ip_addresses, :address
   end
 end

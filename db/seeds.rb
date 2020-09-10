@@ -17,7 +17,21 @@ NetworkCategory.count.zero? && NetworkCategory.create([
     name: 'DMZ',
     dhcp: false,
     auth: false,
-    global: true,
+  },
+  {
+    name: '管理',
+    dhcp: false,
+    auth: false,
+  },
+  {
+    name: 'ネットワーク',
+    dhcp: false,
+    auth: false,
+  },
+  {
+    name: 'サーバー',
+    dhcp: false,
+    auth: false,
   },
   {
     name: '学内',

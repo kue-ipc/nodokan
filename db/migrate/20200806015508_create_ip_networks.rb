@@ -9,6 +9,6 @@ class CreateIpNetworks < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-    add_index :ip_networks, :address, unique: true
+    add_index :ip_networks, :address
   end
 end
