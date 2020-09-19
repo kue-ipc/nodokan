@@ -30,7 +30,7 @@ default-character-set=utf8mb4
 character-set-server=utf8mb4
 ```
 
-### FreeRadius
+### FreeRADIUS
 
 ```
 sudo dnf module install freeradius:3.0/server
@@ -79,7 +79,7 @@ ldapは"authentication"でチェックされるようにする？
 
 ### Kea
 
-1.6にはCentOS 8のパッケージがない！
+1.8を使用すること。
 
 ```
 curl -1sLf \
@@ -89,7 +89,7 @@ curl -1sLf \
 sudo dnf install isc-kea
 ```
 
-log4clpusがコンフリクトするため、
+epelのlog4clpusがコンフリクトするため、
 
 ```
 sudo dnf update --nobest
