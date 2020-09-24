@@ -22,16 +22,8 @@ class NodesController < ApplicationController
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      network_interfaces: [
-        NetworkInterface.new(
-          network_connections: [
-            NetworkConnection.new(
-              ip_addresses: [
-                IpAddress.new(family: :ivp4)
-              ]
-            )
-          ]
-        )
+      nics: [
+        Nic.new()
       ]
     )
   end

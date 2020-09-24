@@ -13,13 +13,13 @@ class User < ApplicationRecord
 
   has_many :nodes, dependent: :nullify
 
-  has_many :subnetwork_users, dependent: :destroy
-  has_many :assignable_subnetwork_users, -> { where(assignable: true) }, class_name: 'SubnetworkUser'
-  has_many :managable_subnetwork_users, -> { where(managable: true) }, class_name: 'SubnetworkUser'
+  has_many :network_users, dependent: :destroy
+  has_many :assignable_network_users, -> { where(assignable: true) }, class_name: 'NetworkUser'
+  has_many :managable_network_users, -> { where(managable: true) }, class_name: 'NetworkUser'
 
-  has_many :subnetworks, through: :subnetwork_users
-  has_many :assignable_subnetworks, through: :assignable_subnetwork_users, source: :subnetwork
-  has_many :managable_subnetworks, through: :managable_subnetwork_users, source: :subnetwork
+  has_many :networks, through: :network_users
+  has_many :assignable_networks, through: :assignable_network_users, source: :network
+  has_many :managable_networks, through: :managable_network_users, source: :network
 
   def ldap_before_save
     sync_ldap!

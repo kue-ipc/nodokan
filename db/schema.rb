@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_04_071222) do
+ActiveRecord::Schema.define(version: 2020_09_24_065048) do
 
   create_table "confirmations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -55,7 +55,7 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ip_addresses_on_address", unique: true
+    t.index ["address"], name: "index_ip_addresses_on_address"
     t.index ["ip_pool_id"], name: "index_ip_addresses_on_ip_pool_id"
     t.index ["network_connection_id"], name: "index_ip_addresses_on_network_connection_id"
   end
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
     t.string "gateway"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ip_networks_on_address", unique: true
+    t.index ["address"], name: "index_ip_networks_on_address"
     t.index ["subnetwork_id"], name: "index_ip_networks_on_subnetwork_id"
   end
 
@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
     t.boolean "dhcp", default: false, null: false
     t.boolean "auth", default: false, null: false
     t.boolean "global", default: false, null: false
+    t.boolean "closed", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_network_categories_on_name", unique: true
@@ -114,6 +115,52 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
     t.index ["duid"], name: "index_network_interfaces_on_duid"
     t.index ["mac_address"], name: "index_network_interfaces_on_mac_address"
     t.index ["node_id"], name: "index_network_interfaces_on_node_id"
+  end
+
+  create_table "network_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "network_id", null: false
+    t.bigint "user_id", null: false
+    t.boolean "assignable", default: false, null: false
+    t.boolean "managable", default: false, null: false
+    t.boolean "assigned", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["network_id", "user_id"], name: "index_network_users_on_network_id_and_user_id", unique: true
+    t.index ["network_id"], name: "index_network_users_on_network_id"
+    t.index ["user_id"], name: "index_network_users_on_user_id"
+  end
+
+  create_table "networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.string "name"
+    t.integer "vlan"
+    t.boolean "dhcp"
+    t.boolean "auth"
+    t.boolean "closed"
+    t.binary "ip_address"
+    t.integer "ip_prefix"
+    t.binary "ip_gateway"
+    t.binary "ip6_address"
+    t.integer "ip6_prefix"
+    t.binary "ip6_gateway"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_networks_on_name", unique: true
+  end
+
+  create_table "nics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "node_id", null: false
+    t.bigint "network_id", null: false
+    t.string "name"
+    t.binary "mac_address"
+    t.binary "duid"
+    t.integer "ip_config"
+    t.binary "ip_address"
+    t.integer "ip6_config"
+    t.binary "ip6_address"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["network_id"], name: "index_nics_on_network_id"
+    t.index ["node_id"], name: "index_nics_on_node_id"
   end
 
   create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -244,6 +291,10 @@ ActiveRecord::Schema.define(version: 2020_09_04_071222) do
   add_foreign_key "network_connections", "network_interfaces"
   add_foreign_key "network_connections", "subnetworks"
   add_foreign_key "network_interfaces", "nodes"
+  add_foreign_key "network_users", "networks"
+  add_foreign_key "network_users", "users"
+  add_foreign_key "nics", "networks"
+  add_foreign_key "nics", "nodes"
   add_foreign_key "nodes", "hardwares"
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "places"

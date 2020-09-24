@@ -6,8 +6,8 @@ class Node < ApplicationRecord
   belongs_to :operating_system, optional: true, counter_cache: true
   belongs_to :security_software, optional: true, counter_cache: true
 
-  has_many :network_interfaces, dependent: :destroy
-  accepts_nested_attributes_for :network_interfaces, allow_destroy: true
+  has_many :nics, dependent: :destroy
+  accepts_nested_attributes_for :nics, allow_destroy: true
 
   validates :name, presence: true
   validates :hostname, allow_nil: true,
