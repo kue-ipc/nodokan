@@ -1,19 +1,12 @@
 class IpPool < ApplicationRecord
-  include IpFamily
   include IpConfig
+  belongs_to :network
 
-  belongs_to :ip_network
-  has_many :ip_addresses, dependent: :nullify
-
-  def first_address
-    @first_address ||= IPAddress(first)
+  def first
+    @first ||= IPAddress::IPv4.parse_data(@first_address)
   end
 
-  def last_address
-    @last_address ||= IPAddress(last)
-  end
-
-  def size
-    @size ||= (last_address - first_address + 1)
+  def last
+    @last ||= IPAddress::IPv4.parse_data(@last_address)
   end
 end

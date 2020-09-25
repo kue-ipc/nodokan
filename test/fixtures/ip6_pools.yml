@@ -2,12 +2,12 @@
 
 one:
   network: one
-  ip_config: 1
+  ip6_config: 1
   first_address: 
   last_address: 
 
 two:
   network: two
-  ip_config: 1
+  ip6_config: 1
   first_address: 
   last_address: 

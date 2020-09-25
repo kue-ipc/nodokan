@@ -6,109 +6,130 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-NetworkCategory.count.zero? && NetworkCategory.create([
-  {
-    name: 'WAN',
-    dhcp: false,
-    auth: false,
-    global: true,
-  },
-  {
-    name: 'DMZ',
-    dhcp: false,
-    auth: false,
-  },
-  {
-    name: '管理',
-    dhcp: false,
-    auth: false,
-  },
-  {
-    name: 'ネットワーク',
-    dhcp: false,
-    auth: false,
-  },
-  {
-    name: 'サーバー',
-    dhcp: false,
-    auth: false,
-  },
-  {
-    name: '学内',
-    dhcp: false,
-    auth: false,
-  },
-  {
-    name: '認証',
-    dhcp: true,
-    auth: true,
-  },
-  {
-    name: '公衆',
-    dhcp: true,
-    auth: false,
-  }
-])
+# NetworkCategory.count.zero? && NetworkCategory.create([
+#   {
+#     name: 'WAN',
+#     dhcp: false,
+#     auth: false,
+#     global: true,
+#   },
+#   {
+#     name: 'DMZ',
+#     dhcp: false,
+#     auth: false,
+#   },
+#   {
+#     name: '管理',
+#     dhcp: false,
+#     auth: false,
+#   },
+#   {
+#     name: 'ネットワーク',
+#     dhcp: false,
+#     auth: false,
+#   },
+#   {
+#     name: 'サーバー',
+#     dhcp: false,
+#     auth: false,
+#   },
+#   {
+#     name: '学内',
+#     dhcp: false,
+#     auth: false,
+#   },
+#   {
+#     name: '認証',
+#     dhcp: true,
+#     auth: true,
+#   },
+#   {
+#     name: '公衆',
+#     dhcp: true,
+#     auth: false,
+#   }
+# ])
 
-Subnetwork.count.zero? && Subnetwork.create([
+# Subnetwork.count.zero? && Subnetwork.create([
+#   {
+#     name: 'サーバー',
+#     network_category: NetworkCategory.find_by(name: '学内'),
+#     vlan: 101,
+#   },
+#   {
+#     name: 'クライアント',
+#     network_category: NetworkCategory.find_by(name: '学内'),
+#     vlan: 102,
+#   },
+#   {
+#     name: 'DMZ',
+#     network_category: NetworkCategory.find_by(name: 'DMZ'),
+#     vlan: 200,
+#   },
+#   {
+#     name: 'Wi-Fi',
+#     network_category: NetworkCategory.find_by(name: '公衆'),
+#     vlan: 201,
+#   }
+# ])
+
+# IpNetwork.count.zero? && IpNetwork.create([
+#   {
+#     subnetwork: Subnetwork.find_by(name: 'サーバー'),
+#     family: :ipv4,
+#     address: '192.168.1.0/24',
+#     gateway: '192.168.1.254',
+#   },
+#   {
+#     subnetwork: Subnetwork.find_by(name: 'クライアント'),
+#     family: :ipv4,
+#     address: '192.168.2.0/24',
+#     gateway: '192.168.2.254',
+#   }
+# ])
+
+Network.count.zero? && Network.create([
   {
     name: 'サーバー',
-    network_category: NetworkCategory.find_by(name: '学内'),
     vlan: 101,
+    dhcp: false,
+    auth: false,
+    closed: false,
+    ip_address: IPAddress('192.168.1.0').data,
+    ip_prefix: 24,
+    ip_gateway: IPAddress('192.168.1.254').data,
   },
   {
     name: 'クライアント',
-    network_category: NetworkCategory.find_by(name: '学内'),
     vlan: 102,
+    dhcp: true,
+    auth: true,
+    closed: false,
+    ip_address: IPAddress('192.168.2.0').data,
+    ip_prefix: 24,
+    ip_gateway: IPAddress('192.168.2.254').data,
   },
-  {
-    name: 'DMZ',
-    network_category: NetworkCategory.find_by(name: 'DMZ'),
-    vlan: 200,
-  },
-  {
-    name: 'Wi-Fi',
-    network_category: NetworkCategory.find_by(name: '公衆'),
-    vlan: 201,
-  }
 ])
 
-IpNetwork.count.zero? && IpNetwork.create([
-  {
-    subnetwork: Subnetwork.find_by(name: 'サーバー'),
-    family: :ipv4,
-    address: '192.168.1.0/24',
-    gateway: '192.168.1.254',
-  },
-  {
-    subnetwork: Subnetwork.find_by(name: 'クライアント'),
-    family: :ipv4,
-    address: '192.168.2.0/24',
-    gateway: '192.168.2.254',
-  }
-])
 
 IpPool.count.zero? && IpPool.create([
   {
-    ip_network: Subnetwork.find_by(name: 'クライアント').ip_networks.first,
-    family: :ipv4,
-    config: :dynamic,
-    first: '192.168.2.1',
-    last: '192.168.2.99',
+    network: Network.find_by(name: 'クライアント'),
+    ip_config: :dynamic,
+    first_adderss: IPAddress('192.168.2.1').data,
+    last_address: IPAddress('192.168.2.99').data,
   },
   {
-    ip_network: Subnetwork.find_by(name: 'クライアント').ip_networks.first,
-    family: :ipv4,
+    network: Network.find_by(name: 'クライアント'),
     config: :reserved,
-    first: '192.168.2.100',
-    last: '192.168.2.199',
+    first_adderss: IPAddress('192.168.2.100').data,
+    last_address: IPAddress('192.168.2.199').data,
   },
   {
-    ip_network: Subnetwork.find_by(name: 'クライアント').ip_networks.first,
-    family: :ipv4,
+    network: Network.find_by(name: 'クライアント'),
     config: :static,
-    first: '192.168.2.200',
-    last: '192.168.2.249',
+    first_adderss: IPAddress('192.168.2.200').data,
+    last_address: IPAddress('192.168.2.240').data,
   },
 ])
 

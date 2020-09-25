@@ -1,8 +1,8 @@
-module IpConfig
+module Ip6Config
   extend ActiveSupport::Concern
 
   included do
-    enum ip_config: {
+    enum ip6_config: {
       disabled: 0,
       static: 1,
       dynamic: 2,
