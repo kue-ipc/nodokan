@@ -1,4 +1,7 @@
 class Nic < ApplicationRecord
+  include IpConfig
+  include Ip6Config
+
   belongs_to :node
   belongs_to :network
 

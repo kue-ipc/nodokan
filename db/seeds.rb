@@ -116,19 +116,19 @@ IpPool.count.zero? && IpPool.create([
   {
     network: Network.find_by(name: 'クライアント'),
     ip_config: :dynamic,
-    first_adderss: IPAddress('192.168.2.1').data,
+    first_address: IPAddress('192.168.2.1').data,
     last_address: IPAddress('192.168.2.99').data,
   },
   {
     network: Network.find_by(name: 'クライアント'),
-    config: :reserved,
-    first_adderss: IPAddress('192.168.2.100').data,
+    ip_config: :reserved,
+    first_address: IPAddress('192.168.2.100').data,
     last_address: IPAddress('192.168.2.199').data,
   },
   {
     network: Network.find_by(name: 'クライアント'),
-    config: :static,
-    first_adderss: IPAddress('192.168.2.200').data,
+    ip_config: :static,
+    first_address: IPAddress('192.168.2.200').data,
     last_address: IPAddress('192.168.2.240').data,
   },
 ])

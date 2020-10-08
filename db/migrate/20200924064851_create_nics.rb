@@ -2,8 +2,9 @@ class CreateNics < ActiveRecord::Migration[6.0]
   def change
     create_table :nics do |t|
       t.references :node, null: false, foreign_key: true
-      t.references :network, null: false, foreign_key: true
+      t.references :network, foreign_key: true
       t.string :name
+      t.integer :interface_type, null: false, default: 0
       t.binary :mac_address, limit: 6
       t.binary :duid, limit: 255
       t.integer :ip_config

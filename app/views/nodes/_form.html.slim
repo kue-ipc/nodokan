@@ -53,8 +53,8 @@ p 【必須】の項目は入力が必須です。
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |fields|
         .form-group.col-md-2
-          = fields.label :category
-          = fields.select :category, t_enums(Hardware, :categories),
+          = fields.label :device_type
+          = fields.select :device_type, t_enums(Hardware, :device_types),
                           {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-3
           = fields.label :maker
@@ -67,14 +67,14 @@ p 【必須】の項目は入力が必須です。
           = fields.text_field :model_number, class: 'form-control'
 
   .rounded.border.p-2.mb-2
-    h4 ソフトウェア情報
+    h4 OS(オペレーティングシステム)情報
     small.form-text.text-muted
       | 種別を選択するとOS名入力時に候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
       = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |fields|
         .form-group.col-md-2
-          = fields.label :category
-          = fields.select :category, t_enums(OperatingSystem, :categories), \
+          = fields.label :os_category
+          = fields.select :os_category, t_enums(OperatingSystem, :os_categories), \
                           {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-4
           = fields.label :name
@@ -88,17 +88,10 @@ p 【必須】の項目は入力が必須です。
             }
           #node_operating_system_name-app.datalist-canadidaiton data-params=operating_system_datalist_params.to_json
 
-      .form-group.col-md-6
-        = f.label :security_software
-        = f.collection_select :security_software_id, SecuritySoftware.all, :id, :name, \
-                              {prompt: '(未選択)'}, \
-                              class: 'custom-select'
-
   .rounded.border.p-2.mb-2
     h4 ネットワーク接続情報
     - count = 0
-    = f.fields_for :network_interfaces do |fields|
-      - pp fields.class
+    = f.fields_for :nics do |fields|
       = fields.hidden_field :id
       .rounded.border.p-2.mb-2.
         - count += 1
@@ -122,34 +115,25 @@ p 【必須】の項目は入力が必須です。
             = fields.text_field :mac_address, class: 'form-control', \
               pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
               placeholder: '00-00-5E-00-53-00'
-          / .form-group.col-md-6
-          /   = fields.label :duid
-          /   = fields.text_field :duid, class: 'form-control',
-          /     pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-          /     placeholder: '00-03-00-01-00-00-5E-00-53-00'
-          table.table
-            tr
-              td 接続するサブネット
-              td IP取得方法
-              td IPアドレス
-            = fields.fields_for :network_connections do |nc_fields|
-              tr
-                td
-                  = nc_fields.hidden_field :id
-                  = nc_fields.collection_select :subnetwork_id, Subnetwork.all, \
-                                                :id, :name, \
-                                                {}, class: 'custom-select'
-                = nc_fields.fields_for :ip_addresses do |ip_fields|
-                  td
-                    = ip_fields.hidden_field :id
-                    = ip_fields.select :config, \
-                                       t_enums(IpAddress, :configs), \
+          .form-group.col-md-6
+            = fields.label :duid
+            = fields.text_field :duid, class: 'form-control',
+              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+              placeholder: '00-03-00-01-00-00-5E-00-53-00'
+          .form-group.col-md-6
+            = fields.label :network
+            = fields.collection_select :network_id, Network.all, \
+                                       :id, :name, \
                                        {}, class: 'custom-select'
-                  td
-                    = ip_fields.hidden_field :family
-                    = ip_fields.text_field :address, \
-                                           class: 'form-control-plaintext', \
-                                           readonly: true
+          .form-group.col-md-6
+            = fields.label :ip_config
+            = fields.select :ip_config, \
+                            t_enums(Nic, :ip_configs), \
+                            {}, class: 'custom-select'
+          .form-group.col-md-6
+            = fields.label :ip_address
+            = fields.text_field :ip_address, \
+                                class: 'form-control'
 
 
   .rounded.border.p-2.mb-2

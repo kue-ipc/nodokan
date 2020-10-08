@@ -7,7 +7,7 @@ class NodesController < ApplicationController
   def index
     @nodes = policy_scope(Node)
       .includes(:user, :place, :hardware,
-               network_interfaces: {network_connections: :ip_addresses})
+                network_interfaces: {network_connections: :ip_addresses})
       .all
   end
 
@@ -22,9 +22,7 @@ class NodesController < ApplicationController
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      nics: [
-        Nic.new()
-      ]
+      nics: [Nic.new()]
     )
   end
 

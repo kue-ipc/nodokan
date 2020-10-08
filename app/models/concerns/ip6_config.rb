@@ -8,6 +8,6 @@ module Ip6Config
       dynamic: 2,
       reserved: 3,
       link_local: 4,
-    }
+    }, _prefix: :ip6
   end
 end

@@ -8,6 +8,6 @@ module IpConfig
       dynamic: 2,
       reserved: 3,
       link_local: 4,
-    }
+    }, _prefix: :ip
   end
 end

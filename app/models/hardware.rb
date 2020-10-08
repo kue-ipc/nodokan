@@ -7,8 +7,9 @@ class Hardware < ApplicationRecord
     tablet: 2,
     mobile: 3,
     server: 4,
-    network: 5,
-    virtual: 6,
+    appliance: 5,
+    network: 16,
+    virtual: 128,
     other: 255,
     unknown: -1,
   }

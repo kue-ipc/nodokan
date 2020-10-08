@@ -155,8 +155,9 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
 
   create_table "nics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "node_id", null: false
-    t.bigint "network_id", null: false
+    t.bigint "network_id"
     t.string "name"
+    t.integer "interface_type", default: 0, null: false
     t.binary "mac_address", limit: 6
     t.binary "duid", limit: 255
     t.integer "ip_config"

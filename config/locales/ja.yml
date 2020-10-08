@@ -115,26 +115,32 @@ ja:
         duid: DUID(DHPv6固有識別子)
     enums:
       hardware:
-        categories:
+        device_types:
           desktop: デスクトップPC
-          laptop: ノートPC
+          laptop: ノートPC (2-in-1を含む)
           tablet: タブレット
-          mobile: 携帯/スマートフォン
+          mobile: 携帯端末 (スマートフォン/携帯電話)
           server: サーバー
-          network: ネットワーク機器
+          appliance: 専用機器 (アプライアンスサーバー)
+          network: ネットワーク機器 (ルーター/スイッチ等)
           virtual: 仮想マシン
           other: その他
+          unknown: 不明
       operating_system:
-        categories:
-          window: Windows
-          mac: Mac
-          ios: iOS(iPadOS/watchOS含む)
+        os_categories:
+          windows_client: Windows クライアント
+          windows_server: Windows サーバー
+          mac: Mac (macOS/Mac OS X等)
+          linux: Linux (Ubuntu/CentOS等)
+          bsd: BSD系UNIX (FreeBSD/OpenBSD等)
+          unix: System V系UNIX (Solaris/AIX等)
+          apple: Apple端末OS (iOS/iPadOS/watchOS/tvOS等)
           android: Android
-          linux: Linux
-          bsd: BSD系
-          unix: UNIX(System V系)
           dedicated: 専用OS
+          embedded: 組込みOS
+          os_less: OS無し
           other: その他
+          unknwon: 不明
       network_interface:
         interface_types:
           wired: 有線
