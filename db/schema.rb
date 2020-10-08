@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_24_065048) do
+ActiveRecord::Schema.define(version: 2020_09_25_011323) do
 
   create_table "confirmations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -47,16 +47,24 @@ ActiveRecord::Schema.define(version: 2020_09_24_065048) do
     t.index ["product_name"], name: "index_hardwares_on_product_name"
   end
 
+  create_table "ip6_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "network_id", null: false
+    t.integer "ip6_config", null: false
+    t.binary "first6_address", limit: 16, null: false
+    t.binary "last6_address", limit: 16, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["network_id"], name: "index_ip6_pools_on_network_id"
+  end
+
   create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_connection_id", null: false
-    t.bigint "ip_pool_id"
     t.integer "family", default: 2, null: false
     t.integer "config", null: false
     t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["address"], name: "index_ip_addresses_on_address"
-    t.index ["ip_pool_id"], name: "index_ip_addresses_on_ip_pool_id"
     t.index ["network_connection_id"], name: "index_ip_addresses_on_network_connection_id"
   end
 
@@ -72,15 +80,13 @@ ActiveRecord::Schema.define(version: 2020_09_24_065048) do
   end
 
   create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "ip_network_id", null: false
-    t.integer "family", default: 2, null: false
-    t.integer "config", null: false
-    t.string "first", null: false
-    t.string "last", null: false
-    t.integer "ip_address_count", default: 0, null: false
+    t.bigint "network_id", null: false
+    t.integer "ip_config", null: false
+    t.binary "first_address", limit: 4, null: false
+    t.binary "last_address", limit: 4, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["ip_network_id"], name: "index_ip_pools_on_ip_network_id"
+    t.index ["network_id"], name: "index_ip_pools_on_network_id"
   end
 
   create_table "network_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -131,17 +137,17 @@ ActiveRecord::Schema.define(version: 2020_09_24_065048) do
   end
 
   create_table "networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.integer "vlan"
-    t.boolean "dhcp"
-    t.boolean "auth"
-    t.boolean "closed"
-    t.binary "ip_address"
+    t.boolean "dhcp", default: false, null: false
+    t.boolean "auth", default: false, null: false
+    t.boolean "closed", default: false, null: false
+    t.binary "ip_address", limit: 4
     t.integer "ip_prefix"
-    t.binary "ip_gateway"
-    t.binary "ip6_address"
+    t.binary "ip_gateway", limit: 4
+    t.binary "ip6_address", limit: 16
     t.integer "ip6_prefix"
-    t.binary "ip6_gateway"
+    t.binary "ip6_gateway", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_networks_on_name", unique: true
@@ -151,14 +157,18 @@ ActiveRecord::Schema.define(version: 2020_09_24_065048) do
     t.bigint "node_id", null: false
     t.bigint "network_id", null: false
     t.string "name"
-    t.binary "mac_address"
-    t.binary "duid"
+    t.binary "mac_address", limit: 6
+    t.binary "duid", limit: 255
     t.integer "ip_config"
-    t.binary "ip_address"
+    t.binary "ip_address", limit: 4
     t.integer "ip6_config"
-    t.binary "ip6_address"
+    t.binary "ip6_address", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["duid"], name: "index_nics_on_duid"
+    t.index ["ip6_address"], name: "index_nics_on_ip6_address"
+    t.index ["ip_address"], name: "index_nics_on_ip_address"
+    t.index ["mac_address"], name: "index_nics_on_mac_address"
     t.index ["network_id"], name: "index_nics_on_network_id"
     t.index ["node_id"], name: "index_nics_on_node_id"
   end
@@ -284,10 +294,10 @@ ActiveRecord::Schema.define(version: 2020_09_24_065048) do
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "confirmations", "users"
-  add_foreign_key "ip_addresses", "ip_pools"
+  add_foreign_key "ip6_pools", "networks"
   add_foreign_key "ip_addresses", "network_connections"
   add_foreign_key "ip_networks", "subnetworks"
-  add_foreign_key "ip_pools", "ip_networks"
+  add_foreign_key "ip_pools", "networks"
   add_foreign_key "network_connections", "network_interfaces"
   add_foreign_key "network_connections", "subnetworks"
   add_foreign_key "network_interfaces", "nodes"
