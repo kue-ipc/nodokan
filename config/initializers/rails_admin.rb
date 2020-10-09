@@ -21,6 +21,14 @@ RailsAdmin.config do |config|
   ## == PaperTrail ==
   config.audit_with :paper_trail, 'User', 'PaperTrail::Version' # PaperTrail >= 3.0.0
 
+  config.model "PaperTrail::Version" do
+    visible false
+  end
+
+  config.model "PaperTrail::VersionAssociation" do
+    visible false
+  end
+
   ### More at https://github.com/sferik/rails_admin/wiki/Base-configuration
 
   ## == Gravatar integration ==
