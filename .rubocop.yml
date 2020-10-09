@@ -195,3 +195,9 @@ Rails/ShortI18n:
   Enabled: true
 Rails/WhereExists:
   Enabled: true
+
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma

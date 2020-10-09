@@ -4,7 +4,7 @@ h1
 table.table
   thead
     tr
-      th = OperatingSystem.human_attribute_name(:category)
+      th = OperatingSystem.human_attribute_name(:os_category)
       th = OperatingSystem.human_attribute_name(:name)
       th = OperatingSystem.human_attribute_name(:eol)
       th = OperatingSystem.human_attribute_name(:description)
@@ -12,7 +12,7 @@ table.table
   tbody
     - @operating_systems.each do |operating_system|
       tr
-        td = operating_system.category
+        td = operating_system.os_category
         td = operating_system.name
         td
           - if operating_system.eol

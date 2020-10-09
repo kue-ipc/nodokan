@@ -1,1 +1,1 @@
-json.extract! operating_system, :id, :category, :name, :eol, :description, :nodes_count
+json.extract! operating_system, :id, :os_category, :name, :eol, :description, :nodes_count

@@ -26,122 +26,145 @@ p 【必須】の項目は入力が必須です。
     h4 設置場所
     small.text-muted 候補に現れない場合は、そのまま名称を入力してください。管理者によって名称が統合される場合があります。
     .form-row
-      = f.fields_for :place, @node.place || Place.new do |fields|
+      = f.fields_for :place, @node.place || Place.new do |place_f|
         .form-group.col-md-3
-          = fields.label :area
-          = fields.text_field :area, class: 'form-control', list: 'area-list'
+          = place_f.label :area
+          = place_f.text_field :area, class: 'form-control', list: 'area-list'
           datalist#area-list
             option value="Aキャンパス"
             option value="B学校"
         .form-group.col-md-3
-          = fields.label :building
-          = fields.text_field :building, class: 'form-control'
+          = place_f.label :building
+          = place_f.text_field :building, class: 'form-control'
         .form-group.col-md-2
-          = fields.label :floor
+          = place_f.label :floor
           .input-group
-            = fields.number_field :floor, class: 'form-control'
+            = place_f.number_field :floor, class: 'form-control'
             .input-group-append
               span.input-group-text 階
         .form-group.col-md-4
-          = fields.label :room
-          = fields.text_field :room, class: 'form-control'
+          = place_f.label :room
+          = place_f.text_field :room, class: 'form-control'
 
   .rounded.border.p-2.mb-2
     h4 ハードウェア情報
     small.form-text.text-muted
       | 前の項目を埋めると候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
-      = f.fields_for :hardware, @node.hardware || Hardware.new do |fields|
+      = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         .form-group.col-md-2
-          = fields.label :device_type
-          = fields.select :device_type, t_enums(Hardware, :device_types),
+          = hardware_f.label :device_type
+          = hardware_f.select :device_type, t_enums(Hardware, :device_types), \
                           {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-3
-          = fields.label :maker
-          = fields.text_field :maker, class: 'form-control'
+          = hardware_f.label :maker
+          = hardware_f.text_field :maker, class: 'form-control'
         .form-group.col-md-4
-          = fields.label :product_name
-          = fields.text_field :product_name, class: 'form-control'
+          = hardware_f.label :product_name
+          = hardware_f.text_field :product_name, class: 'form-control'
         .form-group.col-md-3
-          = fields.label :model_number
-          = fields.text_field :model_number, class: 'form-control'
+          = hardware_f.label :model_number
+          = hardware_f.text_field :model_number, class: 'form-control'
 
   .rounded.border.p-2.mb-2
     h4 OS(オペレーティングシステム)情報
     small.form-text.text-muted
       | 種別を選択するとOS名入力時に候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
-      = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |fields|
+      = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |operating_system_f|
         .form-group.col-md-2
-          = fields.label :os_category
-          = fields.select :os_category, t_enums(OperatingSystem, :os_categories), \
+          = operating_system_f.label :os_category
+          = operating_system_f.select :os_category, t_enums(OperatingSystem, :os_categories), \
                           {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-4
-          = fields.label :name
-          = fields.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
+          = operating_system_f.label :name
+          = operating_system_f.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
           - operating_system_datalist_params = {\
               parent: 'node', \
               name: 'operating_system', \
               target: 'name', \
-              inputList: ['category'], \
+              inputList: ['os_category'], \
               url: '/operating_systems.json', \
             }
           #node_operating_system_name-app.datalist-canadidaiton data-params=operating_system_datalist_params.to_json
 
   .rounded.border.p-2.mb-2
-    h4 ネットワーク接続情報
+    h4 NIC(ネットワークインターフェースコントローラー)情報
+    small.form-text.text-muted
+      | 端末に備わっているネットワーク接続のインターフェースです。複数のネットワークに接続する場合は複数記載してください。
     - count = 0
-    = f.fields_for :nics do |fields|
-      = fields.hidden_field :id
-      .rounded.border.p-2.mb-2.
+    - nic_list = []
+    = f.fields_for :nics do |nic_f|
+      .rounded.border.p-2.mb-2.node-nic-root id="node_nics_attributes_#{nic_f.index}"
         - count += 1
+        - nic_list << nic_f.index
+        = nic_f.hidden_field :id
         h6
           => count
-          | 番目のネットワークインターフェース
+          | 番目のNIC
         .custom-control.custom-checkbox
-          = fields.check_box :_destroy, class: 'custom-control-input'
-          = fields.label :_destroy, '削除', class: 'custom-control-label'
-        .form-row
+          = nic_f.check_box :_destroy, class: 'custom-control-input'
+          = nic_f.label :_destroy, 'このINCを削除する', class: 'custom-control-label'
+        .form-row.node-nic-form
           .form-group.col-md-3
-            = fields.label :interface_type
-            = fields.select :interface_type, \
+            = nic_f.label :interface_type
+            = nic_f.select :interface_type, \
                             t_enums(NetworkInterface, :interface_types), \
                             {}, class: 'custom-select'
           .form-group.col-md-9
-            = fields.label :name
-            = fields.text_field :name, class: 'form-control'
-          .form-group.col-md-6
-            = fields.label :mac_address
-            = fields.text_field :mac_address, class: 'form-control', \
-              pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-              placeholder: '00-00-5E-00-53-00'
-          .form-group.col-md-6
-            = fields.label :duid
-            = fields.text_field :duid, class: 'form-control',
-              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-              placeholder: '00-03-00-01-00-00-5E-00-53-00'
-          .form-group.col-md-6
-            = fields.label :network
-            = fields.collection_select :network_id, Network.all, \
+            = nic_f.label :name
+            = nic_f.text_field :name, class: 'form-control'
+          .form-group.col-md-4
+            = nic_f.label :network
+            = nic_f.collection_select :network_id, Network.all, \
                                        :id, :name, \
                                        {}, class: 'custom-select'
-          .form-group.col-md-6
-            = fields.label :ip_config
-            = fields.select :ip_config, \
+          .form-group.col-md-4
+            = nic_f.label :mac_address
+            = nic_f.text_field :mac_address, class: 'form-control', \
+              pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
+              placeholder: '00-00-5E-00-53-00'
+          .form-group.col-md-4
+            = nic_f.label :duid
+            = nic_f.text_field :duid, class: 'form-control',
+              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+              placeholder: '00-03-00-01-00-00-5E-00-53-00'
+          .form-group.col-md-4
+            = nic_f.label :ip_config
+            = nic_f.select :ip_config, \
                             t_enums(Nic, :ip_configs), \
                             {}, class: 'custom-select'
-          .form-group.col-md-6
-            = fields.label :ip_address
-            = fields.text_field :ip_address, \
+          .form-group.col-md-8
+            = nic_f.label :ip_address
+            = nic_f.text_field :ip_address, \
                                 class: 'form-control'
-
+          .form-group.col-md-4
+            = nic_f.label :ip6_config
+            = nic_f.select :ip6_config, \
+                            t_enums(Nic, :ip_configs), \
+                            {}, class: 'custom-select'
+          .form-group.col-md-8
+            = nic_f.label :ip6_address
+            = nic_f.text_field :ip6_address, \
+                                class: 'form-control'
+    = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic'
+    #node-nic-list.d-none data-list="#{nic_list.to_json}"
 
   .rounded.border.p-2.mb-2
     .form-row
       .form-group.col-md-12
         = f.label :note
         = f.text_area :note, class: 'form-control'
+      .form-group.col-md-12
+        = f.fields_for :user, @node.user || current_user do |user_f|
+          = user_f.label :username, '端末管理者名'
+          - if current_user.admin?
+            = user_f.text_field :username, class: 'form-control'
+          - else
+            = user_f.text_field :username, class: 'form-control-plaintext', readonly: true
+        end
 
   = f.submit class: 'btn btn-primary'
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
+= javascript_pack_tag 'node-nic', 'data-turbolinks-track': 'reload'

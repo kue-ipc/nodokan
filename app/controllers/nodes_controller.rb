@@ -6,8 +6,7 @@ class NodesController < ApplicationController
   # GET /nodes.json
   def index
     @nodes = policy_scope(Node)
-      .includes(:user, :place, :hardware,
-                network_interfaces: {network_connections: :ip_addresses})
+      .includes(:user, :place, :hardware, :operating_system, nics: :network)
       .all
   end
 
@@ -22,7 +21,7 @@ class NodesController < ApplicationController
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      nics: [Nic.new()]
+      nics: [Nic.new]
     )
   end
 
@@ -34,12 +33,17 @@ class NodesController < ApplicationController
   # POST /nodes.json
   def create
     @node = Node.new(node_params)
-
     respond_to do |format|
-      if @node.save
-        format.html { redirect_to @node, notice: 'Node was successfully created.' }
-        format.json { render :show, status: :created, location: @node }
-      else
+      if params['commit']
+        if @node.save
+          format.html { redirect_to @node, notice: 'Node was successfully created.' }
+          format.json { render :show, status: :created, location: @node }
+        else
+          format.html { render :new }
+          format.json { render json: @node.errors, status: :unprocessable_entity }
+        end
+      elsif params['add_nic']
+        @node.nics << Nic.new
         format.html { render :new }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
@@ -104,7 +108,9 @@ class NodesController < ApplicationController
 
     # Use callbacks to share common setup or constraints between actions.
     def set_node
-      @node = Node.find(params[:id])
+      @node = policy_scope(Node)
+        .includes(:user, :place, :hardware, :operating_system, nics: :network)
+        .find(params[:id])
       authorize @node
     end
 
@@ -115,58 +121,57 @@ class NodesController < ApplicationController
         :hostname,
         :domain,
         :note,
-        :security_software_id,
+        user: [
+          :username,
+        ],
         place: [
           :area,
           :building,
           :floor,
-          :room
+          :room,
         ],
         hardware: [
-          :category,
+          :device_type,
           :maker,
           :product_name,
-          :model_number
+          :model_number,
         ],
         operating_system: [
-          :category,
-          :name
+          :os_category,
+          :name,
         ],
-        network_interfaces_attributes: [
+        nics_attributes: [
           :id,
           :_destroy,
           :name,
           :interface_type,
           :mac_address,
-          {
-            network_connections_attributes: [
-              :id,
-              :_destroy,
-              :subnetwork_id,
-              {
-                ip_addresses_attributes: [
-                  :id,
-                  :_destroy,
-                  :config,
-                  :family,
-                  :address
-                ],
-              }
-            ],
-          }
+          :duid,
+          :network_id,
+          :ip_config,
+          :ip_address,
+          :ip6_config,
+          :ip6_address,
         ]
       )
 
-      place = Place.find_or_create_by(permitted_params[:place])
-      hardware = if permitted_params[:hardware][:category].present?
-                   Hardware.find_or_create_by(permitted_params[:hardware])
-      end
-      operating_system = if permitted_params[:operating_system][:category].present?
-                           OperatingSystem.find_or_create_by(permitted_params[:operating_system])
-      end
+      user = User.find_by(permitted_params[:user])
+
+      place = Place.find_or_initialize_by(permitted_params[:place])
+
+      hardware =
+        if permitted_params[:hardware][:device_type].present?
+          Hardware.find_or_initialize_by(permitted_params[:hardware])
+        end
+
+      operating_system =
+        if permitted_params[:operating_system][:os_category].present?
+          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
+        end
 
       permitted_params.except(:place, :hardware, :operating_system).merge(
         {
+          user: user,
           place: place,
           hardware: hardware,
           operating_system: operating_system,

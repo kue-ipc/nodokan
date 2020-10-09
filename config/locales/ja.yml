@@ -32,57 +32,29 @@ ja:
 
   activerecord:
     models:
+      confirmation: 確認
       hardware: ハードウェア
-      ip_address: IPアドレス
-      ip_network: IPネットワーク
-      network_category: ネットワークカテゴリー
-      network_connection: ネットワーク接続
-      network_interface: ネットワークインターフェース
+      ip6_pool: IPv6プール
+      ip_pool: IPプール
+      networck: ネットワーク
+      nic: ネットワークインタフェースコントローラー(NIC)
       node: 端末
       operating_system: オペレーティングシステム(OS)
       place: 設置場所
       security_software: セキュリティソフトウェア
-      subnetwork: サブネットワーク
-      subnetwork_user: ユーザーのサブネットワーク
+      # network_category: ネットワークカテゴリー
+      # network_connection: ネットワーク接続
+      # network_interface: ネットワークインターフェース
+      # subnetwork: サブネットワーク
+      # subnetwork_user: ユーザーのサブネットワーク
+      # ip_address: IPアドレス
+      # ip_network: IPネットワーク
     attributes:
-      user:
-        username: ユーザー名
-        password: パスワード
       hardware:
-        category: カテゴリー
+        device_type: 機器形態
         maker: 製造業者
         product_name: 製品名
         model_number: 型番
-      ip_address:
-        network_connection: ネットワーク接続
-        address: IPアドレス
-      operating_system:
-        category: カテゴリー
-        name: 名前
-        eol: サポート終了日
-        description: 詳細
-      subnetwork:
-        name: 名前
-        network_category: ネットワークカテゴリー
-        vlan: VLAN番号
-      security_software:
-        name: 名前
-        description: 詳細
-      network_interface:
-        node: 端末
-        name: 名前
-        interface_type: インターフェースタイプ
-        mac_address: MACアドレス
-        duid: DUID(DHCP固有識別子)
-      network_category:
-        name: 名前
-        dhcp: DHCP
-        auth: 認証
-        global: グローバル
-      network_connection:
-        network_interface: ネットワークインターフェース
-        subnetwork: サブネットワーク
-        mac_address_randomization: MACアドレスのランダム化
       node:
         name: 端末名
         hostname: ホスト名
@@ -93,67 +65,99 @@ ja:
         operating_system: OS
         security_software: セキュリティソフトウェア
         network_interface: ネットワークインターフェース
+      nic:
+        node: 端末
+        name: 名前
+        interface_type: 接続形態
+        mac_address: MACアドレス
+        duid: DUID(DHCP固有識別子)
+        network: ネットワーク
+        ip_config: IP設定
+        ip_address: IPアドレス
+        ip6_config: IPv6設定
+        ip6_address: IPv6アドレス
+      operating_system:
+        os_category: OS種別
+        name: OS名
+        eol: サポート終了日
+        description: 詳細
       place:
         area: 拠点(キャンパス)
         building: 建屋
         floor: フロア
         room: 部屋
-      hardware:
-        category: 種別
-        maker: 製造業者
-        product_name: 製品名
-        model_number: 型番
-      operating_system:
-        category: 種別
-        name: OS名
       security_software:
         name: ソフトウェア名
-      network_interface:
-        name: インターフェース名
-        interface_type: 接続形態
-        mac_address: MACアドレス(ハードウェアアドレス)
-        duid: DUID(DHPv6固有識別子)
+        description: 詳細
+      user:
+        username: ユーザー名
+        password: パスワード
+      # ip_address:
+      #   network_connection: ネットワーク接続
+      #   address: IPアドレス
+      # subnetwork:
+      #   name: 名前
+      #   network_category: ネットワークカテゴリー
+      #   vlan: VLAN番号
+      # network_category:
+      #   name: 名前
+      #   dhcp: DHCP
+      #   auth: 認証
+      #   global: グローバル
+      # network_connection:
+      #   network_interface: ネットワークインターフェース
+      #   subnetwork: サブネットワーク
+      #   mac_address_randomization: MACアドレスのランダム化
+      # network_interface:
+      #   name: インターフェース名
+      #   interface_type: 接続形態
+      #   mac_address: MACアドレス(ハードウェアアドレス)
+      #   duid: DUID(DHPv6固有識別子)
     enums:
-      hardware:
-        device_types:
-          desktop: デスクトップPC
-          laptop: ノートPC (2-in-1を含む)
-          tablet: タブレット
-          mobile: 携帯端末 (スマートフォン/携帯電話)
-          server: サーバー
-          appliance: 専用機器 (アプライアンスサーバー)
-          network: ネットワーク機器 (ルーター/スイッチ等)
-          virtual: 仮想マシン
-          other: その他
-          unknown: 不明
-      operating_system:
-        os_categories:
-          windows_client: Windows クライアント
-          windows_server: Windows サーバー
-          mac: Mac (macOS/Mac OS X等)
-          linux: Linux (Ubuntu/CentOS等)
-          bsd: BSD系UNIX (FreeBSD/OpenBSD等)
-          unix: System V系UNIX (Solaris/AIX等)
-          apple: Apple端末OS (iOS/iPadOS/watchOS/tvOS等)
-          android: Android
-          dedicated: 専用OS
-          embedded: 組込みOS
-          os_less: OS無し
-          other: その他
-          unknwon: 不明
-      network_interface:
-        interface_types:
-          wired: 有線
-          wireless: 無線
-          virtual: 仮想
-          bluetooth: Bluetooth
-          dialup: 電話回線
-          vpn: VPN
-          other: その他
-      ip_address:
-        configs:
-          static: 固定(手動設定)
-          dynamic: 動的(DHCP自動取得)
-          reserved: 予約(DHCP自動取得)
+      device_types:
+        desktop: デスクトップPC
+        laptop: ノートPC (2-in-1を含む)
+        tablet: タブレット
+        mobile: 携帯端末 (スマートフォン/携帯電話)
+        server: サーバー
+        appliance: 専用機器 (アプライアンスサーバー)
+        network: ネットワーク機器 (ルーター/スイッチ等)
+        virtual: 仮想マシン
+        other: その他
+        unknown: 不明
+      os_categories:
+        windows_client: Windows クライアント
+        windows_server: Windows サーバー
+        mac: Mac (macOS/Mac OS X等)
+        linux: Linux (Ubuntu/CentOS等)
+        bsd: BSD系UNIX (FreeBSD/OpenBSD等)
+        unix: System V系UNIX (Solaris/AIX等)
+        apple: Apple端末OS (iOS/iPadOS/watchOS/tvOS等)
+        android: Android
+        dedicated: 専用OS
+        embedded: 組込みOS
+        os_less: OS無し
+        other: その他
+        unknwon: 不明
+      interface_types:
+        wired: 有線
+        wireless: 無線
+        virtual: 仮想
+        bluetooth: Bluetooth
+        dialup: 電話回線
+        vpn: VPN
+        other: その他
+      ip_configs:
+        disabled: 無効
+        static: 固定(手動設定)
+        dynamic: 動的(DHCP)
+        reserved: 予約(DHCP)
+        link_local: リンクローカル(自動設定)
+      ip6_configs:
+        disabled: 無効
+        static: 固定(手動設定)
+        dynamic: 動的(自動取得)
+        reserved: 予約(自動取得)
+        link_local: リンクローカル(自動設定)
 
 

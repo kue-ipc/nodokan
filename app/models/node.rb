@@ -4,16 +4,20 @@ class Node < ApplicationRecord
   belongs_to :place, optional: true, counter_cache: true
   belongs_to :hardware, optional: true, counter_cache: true
   belongs_to :operating_system, optional: true, counter_cache: true
-  belongs_to :security_software, optional: true, counter_cache: true
 
   has_many :nics, dependent: :destroy
   accepts_nested_attributes_for :nics, allow_destroy: true
 
   validates :name, presence: true
   validates :hostname, allow_nil: true,
-            format: { with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i }
-  validates :domain, allow_nil: true,
-            format: { with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i }
+                       format: {
+                         with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
+                       }
+  validates :domain,
+    allow_nil: true,
+    format: {
+      with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
+    }
 
   normalize_attribute :hostname, with: [:nilify, :downcase]
   normalize_attribute :domain, with: [:nilify, :downcase]

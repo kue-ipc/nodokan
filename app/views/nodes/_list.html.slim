@@ -12,18 +12,14 @@ table.table.table-hover.table-sm
   tbody
     - @nodes.each do |node|
       tr
-        th.text-nowrap scope="row "
+        th.text-nowrap scope="row"
           = link_to node.id, node
         td  = node.name
         td.text-nowrap = node.user.username
         td = node.place&.room
         td = node.hardware&.product_name
         td.text-nowrap
-          - addresses = node.network_interfaces.flat_map do |network_interface|
-            - network_interface.network_connections.flat_map do |network_connection|
-              - network_connection.ip_addresses.flat_map do |ip_address|
-                - ip_address.address
-          = addresses.join('\n')
+          = node.nics.map(&:ip_address).compact.join("\n")
         td.text-nowrap
           - if node.confirmed_at
             - if node.confirmed_at <= Time.current.months_ago(13)

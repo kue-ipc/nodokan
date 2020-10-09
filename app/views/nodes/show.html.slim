@@ -15,8 +15,8 @@ dl
   dd = @node.hardware&.name
   dt = Node.human_attribute_name(:operating_system)
   dd = @node.operating_system&.name
-  dt = Node.human_attribute_name(:network_interfaces)
-  dd = @node.network_interfaces
+  dt = Node.human_attribute_name(:nics)
+  dd = @node.nics.map(&:ip_address).compact.join(',')
 
 
 
