@@ -5,12 +5,12 @@ class CreateNics < ActiveRecord::Migration[6.0]
       t.references :network, foreign_key: true
       t.string :name
       t.integer :interface_type, null: false, default: 0
-      t.binary :mac_address, limit: 6
-      t.binary :duid, limit: 255
+      t.string :mac_address, limit: 18
+      t.string :duid
       t.integer :ip_config
-      t.binary :ip_address, limit: 4
+      t.string :ip_address, limit: 16
       t.integer :ip6_config
-      t.binary :ip6_address, limit: 16
+      t.string :ip6_address, limit: 40
 
       t.timestamps
     end

@@ -50,8 +50,8 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
   create_table "ip6_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip6_config", null: false
-    t.binary "first6_address", limit: 16, null: false
-    t.binary "last6_address", limit: 16, null: false
+    t.string "first6_address", limit: 40, null: false
+    t.string "last6_address", limit: 40, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip6_pools_on_network_id"
@@ -82,8 +82,8 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
   create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip_config", null: false
-    t.binary "first_address", limit: 4, null: false
-    t.binary "last_address", limit: 4, null: false
+    t.string "first_address", limit: 16, null: false
+    t.string "last_address", limit: 16, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip_pools_on_network_id"
@@ -142,12 +142,12 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.boolean "dhcp", default: false, null: false
     t.boolean "auth", default: false, null: false
     t.boolean "closed", default: false, null: false
-    t.binary "ip_address", limit: 4
-    t.integer "ip_prefix"
-    t.binary "ip_gateway", limit: 4
-    t.binary "ip6_address", limit: 16
+    t.string "ip_address", limit: 16
+    t.string "ip_mask", limit: 16
+    t.string "ip_gateway", limit: 16
+    t.string "ip6_address", limit: 40
     t.integer "ip6_prefix"
-    t.binary "ip6_gateway", limit: 16
+    t.string "ip6_gateway", limit: 40
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_networks_on_name", unique: true
@@ -158,12 +158,12 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.bigint "network_id"
     t.string "name"
     t.integer "interface_type", default: 0, null: false
-    t.binary "mac_address", limit: 6
-    t.binary "duid", limit: 255
+    t.string "mac_address", limit: 18
+    t.string "duid"
     t.integer "ip_config"
-    t.binary "ip_address", limit: 4
+    t.string "ip_address", limit: 16
     t.integer "ip6_config"
-    t.binary "ip6_address", limit: 16
+    t.string "ip6_address", limit: 40
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["duid"], name: "index_nics_on_duid"

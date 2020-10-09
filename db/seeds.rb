@@ -95,9 +95,9 @@ Network.count.zero? && Network.create([
     dhcp: false,
     auth: false,
     closed: false,
-    ip_address: IPAddress('192.168.1.0').data,
-    ip_prefix: 24,
-    ip_gateway: IPAddress('192.168.1.254').data,
+    ip_address: '192.168.1.0',
+    ip_mask: '255.255.255.0',
+    ip_gateway: '192.168.1.254',
   },
   {
     name: 'クライアント',
@@ -105,9 +105,9 @@ Network.count.zero? && Network.create([
     dhcp: true,
     auth: true,
     closed: false,
-    ip_address: IPAddress('192.168.2.0').data,
-    ip_prefix: 24,
-    ip_gateway: IPAddress('192.168.2.254').data,
+    ip_address: '192.168.2.0',
+    ip_mask: '255.255.255.0',
+    ip_gateway: '192.168.2.254',
   },
 ])
 
@@ -116,20 +116,20 @@ IpPool.count.zero? && IpPool.create([
   {
     network: Network.find_by(name: 'クライアント'),
     ip_config: :dynamic,
-    first_address: IPAddress('192.168.2.1').data,
-    last_address: IPAddress('192.168.2.99').data,
+    first_address: '192.168.2.1',
+    last_address: '192.168.2.99',
   },
   {
     network: Network.find_by(name: 'クライアント'),
     ip_config: :reserved,
-    first_address: IPAddress('192.168.2.100').data,
-    last_address: IPAddress('192.168.2.199').data,
+    first_address: '192.168.2.100',
+    last_address: '192.168.2.199',
   },
   {
     network: Network.find_by(name: 'クライアント'),
     ip_config: :static,
-    first_address: IPAddress('192.168.2.200').data,
-    last_address: IPAddress('192.168.2.240').data,
+    first_address: '192.168.2.200',
+    last_address: '192.168.2.240',
   },
 ])
 

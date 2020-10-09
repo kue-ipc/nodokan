@@ -6,12 +6,12 @@ class CreateNetworks < ActiveRecord::Migration[6.0]
       t.boolean :dhcp, null: false, default: false
       t.boolean :auth, null: false, default: false
       t.boolean :closed, null: false, default: false
-      t.binary :ip_address, limit: 4
-      t.integer :ip_prefix
-      t.binary :ip_gateway, limit: 4
-      t.binary :ip6_address, limit: 16
+      t.string :ip_address, limit: 16
+      t.string :ip_mask, limit: 16
+      t.string :ip_gateway, limit: 16
+      t.string :ip6_address, limit: 40
       t.integer :ip6_prefix
-      t.binary :ip6_gateway, limit: 16
+      t.string :ip6_gateway, limit: 40
 
       t.timestamps
     end
