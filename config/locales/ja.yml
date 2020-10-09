@@ -55,16 +55,19 @@ ja:
         maker: 製造業者
         product_name: 製品名
         model_number: 型番
-      node:
-        name: 端末名
-        hostname: ホスト名
-        domain: ドメイン名
+      network:
+        name: 名前
+        vlan: VLAN番号
+        dhcp: DHCP
+        auth: 認証
+        closed: 閉域
+        ip_address: IPアドレス
+        ip_mask: サブネットマスク
+        ip_gateway: ゲートウェイ
+        ip6_address: IPv6アドレス
+        ip6_prefix: プレフィックス
+        ip6_gateway: IPv6ゲートウェイ
         note: 備考
-        location: 設置場所
-        hardware: 機器情報
-        operating_system: OS
-        security_software: セキュリティソフトウェア
-        network_interface: ネットワークインターフェース
       nic:
         node: 端末
         name: 名前
@@ -76,6 +79,16 @@ ja:
         ip_address: IPアドレス
         ip6_config: IPv6設定
         ip6_address: IPv6アドレス
+      node:
+        name: 端末名
+        hostname: ホスト名
+        domain: ドメイン名
+        location: 設置場所
+        hardware: 機器情報
+        operating_system: OS
+        security_software: セキュリティソフトウェア
+        network_interface: ネットワークインターフェース
+        note: 備考
       operating_system:
         os_category: OS種別
         name: OS名

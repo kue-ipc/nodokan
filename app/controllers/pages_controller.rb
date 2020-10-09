@@ -1,6 +1,6 @@
 class PagesController < ApplicationController
   def top
-    @subnetworks = policy_scope(Subnetwork).all
+    @networks = policy_scope(Network).all
   end
 
   def about

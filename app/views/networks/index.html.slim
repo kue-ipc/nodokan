@@ -26,12 +26,8 @@ table
         td = network.dhcp
         td = network.auth
         td = network.closed
-        td = network.ip_address
-        td = network.ip_prefix
-        td = network.ip_gateway
-        td = network.ip6_address
-        td = network.ip6_prefix
-        td = network.ip6_gateway
+        td = network.ip_network.to_s
+        td = network.ip6_network.to_s
         td = link_to 'Show', network
         td = link_to 'Edit', edit_network_path(network)
         td = link_to 'Destroy', network, data: { confirm: 'Are you sure?' }, method: :delete

@@ -1,42 +1,64 @@
-= form_for @network do |f|
-  - if @network.errors.any?
-    #error_explanation
-      h2 = "#{pluralize(@network.errors.count, "error")} prohibited this network from being saved:"
-      ul
-        - @network.errors.full_messages.each do |message|
-          li = message
+- if @network.errors.any?
+  #error_explanation
+    h2 = "#{pluralize(@network.errors.count, "error")} prohibited this network from being saved:"
+    ul
+      - @network.errors.full_messages.each do |message|
+        li = message
 
-  .field
-    = f.label :name
-    = f.text_field :name
-  .field
-    = f.label :vlan
-    = f.number_field :vlan
-  .field
-    = f.label :dhcp
-    = f.check_box :dhcp
-  .field
-    = f.label :auth
-    = f.check_box :auth
-  .field
-    = f.label :closed
-    = f.check_box :closed
-  .field
-    = f.label :ip_address
-    = f.text_field :ip_address
-  .field
-    = f.label :ip_prefix
-    = f.number_field :ip_prefix
-  .field
-    = f.label :ip_gateway
-    = f.text_field :ip_gateway
-  .field
-    = f.label :ip6_address
-    = f.text_field :ip6_address
-  .field
-    = f.label :ip6_prefix
-    = f.number_field :ip6_prefix
-  .field
-    = f.label :ip6_gateway
-    = f.text_field :ip6_gateway
-  .actions = f.submit
+= form_for @network do |f|
+  .rounded.border.p-2.mb-2
+    h4 ネットワーク基本情報
+    .form-row
+      .form-group.col-md-10
+        = f.label :name, class: 'required-label'
+        = f.text_field :name, class: 'form-control', required: true
+      .form-group.col-md-2
+        = f.label :vlan
+        = f.number_field :vlan, class: 'form-control', min: 1, max: 4094
+      .form-group.col-md-12
+        .custom-control.custom-checkbox.custom-control-inline
+          = f.check_box :dhcp, class: 'custom-control-input'
+          = f.label :dhcp, class: 'custom-control-label'
+        .custom-control.custom-checkbox.custom-control-inline
+          = f.check_box :auth, class: 'custom-control-input'
+          = f.label :auth, class: 'custom-control-label'
+        .custom-control.custom-checkbox.custom-control-inline
+          = f.check_box :closed, class: 'custom-control-input'
+          = f.label :closed, class: 'custom-control-label'
+  .rounded.border.p-2.mb-2
+    h4 IPv4ネットワーク情報
+    small.form-text.text-muted
+      | 空欄の場合、IPv4は設定されていません。
+    .form-row
+      .form-group.col-md-4
+        = f.label :ip_address
+        = f.text_field :ip_address, class: 'form-control'
+      .form-group.col-md-4
+        = f.label :ip_mask
+        .input-group
+          .input-group-prepend
+            span.input-group-text
+              | /
+          = f.text_field :ip_mask, class: 'form-control'
+      .form-group.col-md-4
+        = f.label :ip_gateway
+        = f.text_field :ip_gateway, class: 'form-control'
+  .rounded.border.p-2.mb-2
+    h4 IPv6ネットワーク情報
+    small.form-text.text-muted
+      | 空欄の場合、IPv6は設定されていません。
+    .form-row
+      .form-group.col-md-6
+        = f.label :ip6_address
+        = f.text_field :ip6_address, class: 'form-control'
+      .form-group.col-md-3
+        = f.label :ip6_prefix
+        .input-group
+          .input-group-prepend
+            span.input-group-text
+              | /
+          = f.number_field :ip6_prefix, class: 'form-control', min: 0, max: 128, default: 64
+      .form-group.col-md-6
+        = f.label :ip6_gateway
+        = f.text_field :ip6_gateway, class: 'form-control'
+  = f.submit class: 'btn btn-primary'

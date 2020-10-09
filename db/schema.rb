@@ -175,7 +175,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
   end
 
   create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.string "name", null: false
     t.string "hostname"
     t.string "domain"
