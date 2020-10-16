@@ -33,7 +33,7 @@ gem 'jbuilder', '~> 2.7'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 # IP Address
-gem 'ipaddress'
+gem 'ipaddress_2'
 
 # Attribute Normalizer
 gem 'attribute_normalizer'

@@ -39,7 +39,10 @@
           .input-group-prepend
             span.input-group-text
               | /
-          = f.text_field :ip_mask, class: 'form-control'
+          / = f.text_field :ip_mask, class: 'form-control'
+          = f.select :ip_mask, \
+                          [''] + Network::IP_MASKS, \
+                          {}, class: 'custom-select'
       .form-group.col-md-4
         = f.label :ip_gateway
         = f.text_field :ip_gateway, class: 'form-control'
