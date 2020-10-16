@@ -42,11 +42,15 @@ class Network < ApplicationRecord
   before_save :ip_normalize, :ip6_normalize
 
   def ip_network
-    @ip_network ||= ip_address.present? && "#{ip_address}/#{ip_mask}"
+    return nil if ip_address.blank?
+
+    @ip_network ||= "#{ip_address}/#{ip_mask}"
   end
 
   def ip6_network
-    @ip6_network ||= ip6_address.present? && "#{ip6_address}/#{ip6_prefix}"
+    return nil if ip6_address.blank?
+
+    @ip6_network ||= "#{ip6_address}/#{ip6_prefix}"
   end
 
   def ip_normalize
