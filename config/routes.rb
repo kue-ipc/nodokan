@@ -4,7 +4,6 @@ Rails.application.routes.draw do
   root to: 'pages#top'
   get 'about', to: 'pages#about'
 
-  resources :subnetworks
   resources :nodes do
     member do
       get 'copy'

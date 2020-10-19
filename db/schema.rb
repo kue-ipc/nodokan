@@ -57,28 +57,6 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.index ["network_id"], name: "index_ip6_pools_on_network_id"
   end
 
-  create_table "ip_addresses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "network_connection_id", null: false
-    t.integer "family", default: 2, null: false
-    t.integer "config", null: false
-    t.string "address"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ip_addresses_on_address"
-    t.index ["network_connection_id"], name: "index_ip_addresses_on_network_connection_id"
-  end
-
-  create_table "ip_networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "subnetwork_id", null: false
-    t.integer "family", default: 2, null: false
-    t.string "address", null: false
-    t.string "gateway"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["address"], name: "index_ip_networks_on_address"
-    t.index ["subnetwork_id"], name: "index_ip_networks_on_subnetwork_id"
-  end
-
   create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip_config", null: false
@@ -87,40 +65,6 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip_pools_on_network_id"
-  end
-
-  create_table "network_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "name", null: false
-    t.boolean "dhcp", default: false, null: false
-    t.boolean "auth", default: false, null: false
-    t.boolean "global", default: false, null: false
-    t.boolean "closed", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_network_categories_on_name", unique: true
-  end
-
-  create_table "network_connections", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "network_interface_id", null: false
-    t.bigint "subnetwork_id", null: false
-    t.boolean "mac_address_randomization", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["network_interface_id"], name: "index_network_connections_on_network_interface_id"
-    t.index ["subnetwork_id"], name: "index_network_connections_on_subnetwork_id"
-  end
-
-  create_table "network_interfaces", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "node_id", null: false
-    t.integer "interface_type", default: 0, null: false
-    t.string "name"
-    t.string "mac_address"
-    t.string "duid"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["duid"], name: "index_network_interfaces_on_duid"
-    t.index ["mac_address"], name: "index_network_interfaces_on_mac_address"
-    t.index ["node_id"], name: "index_network_interfaces_on_node_id"
   end
 
   create_table "network_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
@@ -235,29 +179,6 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.index ["state", "os_category"], name: "index_security_softwares_on_state_and_os_category"
   end
 
-  create_table "subnetwork_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.bigint "subnetwork_id", null: false
-    t.bigint "user_id", null: false
-    t.boolean "assignable", default: false, null: false
-    t.boolean "managable", default: false, null: false
-    t.boolean "default", default: false, null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["subnetwork_id"], name: "index_subnetwork_users_on_subnetwork_id"
-    t.index ["user_id"], name: "index_subnetwork_users_on_user_id"
-  end
-
-  create_table "subnetworks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
-    t.string "name", null: false
-    t.bigint "network_category_id", null: false
-    t.integer "vlan", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_subnetworks_on_name", unique: true
-    t.index ["network_category_id"], name: "index_subnetworks_on_network_category_id"
-    t.index ["vlan"], name: "index_subnetworks_on_vlan", unique: true
-  end
-
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
@@ -296,12 +217,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "confirmations", "users"
   add_foreign_key "ip6_pools", "networks"
-  add_foreign_key "ip_addresses", "network_connections"
-  add_foreign_key "ip_networks", "subnetworks"
   add_foreign_key "ip_pools", "networks"
-  add_foreign_key "network_connections", "network_interfaces"
-  add_foreign_key "network_connections", "subnetworks"
-  add_foreign_key "network_interfaces", "nodes"
   add_foreign_key "network_users", "networks"
   add_foreign_key "network_users", "users"
   add_foreign_key "nics", "networks"
@@ -310,7 +226,4 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "places"
   add_foreign_key "nodes", "users"
-  add_foreign_key "subnetwork_users", "subnetworks"
-  add_foreign_key "subnetwork_users", "users"
-  add_foreign_key "subnetworks", "network_categories"
 end
