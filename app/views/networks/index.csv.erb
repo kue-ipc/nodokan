@@ -1,0 +1,30 @@
+<%== "\u{feff}" -%>
+<%- require 'csv' -%>
+<%= %w[
+  id
+  name
+  vlan
+  dhcp
+  auth
+  closed
+  ip_network
+  ip_gateway
+  ip6_network
+  ip6_gateway
+].join(',') %>
+<%- @networks.each do |network| -%>
+<%==
+[
+  network.id,
+  network.name,
+  network.vlan,
+  network.dhcp,
+  network.auth,
+  network.closed,
+  network.ip_network,
+  network.ip_gateway,
+  network.ip6_network,
+  network.ip6_gateway,
+].to_csv
+-%>
+<%- end -%>
