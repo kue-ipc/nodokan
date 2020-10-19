@@ -34,5 +34,9 @@ config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
 
+# no rbenv, nodenv
 /.ruby-version
+/.node-version
+
+# vendor
 /vendor/*
