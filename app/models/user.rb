@@ -14,12 +14,23 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :nullify
 
   has_many :network_users, dependent: :destroy
-  has_many :assignable_network_users, -> { where(assignable: true) }, class_name: 'NetworkUser'
-  has_many :managable_network_users, -> { where(managable: true) }, class_name: 'NetworkUser'
+  has_many :avialble_network_users,
+    -> { where(avialble: true) }, class_name: 'NetworkUser'
+  has_many :managable_network_users,
+    -> { where(managable: true) }, class_name: 'NetworkUser'
+  has_many :assigned_network_users,
+    -> { where(assigned: true) }, class_name: 'NetworkUser'
 
   has_many :networks, through: :network_users
-  has_many :assignable_networks, through: :assignable_network_users, source: :network
-  has_many :managable_networks, through: :managable_network_users, source: :network
+  has_many :available_networks, through: :available_network_users,
+    source: :network
+  has_many :managable_networks, through: :managable_network_users,
+    source: :network
+  has_many :assigned_networks, through: :assigned_network_users,
+    source: :network
+
+  validates :username, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true
 
   def ldap_before_save
     sync_ldap!

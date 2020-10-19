@@ -1,6 +1,7 @@
 class Confirmation < ApplicationRecord
   belongs_to :user
   belongs_to :node
+  belongs_to :security_software
 
   enum existence: {
     existed: 0,
@@ -10,7 +11,7 @@ class Confirmation < ApplicationRecord
     unknown: 255,
   }, _prefix: true
 
-  enum registered_content: {
+  enum content: {
     correct: 0,
     incorrect: 1,
     unknown: 255,

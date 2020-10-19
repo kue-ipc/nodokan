@@ -1,8 +1,6 @@
 class SecuritySoftware < ApplicationRecord
   include OsCategory
 
-  has_many :node, dependent: :restrict_with_error
-
   enum state: {
     built_in: 0,
     distrbuted: 1,

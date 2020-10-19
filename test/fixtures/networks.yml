@@ -1,27 +1,27 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  vlan: 1
+  name: サーバー
+  vlan: 101
   dhcp: false
   auth: false
   closed: false
-  ip_address:
+  ip_address: '192.168.1.0'
   ip_mask: 1
-  ip_gateway:
-  ip6_address:
-  ip6_prefix: 1
-  ip6_gateway:
+  ip_gateway: '192.168.1.254'
+  ip6_address: 'fd00:1::'
+  ip6_prefix: 64
+  ip6_gateway: 'fd00:1::FFFF'
 
 two:
-  name: MyString
-  vlan: 1
+  name: クライアント
+  vlan: 102
   dhcp: false
   auth: false
   closed: false
-  ip_address:
-  ip_mask: 1
-  ip_gateway:
-  ip6_address:
-  ip6_prefix: 1
-  ip6_gateway:
+  ip_address: '192.168.2.0'
+  ip_mask: '255.255.255.0'
+  ip_gateway: '192.168.2.254'
+  ip6_address: 'fd00:2::'
+  ip6_prefix: 64
+  ip6_gateway: 'fd00:2::FFFF'

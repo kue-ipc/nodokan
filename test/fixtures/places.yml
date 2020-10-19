@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  area: MyString
-  building: MyString
+  area: Aキャンパス
+  building: センター
   floor: 1
-  room: MyString
+  room: サーバー室
 
 two:
-  area: MyString
-  building: MyString
-  floor: 1
-  room: MyString
+  area: Bキャンパス
+  building: 講義棟
+  floor: 2
+  room: 講義室101
+
+three:
+  area: Aキャンパス
+  building: グランド
+  floor: 0
+  room: ''

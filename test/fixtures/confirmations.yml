@@ -1,29 +1,29 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user: one
+  user: admin
   node: one
   existence: 1
-  registered_content: 1
+  content: 1
   os_update: 1
   ms_upadte: 1
   store_update: 1
-  soft_update,: MyString
+  soft_update: 1
+  security_software: one
+  security_update: 1
+  security_scan: 1
   updated_date: 2020-09-04
-  securiy_software: 1
-  security_software_name: MyString
-  securiyt_software_update: 1
 
 two:
-  user: two
+  user: user01
   node: two
-  existence: 1
-  registered_content: 1
-  os_update: 1
-  ms_upadte: 1
-  store_update: 1
-  soft_update,: MyString
-  updated_date: 2020-09-04
-  securiy_software: 1
-  security_software_name: MyString
-  securiyt_software_update: 1
+  existence: 2
+  content: 2
+  os_update: 2
+  ms_upadte: 2
+  store_update: 2
+  soft_update: 2
+  security_software: two
+  security_update: 2
+  security_scan: 2
+  updated_date: 2020-09-05

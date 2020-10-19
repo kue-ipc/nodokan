@@ -1,6 +1,14 @@
 class Place < ApplicationRecord
   has_many :nodes, dependent: :restrict_with_error
 
+  validates :area, length: {maximum: 255}
+  validates :building, length: {maximum: 255}
+  validates :floor, numericality: {
+    only_integer: true,
+  }
+  validates :room, length: {maximum: 255},
+    uniqueness: {scope: [:area, :building, :floor], case_sensitive: true}
+
   def name
     [area, building, floor_human, room].select(&:present?).join(' ')
   end

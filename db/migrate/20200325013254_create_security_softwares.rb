@@ -4,7 +4,7 @@ class CreateSecuritySoftwares < ActiveRecord::Migration[6.0]
       t.integer :state, null: false
       t.integer :os_category, null: false
       t.string :name, null: false
-      t.boolean :approved, vull: false
+      t.boolean :approved, null: false
       t.text :description
 
       t.timestamps

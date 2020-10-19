@@ -2,14 +2,14 @@
 
 one:
   network: one
-  user: one
-  assignable: false
+  user: admin
+  available: false
   managable: false
-  default: false
+  assigned: false
 
 two:
   network: two
-  user: two
-  assignable: false
+  user: user01
+  available: false
   managable: false
   assigned: false

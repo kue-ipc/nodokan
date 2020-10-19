@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  network: one
-  ip6_config: 1
-  first6_address:
-  last6_address:
+  network: two
+  ip_config: :dynamic
+  first_address: 'fd00':2::1'
+  last_address: 'fd00:2::FF'
 
 two:
   network: two
-  ip6_config: 1
-  first6_address:
-  last6_address:
+  ip_config: :reserved
+  first_address: 'fd00:2::100'
+  last_address: 'fd00:2::1FF'
+
+three:
+  network: two
+  ip_config: :static
+  first_address: 'fd00:2::200'
+  last_address: 'fd00:2::2FF'
