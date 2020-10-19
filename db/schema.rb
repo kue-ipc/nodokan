@@ -70,7 +70,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
   create_table "network_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.bigint "user_id", null: false
-    t.boolean "assignable", default: false, null: false
+    t.boolean "available", default: false, null: false
     t.boolean "managable", default: false, null: false
     t.boolean "assigned", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.string "ip6_address", limit: 40
     t.integer "ip6_prefix"
     t.string "ip6_gateway", limit: 40
+    t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_networks_on_name", unique: true

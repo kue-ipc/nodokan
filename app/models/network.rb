@@ -7,7 +7,10 @@ class Network < ApplicationRecord
   has_many :nics, dependent: :nullify
 
   has_many :ip_pools, dependent: :destroy
+  accepts_nested_attributes_for :ip_pools, allow_destroy: true
   has_many :ip6_pools, dependent: :destroy
+  accepts_nested_attributes_for :ip6_pools, allow_destroy: true
+
 
   has_many :network_users, dependent: :destroy
   has_many :users, through: :network_users

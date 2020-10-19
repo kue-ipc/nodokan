@@ -2,12 +2,12 @@
 
 one:
   name: MyString
-  owner: one
+  user: one
   confirmed_at: 2020-03-25 14:35:57
   note: MyText
 
 two:
   name: MyString
-  owner: two
+  user: two
   confirmed_at: 2020-03-25 14:35:57
   note: MyText

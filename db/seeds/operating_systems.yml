@@ -1,0 +1,167 @@
+- os_category: :windows_client
+  name: 'Windows 10 Home'
+
+- os_category: :windows_client
+  name: 'Windows 10 Pro'
+
+- os_category: :windows_client
+  name: 'Windows 10 Enterprise'
+
+- os_category: :windows_client
+  name: 'Windows 10 Education'
+
+- os_category: :windows_client
+  name: 'Windows 10 S'
+
+- os_category: :windows_client
+  name: 'Windows Enterprise 2019 LTSC'
+  eol: 2029-01-09
+
+- os_category: :windows_client
+  name: 'Windows Enterprise 2016 LTSB'
+  eol: 2026-10-13
+
+- os_category: :windows_client
+  name: 'Windows Enterprise 2015 LTSB'
+  eol: 2025-10-14
+
+- os_category: :windows_client
+  name: 'Windows 8.1'
+  eol: 2023-01-10
+
+- os_category: :windows_client
+  name: 'Windows 8'
+  eol: 2016-01-12
+  description: 'Windows 8.1へアップデート可能です。'
+
+- os_category: :windows_client
+  name: 'Windows 7'
+  eol: 2020-01-14
+
+- os_category: :windows_client
+  name: 'Windows 7 ESU'
+  eol: 2023-01-10
+  description: '有償の「Windows 7 Extended Security Update」を契約しているWindows 7です。'
+
+- os_category: :windows_client
+  name: 'Windows Vista'
+  eol: 2017-04-11
+
+- os_category: :windows_client
+  name: 'Windows XP'
+  eol: 2014-04-08
+
+- os_category: :windows_server
+  name: 'Windows Server SAC'
+  eol: null
+  description: '半期チャンネル(SAC)で提供されるWindows Serverです。'
+
+- os_category: :windows_server
+  name: 'Windows Server 2019'
+  eol: 2029-01-09
+
+- os_category: :windows_server
+  name: 'Windows Server 2016'
+  eol: 2027-01-12
+
+- os_category: :windows_server
+  name: 'Windows Server 2012 R2'
+  eol: 2023-10-10
+
+- os_category: :windows_server
+  name: 'Windows Server 2012'
+  eol: 2023-10-10
+
+- os_category: :windows_server
+  name: 'Windows Server 2008 R2'
+  eol: 2020-01-14
+
+- os_category: :windows_server
+  name: 'Windows Server 2008'
+  eol: 2020-01-14
+
+- os_category: :windows_server
+  name: 'Windows Server 2003 R2'
+  eol: 2015-07-14
+
+- os_category: :windows_server
+  name: 'Windows Server 2003'
+  eol: 2015-07-14
+
+- os_category: :mac
+  name: 'macOS 11.0 Big Sur'
+
+- os_category: :mac
+  name: 'macOS 10.15 Catalina'
+
+- os_category: :mac
+  name: 'macOS 10.14 Mojave'
+
+- os_category: :mac
+  name: 'macOS 10.13 High Sierra'
+
+- os_category: :mac
+  name: 'macOS 10.12 Sierra'
+  eol: 2019-09-26
+
+- os_category: :mac
+  name: 'OS X 10.11 El Capitan'
+  eol: 2018-07-09
+
+- os_category: :mac
+  name: 'OS X 10.10 Yosemite'
+  eol: 2017-07-19
+
+- os_category: :apple
+  name: 'iOS'
+
+- os_category: :apple
+  name: 'iPadOS'
+
+- os_category: :apple
+  name: 'watchOS'
+
+- os_category: :linux
+  name: 'Red Hat Enterprise Linux 8'
+  eol: 2029-05-01
+
+- os_category: :linux
+  name: 'Red Hat Enterprise Linux 7'
+  eol: 2024-06-30
+
+- os_category: :linux
+  name: 'Red Hat Enterprise Linux 6'
+  eol: 2020-11-30
+
+- os_category: :linux
+  name: 'Red Hat Enterprise Linux 6 ELS'
+  eol: 2024-06-30
+  description: '追加費用のELS契約をしているRed Hat Etnerprise Linux 6です。'
+
+- os_category: :linux
+  name: 'CentOS 8'
+  eol: 2029-05-01
+
+- os_category: :linux
+  name: 'CentOS 7'
+  eol: 2024-06-30
+
+- os_category: :linux
+  name: 'CentOS 6'
+  eol: 2020-11-30
+
+- os_category: :linux
+  name: 'Ubuntu 20.04 LTS'
+  eol: 2025-04-01
+
+- os_category: :linux
+  name: 'Ubuntu 18.04 LTS'
+  eol: 2023-04-01
+
+- os_category: :linux
+  name: 'Ubuntu 16.04 LTS'
+  eol: 2021-04-01
+
+- os_category: :embedded
+  name: 'Cisco IOS'
+  description: 'Cisco製のスイッチ・ルーター等の組み込みOSです。'

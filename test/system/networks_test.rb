@@ -22,7 +22,7 @@ class NetworksTest < ApplicationSystemTestCase
     fill_in "Ip6 prefix", with: @network.ip6_prefix
     fill_in "Ip address", with: @network.ip_address
     fill_in "Ip gateway", with: @network.ip_gateway
-    fill_in "Ip prefix", with: @network.ip_prefix
+    fill_in "Ip mask", with: @network.ip_mask
     fill_in "Name", with: @network.name
     fill_in "Vlan", with: @network.vlan
     click_on "Create Network"
@@ -43,7 +43,7 @@ class NetworksTest < ApplicationSystemTestCase
     fill_in "Ip6 prefix", with: @network.ip6_prefix
     fill_in "Ip address", with: @network.ip_address
     fill_in "Ip gateway", with: @network.ip_gateway
-    fill_in "Ip prefix", with: @network.ip_prefix
+    fill_in "Ip mask", with: @network.ip_mask
     fill_in "Name", with: @network.name
     fill_in "Vlan", with: @network.vlan
     click_on "Update Network"

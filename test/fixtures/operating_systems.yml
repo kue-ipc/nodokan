@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  category: 1
+  os_category: 1
   name: MyString
   eol: 2020-03-27
   description: MyText
 
 two:
-  category: 1
+  os_category: 1
   name: MyString
   eol: 2020-03-27
   description: MyText

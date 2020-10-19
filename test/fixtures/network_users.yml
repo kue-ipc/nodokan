@@ -12,4 +12,4 @@ two:
   user: two
   assignable: false
   managable: false
-  default: false
+  assigned: false

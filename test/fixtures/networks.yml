@@ -6,12 +6,12 @@ one:
   dhcp: false
   auth: false
   closed: false
-  ip_address: 
-  ip_prefix: 1
-  ip_gateway: 
-  ip6_address: 
+  ip_address:
+  ip_mask: 1
+  ip_gateway:
+  ip6_address:
   ip6_prefix: 1
-  ip6_gateway: 
+  ip6_gateway:
 
 two:
   name: MyString
@@ -19,9 +19,9 @@ two:
   dhcp: false
   auth: false
   closed: false
-  ip_address: 
-  ip_prefix: 1
-  ip_gateway: 
-  ip6_address: 
+  ip_address:
+  ip_mask: 1
+  ip_gateway:
+  ip6_address:
   ip6_prefix: 1
-  ip6_gateway: 
+  ip6_gateway:

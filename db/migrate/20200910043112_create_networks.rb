@@ -13,6 +13,8 @@ class CreateNetworks < ActiveRecord::Migration[6.0]
       t.integer :ip6_prefix
       t.string :ip6_gateway, limit: 40
 
+      t.text :note
+
       t.timestamps
     end
     add_index :networks, :name, unique: true

@@ -17,7 +17,23 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create confirmation" do
     assert_difference('Confirmation.count') do
-      post confirmations_url, params: { confirmation: { existence: @confirmation.existence, ms_upadte: @confirmation.ms_upadte, node_id: @confirmation.node_id, os_update: @confirmation.os_update, registered_content: @confirmation.registered_content, security_software_name: @confirmation.security_software_name, securiy_software: @confirmation.securiy_software, securiyt_software_update: @confirmation.securiyt_software_update, soft_update,: @confirmation.soft_update,, store_update: @confirmation.store_update, updated_date: @confirmation.updated_date, user_id: @confirmation.user_id } }
+      post confirmations_url,
+        params: {
+          confirmation: {
+            existence: @confirmation.existence,
+            ms_upadte: @confirmation.ms_upadte,
+            node_id: @confirmation.node_id,
+            os_update: @confirmation.os_update,
+            registered_content: @confirmation.registered_content,
+            security_software_name: @confirmation.security_software_name,
+            securiy_software: @confirmation.securiy_software,
+            securiyt_software_update: @confirmation.securiyt_software_update,
+            soft_update: @confirmation.soft_update,
+            store_update: @confirmation.store_update,
+            updated_date: @confirmation.updated_date,
+            user_id: @confirmation.user_id
+          }
+        }
     end
 
     assert_redirected_to confirmation_url(Confirmation.last)
@@ -34,7 +50,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update confirmation" do
-    patch confirmation_url(@confirmation), params: { confirmation: { existence: @confirmation.existence, ms_upadte: @confirmation.ms_upadte, node_id: @confirmation.node_id, os_update: @confirmation.os_update, registered_content: @confirmation.registered_content, security_software_name: @confirmation.security_software_name, securiy_software: @confirmation.securiy_software, securiyt_software_update: @confirmation.securiyt_software_update, soft_update,: @confirmation.soft_update,, store_update: @confirmation.store_update, updated_date: @confirmation.updated_date, user_id: @confirmation.user_id } }
+    patch confirmation_url(@confirmation), params: { confirmation: { existence: @confirmation.existence, ms_upadte: @confirmation.ms_upadte, node_id: @confirmation.node_id, os_update: @confirmation.os_update, registered_content: @confirmation.registered_content, security_software_name: @confirmation.security_software_name, securiy_software: @confirmation.securiy_software, securiyt_software_update: @confirmation.securiyt_software_update, soft_update: @confirmation.soft_update, store_update: @confirmation.store_update, updated_date: @confirmation.updated_date, user_id: @confirmation.user_id } }
     assert_redirected_to confirmation_url(@confirmation)
   end
 

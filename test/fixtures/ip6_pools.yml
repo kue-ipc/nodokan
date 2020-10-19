@@ -3,11 +3,11 @@
 one:
   network: one
   ip6_config: 1
-  first_address: 
-  last_address: 
+  first6_address:
+  last6_address:
 
 two:
   network: two
   ip6_config: 1
-  first_address: 
-  last_address: 
+  first6_address:
+  last6_address:

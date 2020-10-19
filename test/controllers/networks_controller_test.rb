@@ -17,7 +17,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
 
   test "should create network" do
     assert_difference('Network.count') do
-      post networks_url, params: { network: { auth: @network.auth, closed: @network.closed, dhcp: @network.dhcp, ip6_address: @network.ip6_address, ip6_gateway: @network.ip6_gateway, ip6_prefix: @network.ip6_prefix, ip_address: @network.ip_address, ip_gateway: @network.ip_gateway, ip_prefix: @network.ip_prefix, name: @network.name, vlan: @network.vlan } }
+      post networks_url, params: { network: { auth: @network.auth, closed: @network.closed, dhcp: @network.dhcp, ip6_address: @network.ip6_address, ip6_gateway: @network.ip6_gateway, ip6_prefix: @network.ip6_prefix, ip_address: @network.ip_address, ip_gateway: @network.ip_gateway, ip_mask: @network.ip_mask, name: @network.name, vlan: @network.vlan } }
     end
 
     assert_redirected_to network_url(Network.last)
@@ -34,7 +34,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update network" do
-    patch network_url(@network), params: { network: { auth: @network.auth, closed: @network.closed, dhcp: @network.dhcp, ip6_address: @network.ip6_address, ip6_gateway: @network.ip6_gateway, ip6_prefix: @network.ip6_prefix, ip_address: @network.ip_address, ip_gateway: @network.ip_gateway, ip_prefix: @network.ip_prefix, name: @network.name, vlan: @network.vlan } }
+    patch network_url(@network), params: { network: { auth: @network.auth, closed: @network.closed, dhcp: @network.dhcp, ip6_address: @network.ip6_address, ip6_gateway: @network.ip6_gateway, ip6_prefix: @network.ip6_prefix, ip_address: @network.ip_address, ip_gateway: @network.ip_gateway, ip_mask: @network.ip_mask, name: @network.name, vlan: @network.vlan } }
     assert_redirected_to network_url(@network)
   end
 
