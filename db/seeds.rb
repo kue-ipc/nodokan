@@ -9,12 +9,10 @@ if Network.count.zero?
   end
 end
 
-YAML.load_file(seeds_path / 'operating_systems.yml').each do |data|
-  os = OperatingSystem.find_or_initialize_by(name: data['name'])
-  os.os_category = data['os_category']
-  os.eol = os['eol']
-  os.description = os['description']
-  os.save
+if OperatingSystem.count.zero?
+  YAML.load_file(seeds_path / 'operating_systems.yml').each do |data|
+    OperatingSystem.create(data)
+  end
 end
 
 if SecuritySoftware.count.zero?
