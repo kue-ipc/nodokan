@@ -4,7 +4,6 @@ class Network < ApplicationRecord
       .map(&:to_s).join('.')
   end.reverse
 
-
   has_many :nics, dependent: :nullify
 
   has_many :ip_pools, dependent: :destroy

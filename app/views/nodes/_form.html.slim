@@ -109,7 +109,7 @@ p 【必須】の項目は入力が必須です。
           .form-group.col-md-3
             = nic_f.label :interface_type
             = nic_f.select :interface_type, \
-                            t_enums(NetworkInterface, :interface_types), \
+                            t_enums(Nic, :interface_types), \
                             {}, class: 'custom-select'
           .form-group.col-md-9
             = nic_f.label :name
@@ -141,7 +141,7 @@ p 【必須】の項目は入力が必須です。
           .form-group.col-md-4
             = nic_f.label :ip6_config
             = nic_f.select :ip6_config, \
-                            t_enums(Nic, :ip_configs), \
+                            t_enums(Nic, :ip6_configs), \
                             {}, class: 'custom-select'
           .form-group.col-md-8
             = nic_f.label :ip6_address
