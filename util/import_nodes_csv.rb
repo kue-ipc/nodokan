@@ -79,7 +79,7 @@ end
 
 if $0 == __FILE__
   csv_file = File.join(Rails.root, 'util', 'data', 'nodes.csv')
-  backup_csv_file = csv_file + '.' + Time.now.strftime('%Y%m%d-%H%M%S')
+  backup_csv_file = "#{csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
 
   FileUtils.copy_file(csv_file, backup_csv_file)
   node_datas = CSV.read(csv_file, encoding: 'BOM|UTF-8', headers: :first_row)

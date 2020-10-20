@@ -15,7 +15,6 @@ class Hardware < ApplicationRecord
   }
 
   def name
-    device_type.to_s + ' ' +
-      [maker, product_name].select(&:present?).join(' ')
+    "#{device_type} #{[maker, product_name].select(&:present?).join(' ')}"
   end
 end
