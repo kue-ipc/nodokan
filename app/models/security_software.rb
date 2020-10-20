@@ -11,5 +11,4 @@ class SecuritySoftware < ApplicationRecord
     not_installed: 16,
     unknown: -1,
   }, _prefix: true
-
 end

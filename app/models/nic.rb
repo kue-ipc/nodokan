@@ -19,5 +19,4 @@ class Nic < ApplicationRecord
   def mac_gl?
     @mac_address[0].ord & 0x02
   end
-
 end

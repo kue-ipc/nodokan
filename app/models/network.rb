@@ -1,6 +1,6 @@
 class Network < ApplicationRecord
   IP_MASKS = (0..32).map do |i|
-    [(IPAddr::IN4MASK - (1<<i) + 1)].pack('N').unpack('C*')
+    [(IPAddr::IN4MASK - (1 << i) + 1)].pack('N').unpack('C*')
       .map(&:to_s).join('.')
   end.reverse
 
@@ -11,17 +11,16 @@ class Network < ApplicationRecord
   has_many :ip6_pools, dependent: :destroy
   accepts_nested_attributes_for :ip6_pools, allow_destroy: true
 
-
   has_many :network_users, dependent: :destroy
   has_many :users, through: :network_users
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true,
-    numericality: {
-      only_integer: true,
-      greater_than_or_equal_to: 1,
-      less_than_or_equal_to: 4094,
-    }
+                   numericality: {
+                     only_integer: true,
+                     greater_than_or_equal_to: 1,
+                     less_than_or_equal_to: 4094,
+                   }
 
   validates :ip_address, allow_blank: true, ip: true
   validates :ip_gateway, allow_blank: true, ip: true
@@ -29,12 +28,12 @@ class Network < ApplicationRecord
   validates :ip6_gateway, allow_blank: true, ip6: true
 
   validates :ip_mask, allow_blank: true,
-    inclusion: {
-      in: (0..32).map do |i|
-        [(IPAddr::IN4MASK - (1<<i) + 1)].pack('N').unpack('C*')
-          .map(&:to_s).join('.')
-      end + (0..32).map(&:to_s)
-    }
+                      inclusion: {
+                        in: (0..32).map do |i|
+                          [(IPAddr::IN4MASK - (1 << i) + 1)].pack('N').unpack('C*')
+                            .map(&:to_s).join('.')
+                        end + (0..32).map(&:to_s),
+                      }
   validates :ip6_prefix, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
@@ -59,9 +58,7 @@ class Network < ApplicationRecord
     if ip_network
       ip_network_addr = IPAddress::IPv4.new(ip_network)
 
-      if ip_network_addr.network?
-        errors.add(:ip_address, 'ネットワークアドレスではありません。')
-      end
+      errors.add(:ip_address, 'ネットワークアドレスではありません。') if ip_network_addr.network?
 
       self.ip_address = ip_network_addr.octets.map(&:to_s).join('.')
       self.ip_mask = ip_network_addr.netmask
@@ -112,5 +109,4 @@ class Network < ApplicationRecord
     end
     true
   end
-
 end

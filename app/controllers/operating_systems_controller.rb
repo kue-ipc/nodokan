@@ -17,7 +17,7 @@ class OperatingSystemsController < ApplicationController
   private
 
     def query_params
-      params.permit()
+      params.permit
     end
 
     def authorize_operating_system

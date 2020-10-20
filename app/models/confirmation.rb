@@ -77,9 +77,7 @@ class Confirmation < ApplicationRecord
 
     if registered_content
       errors.add(:existence, '端末が見つからない場合は、。削除後の確認は不要です。')
-      return false
+      false
     end
-
-
   end
 end

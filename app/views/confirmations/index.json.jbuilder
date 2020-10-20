@@ -1,1 +1,1 @@
-json.array! @confirmations, partial: "confirmations/confirmation", as: :confirmation
+json.array! @confirmations, partial: 'confirmations/confirmation', as: :confirmation

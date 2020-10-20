@@ -1,1 +1,1 @@
-json.partial! "networks/network", network: @network
+json.partial! 'networks/network', network: @network

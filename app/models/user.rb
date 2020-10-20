@@ -23,11 +23,11 @@ class User < ApplicationRecord
 
   has_many :networks, through: :network_users
   has_many :available_networks, through: :available_network_users,
-    source: :network
+                                source: :network
   has_many :managable_networks, through: :managable_network_users,
-    source: :network
+                                source: :network
   has_many :assigned_networks, through: :assigned_network_users,
-    source: :network
+                               source: :network
 
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true

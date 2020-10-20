@@ -21,11 +21,11 @@ RailsAdmin.config do |config|
   ## == PaperTrail ==
   config.audit_with :paper_trail, 'User', 'PaperTrail::Version' # PaperTrail >= 3.0.0
 
-  config.model "PaperTrail::Version" do
+  config.model 'PaperTrail::Version' do
     visible false
   end
 
-  config.model "PaperTrail::VersionAssociation" do
+  config.model 'PaperTrail::VersionAssociation' do
     visible false
   end
 

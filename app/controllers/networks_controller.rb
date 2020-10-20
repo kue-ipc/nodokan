@@ -63,6 +63,7 @@ class NetworksController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_network
       @network = policy_scope(Network).find(params[:id])
@@ -82,7 +83,8 @@ class NetworksController < ApplicationController
         :ip_gateway,
         :ip6_address,
         :ip6_prefix,
-        :ip6_gateway)
+        :ip6_gateway
+      )
     end
 
     def authorize_network

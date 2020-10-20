@@ -11,47 +11,45 @@ def register_node(data)
   node = Node.new(
     name: data['name'],
     hostname: data['hostname'],
-    domain: data['domain'],
+    domain: data['domain']
   )
 
-  node.user = User.find_by_username(data['user'])
+  node.user = User.find_by(username: data['user'])
 
   node.place = Place.find_or_create_by(
     area: data['place[area]'] || '',
     building: data['place[building]'] || '',
     floor: data['place[floor]'] || 0,
-    room: data['place[room]'] || '',
+    room: data['place[room]'] || ''
   )
 
   node.hardware = Hardware.find_or_create_by(
     category: data['hardware[category]'] || 'unknown',
     maker: data['hardware[maker]'] || '',
     product_name: data['hardware[product_name]'] || '',
-    model_number: data['hardware[model_number]'] || '',
+    model_number: data['hardware[model_number]'] || ''
   )
 
-  node.operating_system = if data['operating_system[category]']
-    OperatingSystem.find_or_create_by(
-      category: data['operating_system[category]'],
-      name: data['operating_system[name]'] || '',
-    )
-  end
-
-  node.security_software = if data['security_software[name]'].present?
-    SecuritySoftware.find_or_create_by(
-      name: data['security_software[name]'],
-    )
-  end
-
-  ip_addr =
-    if data['network[address]'] && !data['network[address]'].empty?
-      IPAddr.new(data['network[address]'])
+  node.operating_system =
+    if data['operating_system[category]']
+      OperatingSystem.find_or_create_by(
+        category: data['operating_system[category]'],
+        name: data['operating_system[name]'] || ''
+      )
     end
 
-  subnetwork = Subnetwork.find_by_vlan(data['network[vlan]'])
-  if subnetwork.nil?
-    raise "not exist valn: #{data['network[vlan]']}"
-  end
+  node.security_software =
+    if data['security_software[name]'].present?
+      SecuritySoftware.find_or_create_by(
+        name: data['security_software[name]']
+      )
+    end
+
+  ip_addr =
+    (IPAddr.new(data['network[address]']) if data['network[address]'].present?)
+
+  subnetwork = Subnetwork.find_by(vlan: data['network[vlan]'])
+  raise "not exist valn: #{data['network[vlan]']}" if subnetwork.nil?
 
   node.network_interfaces = [
     NetworkInterface.new(
@@ -64,13 +62,13 @@ def register_node(data)
           ip_addresses: [
             IpAddress.new(
               config: data['network[config]'],
-              family: (if ip_addr&.ipv6? then :ipv6 else :ipv4 end),
-              address: ip_addr&.to_s,
-            )
+              family: (ip_addr&.ipv6? ? :ipv6 : :ipv4),
+              address: ip_addr&.to_s
+            ),
           ]
-        )
+        ),
       ]
-    )
+    ),
   ]
   if node.save
     node.id
@@ -81,7 +79,7 @@ end
 
 if $0 == __FILE__
   csv_file = File.join(Rails.root, 'util', 'data', 'nodes.csv')
-  backup_csv_file = csv_file + '.' + Time.now.strftime("%Y%m%d-%H%M%S")
+  backup_csv_file = csv_file + '.' + Time.now.strftime('%Y%m%d-%H%M%S')
 
   FileUtils.copy_file(csv_file, backup_csv_file)
   node_datas = CSV.read(csv_file, encoding: 'BOM|UTF-8', headers: :first_row)
@@ -97,7 +95,7 @@ if $0 == __FILE__
 
       result = register_node(data)
       data['id'] = result
-    rescue => e
+    rescue StandardError => e
       $logger.error(e.message)
       data['id'] = 'E'
       data['note'] = e.message

@@ -1,1 +1,1 @@
-json.partial! "confirmations/confirmation", confirmation: @confirmation
+json.partial! 'confirmations/confirmation', confirmation: @confirmation
