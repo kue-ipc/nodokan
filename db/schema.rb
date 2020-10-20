@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_25_011323) do
+ActiveRecord::Schema.define(version: 2020_10_20_041622) do
 
   create_table "confirmations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -171,7 +171,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.integer "state", null: false
     t.integer "os_category", null: false
     t.string "name", null: false
-    t.boolean "approved"
+    t.boolean "approved", null: false
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -188,6 +188,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.boolean "deleted", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "nodes_count", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end

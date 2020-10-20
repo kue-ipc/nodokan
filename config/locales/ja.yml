@@ -76,12 +76,13 @@ ja:
         name: 端末名
         hostname: ホスト名
         domain: ドメイン名
-        location: 設置場所
+        place: 設置場所
         hardware: 機器情報
         operating_system: OS
-        security_software: セキュリティソフトウェア
-        network_interface: ネットワークインターフェース
+        nic: ネットワークインターフェースコントローラー
         note: 備考
+        confirmed_at: 確認日
+        user: 管理者
       operating_system:
         os_category: OS種別
         name: OS名

@@ -21,8 +21,10 @@ class NodesController < ApplicationController
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      nics: [Nic.new]
+      nics: [Nic.new],
+      user: current_user
     )
+    authorize @node
   end
 
   # GET /nodes/1/edit
@@ -33,6 +35,8 @@ class NodesController < ApplicationController
   # POST /nodes.json
   def create
     @node = Node.new(node_params)
+    authorize @node
+
     respond_to do |format|
       if params['commit']
         if @node.save

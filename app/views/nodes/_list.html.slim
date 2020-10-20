@@ -1,22 +1,22 @@
+p 端末の操作（確認、変更、削除）を行う場合は、該当の列をクリックしてください。
+
 table.table.table-hover.table-sm
   thead
     tr
-      th scope="col" #
       th scope="col" = Node.human_attribute_name(:name)
-      th scope="col" User
-      th scope="col" 場所
-      th scope="col" 製品名
-      th scope="col" IPアドレス
-      th scope="col" 確認日
+      - if current_user.admin?
+        th scope="col" = Node.human_attribute_name(:user)
+      th scope="col" = Node.human_attribute_name(:place)
+      th scope="col" = Hardware.human_attribute_name(:product_name)
+      th scope="col" = Nic.human_attribute_name(:ip_address)
+      th scope="col" = Node.human_attribute_name(:confirmed_at)
 
   tbody
     - @nodes.each do |node|
-      tr
-        th.text-nowrap scope="row"
-          = link_to node.id, node
+      tr.clickable-row data-href="#{node_path(node)}"
         td  = node.name
         td.text-nowrap = node.user.username
-        td = node.place&.room
+        td = node.place&.name
         td = node.hardware&.product_name
         td.text-nowrap
           = node.nics.map(&:ip_address).compact.join("\n")
@@ -33,3 +33,5 @@ table.table.table-hover.table-sm
             - else
           - else
             span.text-danger 未確認
+
+= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
