@@ -5,8 +5,6 @@ require 'fileutils'
 require 'logger'
 require 'ipaddr'
 
-$logger = Logger.new($stderr)
-
 def register_node(data)
   node = Node.new(
     name: data['name'],
@@ -78,8 +76,9 @@ def register_node(data)
 end
 
 if $0 == __FILE__
-  csv_file = File.join(Rails.root, 'util', 'data', 'nodes.csv')
+  csv_file = Rails.root / 'util' / 'data' / 'nodes.csv'
   backup_csv_file = "#{csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
+  logger = Logger.new($stderr)
 
   FileUtils.copy_file(csv_file, backup_csv_file)
   node_datas = CSV.read(csv_file, encoding: 'BOM|UTF-8', headers: :first_row)
@@ -89,14 +88,14 @@ if $0 == __FILE__
     io.puts node_datas.headers.to_csv
     node_datas.each.with_index do |data, idx|
       if data['id'] =~ /\A\d+\z/
-        $logger.info("#{idx}: [skip] already registered as #{idx}")
+        logger.info("#{idx}: [skip] already registered as #{idx}")
         next
       end
 
       result = register_node(data)
       data['id'] = result
     rescue StandardError => e
-      $logger.error(e.message)
+      logger.error(e.message)
       data['id'] = 'E'
       data['note'] = e.message
     ensure

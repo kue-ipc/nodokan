@@ -1,4 +1,5 @@
 module Radius
+  # rubocop:disable Rails/ApplicationRecord
   class RadiusRecord < ActiveRecord::Base
     self.abstract_class = true
 
@@ -18,6 +19,7 @@ module Radius
       end
 
       def list_attribute_methods(attr_name)
+        # rubocop:disable Metrics/NestedPercentLiteral
         %w[
           %s
           %s=
@@ -38,7 +40,9 @@ module Radius
           %s_change_to_be_saved
           %s_in_database
         ].map { |s| s % attr_name }
+        # rubocop:enable Metrics/NestedPercentLiteral
       end
     end
   end
+  # rubocop:enable Rails/ApplicationRecord
 end

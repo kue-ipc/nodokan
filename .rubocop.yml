@@ -67,6 +67,7 @@ Metrics/CyclomaticComplexity:
 
 Metrics/MethodLength:
   Max: 15
+  CountAsOne: ['array', 'hash', 'hearedoc']
   Exclude:
     - 'db/migrate/*.rb'
 
@@ -111,3 +112,6 @@ Layout/ArgumentAlignment:
 
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma
+
+Style/SpecialGlobalVars:
+  EnforcedStyle: use_perl_names
