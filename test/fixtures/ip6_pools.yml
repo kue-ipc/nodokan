@@ -2,18 +2,18 @@
 
 one:
   network: two
-  ip_config: :dynamic
-  first_address: 'fd00':2::1'
-  last_address: 'fd00:2::FF'
+  ip6_config: :dynamic
+  first6_address: 'fd00:2::1'
+  last6_address: 'fd00:2::FF'
 
 two:
   network: two
-  ip_config: :reserved
-  first_address: 'fd00:2::100'
-  last_address: 'fd00:2::1FF'
+  ip6_config: :reserved
+  first6_address: 'fd00:2::100'
+  last6_address: 'fd00:2::1FF'
 
 three:
   network: two
-  ip_config: :static
-  first_address: 'fd00:2::200'
-  last_address: 'fd00:2::2FF'
+  ip6_config: :static
+  first6_address: 'fd00:2::200'
+  last6_address: 'fd00:2::2FF'
