@@ -1,2 +1,68 @@
-h1 Pages#about
-p Find me in app/views/pages/about.html.slim
+h2 システム情報
+
+/ - if current_config&.contact_name&.size&.positive?
+/   h3 管理者の連絡先
+/   .row.my-1
+/     div class=col_name
+/       | 管理者:
+/     div class=col_value
+/       = current_config&.contact_name
+/   - if current_config&.contact_email&.size&.positive?
+/     .row.my-1
+/       div class=col_name
+/         | メールアドレス:
+/       div class=col_value
+/         = link_to current_config&.contact_email, "mailto:#{current_config&.contact_email}"
+/   - if current_config&.contact_phone&.size&.positive?
+/     .row.my-1
+/       div class=col_name
+/         | 電話番号:
+/       div class=col_value
+/         = current_config&.contact_phone
+/   hr
+
+h3 のどかん (Nodokan)
+
+p
+  | このシステムは
+  strong<> のどかん (Nodokan)
+  | を使用しています。
+  | のどかんは日本国内の大学向けに作成されたネットワーク端末管理システムです。
+
+h4 バージョン
+
+p
+  | Nodokan
+  =< Nodokan::VERSION
+
+h4 ライセンス
+pre.border.rounded.bg-light.p-2
+  code
+    = IO.read(Rails.root / 'LICENSE')
+
+h4 アプリケーションの構成
+p
+  | このWebアプリケーションは
+  =<> link_to 'Ruby', 'https://www.ruby-lang.org/'
+  | のフレームワーク
+  =<> link_to 'Ruby on Rails', 'https://rubyonrails.org/'
+  | で作成されました。
+
+h4 ソースコードの入手方法
+p
+  | 管理者にお問い合わせください。
+
+
+/
+  hr
+  h3 テスト
+  p.text-serif serifの文: abcde 01234 いろはにほ 亜院押魁粥
+  p sans-serifの文(通常): abcde 01234 いろはにほ 亜院押魁粥
+  p.text-monospace monospaceの文: abcde 01234 いろはにほ 亜院押魁粥
+  p.text-monospace
+    strong monospaceのstrong文: abcde 01234 いろはにほ 亜院押魁粥
+  p.text-monospace
+    em monospaceのem文: abcde 01234 いろはにほ 亜院押魁粥
+  p.text-monospace
+    strong
+      em monospaceのstrong+em文: abcde 01234 いろはにほ 亜院押魁粥

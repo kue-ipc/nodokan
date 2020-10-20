@@ -36,19 +36,12 @@ ja:
       hardware: ハードウェア
       ip6_pool: IPv6プール
       ip_pool: IPプール
-      networck: ネットワーク
+      network: ネットワーク
       nic: ネットワークインタフェースコントローラー(NIC)
       node: 端末
       operating_system: オペレーティングシステム(OS)
       place: 設置場所
       security_software: セキュリティソフトウェア
-      # network_category: ネットワークカテゴリー
-      # network_connection: ネットワーク接続
-      # network_interface: ネットワークインターフェース
-      # subnetwork: サブネットワーク
-      # subnetwork_user: ユーザーのサブネットワーク
-      # ip_address: IPアドレス
-      # ip_network: IPネットワーク
     attributes:
       hardware:
         device_type: 機器形態
@@ -105,27 +98,6 @@ ja:
       user:
         username: ユーザー名
         password: パスワード
-      # ip_address:
-      #   network_connection: ネットワーク接続
-      #   address: IPアドレス
-      # subnetwork:
-      #   name: 名前
-      #   network_category: ネットワークカテゴリー
-      #   vlan: VLAN番号
-      # network_category:
-      #   name: 名前
-      #   dhcp: DHCP
-      #   auth: 認証
-      #   global: グローバル
-      # network_connection:
-      #   network_interface: ネットワークインターフェース
-      #   subnetwork: サブネットワーク
-      #   mac_address_randomization: MACアドレスのランダム化
-      # network_interface:
-      #   name: インターフェース名
-      #   interface_type: 接続形態
-      #   mac_address: MACアドレス(ハードウェアアドレス)
-      #   duid: DUID(DHPv6固有識別子)
     enums:
       device_types:
         desktop: デスクトップPC
