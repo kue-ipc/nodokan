@@ -4,9 +4,62 @@ ja:
     top: ホーム
 
   actions:
-    close: 閉じる
+    close: 閉鎖
     sign_in: ログイン
     sign_out: ログアウト
+    index: 一覧
+    new: 新規作成
+    show: 閲覧
+    edit: 編集
+    destroy: 削除
+    save: 保存
+    create: 作成
+    update: 更新
+    add: 追加
+    delete: 削除
+    insert: 挿入
+    register: 登録
+    reset: リセット
+    apply: 申込み
+    withdraw: 取下げ
+    approve: 受付け
+    reject: 拒否
+    cancel: 中止
+    reserve: 予約
+    deliver: 配信
+    redilver: 再配信
+    finish: 完了
+    fail: 失敗
+    error: エラー
+    start: 開始
+
+  do_actions:
+    close: 閉じる
+    index: 一覧を表示する
+    new: 新規作成する
+    show: 閲覧する
+    edit: 編集する
+    destroy: 削除する
+    save: 保存する
+    create: 作成する
+    update: 更新する
+    add: 追加する
+    delete: 削除する
+    insert: 挿入する
+    register: 登録する
+    reset: リセットする
+    apply: 申し込む
+    withdraw: 取り下げる
+    approve: 受け付ける
+    reject: 拒否する
+    cancel: 中止する
+    reserve: 予約する
+    deliver: 配信する
+    redilver: 再配信する
+    finish: 完了する
+    fail: 失敗する
+    error: エラーになる
+    start: 開始する
 
   messages:
     require_javascript: |
@@ -145,5 +198,12 @@ ja:
         dynamic: 動的(自動取得)
         reserved: 予約(自動取得)
         link_local: リンクローカル(自動設定)
-
-
+  helpers:
+    page_entries_info:
+      one_page:
+        display_entries:
+          zero: "%{entry_name} 無し"
+          one: "<b>1</b> 個の%{entry_name}を表示"
+          other: "全 <b>%{count}</b> 個の%{entry_name}を表示"
+      more_pages:
+        display_entries: "全 <b>%{total}</b> 個の%{entry_name}のうち、<b>%{first}&nbsp;-&nbsp;%{last}</b> 個目を表示"

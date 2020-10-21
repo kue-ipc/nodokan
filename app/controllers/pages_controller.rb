@@ -8,8 +8,13 @@ class PagesController < ApplicationController
       return
     end
 
-    @non_confirmed_nodes = policy_scope(Node).where(confirmed_at: nil)
+    @unconfirmed_nodes_count =
+      policy_scope(Node).where.not(confirmed_at: Time.current.ago(1.year)..)
+        .or(policy_scope(Node).where(confirmed_at: nil)).count
     @networks = policy_scope(Network).all
+
+    # flash[:alert] ||= []
+    # flash[:alert] << content_tag(:div, 'hoge')
   end
 
   def about

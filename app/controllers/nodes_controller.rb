@@ -5,9 +5,28 @@ class NodesController < ApplicationController
   # GET /nodes
   # GET /nodes.json
   def index
-    @nodes = policy_scope(Node)
+    @q = params[:q].presence
+    @uc = params[:uc].presence&.to_i&.positive? || false
+
+    @nodes =
+      if @uc
+        policy_scope(Node).where.not(confirmed_at: Time.current.ago(1.year)..)
+          .or(policy_scope(Node).where(confirmed_at: nil))
+      else
+        policy_scope(Node)
+      end
+
+    if @q
+      @nodes = @nodes.where(
+        'name LiKE :q OR ' \
+        'hostname LIKE :q',
+        {q: "%#{@q}%"}
+      )
+    end
+
+    @nodes = @nodes
       .includes(:user, :place, :hardware, :operating_system, nics: :network)
-      .all
+      .page(params[:page])
   end
 
   # GET /nodes/1

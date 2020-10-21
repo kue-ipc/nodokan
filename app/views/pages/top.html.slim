@@ -1,20 +1,48 @@
-= link_to '端末の新規登録', new_node_path
+h3 利用者メニュー
 
-ul
-| 管理端末:
-| 内、未確認または期限切れの端末:
-  dd
+.menu.row.mb-1
+  .col-sm-6.col-lg-4.col-xl-3.my-1
+    = link_to new_node_path, class: 'card border-primary' do
+      .card-header.text-center
+        | 端末の新規登録
+      .card-body
+        | 端末の新規登録を行います。
+        | 端末を新しく購入した場合は、こちらで登録を行うことができます。
+  .col-sm-6.col-lg-4.col-xl-3.my-1
+    = link_to nodes_path, class: 'card border-secondary' do
+      .card-header.text-center
+        | 端末一覧
+      .card-body
+        | 登録されている端末の一覧を表示します。
+        | 端末の確認、変更、削除等を行いたい場合は、こちらにアクセスしてください。
 
-未確認または期限切れの端末があります。確認を実施してください。
+/ = link_to '端末の新規登録', new_node_path
+
+/ = link_to '端末の新規登録', new_node_path
+
+/ hr
+
+- if @unconfirmed_nodes_count.zero?
+  p 未確認または期限切れの端末はありません。
+- else
+  p
+    strong.text-danger
+      | 未確認または期限切れの端末が
+      =<> @unconfirmed_nodes_count
+      | 台あります。
+    = link_to '要確認端末一覧', nodes_path(uc: 1)
+    | にアクセスし、確認を実施してください。
+  / = render '/nodes/list'
 
 
-h1 Pages#top
-p Find me in app/views/pages/top.html.slim
 
-p
-  = link_to Node.model_name.human, nodes_path
-p
-  = link_to Network.model_name.human, networks_path
+/ h1 Pages#top
+/ p Find me in app/views/pages/top.html.slim
+
+/ p
+/   = link_to Node.model_name.human, nodes_path
+/ p
+/   = link_to Network.model_name.human, networks_path
 
 / - @networks.each do |network|
 /   p
