@@ -15,6 +15,6 @@ class Hardware < ApplicationRecord
   }
 
   def name
-    "#{device_type} #{[maker, product_name].select(&:present?).join(' ')}"
+    "#{I18n.t(device_type, scope: [:activerecord, :enums, :device_types])} #{[maker, product_name].select(&:present?).join(' ')}"
   end
 end

@@ -1,21 +1,21 @@
-h1 端末一覧
+- content_for :heading
+  h1 端末一覧
 
 p
   | 1年に1度、端末の確認を行ってください。
 
-= link_to 'New Node', new_node_path, class: 'btn btn-primary'
+p
+  = link_to '新規登録', new_node_path, class: 'btn btn-primary'
 
-h4 絞り込み
 
-= bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
-  .input-group.mr-1
-    .input-group-prepend
-      = f.primary name: :s, class: 'btn btn-primary' do
-        i.fas.fa-search
-    = f.search_field :q, hide_label: true, value: @q
-  = f.check_box :uc, label: '要確認端末のみ表示', custom: true, checked: @uc
-
-hr
+.mb-3
+  = bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
+    .input-group.mr-1
+      .input-group-prepend
+        = f.primary name: :s, class: 'btn btn-primary' do
+          i.fas.fa-search
+      = f.search_field :q, hide_label: true, value: @q
+    = f.check_box :uc, label: '要確認端末のみ表示', custom: true, checked: @uc
 
 = render 'list'
 

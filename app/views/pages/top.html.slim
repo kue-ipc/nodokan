@@ -1,3 +1,15 @@
+- if @unconfirmed_nodes_count.positive?
+  .alert.alert-danger.alertdismissible.fade.show role="alert"
+    strong
+      | 未確認または期限切れの端末が
+      =<> @unconfirmed_nodes_count
+      | 台あります。
+    = link_to '要確認端末一覧', nodes_path(uc: 1)
+    | にアクセスし、確認を実施してください。
+    button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
+      span aria-hidden="true" &times
+
+
 h3 利用者メニュー
 
 .menu.row.mb-1
@@ -26,12 +38,6 @@ h3 利用者メニュー
   p 未確認または期限切れの端末はありません。
 - else
   p
-    strong.text-danger
-      | 未確認または期限切れの端末が
-      =<> @unconfirmed_nodes_count
-      | 台あります。
-    = link_to '要確認端末一覧', nodes_path(uc: 1)
-    | にアクセスし、確認を実施してください。
   / = render '/nodes/list'
 
 

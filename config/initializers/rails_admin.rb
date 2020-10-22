@@ -52,4 +52,9 @@ RailsAdmin.config do |config|
   end
 
   config.label_methods << :address
+
+
+  # config.model 'Hardware' do
+
+  # end
 end

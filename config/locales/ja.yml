@@ -129,10 +129,12 @@ ja:
         name: 端末名
         hostname: ホスト名
         domain: ドメイン名
+        fqdn: FQDN(完全修飾ドメイン名)
         place: 設置場所
         hardware: 機器情報
-        operating_system: OS
-        nic: ネットワークインターフェースコントローラー
+        operating_system: OS(オペレーティングシステム)
+        nic: NIC(ネットワークインターフェースコントローラー)
+        nics: NIC(ネットワークインターフェースコントローラー)
         note: 備考
         confirmed_at: 確認日
         user: 管理者

@@ -2,7 +2,7 @@
 <%- require 'csv' -%>
 <%= %w[
 id
-user
+user[username]
 name
 hostname
 domain
@@ -10,19 +10,18 @@ place[area]
 place[building]
 place[floor]
 place[room]
-hardware[category]
+hardware[device_type]
 hardware[maker]
 hardware[product_name]
 hardware[model_number]
-operating_system[category]
+operating_system[os_category]
 operating_system[name]
-security_software[name]
-network[interface_type]
-network[name]
-network[mac_address]
-network[vlan]
-network[config]
-network[address]
+nic[interface_type]
+nic[name]
+nic[mac_address]
+nic[network][vlan]
+nic[ip_config]
+nic[ip_address]
 note
 ].join(',') %>
 <%- @nodes.each do |node| -%>
@@ -37,19 +36,18 @@ note
   node.place&.building,
   node.place&.floor,
   node.place&.room,
-  node.hardware&.category,
+  node.hardware&.device_type,
   node.hardware&.maker,
   node.hardware&.product_name,
   node.hardware&.model_number,
-  node.operating_system&.category,
+  node.operating_system&.os_category,
   node.operating_system&.name,
-  node.security_software&.name,
-  node.network_interfaces.first&.interface_type,
-  node.network_interfaces.first&.name,
-  node.network_interfaces.first&.mac_address,
-  node.network_interfaces.first&.network_connections.first&.subnetwork.vlan,
-  node.network_interfaces.first&.network_connections.first&.ip_addresses.first&.config,
-  node.network_interfaces.first&.network_connections.first&.ip_addresses.first&.address,
+  node.nics.first&.interface_type,
+  node.nics.first&.name,
+  node.nics.first&.mac_address,
+  node.nics.first&.network&.vlan,
+  node.nics.first&.ip_config,
+  node.nics.first&.ip_address,
   node.note
 ].to_csv
 -%>

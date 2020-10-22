@@ -12,7 +12,7 @@ def register_node(data)
     domain: data['domain']
   )
 
-  node.user = User.find_by(username: data['user'])
+  node.user = User.find_by(username: data['user[username]'])
 
   node.place = Place.find_or_create_by(
     area: data['place[area]'] || '',
@@ -22,52 +22,33 @@ def register_node(data)
   )
 
   node.hardware = Hardware.find_or_create_by(
-    category: data['hardware[category]'] || 'unknown',
+    device_type: data['hardware[device_type]'] || 'unknown',
     maker: data['hardware[maker]'] || '',
     product_name: data['hardware[product_name]'] || '',
     model_number: data['hardware[model_number]'] || ''
   )
 
   node.operating_system =
-    if data['operating_system[category]']
+    if data['operating_system[os_category]']
       OperatingSystem.find_or_create_by(
-        category: data['operating_system[category]'],
+        os_category: data['operating_system[os_category]'],
         name: data['operating_system[name]'] || ''
       )
     end
 
-  node.security_software =
-    if data['security_software[name]'].present?
-      SecuritySoftware.find_or_create_by(
-        name: data['security_software[name]']
-      )
-    end
+  network = Network.find_by(vlan: data['nic[network][vlan]'])
 
-  ip_addr =
-    (IPAddr.new(data['network[address]']) if data['network[address]'].present?)
-
-  subnetwork = Subnetwork.find_by(vlan: data['network[vlan]'])
-  raise "not exist valn: #{data['network[vlan]']}" if subnetwork.nil?
-
-  node.network_interfaces = [
-    NetworkInterface.new(
-      interface_type: data['network[interface_type]'] || 'unknown',
-      name: data['network[interface_type]'],
-      mac_address: data['network[mac_address]'],
-      network_connections: [
-        NetworkConnection.new(
-          subnetwork: subnetwork,
-          ip_addresses: [
-            IpAddress.new(
-              config: data['network[config]'],
-              family: (ip_addr&.ipv6? ? :ipv6 : :ipv4),
-              address: ip_addr&.to_s
-            ),
-          ]
-        ),
-      ]
+  node.nics = [
+    Nic.new(
+      interface_type: data['nic[interface_type]'] || 'unknown',
+      name: data['nic[name]'],
+      mac_address: data['nic[mac_address]'],
+      network: Network.find_by(vlan: data['nic[network][vlan]']),
+      ip_config: data['nic[ip_config]'],
+      ip_address: data['nic[ip_address]'],
     ),
   ]
+
   if node.save
     node.id
   else

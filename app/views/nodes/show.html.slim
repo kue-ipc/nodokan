@@ -1,22 +1,26 @@
-p#notice = notice
+- content_for :heading
+  h1 端末情報
+
+dl.row
+  dt.col-md-5 = Node.human_attribute_name(:name)
+  dd.col-md-5 = @node.name
+  dt.col-md-5 = Node.human_attribute_name(:fqdn)
+  dd.col-md-5 = @node.fqdn
+  dt.col-md-5 = Node.human_attribute_name(:place)
+  dd.col-md-5 = @node.place&.name
+  dt.col-md-5 = Node.human_attribute_name(:hardware)
+  dd.col-md-5 = @node.hardware&.name
+  dt.col-md-5 = Node.human_attribute_name(:operating_system)
+  dd.col-md-5 = @node.operating_system&.name
+  dt.col-md-5 = Node.human_attribute_name(:nics)
+  dd.col-md-5
+    - @node.nics.each do |nic|
+      = nic.mac_address
+      = nic.ip_address
 
 p
   | 内容に違いがある場合は「編集」ボタンから編集を行ってください。
   | 内容に問題がない場合は、確認を行ってください。
-
-dl
-  dt = Node.human_attribute_name(:name)
-  dd = @node.name
-  dt = Node.human_attribute_name(:fqdn)
-  dd = @node.fqdn
-  dt = Node.human_attribute_name(:place)
-  dd = @node.place&.name
-  dt = Node.human_attribute_name(:hardware)
-  dd = @node.hardware&.name
-  dt = Node.human_attribute_name(:operating_system)
-  dd = @node.operating_system&.name
-  dt = Node.human_attribute_name(:nics)
-  dd = @node.nics.map(&:ip_address).compact.join(',')
 
 
 
