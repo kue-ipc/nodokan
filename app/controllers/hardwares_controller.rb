@@ -28,7 +28,7 @@ class HardwaresController < ApplicationController
 
     if @target
       if [:device_type, :maker, :product_name, :model_number].include?(@target)
-        @hardwares = @hardwares.select(@target).distinct.page(params[:page])
+        @hardwares = @hardwares.select(@target).distinct
       else
         raise ActionController::BadRequest,
           "[places#index] invalid target: #{@target}"

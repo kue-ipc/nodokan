@@ -1,38 +1,46 @@
 - content_for :heading
   h2
     = OperatingSystem.model_name.human
+    = t('actions.index')
+
 
 table.table.table-sm
   thead
     tr
-      th = OperatingSystem.human_attribute_name(:os_category)
-      th = OperatingSystem.human_attribute_name(:name)
-      th = OperatingSystem.human_attribute_name(:eol)
-      th = OperatingSystem.human_attribute_name(:description)
-      th = OperatingSystem.human_attribute_name(:nodes_count)
+      - if @target
+        th = OperatingSystem.human_attribute_name(@target)
+      - else
+        th = OperatingSystem.human_attribute_name(:os_category)
+        th = OperatingSystem.human_attribute_name(:name)
+        th = OperatingSystem.human_attribute_name(:eol)
+        th = OperatingSystem.human_attribute_name(:description)
+        th = OperatingSystem.human_attribute_name(:nodes_count)
   tbody
     - @operating_systems.each do |operating_system|
       tr
-        td
-          = t(operating_system.os_category,
-            scope: [:activerecord, :enums, :os_categories])
-        td = operating_system.name
-        td
-          - if operating_system.eol
-            - if operating_system.eol <= Time.current
-              span.text-danger
-                = operating_system.eol
-            - elsif operating_system.eol <= Time.current.years_since(1)
-              span.text-warning
-                = operating_system.eol
+        - if @target
+          td = operating_system[@target]
+        - else
+          td
+            = t(operating_system.os_category,
+              scope: [:activerecord, :enums, :os_categories])
+          td = operating_system.name
+          td
+            - if operating_system.eol
+              - if operating_system.eol <= Time.current
+                span.text-danger
+                  = operating_system.eol
+              - elsif operating_system.eol <= Time.current.years_since(1)
+                span.text-warning
+                  = operating_system.eol
+              - else
+                span.text-success
+                  = operating_system.eol
             - else
-              span.text-success
-                = operating_system.eol
-          - else
-            span.text-muted
-              | 未定
-        td = operating_system.description
-        td = operating_system.nodes_count
+              span.text-muted
+                | 未定
+          td = operating_system.description
+          td = operating_system.nodes_count
 
 = paginate @operating_systems
 p

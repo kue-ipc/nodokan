@@ -157,11 +157,11 @@ p 【必須】の項目は入力が必須です。
               parent: 'node', \
               name: 'operating_system', \
               target: 'name', \
-              order: 'nodes_count', \
+              order: {nodes_count: 'desc'}, \
               inputList: ['os_category'], \
               url: '/operating_systems.json', \
             }
-          / #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
+          #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
 
   .rounded.border.p-2.mb-2
     h4 NIC(ネットワークインターフェースコントローラー)情報

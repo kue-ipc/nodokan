@@ -26,7 +26,7 @@ class PlacesController < ApplicationController
 
     if @target
       if [:area, :building, :room].include?(@target)
-        @places = @places.select(@target).distinct.page(params[:page])
+        @places = @places.select(@target).distinct
       else
         raise ActionController::BadRequest,
           "[places#index] invalid target: #{@target}"
