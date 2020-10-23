@@ -29,13 +29,34 @@ p 【必須】の項目は入力が必須です。
       = f.fields_for :place, @node.place || Place.new do |place_f|
         .form-group.col-md-3
           = place_f.label :area
-          = place_f.text_field :area, class: 'form-control', list: 'area-list'
-          datalist#area-list
-            option value="Aキャンパス"
-            option value="B学校"
+          = place_f.text_field :area, class: 'form-control', \
+                               list: 'node_place_area-list'
+          - node_place_area_params = {\
+              parent: 'node', \
+              name: 'place', \
+              target: 'area', \
+              order: {area: 'asc'}, \
+              inputList: [], \
+              url: '/places.json', \
+            }
+          #node_place_area-app.datalist-canadidaiton(
+            data-params=node_place_area_params.to_json
+          )
         .form-group.col-md-3
           = place_f.label :building
-          = place_f.text_field :building, class: 'form-control'
+          = place_f.text_field :building, class: 'form-control', \
+                               list: 'node_place_building-list'
+          - node_place_building_params = {\
+              parent: 'node', \
+              name: 'place', \
+              target: 'building', \
+              order: {building: 'asc'}, \
+              inputList: ['area'], \
+              url: '/places.json', \
+            }
+          #node_place_building-app.datalist-canadidaiton(
+            data-params=node_place_building_params.to_json
+          )
         .form-group.col-md-2
           = place_f.label :floor
           .input-group
@@ -50,6 +71,7 @@ p 【必須】の項目は入力が必須です。
               parent: 'node', \
               name: 'place', \
               target: 'room', \
+              order: {nodes_count: 'desc'}, \
               inputList: ['area', 'building', 'floor'], \
               url: '/places.json', \
             }
@@ -98,10 +120,11 @@ p 【必須】の項目は入力が必須です。
               parent: 'node', \
               name: 'operating_system', \
               target: 'name', \
+              order: 'nodes_count', \
               inputList: ['os_category'], \
               url: '/operating_systems.json', \
             }
-          #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
+          / #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
 
   .rounded.border.p-2.mb-2
     h4 NIC(ネットワークインターフェースコントローラー)情報

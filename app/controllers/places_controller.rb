@@ -34,14 +34,7 @@ class PlacesController < ApplicationController
     end
 
     if @order
-      pp @order
       @places = @places.order(@order.to_h)
-      # pp @order
-      # @order.each do |key, value|
-      #   pp key
-      #   pp value
-      # end
-      pp @places
     end
 
     @places = @places.page(params[:page]).per(params[:per])

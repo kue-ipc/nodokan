@@ -2,7 +2,7 @@ import {h, text, app} from 'hyperapp'
 import {request} from '@hyperapp/http'
 
 class DatalistCandidation
-  constructor: ({@parent, @name, @target, @inputList, @url}) ->
+  constructor: ({@parent, @name, @target, @order, @inputList, @url, @per = 100}) ->
     @appId = [@attrId(@target), 'app'].join('-')
     @datalistId = [@attrId(@target), 'list'].join('-')
     @appNode = document.getElementById(@appId)
@@ -17,16 +17,23 @@ class DatalistCandidation
     }
 
   getResult: (state, data) =>
-    list = data
-      .sort (a, b) -> b.nodes_count - a.nodes_count
-      .map (data) -> data.name
+    console.log(data)
+    list = data['data']
+      .map (entry) => entry[@target]
     {
       state...
       list
     }
 
   createUrl: (attrs) ->
-    list = ["_t=#{@target}"].concat("#{attr.name}=#{encodeURIComponent(attr.value)}" for attr in attrs)
+    list = []
+    list.push("per=#{@per}")
+    list.push("target=#{@target}")
+    if @order?
+      for k, v of @order
+        list.push("#{k}=#{v}")
+    for attr in attrs
+      list.push("condition[#{attr.name}]=#{encodeURIComponent(attr.value)}")
     @url + '?' + list.join('&')
 
   view: (state) =>
