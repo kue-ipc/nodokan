@@ -1,5 +1,3 @@
-# まったくもって書きかけ、方針が定まらない
-
 import {h, text, app} from 'hyperapp'
 import {request} from '@hyperapp/http'
 

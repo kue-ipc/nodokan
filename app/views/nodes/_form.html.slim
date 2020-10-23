@@ -44,7 +44,18 @@ p 【必須】の項目は入力が必須です。
               span.input-group-text 階
         .form-group.col-md-4
           = place_f.label :room
-          = place_f.text_field :room, class: 'form-control'
+          = place_f.text_field :room, class: 'form-control', \
+                               list: 'node_place_room-list'
+          - node_place_room_params = {\
+              parent: 'node', \
+              name: 'place', \
+              target: 'room', \
+              inputList: ['area', 'building', 'floor'], \
+              url: '/places.json', \
+            }
+          #node_place_room-app.datalist-canadidaiton(
+            data-params=node_place_room_params.to_json
+          )
 
   .rounded.border.p-2.mb-2
     h4 ハードウェア情報
@@ -69,24 +80,28 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     h4 OS(オペレーティングシステム)情報
     small.form-text.text-muted
-      | 種別を選択するとOS名入力時に候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
+      |
+        種別を選択するとOS名入力時に候補が表示されます。
+        候補に現れない場合は、そのまま名前を入れてください。
+        管理者によって名前が統合される場合があります。
     .form-row
-      = f.fields_for :operating_system, @node.operating_system || OperatingSystem.new do |operating_system_f|
-        .form-group.col-md-2
+      = f.fields_for :operating_system, \
+          @node.operating_system || OperatingSystem.new do |operating_system_f|
+        .form-group.col-md-4
           = operating_system_f.label :os_category
           = operating_system_f.select :os_category, t_enums(OperatingSystem, :os_categories), \
                           {prompt: '(未選択)'}, class: 'custom-select'
-        .form-group.col-md-4
+        .form-group.col-md-8
           = operating_system_f.label :name
           = operating_system_f.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
-          - operating_system_datalist_params = {\
+          - node_operating_system_name_params = {\
               parent: 'node', \
               name: 'operating_system', \
               target: 'name', \
               inputList: ['os_category'], \
               url: '/operating_systems.json', \
             }
-          #node_operating_system_name-app.datalist-canadidaiton data-params=operating_system_datalist_params.to_json
+          #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
 
   .rounded.border.p-2.mb-2
     h4 NIC(ネットワークインターフェースコントローラー)情報
@@ -106,12 +121,12 @@ p 【必須】の項目は入力が必須です。
           = nic_f.check_box :_destroy, class: 'custom-control-input'
           = nic_f.label :_destroy, 'このINCを削除する', class: 'custom-control-label'
         .form-row.node-nic-form
-          .form-group.col-md-3
+          .form-group.col-md-4
             = nic_f.label :interface_type
             = nic_f.select :interface_type, \
                             t_enums(Nic, :interface_types), \
                             {}, class: 'custom-select'
-          .form-group.col-md-9
+          .form-group.col-md-8
             = nic_f.label :name
             = nic_f.text_field :name, class: 'form-control'
           .form-group.col-md-4

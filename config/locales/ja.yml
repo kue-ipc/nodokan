@@ -64,12 +64,15 @@ ja:
   messages:
     require_javascript: |
       JavaScriptが無効のため、正常に動作させることができません。
-      このWebシステムへのアクセスにはJavaScriptが必要です。JavaScriptを有効にしてください。
+      このWebシステムへのアクセスにはJavaScriptが必要です。
+      JavaScriptを有効にしてください。
     require_modern_browser: |
       レガシブラウザーを使用しているため、正常に動作させることができません。
       このWebシステムへのアクセスには最新のモダンブラウザーが必要です。
-      Internet Explorer等のレガシブラウザーは使用できません。
-      Microsoft Edge、Mozilla Firefox、Google Chrome、Apple Safari等のモダンブラウザーを使用してください。
+      Internet ExplorerやMicrosoft Edge レガシ等の
+      レガシブラウザーは使用できません。
+      新しい Microsoft Edge、Mozilla Firefox、Google Chrome、Apple Safari等の
+      モダンブラウザーを使用してください。
 
   date:
     formats:
@@ -90,17 +93,19 @@ ja:
       ip6_pool: IPv6プール
       ip_pool: IPプール
       network: ネットワーク
-      nic: ネットワークインタフェースコントローラー(NIC)
+      nic: NIC(ネットワークインタフェースコントローラー)
       node: 端末
-      operating_system: オペレーティングシステム(OS)
+      operating_system: OS(オペレーティングシステム)
       place: 設置場所
       security_software: セキュリティソフトウェア
+      nework_user: ネットワークとユーザー関係
     attributes:
       hardware:
         device_type: 機器形態
         maker: 製造業者
         product_name: 製品名
         model_number: 型番
+        nodes_count: 端末数
       network:
         name: 名前
         vlan: VLAN番号
@@ -148,6 +153,7 @@ ja:
         building: 建屋
         floor: フロア
         room: 部屋
+        nodes_count: 端末数
       security_software:
         name: ソフトウェア名
         description: 詳細

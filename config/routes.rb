@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  resources :networks
-  resources :confirmations
   root to: 'pages#top'
   get 'about', to: 'pages#about'
 
@@ -9,10 +7,20 @@ Rails.application.routes.draw do
       get 'copy'
     end
   end
+
+  resources :networks
+
+  resources :confirmations
+
+  resources :places, only: [:index, :edit, :update] do
+    member do
+      patch 'merge'
+    end
+  end
+
   resources :operating_systems, only: [:index]
 
   devise_for :users
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
