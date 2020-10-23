@@ -17,7 +17,6 @@ class DatalistCandidation
     }
 
   getResult: (state, data) =>
-    console.log(data)
     list = data['data']
       .map (entry) => entry[@target]
     {

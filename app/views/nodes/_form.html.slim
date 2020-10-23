@@ -60,9 +60,10 @@ p 【必須】の項目は入力が必須です。
         .form-group.col-md-2
           = place_f.label :floor
           .input-group
-            = place_f.number_field :floor, class: 'form-control'
-            .input-group-append
-              span.input-group-text 階
+            = place_f.select :floor, \
+              10.downto(-5).map { |i| [t_floor(i), i] }, \
+              {},
+              class: 'custom-select'
         .form-group.col-md-4
           = place_f.label :room
           = place_f.text_field :room, class: 'form-control', \

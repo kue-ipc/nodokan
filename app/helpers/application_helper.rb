@@ -5,4 +5,16 @@ module ApplicationHelper
       t(key, scope: [:activerecord, :enums, attr_name])
     end
   end
+
+  def t_floor(number)
+    if number.zero?
+      t('helpers.floor.zero')
+    elsif number == 1
+      t('helpers.floor.one')
+    elsif number > 1
+      t('helpers.floor.positive', number: number)
+    else
+      t('helpers.floor.negative', number: - number)
+    end
+  end
 end

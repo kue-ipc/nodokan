@@ -4,4 +4,8 @@ class PlacePolicy < ApplicationPolicy
       scope.all
     end
   end
+
+  def index?
+    true
+  end
 end

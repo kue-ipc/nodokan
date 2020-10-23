@@ -1,11 +1,10 @@
 class PlacesController < ApplicationController
-  before_action :authorize_node, only: [:index]
+  before_action :authorize_place, only: [:index]
 
   def index
     permitted_params = params.permit(
       :page,
       :per,
-      :sort,
       :target,
       :format,
       order: [:id, :area, :building, :floor, :room, :nodes_count],
@@ -14,7 +13,6 @@ class PlacesController < ApplicationController
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
-    @sort = permitted_params[:sort]
     @order = permitted_params[:order]
 
     @target = permitted_params[:target]
@@ -24,6 +22,8 @@ class PlacesController < ApplicationController
 
     @places = @places.where(@condition) if @condition
 
+    @places = @places.order(@order.to_h) if @order
+
     if @target
       if ['area', 'building', 'room'].include?(@target)
         @places = @places.select(@target).distinct.page(params[:page])
@@ -31,10 +31,6 @@ class PlacesController < ApplicationController
         raise ActionController::BadRequest,
           "[places#index] invalid target: #{@target}"
       end
-    end
-
-    if @order
-      @places = @places.order(@order.to_h)
     end
 
     @places = @places.page(params[:page]).per(params[:per])
@@ -51,7 +47,7 @@ class PlacesController < ApplicationController
 
   private
 
-  def authorize_node
-    authorize Node
+  def authorize_place
+    authorize Place
   end
 end

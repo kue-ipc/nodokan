@@ -218,6 +218,12 @@ ja:
         display_entries: |
           全 <b>%{total}</b> 個の%{entry_name}のうち、
           <b>%{first}&nbsp;-&nbsp;%{last}</b> 個目を表示
+    floor:
+      zero: "-"
+      one: "1階(地上階)"
+      positive: "%{number}階"
+      negative: "地下%{number}階"
+
 
   views:
     pagination:
