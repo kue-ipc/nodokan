@@ -9,6 +9,9 @@
 p 【必須】の項目は入力が必須です。
 
 = form_for @node do |f|
+  .d-none
+    / ダミーでおいておかないと、NIC追加のサブミットが走る
+    = f.submit class: 'btn btn-primary'
   .rounded.border.p-2.mb-2
     h4 端末基本情報
     .form-row
@@ -198,12 +201,12 @@ p 【必須】の項目は入力が必須です。
             = nic_f.label :mac_address
             = nic_f.text_field :mac_address, class: 'form-control', \
               pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-              placeholder: '00-00-5E-00-53-00'
+              placeholder: '00-00-5E- ...'
           .form-group.col-md-4
             = nic_f.label :duid
             = nic_f.text_field :duid, class: 'form-control',
               pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-              placeholder: '00-03-00-01-00-00-5E-00-53-00'
+              placeholder: '00-03-00- ...'
           .form-group.col-md-4
             = nic_f.label :ip_config
             = nic_f.select :ip_config, \
