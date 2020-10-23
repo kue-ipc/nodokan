@@ -2,16 +2,15 @@ class OperatingSystemsController < ApplicationController
   before_action :authorize_operating_system, only: [:index]
 
   def index
-    os_category = params[:os_category]
-    if os_category
-      if OperatingSystem.os_categories.include?(os_category)
-        @operating_systems = policy_scope(OperatingSystem).where(os_category: os_category)
+    @target = params[:_t]
+
+    @operating_systems =
+      case @target
+      when 'name'
+        policy_scope(OperatingSystem).where(os_category: params[:os_category])
       else
-        @operating_sysetms = []
+        policy_scope(OperatingSystem).page(params[:page])
       end
-    else
-      @operating_systems = policy_scope(OperatingSystem).all
-    end
   end
 
   private

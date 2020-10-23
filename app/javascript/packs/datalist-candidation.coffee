@@ -26,7 +26,7 @@ class DatalistCandidation
     }
 
   createUrl: (attrs) ->
-    list = ("#{attr.name}=#{encodeURIComponent(attr.value)}" for attr in attrs)
+    list = ["_t=#{@target}"].concat("#{attr.name}=#{encodeURIComponent(attr.value)}" for attr in attrs)
     @url + '?' + list.join('&')
 
   view: (state) =>

@@ -1,2 +1,31 @@
-h1 Places#index
-p Find me in app/views/places/index.html.slim
+- content_for :heading
+  h2
+    = Place.model_name.human
+    = t('actions.index')
+
+table.table.table-sm
+  thead
+    tr
+      - if @target
+        th = Place.human_attribute_name(@target)
+      - else
+        th = Place.human_attribute_name(:area)
+        th = Place.human_attribute_name(:building)
+        th = Place.human_attribute_name(:floor)
+        th = Place.human_attribute_name(:room)
+        th = Place.human_attribute_name(:nodes_count)
+  tbody
+    - @places.each do |place|
+      tr
+        - if @target
+          td = place[@target]
+        - else
+          td = place.area
+          td = place.building
+          td = place.floor
+          td = place.room
+          td = place.nodes_count
+
+= paginate @places
+p
+  = page_entries_info @places

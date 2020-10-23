@@ -1,7 +1,8 @@
-h1
-  = OperatingSystem.model_name.human
+- content_for :heading
+  h2
+    = OperatingSystem.model_name.human
 
-table.table
+table.table.table-sm
   thead
     tr
       th = OperatingSystem.human_attribute_name(:os_category)
@@ -12,7 +13,9 @@ table.table
   tbody
     - @operating_systems.each do |operating_system|
       tr
-        td = operating_system.os_category
+        td
+          = t(operating_system.os_category,
+            scope: [:activerecord, :enums, :os_categories])
         td = operating_system.name
         td
           - if operating_system.eol
@@ -28,7 +31,9 @@ table.table
           - else
             span.text-muted
               | 未定
-
-
         td = operating_system.description
         td = operating_system.nodes_count
+
+= paginate @operating_systems
+p
+  = page_entries_info @operating_systems
