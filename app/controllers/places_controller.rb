@@ -15,7 +15,7 @@ class PlacesController < ApplicationController
     @per = permitted_params[:per]
     @order = permitted_params[:order]
 
-    @target = permitted_params[:target]
+    @target = permitted_params[:target]&.intern
     @condition = permitted_params[:condition]
 
     @places = policy_scope(Place)
@@ -25,7 +25,7 @@ class PlacesController < ApplicationController
     @places = @places.order(@order.to_h) if @order
 
     if @target
-      if ['area', 'building', 'room'].include?(@target)
+      if [:area, :building, :room].include?(@target)
         @places = @places.select(@target).distinct.page(params[:page])
       else
         raise ActionController::BadRequest,
@@ -33,7 +33,7 @@ class PlacesController < ApplicationController
       end
     end
 
-    @places = @places.page(params[:page]).per(params[:per])
+    @places = @places.page(@page).per(@per)
   end
 
   def edit

@@ -92,13 +92,49 @@ p 【必須】の項目は入力が必須です。
                           {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-3
           = hardware_f.label :maker
-          = hardware_f.text_field :maker, class: 'form-control'
+          = hardware_f.text_field :maker, class: 'form-control', \
+                                  list: 'node_hardware_maker-list'
+          - node_hardware_maker_params = {\
+              parent: 'node', \
+              name: 'hardware', \
+              target: 'maker', \
+              order: {maker: 'asc'}, \
+              inputList: ['device_type'], \
+              url: '/hardwares.json', \
+            }
+          #node_hardware_maker-app.datalist-canadidaiton(
+            data-params=node_hardware_maker_params.to_json
+          )
         .form-group.col-md-4
           = hardware_f.label :product_name
-          = hardware_f.text_field :product_name, class: 'form-control'
+          = hardware_f.text_field :product_name, class: 'form-control', \
+                                  list: 'node_hardware_product_name-list'
+          - node_hardware_product_name_params = {\
+              parent: 'node', \
+              name: 'hardware', \
+              target: 'product_name', \
+              order: {product_name: 'asc'}, \
+              inputList: ['device_type', 'maker'], \
+              url: '/hardwares.json', \
+            }
+          #node_hardware_product_name-app.datalist-canadidaiton(
+            data-params=node_hardware_product_name_params.to_json
+          )
         .form-group.col-md-3
           = hardware_f.label :model_number
-          = hardware_f.text_field :model_number, class: 'form-control'
+          = hardware_f.text_field :model_number, class: 'form-control', \
+                                  list: 'node_hardware_model_number-list'
+          - node_hardware_model_number_params = {\
+              parent: 'node', \
+              name: 'hardware', \
+              target: 'model_number', \
+              order: {model_number: 'asc'}, \
+              inputList: ['device_type', 'maker', 'product_name'], \
+              url: '/hardwares.json', \
+            }
+          #node_hardware_model_number-app.datalist-canadidaiton(
+            data-params=node_hardware_model_number_params.to_json
+          )
 
   .rounded.border.p-2.mb-2
     h4 OS(オペレーティングシステム)情報

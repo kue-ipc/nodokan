@@ -7,7 +7,7 @@ json.page do
 end
 json.data do
   if @target
-    json.array! @places, @target.intern
+    json.array! @places, @target
   else
     json.array! @places, partial: 'places/place', as: :place
   end

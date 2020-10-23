@@ -1,0 +1,33 @@
+- content_for :heading
+  h2
+    = Hardware.model_name.human
+    = t('actions.index')
+
+table.table.table-sm
+  thead
+    tr
+      - if @target
+        th = Hardware.human_attribute_name(@target)
+      - else
+        th = Hardware.human_attribute_name(:device_type)
+        th = Hardware.human_attribute_name(:maker)
+        th = Hardware.human_attribute_name(:product_name)
+        th = Hardware.human_attribute_name(:model_number)
+        th = Hardware.human_attribute_name(:nodes_count)
+  tbody
+    - @hardwares.each do |hardware|
+      tr
+        - if @target
+          td = hardware[@target]
+        - else
+          td
+            = t(hardware.device_type, \
+                scope: [:activerecord, :enums, :device_types])
+          td = hardware.maker
+          td = hardware.product_name
+          td = hardware.model_number
+          td = hardware.nodes_count
+
+= paginate @hardwares
+p
+  = page_entries_info @hardwares

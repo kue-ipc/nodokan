@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'hardwares/index'
+  get 'hardwares/edit'
+  get 'hardwares/update'
   root to: 'pages#top'
   get 'about', to: 'pages#about'
 
@@ -12,11 +15,8 @@ Rails.application.routes.draw do
 
   resources :confirmations
 
-  resources :places, only: [:index, :edit, :update] do
-    member do
-      patch 'merge'
-    end
-  end
+  resources :places, only: [:index, :edit, :update]
+  resources :hardwares, only: [:index, :edit, :update]
 
   resources :operating_systems, only: [:index]
 
