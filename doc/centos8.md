@@ -14,11 +14,7 @@ sudo sysctl -p
 
 ```
 sudo dnf module install mariadb:10.3/server
-sudo systemctl enable mariadb --now
-sudo mysql_secure_installation
 ```
-
-開発環境ではrootのパスワードはpassに設定する。
 
 ```/etc/my.cnf.d/client.cnf
 [client]
@@ -29,6 +25,14 @@ default-character-set=utf8mb4
 [server]
 character-set-server=utf8mb4
 ```
+
+```
+sudo systemctl enable mariadb --now
+sudo mysql_secure_installation
+```
+
+開発環境ではrootのパスワードはpassに設定する。
+
 
 ### FreeRADIUS
 
@@ -50,6 +54,7 @@ CREATE DATABASE radius;
 本番ではパスワードを適当に変える。(ファイルのデフォルトはradpass)
 
 ```
+cd /etc/raddb/mods-config/sql/main/mysql
 mysql -u root -p < setup.sql
 mysql -u root -p radius < schema.sql
 ```
@@ -116,10 +121,10 @@ sudo dnf module install ruby:2.6/common
 sudo dnf install rubygem-bundler
 sudo dnf install ruby-devel
 
-sudo dnf install rubygem-mysql2
+<!-- sudo dnf install rubygem-mysql2
 
 ffi
-mysql2
+mysql2 -->
 
 bundle install --path vendor/bundle
 
@@ -142,7 +147,7 @@ sudo dnf install yarn
 sudo dnf module install 389-directory-server:stable/default
 
 ```
-dscreate from-file ds389.inf
+sudo dscreate from-file ds389.inf
 ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password -f user_group.ldif
 ```
 

@@ -4,7 +4,9 @@
 
 ## 389 Directory Server
 
-dscreate from-file ds389.inf
+```
+sudo dscreate from-file ds389.inf
+```
 
 OUは作成済みのためuser_group.ldifのみldapadd
 
