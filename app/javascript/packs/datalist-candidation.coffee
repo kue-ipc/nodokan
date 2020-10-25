@@ -30,7 +30,7 @@ class DatalistCandidation
     list.push("target=#{@target}")
     if @order?
       for k, v of @order
-        list.push("#{k}=#{v}")
+        list.push("order[#{k}]=#{v}")
     for attr in attrs
       list.push("condition[#{attr.name}]=#{encodeURIComponent(attr.value)}")
     @url + '?' + list.join('&')

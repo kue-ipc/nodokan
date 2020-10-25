@@ -112,22 +112,13 @@ class NodesController < ApplicationController
       place: @original_node.place,
       hardware: @original_node.hardware,
       operating_system: @original_node.operating_system,
-      security_software_id: @original_node.security_software_id,
-      network_interfaces: @original_node.network_interfaces.map do |inter|
-        NetworkInterface.new(
-          name: inter.name,
-          interface_type: inter.interface_type,
-          network_connections: inter.network_connections.map do |conn|
-            NetworkConnection.new(
-              subnetwork_id: conn.subnetwork_id,
-              ip_addresses: conn.ip_addresses.map do |ip|
-                IpAddress.new(
-                  config: ip.config,
-                  family: ip.family
-                )
-              end
-            )
-          end
+      nics: @original_node.nics.map do |nic|
+        Nic.new(
+          name: nic.name,
+          interface_type: nic.interface_type,
+          network: nic.network,
+          ip_config: nic.ip_config,
+          ip6_config: nic.ip6_config,
         )
       end
     )
