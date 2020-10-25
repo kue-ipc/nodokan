@@ -121,16 +121,6 @@ sudo dnf module install ruby:2.6/common
 sudo dnf install rubygem-bundler
 sudo dnf install ruby-devel
 
-<!-- sudo dnf install rubygem-mysql2
-
-ffi
-mysql2 -->
-
-bundle install --path vendor/bundle
-
-sudo dnf install zlib-devel
-sudo dnf install mariadb-devel
-
 ### Node.js
 
 sudo dnf module install nodejs:12/common
@@ -155,3 +145,14 @@ ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password 
 
 sudo dnf module install nginx:1.16/common
 
+
+### その他に必要な
+
+sudo dnf install zlib-devel
+sudo dnf install mariadb-devel
+
+## インストールなど
+
+bundle install --path vendor/bundle
+bundle exec rails yarn:install
+bundle exec rails db:setup
