@@ -46,6 +46,25 @@
       .form-group.col-md-4
         = f.label :ip_gateway
         = f.text_field :ip_gateway, class: 'form-control'
+    .form-row
+      = f.fields_for :ip_pools do |ip_pool_f|
+        = ip_pool_f.hidden_field :id
+        .form-group.col-md-1
+          .custom-control.custom-checkbox
+            = ip_pool_f.check_box :_destroy, class: 'custom-control-input'
+            = ip_pool_f.label :_destroy, '削除', class: 'custom-control-label'
+        .form-group.col-md-3
+          = ip_pool_f.select :ip_config, t_enums(IpPool, :ip_configs), \
+            {}, class: 'custom-select'
+
+        .form-group.col-md-4
+          = ip_pool_f.text_field :first_address, class: 'form-control'
+        .form-group.col-md-4
+          = ip_pool_f.text_field :last_address, class: 'form-control'
+      .form-group.col-md-1
+        = f.submit 'IPプールを追加', class: 'btn btn-secondary', name: 'add_ip_pool'
+
+
   .rounded.border.p-2.mb-2
     h4 IPv6ネットワーク情報
     small.form-text.text-muted

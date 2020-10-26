@@ -1,31 +1,35 @@
+- content_for :heading
+  h2
+    = Network.model_name.human
+    = t('actions.index')
+
+
 h1 Listing networks
 
-table
+table.table.table-sm
   thead
     tr
-      th Name
-      th Vlan
-      th Dhcp
-      th Auth
-      th Closed
-      th Ip address
-      th Ip prefix
-      th Ip gateway
-      th Ip6 address
-      th Ip6 prefix
-      th Ip6 gateway
-      th
-      th
-      th
+      th scope="col" = Network.human_attribute_name(:name)
+      th scope="col" = Network.human_attribute_name(:vlan)
+      th scope="col" = Network.human_attribute_name(:config)
+      th scope="col" = Network.human_attribute_name(:ip_network)
+      th scope="col" = Network.human_attribute_name(:ip6_network)
 
   tbody
     - @networks.each do |network|
       tr
         td = network.name
         td = network.vlan
-        td = network.dhcp
-        td = network.auth
-        td = network.closed
+        td
+          - if network.auth
+           span.badge.badge-pill.badge-primary<>
+             = Network.human_attribute_name(:auth)
+          - if network.dhcp
+           span.badge.badge-pill.badge-secondary<>
+             = Network.human_attribute_name(:dhcp)
+          - if network.closed
+           span.badge.badge-pill.badge-dark<>
+             = Network.human_attribute_name(:closed)
         td = network.ip_network.to_s
         td = network.ip6_network.to_s
         td = link_to 'Show', network

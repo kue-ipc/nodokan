@@ -40,7 +40,7 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
-  before_save :ip_normalize, :ip6_normalize
+  before_save :ip_normalize!, :ip6_normalize!
 
   def ip_network
     return nil if ip_address.blank?
@@ -54,7 +54,7 @@ class Network < ApplicationRecord
     @ip6_network ||= "#{ip6_address}/#{ip6_prefix}"
   end
 
-  def ip_normalize
+  def ip_normalize!
     if ip_network
       ip_network_addr = IPAddress::IPv4.new(ip_network)
 
@@ -80,7 +80,7 @@ class Network < ApplicationRecord
     true
   end
 
-  def ip6_normalize
+  def ip6_normalize!
     if ip6_network
       ip6_network_addr = IPAddress::IPv6.new(ip6_network)
 
@@ -108,5 +108,36 @@ class Network < ApplicationRecord
       self.ip6_gateway = nil
     end
     true
+  end
+
+  # 空いている次のIPアドレス
+  def ip_next(ip_config: nil)
+    return unless ip_network
+
+    ip_config = ip_config&.to_s
+
+    ip_network_addr = IPAddress::IPv4.new(ip_network)
+    ip_gateway_addr = ip_gateway || IPAddress::IPv4.new(ip_gateway)
+
+    if ip_config
+      selected_ip_pools.select {|ip_pool| ip_pool.ip_config == ip_config}
+      nics_addrs = nics.map(&:ip_addr).comapct
+        .map { |addr| IPAddress::IPv4.new(addr) }
+    end
+
+    (ip_network_addr.first..ip_network_addr.last).find do |addr|
+      addr.prefix = 32
+
+      next if addr == ip_gateway_addr
+
+      if ip_config
+        selected_ip_pools.any? { |ip|pool| ip_pool.include?(addr) } &&
+          !nics_addrs.include?(addr)
+      else
+        ip_pools.all? do |ip_pool|
+          !ip_pool.include?(addr)
+        end
+      end
+    end
   end
 end

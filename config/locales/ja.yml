@@ -119,6 +119,9 @@ ja:
         ip6_prefix: プレフィックス
         ip6_gateway: IPv6ゲートウェイ
         note: 備考
+        ip_network: IPネットワーク
+        ip6_network: IPv6ネットワーク
+        config: 設定
       nic:
         node: 端末
         name: 名前

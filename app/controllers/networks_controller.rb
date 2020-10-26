@@ -16,6 +16,7 @@ class NetworksController < ApplicationController
   # GET /networks/new
   def new
     @network = Network.new
+    authorize @network
   end
 
   # GET /networks/1/edit
@@ -26,11 +27,30 @@ class NetworksController < ApplicationController
   # POST /networks.json
   def create
     @network = Network.new(network_params)
+    authorize @network
 
     respond_to do |format|
-      if @network.save
-        format.html { redirect_to @network, notice: 'Network was successfully created.' }
-        format.json { render :show, status: :created, location: @network }
+      if params['commit']
+        if @network.save
+          format.html { redirect_to @network, notice: 'Network was successfully created.' }
+          format.json { render :show, status: :created, location: @network }
+        else
+          format.html { render :new }
+          format.json { render json: @network.errors, status: :unprocessable_entity }
+        end
+      elsif params['add_ip_pool'] && @network.ip_network
+        ip_network_address = IPAddress::IPv4.new(@network.ip_network)
+        @network.ip_pools << IpPool.new(
+          ip_config: :static,
+          first_address: ip_network_address.first.to_s,
+          last_address: ip_network_address.last.to_s
+        )
+        format.html { render :new }
+        format.json { render json: @network.errors, status: :unprocessable_entity }
+      elsif params['add_ip6_pool']
+        @network.ip6_pools << Ip6Pool.new(ip_config: :static)
+        format.html { render :new }
+        format.json { render json: @network.errors, status: :unprocessable_entity }
       else
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -42,10 +62,26 @@ class NetworksController < ApplicationController
   # PATCH/PUT /networks/1.json
   def update
     respond_to do |format|
-      if @network.update(network_params)
-        format.html { redirect_to @network, notice: 'Network was successfully updated.' }
-        format.json { render :show, status: :ok, location: @network }
+      if params['commit']
+        if @network.update(network_params)
+          format.html { redirect_to @network, notice: 'Network was successfully updated.' }
+          format.json { render :show, status: :ok, location: @network }
+        else
+          format.html { render :edit }
+          format.json { render json: @network.errors, status: :unprocessable_entity }
+        end
+      elsif params['add_ip_pool']
+        @network.assign_attributes(network_params)
+        @network.ip_pools << IpPool.new(ip_config: :static)
+        format.html { render :edit }
+        format.json { render json: @network.errors, status: :unprocessable_entity }
+      elsif params['add_ip6_pool']
+        @network.assign_attributes(network_params).new(ip_config: :static)
+        @network.ip6_pools << Ip6Pool.new
+        format.html { render :edit }
+        format.json { render json: @network.errors, status: :unprocessable_entity }
       else
+        @network.assign_attributes(network_params)
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       end
@@ -83,7 +119,21 @@ class NetworksController < ApplicationController
         :ip_gateway,
         :ip6_address,
         :ip6_prefix,
-        :ip6_gateway
+        :ip6_gateway,
+        ip_pools_attributes: [
+          :id,
+          :_destroy,
+          :ip_config,
+          :first_address,
+          :last_address,
+        ],
+        ip6_pools_attributes: [
+          :id,
+          :_destroy,
+          :ip6_config,
+          :first6_address,
+          :last6_address,
+        ]
       )
     end
 
