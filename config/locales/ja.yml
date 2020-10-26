@@ -116,7 +116,7 @@ ja:
         ip_mask: サブネットマスク
         ip_gateway: ゲートウェイ
         ip6_address: IPv6アドレス
-        ip6_prefix: プレフィックス
+        ip6_prefix: IPv6プレフィックス
         ip6_gateway: IPv6ゲートウェイ
         note: 備考
         ip_network: IPネットワーク

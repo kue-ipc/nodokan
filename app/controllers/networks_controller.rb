@@ -39,16 +39,21 @@ class NetworksController < ApplicationController
           format.json { render json: @network.errors, status: :unprocessable_entity }
         end
       elsif params['add_ip_pool'] && @network.ip_network
-        ip_network_address = IPAddress::IPv4.new(@network.ip_network)
+        ip_next = @network.ip_next
         @network.ip_pools << IpPool.new(
           ip_config: :static,
-          first_address: ip_network_address.first.to_s,
-          last_address: ip_network_address.last.to_s
+          first_address: ip_next,
+          last_address: ip_next
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params['add_ip6_pool']
-        @network.ip6_pools << Ip6Pool.new(ip_config: :static)
+      elsif params['add_ip6_pool'] && @network.ip6_network
+        ip6_next = @network.ip6_next
+        @network.ip6_pools << Ip6Pool.new(
+          ip6_config: :static,
+          first6_address: ip6_next,
+          last6_address: ip6_next
+        )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       else
@@ -72,12 +77,22 @@ class NetworksController < ApplicationController
         end
       elsif params['add_ip_pool']
         @network.assign_attributes(network_params)
-        @network.ip_pools << IpPool.new(ip_config: :static)
+        ip_next = @network.ip_next
+        @network.ip_pools << IpPool.new(
+          ip_config: :static,
+          first_address: ip_next,
+          last_address: ip_next
+        )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params['add_ip6_pool']
-        @network.assign_attributes(network_params).new(ip_config: :static)
-        @network.ip6_pools << Ip6Pool.new
+      elsif params['add_ip6_pool'] && @network.ip6_network
+        @network.assign_attributes(network_params)
+        ip6_next = @network.ip6_next
+        @network.ip6_pools << Ip6Pool.new(
+          ip6_config: :static,
+          first6_address: ip6_next,
+          last6_address: ip6_next
+        )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       else

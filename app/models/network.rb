@@ -117,12 +117,14 @@ class Network < ApplicationRecord
     ip_config = ip_config&.to_s
 
     ip_network_addr = IPAddress::IPv4.new(ip_network)
-    ip_gateway_addr = ip_gateway || IPAddress::IPv4.new(ip_gateway)
+    ip_gateway_addr = ip_gateway.presence || IPAddress::IPv4.new(ip_gateway)
 
     if ip_config
-      selected_ip_pools.select {|ip_pool| ip_pool.ip_config == ip_config}
-      nics_addrs = nics.map(&:ip_addr).comapct
-        .map { |addr| IPAddress::IPv4.new(addr) }
+      selected_ip_pools = ip_pools
+        .select {|ip_pool| ip_pool.ip_config == ip_config}
+      nics_addrs = nics.map do |nic|
+        nic.ip_address.presence && IPAddress::IPv4.new(nic.ip_address)
+      end.compact
     end
 
     (ip_network_addr.first..ip_network_addr.last).find do |addr|
@@ -131,11 +133,43 @@ class Network < ApplicationRecord
       next if addr == ip_gateway_addr
 
       if ip_config
-        selected_ip_pools.any? { |ip|pool| ip_pool.include?(addr) } &&
+        selected_ip_pools.any? { |ip_pool| ip_pool.include?(addr) } &&
           !nics_addrs.include?(addr)
       else
         ip_pools.all? do |ip_pool|
           !ip_pool.include?(addr)
+        end
+      end
+    end
+  end
+
+  def ip6_next(ip6_config: nil)
+    return unless ip6_network
+
+    ip6_config = ip6_config&.to_s
+
+    ip6_network_addr = IPAddress::IPv6.new(ip6_network)
+    ip6_gateway_addr = ip6_gateway.presence || IPAddress::IPv6.new(ip6_gateway)
+
+    if ip6_config
+      selected_ip6_pools = ip6_pools
+        .select {|ip6_pool| ip6_pool.ip6_config == ip6_config}
+      nics_addrs = nics.map do |nic|
+        nic.ip6_address.presence && IPAddress::IPv6.new(nic.ip6_address)
+      end.compact
+    end
+
+    (ip6_network_addr.first..ip6_network_addr.last).find do |addr|
+      addr.prefix = 32
+
+      next if addr == ip6_gateway_addr
+
+      if ip6_config
+        selected_ip6_pools.any? { |ip6_pool| ip6_pool.include?(addr) } &&
+          !nics_addrs.include?(addr)
+      else
+        ip6_pools.all? do |ip6_pool|
+          !ip6_pool.include?(addr)
         end
       end
     end
