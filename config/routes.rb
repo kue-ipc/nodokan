@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  get 'hardwares/index'
-  get 'hardwares/edit'
-  get 'hardwares/update'
   root to: 'pages#top'
   get 'about', to: 'pages#about'
 
@@ -17,8 +14,13 @@ Rails.application.routes.draw do
 
   resources :places, only: [:index, :edit, :update]
   resources :hardwares, only: [:index, :edit, :update]
-
   resources :operating_systems, only: [:index]
+
+  resources :users, only: [:index, :show, :update] do
+    collection do
+      put 'sync'
+    end
+  end
 
   devise_for :users
 

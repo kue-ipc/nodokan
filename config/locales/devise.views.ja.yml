@@ -26,6 +26,9 @@ ja:
         unconfirmed_email: 未確認Eメール
         unlock_token: ロック解除用トークン
         updated_at: 更新日
+        fullname: フルネーム
+        role: 役割
+        deleted: 削除済み
     models:
       user: ユーザー
   devise:
