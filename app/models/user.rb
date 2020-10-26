@@ -58,10 +58,20 @@ class User < ApplicationRecord
   end
 
   def sync_ldap!
-    return unless ldap_entry
+    if deleted
+      errors.add(:deleted, 'のため、LDAP同期はできません。')
+      return
+    end
+
+    unless ldap_entry
+      errors.add(:username, 'はLDAP上にないため、同期できません。')
+      return
+    end
 
     self.email = ldap_mail
     self.fullname = ldap_display_name
+
+    ldap_entry
   end
 
   def name

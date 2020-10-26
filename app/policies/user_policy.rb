@@ -4,4 +4,8 @@ class UserPolicy < ApplicationPolicy
       scope.all
     end
   end
+
+  def show?
+    user.admin? || user == record
+  end
 end

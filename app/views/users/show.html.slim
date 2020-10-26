@@ -1,2 +1,26 @@
-h1 Users#show
-p Find me in app/views/users/show.html.slim
+- content_for :heading
+  h2
+    = User.model_name.human
+    = t('actions.show')
+
+dl.row
+  dt.col-md-5 = User.human_attribute_name(:username)
+  dd.col-md-5 = @user.username
+  dt.col-md-5 = User.human_attribute_name(:email)
+  dd.col-md-5 = @user.email
+  dt.col-md-5 = User.human_attribute_name(:fullname)
+  dd.col-md-5 = @user.fullname
+  dt.col-md-5 = User.human_attribute_name(:role)
+  dd.col-md-5 = @user.role
+  - if current_user.admin?
+    dt.col-md-5 = User.human_attribute_name(:deleted)
+    dd.col-md-5 = @user.deleted
+
+p 利用済みのネットワークをユーザーの割当から削除しても、端末での登録は削除されません。
+
+- @user.network_users.each do |network_user|
+  = network_user.network.name
+
+= form_for NetworkUser.new(user: @user), url: user_path do |f|
+  = f.hidden_field :user_id
+  = f.collection_select :network_id, Network.all, :id, :name

@@ -16,11 +16,12 @@ Rails.application.routes.draw do
   resources :hardwares, only: [:index, :edit, :update]
   resources :operating_systems, only: [:index]
 
-  resources :users, only: [:index, :show, :update] do
+  resources :users, only: [:index, :show, :create, :update] do
     collection do
       put 'sync'
     end
   end
+  resource :user, only: [:show]
 
   devise_for :users
 

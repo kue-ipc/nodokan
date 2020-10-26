@@ -28,6 +28,16 @@ class UsersController < ApplicationController
   def show
   end
 
+  def create
+    @user = User.new(user_params)
+
+    if @user.sync_ldap! && @user.save
+      redirect_to users_path, notice: '成功'
+    else
+      redirect_to users_path, alert: '失敗'
+    end
+  end
+
   def update
   end
 
@@ -37,7 +47,12 @@ class UsersController < ApplicationController
   private
 
     def set_user
-      @user = User.find(params[:id])
+      @user =
+        if params[:id]
+          User.find(params[:id])
+        else
+          current_user
+        end
       authorize @user
     end
 
