@@ -90,4 +90,8 @@ class User < ApplicationRecord
   def to_s
     name
   end
+
+  def authorizable?
+    Devise::LDAP::Adapter.authorizable?(username)
+  end
 end

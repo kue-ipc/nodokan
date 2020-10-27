@@ -19,7 +19,7 @@ h3 利用者メニュー
         | 端末の新規登録
       .card-body
         | 端末の新規登録を行います。
-        | 端末を新しく購入した場合は、こちらで登録を行うことができます。
+        | 端末を新しく購入した場合は、こちらで登録を行ってください。
   .col-sm-6.col-lg-4.col-xl-3.my-1
     = link_to nodes_path, class: 'card border-secondary' do
       .card-header.text-center
@@ -27,30 +27,22 @@ h3 利用者メニュー
       .card-body
         | 登録されている端末の一覧を表示します。
         | 端末の確認、変更、削除等を行いたい場合は、こちらにアクセスしてください。
+  .col-sm-6.col-lg-4.col-xl-3.my-1
+    = link_to networks_path, class: 'card border-secondary' do
+      .card-header.text-center
+        | ネットワーク一覧
+      .card-body
+        | 管理・閲覧可能なネットワークについて確認できます。
 
-/ = link_to '端末の新規登録', new_node_path
+- if current_user.admin?
+  hr
+  h3 管理者メニュー
 
-/ = link_to '端末の新規登録', new_node_path
-
-/ hr
-
-- if @unconfirmed_nodes_count.zero?
-  p 未確認または期限切れの端末はありません。
-- else
-  p
-  / = render '/nodes/list'
-
-
-
-/ h1 Pages#top
-/ p Find me in app/views/pages/top.html.slim
-
-/ p
-/   = link_to Node.model_name.human, nodes_path
-/ p
-/   = link_to Network.model_name.human, networks_path
-
-/ - @networks.each do |network|
-/   p
-/     = network.name
+.menu.row.mb-1
+  .col-sm-6.col-lg-4.col-xl-3.my-1
+    = link_to users_path, class: 'card border-warning' do
+      .card-header.text-center
+        | ユーザー一覧
+      .card-body
+        | ユーザーの操作を行います。
 

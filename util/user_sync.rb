@@ -18,6 +18,11 @@ if $0 == __FILE__
 
     user = User.new(username: username)
 
+    unless user.authorizable?
+      logger.warn("登録不可: #{username}")
+      next
+    end
+
     unless user.sync_ldap!
       logger.warn("登録不可: #{username}")
       next

@@ -32,7 +32,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
 
-    if @user.sync_ldap! && @user.save
+    if @user.authorizable? && @user.sync_ldap! && @user.save
       redirect_to users_path, notice: '成功'
     else
       redirect_to users_path, alert: '失敗'
