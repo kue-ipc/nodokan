@@ -17,7 +17,7 @@ authorizations: &AUTHORIZATIONS
   required_groups:
     # If only a group name is given, membership will be checked against "uniqueMember"
     - cn=admin,ou=groups,dc=example,dc=jp
-    - cn=user,ou=groups,dc=example,dc=jp
+    - cn=staff,ou=groups,dc=example,dc=jp
     # If an array is given, the first element will be the attribute to check against, the second the group name
     # - ["moreMembers", "cn=users,ou=groups,dc=test,dc=com"]
   ## Requires config.ldap_check_attributes in devise.rb to be true

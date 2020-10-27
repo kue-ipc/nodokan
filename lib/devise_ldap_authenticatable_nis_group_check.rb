@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# devise_ldap_authenticatable_nis_group_check.rb v0.1 2020-10-27
+
 # RFC 2307 LDAP as a NIS
 # setting: config.ldap_nis_group_check
 

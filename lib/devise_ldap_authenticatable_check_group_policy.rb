@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# devise_ldap_authenticatable_check_group_policy.rb v0.1 2020-10-27
+
 # check group membersip policy
 # setting
 # * config.ldap_check_group_policy = :and
