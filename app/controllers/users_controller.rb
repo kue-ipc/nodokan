@@ -26,6 +26,7 @@ class UsersController < ApplicationController
   end
 
   def show
+    @user = @user
   end
 
   def create
@@ -49,7 +50,7 @@ class UsersController < ApplicationController
     def set_user
       @user =
         if params[:id]
-          User.find(params[:id])
+          User.includes(:networks).find(params[:id])
         else
           current_user
         end

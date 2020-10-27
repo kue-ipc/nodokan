@@ -14,7 +14,8 @@ table.table.table-sm
   tbody
     - @users.each do |user|
       tr
-        td = user.username
+        td
+          = link_to user.username, user
         td = user.email
         td = user.fullname
         td = user.role

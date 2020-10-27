@@ -15,7 +15,8 @@ class NetworkUsersController < ApplicationController
         format.html { redirect_to redirect, notice: '作成しました' }
         format.json { render :show, status: :created, location: @network_user }
       else
-        format.html { redirect_to redirect, notice: '作成できませんでした。' }
+        format.html { redirect_to redirect,
+          alert: '作成できませんでした：' +  @network_user.errors.to_a.join}
         format.json { render json: @network_user.errors,
                              status: :unprocessable_entity }
       end
@@ -30,7 +31,8 @@ class NetworkUsersController < ApplicationController
         format.html { redirect_to redirect, notice: '更新しました。' }
         format.json { render :show, status: :ok, location: @network_user }
       else
-        format.html { redirect_to redirect, notice: '更新できませんでした。' }
+        format.html { redirect_to redirect,
+          alert: '更新できませんでした。' +  @network_user.errors.to_a.join}
         format.json { render json: @network_user.errors,
                              status: :unprocessable_entity }
       end
