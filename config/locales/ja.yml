@@ -163,6 +163,17 @@ ja:
       user:
         username: ユーザー名
         password: パスワード
+        fullname: フルネーム
+        role: 役割
+        deleted: 削除済み
+      network_user:
+        user: ユーザー
+        user_id: ユーザー
+        network: ネットワーク
+        network_id: ネットワーク
+        available: 利用可能
+        managable: 管理可能
+        assigned: 割当
     enums:
       device_types:
         desktop: デスクトップPC

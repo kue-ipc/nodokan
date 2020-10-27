@@ -23,6 +23,8 @@ Rails.application.routes.draw do
   end
   resource :user, only: [:show]
 
+  resources :network_users, only: [:show, :create, :update, :destroy]
+
   devise_for :users
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'

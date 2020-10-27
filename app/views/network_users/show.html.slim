@@ -1,0 +1,16 @@
+- content_for :heading
+  h2
+    = NetworkUser.model_name.human
+    = t('actions.show')
+
+dl.row
+  dt.col-md-5 = NetworkUser.human_attribute_name(:user)
+  dd.col-md-5 = @network_user.user.name
+  dt.col-md-5 = NetworkUser.human_attribute_name(:network)
+  dd.col-md-5 = @network_user.network.name
+  dt.col-md-5 = NetworkUser.human_attribute_name(:available)
+  dd.col-md-5 = @network_user.available
+  dt.col-md-5 = NetworkUser.human_attribute_name(:managable)
+  dd.col-md-5 = @network_user.managable
+  dt.col-md-5 = NetworkUser.human_attribute_name(:assigned)
+  dd.col-md-5 = @network_user.assigned

@@ -18,9 +18,43 @@ dl.row
 
 p 利用済みのネットワークをユーザーの割当から削除しても、端末での登録は削除されません。
 
-- @user.network_users.each do |network_user|
-  = network_user.network.name
+hr
 
-= form_for NetworkUser.new(user: @user), url: user_path do |f|
+h4 紐付けられたネットワーク
+
+- @user.network_users.each do |network_user|
+  - form_id = "networck_user-#{network_user.id}"
+  .mb-2
+    = bootstrap_form_for network_user, layout: :inline, namespace: form_id do |f|
+      = hidden_field_tag :redirect, user_path(@user)
+      = f.form_group :network
+        / = f.label :network_id, class: 'mr-sr-2'
+        input.form-control-plaintext type="text" readonly="readonly" value=network_user.network.name
+      = f.form_group :available, class: 'mx-1' do
+        = f.check_box :available, custom: :switch
+      = f.form_group :managable, class: 'mx-1' do
+        = f.check_box :managable, custom: :switch
+      = f.form_group :assigned, class: 'mx-1' do
+        = f.check_box :assigned, custom: :switch
+      .mx-1
+        = f.submit '更新'
+      .mx-1
+        = link_to '削除', \
+          network_user_path(network_user, redirect: user_path(@user)), \
+          data: { confirm: '本当に削除しますか？' }, \
+          method: :delete, \
+          class: 'btn btn-danger'
+
+hr
+
+= bootstrap_form_for NetworkUser.new(user: @user), layout: :inline do |f|
+  = hidden_field_tag :redirect, user_path(@user)
   = f.hidden_field :user_id
-  = f.collection_select :network_id, Network.all, :id, :name
+  = f.collection_select :network_id, Network.all, :id, :name, label: '新規'
+  = f.form_group :available, class: 'mx-1' do
+    = f.check_box :available, custom: :switch
+  = f.form_group :managable, class: 'mx-1' do
+    = f.check_box :managable, custom: :switch
+  = f.form_group :assigned, class: 'mx-1' do
+    = f.check_box :assigned, custom: :switch
+  = f.submit '追加', class: 'btn btn-primary'
