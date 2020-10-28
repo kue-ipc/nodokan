@@ -1,7 +1,6 @@
 - content_for :heading
   h2
     = Network.model_name.human
-    = t('actions.show')
 
 dl
   = dt_dd_for @network, :name
@@ -14,63 +13,12 @@ dl
   = dt_dd_for @network, :ip6_network
   = dt_dd_for @network, :ip6_gateway
 
-  / dt.col-sm-6 col-md-4 col-xl-2 col-print-full
+- if current_user.admin?
+  =<> link_to t('actions.edit'), edit_network_path(@network), \
+    class: 'btn btn-primary'
+  =<> link_to t('actions.destroy'), @network, \
+    data: { confirm: t('actions.corfirm_destroy') },
+    method: :delete
+hr
 
-  / col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-sm-6 col-md-8 col-xl-10  col-print-full
-  /  = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-  / dt.col-md-5 = Network.human_attribute_name(:name)
-  / dd.col-md-5 = @network.name
-
-
-p#notice = notice
-
-p
-  strong Name:
-  = @network.name
-p
-  strong Vlan:
-  = @network.vlan
-p
-  strong Dhcp:
-  = @network.dhcp
-p
-  strong Auth:
-  = @network.auth
-p
-  strong Closed:
-  = @network.closed
-p
-  strong Ip address:
-  = @network.ip_address
-p
-  strong Ip prefix:
-  = @network.ip_mask
-p
-  strong Ip gateway:
-  = @network.ip_gateway
-p
-  strong Ip6 address:
-  = @network.ip6_address
-p
-  strong Ip6 prefix:
-  = @network.ip6_prefix
-p
-  strong Ip6 gateway:
-  = @network.ip6_gateway
-
-=> link_to 'Edit', edit_network_path(@network)
-'|
-=< link_to 'Back', networks_path
+=<> link_to t('actions.index'), networks_path

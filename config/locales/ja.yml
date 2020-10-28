@@ -62,6 +62,23 @@ ja:
     start: 開始する
 
   messages:
+    comment: コメント
+    comment_of_action: "%{action}時のコメント"
+    content: 内容
+    content_of_action: "%{action}内容"
+    corfirm_destroy: "本当に削除してもよろしいですか？"
+    corfirm_reset: "本当にリセットしてもよろしいですか？"
+    error_prohibited_action:
+      zero: "%{model}を%{action}することができません。"
+      one: "エラーにより%{model}を%{action}することができません。"
+      other: "%{count}個のエラーにより%{model}を%{action}することができません。"
+    success_action: "%{model}を%{action}しました。"
+    failure_action: "%{model}を%{action}することができません。"
+    dispaly_detail: "詳細を確認するには%{name}をクリックしてください。"
+    cannot_modify_own: "自分自身の情報は変更できません。"
+    failure_send_notification_mail: |
+      通知メールを送信できませんでした。
+      システム管理者に問い合わせてください。
     require_javascript: |
       JavaScriptが無効のため、正常に動作させることができません。
       このWebシステムへのアクセスにはJavaScriptが必要です。
@@ -113,8 +130,8 @@ ja:
         auth: 認証
         closed: 閉域
         ip_address: IPアドレス
-        ip_mask: サブネットマスク
-        ip_gateway: ゲートウェイ
+        ip_mask: IPサブネットマスク
+        ip_gateway: IPゲートウェイ
         ip6_address: IPv6アドレス
         ip6_prefix: IPv6プレフィックス
         ip6_gateway: IPv6ゲートウェイ
@@ -246,3 +263,6 @@ ja:
       previous: "&lsaquo; 前"
       next: "次 &rsaquo;"
       truncate: "&hellip;"
+
+  values:
+    none: 無し

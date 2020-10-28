@@ -3,10 +3,7 @@
     = Network.model_name.human
     = t('actions.index')
 
-
-h1 Listing networks
-
-table.table.table-sm
+table.table.table-hover.table-sm
   thead
     tr
       th scope="col" = Network.human_attribute_name(:name)
@@ -17,7 +14,7 @@ table.table.table-sm
 
   tbody
     - @networks.each do |network|
-      tr
+      tr.clickable-row data-href="#{network_path(network)}"
         td = network.name
         td = network.vlan
         td
@@ -32,10 +29,14 @@ table.table.table-sm
              = Network.human_attribute_name(:closed)
         td = network.ip_network.to_s
         td = network.ip6_network.to_s
-        td = link_to 'Show', network
-        td = link_to 'Edit', edit_network_path(network)
-        td = link_to 'Destroy', network, data: { confirm: 'Are you sure?' }, method: :delete
+
+= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
+
+= paginate @networks
+p
+  = page_entries_info @networks
 
 br
 
-= link_to 'New Network', new_network_path
+- if current_user.admin?
+  = link_to t('actions.new'), new_network_path

@@ -31,7 +31,7 @@ class HardwaresController < ApplicationController
         @hardwares = @hardwares.select(@target).distinct
       else
         raise ActionController::BadRequest,
-          "[places#index] invalid target: #{@target}"
+          "invalid target: #{@target}"
       end
     end
 

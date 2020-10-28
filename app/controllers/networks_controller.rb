@@ -5,8 +5,31 @@ class NetworksController < ApplicationController
   # GET /networks
   # GET /networks.json
   def index
-    @networks = policy_scope(Network).all
-  end
+    permitted_params = params.permit(
+      :page,
+      :per,
+      :format,
+      order: [
+        :id, :name, :vlan,
+      ],
+      condition: [:dhcp, :auth, :closed]
+    )
+
+    @page = permitted_params[:page]
+    @per = permitted_params[:per]
+    @order = permitted_params[:order]
+
+    @target = permitted_params[:target]&.intern
+    @condition = permitted_params[:condition]
+
+    @networks = policy_scope(Network)
+
+    @networks = @networks.where(@condition) if @condition
+
+    @networks = @networks.order(@order.to_h) if @order
+
+    @networks = @networks.page(@page).per(@per)
+ end
 
   # GET /networks/1
   # GET /networks/1.json
