@@ -14,8 +14,8 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :nullify
 
   has_many :network_users, dependent: :destroy
-  has_many :avialble_network_users,
-    -> { where(avialble: true) }, class_name: 'NetworkUser'
+  has_many :available_network_users,
+    -> { where(available: true) }, class_name: 'NetworkUser'
   has_many :managable_network_users,
     -> { where(managable: true) }, class_name: 'NetworkUser'
   has_many :assigned_network_users,
@@ -33,7 +33,7 @@ class User < ApplicationRecord
                        uniqueness: {case_sensitive: true},
                        length: {maximum: 255}
   validates :email, presence: true, uniqueness: {case_sensitive: true},
-            length: {maximum: 255}
+                    length: {maximum: 255}
   validates :fullname, allow_blank: true, length: {maximum: 255}
 
   def ldap_before_save

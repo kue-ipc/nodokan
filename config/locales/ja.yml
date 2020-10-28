@@ -106,16 +106,28 @@ ja:
   activerecord:
     models:
       confirmation: 確認
-      hardware: ハードウェア
+      hardware: 機器
       ip6_pool: IPv6プール
       ip_pool: IPプール
       network: ネットワーク
-      nic: NIC(ネットワークインタフェースコントローラー)
+      nic: NIC
       node: 端末
-      operating_system: OS(オペレーティングシステム)
+      operating_system: OS
+      place: 設置場所
+      security_software: セキュリティソフト
+      network_user: ネットワーク・ユーザー
+    long_models:
+      confirmation: 端末の確認
+      hardware: 機器
+      ip6_pool: IPv6アドレス プール
+      ip_pool: IPアドレス プール
+      network: ネットワーク
+      nic: ネットワークインタフェースコントローラー
+      node: 端末
+      operating_system: オペレーティングシステム
       place: 設置場所
       security_software: セキュリティソフトウェア
-      nework_user: ネットワークとユーザー関係
+      network_user: ネットワークとユーザー関係
     attributes:
       hardware:
         device_type: 機器形態
