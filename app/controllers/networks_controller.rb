@@ -19,7 +19,6 @@ class NetworksController < ApplicationController
     @per = permitted_params[:per]
     @order = permitted_params[:order]
 
-    @target = permitted_params[:target]&.intern
     @condition = permitted_params[:condition]
 
     @networks = policy_scope(Network)

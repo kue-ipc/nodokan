@@ -11,11 +11,10 @@ p
 .mb-3
   = bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
     .input-group.mr-1
-      .input-group-prepend
-        = f.primary name: :s, class: 'btn btn-primary' do
-          i.fas.fa-search
-      = f.search_field :q, hide_label: true, value: @q
-    = f.check_box :uc, label: '要確認端末のみ表示', custom: true, checked: @uc
+      = f.search_field :query, hide_label: true, value: @query
+      .input-group-append
+        = f.primary name: :search, class: 'btn btn-primary' do
+          = icon('fas', 'search')
 
 = render 'list'
 

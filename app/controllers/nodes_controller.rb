@@ -5,28 +5,101 @@ class NodesController < ApplicationController
   # GET /nodes
   # GET /nodes.json
   def index
-    @q = params[:q].presence
-    @uc = params[:uc].presence&.to_i&.positive? || false
+    permitted_params = params.permit(
+      :page,
+      :per,
+      :format,
+      :query,
+      :search,
+      order: [
+        :id, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id, :confirmed_at,
+      ],
+      condition: [
+        :name, :hostname, :domain, :place_id, :hardware_id,
+        :operating_system_id, :confirmed_at,
+      ]
+    )
 
-    @nodes =
-      if @uc
-        policy_scope(Node).where.not(confirmed_at: Time.current.ago(1.year)..)
-          .or(policy_scope(Node).where(confirmed_at: nil))
-      else
-        policy_scope(Node)
-      end
+    @page = permitted_params[:page]
+    @per = permitted_params[:per]
+    @order = permitted_params[:order]
 
-    if @q
-      @nodes = @nodes.where(
-        'name LiKE :q OR ' \
-        'hostname LIKE :q',
-        {q: "%#{@q}%"}
+    @query = permitted_params[:query]
+
+    @condition = permitted_params[:condition]
+
+    @nodes = policy_scope(Node)
+      .includes(:place, :hardware, :operating_system, :nics)
+
+    if @query.present?
+      query_places = Place.where(
+        'area LIKE :query OR ' \
+        'building LIKE :query OR ' \
+        'room LIKE :query',
+        {query: "%#{@query}%"}
       )
+
+      query_hardwares = Hardware.where(
+        'maker LIKE :query OR ' \
+        'product_name LIKE :query OR ' \
+        'model_number LIKE :query',
+        {query: "%#{@query}%"}
+      )
+
+      query_nics = Nic.where(
+        'name LIKE :query OR ' \
+        'ip_address LIKE :query OR ' \
+        'ip6_address LIKE :query',
+        {query: "%#{@query}%"}
+      )
+
+      @nodes = @nodes
+        .where(
+          'name LiKE :query OR ' \
+          'hostname LIKE :query OR ' \
+          'domain LIKE :query',
+          {query: "%#{@query}%"}
+        )
+        .or(@nodes.where(place_id: query_places.map(&:id)))
+        .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
+        .or(@nodes.where(nics: query_nics.map(&:id)))
     end
 
-    @nodes = @nodes
-      .includes(:user, :place, :hardware, :operating_system, nics: :network)
-      .page(params[:page])
+    @nodes = @nodes.where(@condition) if @condition
+
+    @nodes = @nodes.order(@order.to_h) if @order
+
+    @nodes = @nodes.page(@page).per(@per)
+
+
+    # SELECT `nodes`.* FROM `nodes` WHERE (NOT (`nodes`.`confirmed_at` >= '2019-10-28 06:54:41') OR `nodes`.`confirmed_at` IS NULL)
+
+
+    # where('NOT (`nodes`.`confirmed_at` >= :time) OR `nodes`.`confirmed_at` IS NULL', time: Time.current.ago(1.year)...)
+    #       .or
+
+    # @q = params[:q].presence
+    # @uc = params[:uc].presence&.to_i&.positive? || false
+
+    # @nodes =
+    #   if @uc
+    #     policy_scope(Node).where.not(confirmed_at: Time.current.ago(1.year)..)
+    #       .or(policy_scope(Node).where(confirmed_at: nil))
+    #   else
+    #     policy_scope(Node)
+    #   end
+
+    # if @q
+    #   @nodes = @nodes.where(
+    #     'name LiKE :q OR ' \
+    #     'hostname LIKE :q',
+    #     {q: "%#{@q}%"}
+    #   )
+    # end
+
+    # @nodes = @nodes
+    #   .includes(:user, :place, :hardware, :operating_system, nics: :network)
+    #   .page(params[:page])
   end
 
   # GET /nodes/1
