@@ -1,3 +1,40 @@
+- content_for :heading
+  h2
+    = Network.model_name.human
+    = t('actions.show')
+
+dl
+  = dt_dd_for @network, :name
+  = dt_dd_for @network, :vlan
+  = dt_dd_for @network, :dhcp
+  = dt_dd_for @network, :auth
+  = dt_dd_for @network, :closed
+  = dt_dd_for @network, :ip_network
+  = dt_dd_for @network, :ip_gateway
+  = dt_dd_for @network, :ip6_network
+  = dt_dd_for @network, :ip6_gateway
+
+  / dt.col-sm-6 col-md-4 col-xl-2 col-print-full
+
+  / col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-sm-6 col-md-8 col-xl-10  col-print-full
+  /  = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+  / dt.col-md-5 = Network.human_attribute_name(:name)
+  / dd.col-md-5 = @network.name
+
+
 p#notice = notice
 
 p
