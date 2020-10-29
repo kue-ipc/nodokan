@@ -2,6 +2,14 @@
   h2
     = Network.model_name.human
 
+- if current_user.admin?
+  =<> link_to t('actions.edit'), edit_network_path(@network), \
+    class: 'btn btn-primary'
+  =<> link_to t('actions.destroy'), @network, \
+    data: { confirm: t('actions.corfirm_destroy') },
+    method: :delete
+hr
+
 dl
   = dt_dd_for @network, :name
   = dt_dd_for @network, :vlan
@@ -12,13 +20,25 @@ dl
   = dt_dd_for @network, :ip_gateway
   = dt_dd_for @network, :ip6_network
   = dt_dd_for @network, :ip6_gateway
+  = dt_dd_for @network, :note
 
-- if current_user.admin?
-  =<> link_to t('actions.edit'), edit_network_path(@network), \
-    class: 'btn btn-primary'
-  =<> link_to t('actions.destroy'), @network, \
-    data: { confirm: t('actions.corfirm_destroy') },
-    method: :delete
-hr
+  = dt_dd_tag '端末数' do
+    span.badge.badge-primary
+      = @network.nodes.count
+
+h3 = IpPool.model_name.human
+
+table.table.table-sm
+  thead
+    tr
+      th = IpPool.human_attribute_name(:ip_config)
+      th = IpPool.human_attribute_name(:first_address)
+      th = IpPool.human_attribute_name(:last_address)
+  tbody
+    - @network.ip_pools.sort_by(&:first).each do |ip_pool|
+      tr
+        td = t(ip_pool.ip_config, scope: [:activerecord, :enums, :ip_configs])
+        td = ip_pool.first_address
+        td = ip_pool.last_address
 
 =<> link_to t('actions.index'), networks_path

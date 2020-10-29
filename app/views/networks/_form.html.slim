@@ -84,4 +84,11 @@
         = f.label :ip6_gateway
         = f.text_field :ip6_gateway, class: 'form-control'
     / 未作成
+
+  .rounded.border.p-2.mb-2
+    .form-row
+      .form-group.col-md-12
+        = f.label :note
+        = f.text_area :note, class: 'form-control'
+
   = f.submit class: 'btn btn-primary'

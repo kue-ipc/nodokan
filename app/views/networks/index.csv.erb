@@ -12,6 +12,7 @@
   ip_pools[static]
   ip_pools[dynamic]
   ip_pools[reserved]
+  note
 ].join(',') %>
 <%- @networks.each do |network| -%>
 <%==
@@ -27,6 +28,7 @@
   network.ip_pools.select(&:ip_static?).map { |pl| pool_range(pl) }.join('|'),
   network.ip_pools.select(&:ip_dynamic?).map { |pl| pool_range(pl) }.join('|'),
   network.ip_pools.select(&:ip_reserved?).map { |pl| pool_range(pl) }.join('|'),
+  network.note
 ].to_csv
 -%>
 <%- end -%>

@@ -5,6 +5,7 @@ class Network < ApplicationRecord
   end.reverse
 
   has_many :nics, dependent: :nullify
+  has_many :nodes, through: :nics
 
   has_many :ip_pools, dependent: :destroy
   accepts_nested_attributes_for :ip_pools, allow_destroy: true

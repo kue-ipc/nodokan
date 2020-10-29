@@ -203,6 +203,10 @@ ja:
         available: 利用可能
         managable: 管理可能
         assigned: 割当
+      ip_pool:
+        ip_config: IP設定
+        first_address: 最初のアドレス
+        last_address: 最後のアドレス
     enums:
       device_types:
         desktop: デスクトップPC

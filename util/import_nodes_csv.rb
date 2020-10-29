@@ -57,7 +57,12 @@ def register_node(data)
 end
 
 if $0 == __FILE__
-  csv_file = Rails.root / 'util' / 'data' / 'nodes.csv'
+  csv_file = ARGV[0]
+  if csv_file.nil?
+    warn "USAGE: rails runner #{$0} CSV_FILE"
+    exit(1)
+  end
+
   backup_csv_file = "#{csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
   logger = Logger.new($stderr)
 

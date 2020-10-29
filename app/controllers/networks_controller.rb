@@ -163,6 +163,7 @@ class NetworksController < ApplicationController
         :ip6_address,
         :ip6_prefix,
         :ip6_gateway,
+        :note,
         ip_pools_attributes: [
           :id,
           :_destroy,

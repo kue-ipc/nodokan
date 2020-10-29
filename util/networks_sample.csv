@@ -1,0 +1,1 @@
+﻿id,name,vlan,dhcp,auth,closed,ip_network,ip_gateway,ip_pools[static],ip_pools[dynamic],ip_pools[reserved],note
