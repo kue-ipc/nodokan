@@ -17,11 +17,17 @@ class NetworksController < ApplicationController
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
+
+    if ['csv', 'json'].include?(permitted_params[:format])
+      @per = 10000
+    end
+
     @order = permitted_params[:order]
 
     @condition = permitted_params[:condition]
 
     @networks = policy_scope(Network)
+      .includes(:ip_pools, :ip6_pools)
 
     @networks = @networks.where(@condition) if @condition
 

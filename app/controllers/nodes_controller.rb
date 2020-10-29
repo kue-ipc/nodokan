@@ -22,6 +22,11 @@ class NodesController < ApplicationController
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
+
+    if ['csv', 'json'].include?(permitted_params[:format])
+      @per = 10000
+    end
+
     @order = permitted_params[:order]
 
     @query = permitted_params[:query]
@@ -29,7 +34,7 @@ class NodesController < ApplicationController
     @condition = permitted_params[:condition]
 
     @nodes = policy_scope(Node)
-      .includes(:place, :hardware, :operating_system, :nics)
+      .includes(:user, :place, :hardware, :operating_system, nics: :network)
 
     if @query.present?
       query_places = Place.where(

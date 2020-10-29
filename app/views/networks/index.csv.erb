@@ -9,8 +9,9 @@
   closed
   ip_network
   ip_gateway
-  ip6_network
-  ip6_gateway
+  ip_pools[static]
+  ip_pools[dynamic]
+  ip_pools[reserved]
 ].join(',') %>
 <%- @networks.each do |network| -%>
 <%==
@@ -23,8 +24,9 @@
   network.closed,
   network.ip_network,
   network.ip_gateway,
-  network.ip6_network,
-  network.ip6_gateway,
+  network.ip_pools.select(&:ip_static?).map { |pl| pool_range(pl) }.join('|'),
+  network.ip_pools.select(&:ip_dynamic?).map { |pl| pool_range(pl) }.join('|'),
+  network.ip_pools.select(&:ip_reserved?).map { |pl| pool_range(pl) }.join('|'),
 ].to_csv
 -%>
 <%- end -%>

@@ -10,8 +10,12 @@ class IpPool < ApplicationRecord
     @last ||= IPAddress::IPv4.new(last_address)
   end
 
+  def range
+    @range ||= Range.new(first, last)
+  end
+
   def include?(addr)
     addr = IPAddress::IPv4.new(addr.to_s) unless addr.is_a?(IPAddress::IPv4)
-    first <= addr && addr <= last
+    range.cover?(addr)
   end
 end
