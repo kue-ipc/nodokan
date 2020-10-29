@@ -226,13 +226,13 @@ ja:
         linux: Linux (Ubuntu/CentOS等)
         bsd: BSD系UNIX (FreeBSD/OpenBSD等)
         unix: System V系UNIX (Solaris/AIX等)
-        apple: Apple端末OS (iOS/iPadOS/watchOS/tvOS等)
+        apple: Apple携帯端末OS (iOS/iPadOS/watchOS/tvOS等)
         android: Android
         dedicated: 専用OS
         embedded: 組込みOS
         os_less: OS無し
         other: その他
-        unknwon: 不明
+        unknown: 不明
       interface_types:
         wired: 有線
         wireless: 無線

@@ -147,22 +147,26 @@ p 【必須】の項目は入力が必須です。
         候補に現れない場合は、そのまま名前を入れてください。
         管理者によって名前が統合される場合があります。
     .form-row
-      = f.fields_for :operating_system, \
-          @node.operating_system || OperatingSystem.new do |operating_system_f|
+      = f.fields_for :operating_system,
+        @node.operating_system || OperatingSystem.new do |operating_system_f|
         .form-group.col-md-4
           = operating_system_f.label :os_category
-          = operating_system_f.select :os_category, t_enums(OperatingSystem, :os_categories), \
-                          {prompt: '(未選択)'}, class: 'custom-select'
+          = operating_system_f.select :os_category,
+            t_enums(OperatingSystem, :os_categories),
+            {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-8
           = operating_system_f.label :name
-          = operating_system_f.text_field :name, class: 'form-control', list: 'node_operating_system_name-list'
-          - node_operating_system_name_params = {\
-              parent: 'node', \
-              name: 'operating_system', \
-              target: 'name', \
-              order: {nodes_count: 'desc'}, \
-              inputList: ['os_category'], \
-              url: '/operating_systems.json', \
+          = operating_system_f.text_field :name, class: 'form-control',
+            list: 'node_operating_system_name-list'
+          small#node_operating_system_name-description.form-text.text-muted
+          - node_operating_system_name_params = { \
+              parent: 'node',
+              name: 'operating_system',
+              target: 'name',
+              order: {nodes_count: 'desc'},
+              inputList: ['os_category'],
+              url: '/operating_systems.json',
+              description: true,
             }
           #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
 
@@ -194,9 +198,11 @@ p 【必須】の項目は入力が必須です。
             = nic_f.text_field :name, class: 'form-control'
           .form-group.col-md-4
             = nic_f.label :network
-            = nic_f.collection_select :network_id, Network.all, \
-                                       :id, :name, \
-                                       {}, class: 'custom-select'
+            = nic_f.collection_select :network_id,
+              @current_user.available_networks,
+              :id, :name,
+              {include_blank: '(接続しない)'},
+              class: 'custom-select'
           .form-group.col-md-4
             = nic_f.label :mac_address
             = nic_f.text_field :mac_address, class: 'form-control', \
@@ -211,20 +217,20 @@ p 【必須】の項目は入力が必須です。
             = nic_f.label :ip_config
             = nic_f.select :ip_config, \
                             t_enums(Nic, :ip_configs), \
-                            {}, class: 'custom-select'
+                            {}, class: 'custom-select', disabled: true
           .form-group.col-md-8
             = nic_f.label :ip_address
             = nic_f.text_field :ip_address, \
-                                class: 'form-control'
+                                class: 'form-control', disabled: true
           .form-group.col-md-4
             = nic_f.label :ip6_config
             = nic_f.select :ip6_config, \
                             t_enums(Nic, :ip6_configs), \
-                            {}, class: 'custom-select'
+                            {}, class: 'custom-select', disabled: true
           .form-group.col-md-8
             = nic_f.label :ip6_address
             = nic_f.text_field :ip6_address, \
-                                class: 'form-control'
+                                class: 'form-control', disabled: true
     = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic'
     #node-nic-list.d-none data-list="#{nic_list.to_json}"
 

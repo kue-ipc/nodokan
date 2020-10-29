@@ -3,7 +3,7 @@ class Nic < ApplicationRecord
   include Ip6Config
 
   belongs_to :node
-  belongs_to :network
+  belongs_to :network, optional: true
 
   enum interface_type: {
     wired: 0,

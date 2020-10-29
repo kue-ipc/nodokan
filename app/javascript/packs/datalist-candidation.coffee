@@ -2,10 +2,17 @@ import {h, text, app} from 'hyperapp'
 import {request} from '@hyperapp/http'
 
 class DatalistCandidation
-  constructor: ({@parent, @name, @target, @order, @inputList, @url, @per = 100}) ->
-    @appId = [@attrId(@target), 'app'].join('-')
-    @datalistId = [@attrId(@target), 'list'].join('-')
+  constructor: ({@parent, @name, @target, @order, @inputList, @url, @per = 100,
+                 @description = false}) ->
+    @targetId = @attrId(@target)
+    @appId = [@targetId, 'app'].join('-')
+    @datalistId = [@targetId, 'list'].join('-')
+    @descriptionId = [@targetId, 'description'].join('-')
+
+    @targetNode = document.getElementById(@targetId)
     @appNode = document.getElementById(@appId)
+    @descriptionNode = document.getElementById(@descriptionId)
+
     @inputNodeList = for attr in @inputList
       {
         name: attr
@@ -15,10 +22,17 @@ class DatalistCandidation
       attrs: @inputValues()
       list: []
     }
+    @data = []
+    @targetDescriptions = new Map
 
   getResult: (state, data) =>
-    list = data['data']
-      .map (entry) => entry[@target]
+    @data = data['data']
+    list = []
+    for entry in @data
+      list.push(entry[@target])
+      if @description
+        @targetDescriptions.set(entry[@target], entry['description'])
+    @updateDescription() if @description
     {
       state...
       list
@@ -27,7 +41,8 @@ class DatalistCandidation
   createUrl: (attrs) ->
     list = []
     list.push("per=#{@per}")
-    list.push("target=#{@target}")
+    unless @description
+      list.push("target=#{@target}")
     if @order?
       for k, v of @order
         list.push("order[#{k}]=#{v}")
@@ -70,6 +85,9 @@ class DatalistCandidation
       subscriptions: @subscriptions
     })
 
+    if @description
+      @targetNode.addEventListener 'change', @updateDescription
+
   attrId: (attr) ->
     [@parent, @name, attr].join('_')
 
@@ -103,6 +121,10 @@ class DatalistCandidation
       }
       @getData(newAttrs)
     ]
+
+  updateDescription: =>
+    message = @targetDescriptions.get(@targetNode.value)
+    @descriptionNode.innerText = message ? ''
 
 for node in document.getElementsByClassName('datalist-canadidaiton')
   dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
