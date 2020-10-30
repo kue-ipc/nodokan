@@ -91,27 +91,27 @@ p 【必須】の項目は入力が必須です。
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         .form-group.col-md-2
           = hardware_f.label :device_type
-          = hardware_f.select :device_type, t_enums(Hardware, :device_types), \
-                          {prompt: '(未選択)'}, class: 'custom-select'
+          = hardware_f.select :device_type, t_enums(Hardware, :device_types),
+                              {prompt: '(未選択)'}, class: 'custom-select'
         .form-group.col-md-3
           = hardware_f.label :maker
-          = hardware_f.text_field :maker, class: 'form-control', \
-                                  list: 'node_hardware_maker-list'
-          - node_hardware_maker_params = {\
-              parent: 'node', \
-              name: 'hardware', \
-              target: 'maker', \
-              order: {maker: 'asc'}, \
-              inputList: ['device_type'], \
-              url: '/hardwares.json', \
-            }
+          = hardware_f.text_field :maker, class: 'form-control',
+                                  list: 'node_hardware_maker-list',
+                                  disabled: true
+          - node_hardware_maker_params = {parent: 'node',
+                                          name: 'hardware',
+                                          target: 'maker',
+                                          order: {maker: 'asc'},
+                                          inputList: ['device_type'],
+                                          url: '/hardwares.json'}
           #node_hardware_maker-app.datalist-canadidaiton(
             data-params=node_hardware_maker_params.to_json
           )
         .form-group.col-md-4
           = hardware_f.label :product_name
-          = hardware_f.text_field :product_name, class: 'form-control', \
-                                  list: 'node_hardware_product_name-list'
+          = hardware_f.text_field :product_name, class: 'form-control',
+                                  list: 'node_hardware_product_name-list',
+                                  disabled: true
           - node_hardware_product_name_params = {\
               parent: 'node', \
               name: 'hardware', \
@@ -125,8 +125,9 @@ p 【必須】の項目は入力が必須です。
           )
         .form-group.col-md-3
           = hardware_f.label :model_number
-          = hardware_f.text_field :model_number, class: 'form-control', \
-                                  list: 'node_hardware_model_number-list'
+          = hardware_f.text_field :model_number, class: 'form-control',
+                                  list: 'node_hardware_model_number-list',
+                                  disabled: true
           - node_hardware_model_number_params = {\
               parent: 'node', \
               name: 'hardware', \
@@ -231,7 +232,8 @@ p 【必須】の項目は入力が必須です。
             = nic_f.label :ip6_address
             = nic_f.text_field :ip6_address, \
                                 class: 'form-control', disabled: true
-    = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic'
+    = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic',
+      formnovalidate: true
     #node-nic-list.d-none data-list="#{nic_list.to_json}"
 
   .rounded.border.p-2.mb-2
@@ -248,7 +250,7 @@ p 【必須】の項目は入力が必須です。
             = user_f.text_field :username, class: 'form-control-plaintext', readonly: true
         end
 
-  = f.submit class: 'btn btn-primary'
+  = f.submit class: 'btn btn-primary', formnovalidate: true
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
 = javascript_pack_tag 'node-nic', 'data-turbolinks-track': 'reload'
