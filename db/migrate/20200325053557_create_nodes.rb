@@ -14,6 +14,7 @@ class CreateNodes < ActiveRecord::Migration[6.0]
       t.text :note
 
       t.timestamp :confirmed_at
+      t.boolean :approved, null: false, default: false
 
       t.timestamps
     end

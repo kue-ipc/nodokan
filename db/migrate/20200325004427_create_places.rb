@@ -5,6 +5,7 @@ class CreatePlaces < ActiveRecord::Migration[6.0]
       t.string :building, null: false, default: ''
       t.integer :floor, null: false, default: 0
       t.string :room, null: false, default: ''
+      t.boolean :confirmed, null: false, default: false
 
       t.integer :nodes_count, null: false, default: 0
 

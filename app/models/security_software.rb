@@ -3,7 +3,7 @@ class SecuritySoftware < ApplicationRecord
 
   enum state: {
     built_in: 0,
-    distrbuted: 1,
+    distributed: 1,
     purchased: 2,
     free: 3,
     pre_installed: 4,

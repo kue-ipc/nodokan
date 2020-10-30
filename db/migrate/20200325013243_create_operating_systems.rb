@@ -4,6 +4,8 @@ class CreateOperatingSystems < ActiveRecord::Migration[6.0]
       t.integer :os_category, null: false
       t.string :name, null: false
       t.date :eol
+      t.boolean :approved, null: false, default: false
+      t.boolean :confirmed, null: false, default: false
       t.text :description
 
       t.integer :nodes_count, null: false, default: 0

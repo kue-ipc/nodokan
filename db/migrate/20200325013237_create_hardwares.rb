@@ -5,6 +5,7 @@ class CreateHardwares < ActiveRecord::Migration[6.0]
       t.string :maker, null: false, default: ''
       t.string :product_name, null: false, default: ''
       t.string :model_number, null: false, default: ''
+      t.boolean :confirmed, null: false, default: false
 
       t.integer :nodes_count, null: false, default: 0
 

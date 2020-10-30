@@ -241,6 +241,7 @@ ja:
         dialup: 電話回線
         vpn: VPN
         other: その他
+        unknown: 不明
       ip_configs:
         disabled: 無効
         static: 固定(手動設定)
