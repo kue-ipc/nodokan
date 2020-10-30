@@ -75,36 +75,6 @@ class NodesController < ApplicationController
     @nodes = @nodes.order(@order.to_h) if @order
 
     @nodes = @nodes.page(@page).per(@per)
-
-
-    # SELECT `nodes`.* FROM `nodes` WHERE (NOT (`nodes`.`confirmed_at` >= '2019-10-28 06:54:41') OR `nodes`.`confirmed_at` IS NULL)
-
-
-    # where('NOT (`nodes`.`confirmed_at` >= :time) OR `nodes`.`confirmed_at` IS NULL', time: Time.current.ago(1.year)...)
-    #       .or
-
-    # @q = params[:q].presence
-    # @uc = params[:uc].presence&.to_i&.positive? || false
-
-    # @nodes =
-    #   if @uc
-    #     policy_scope(Node).where.not(confirmed_at: Time.current.ago(1.year)..)
-    #       .or(policy_scope(Node).where(confirmed_at: nil))
-    #   else
-    #     policy_scope(Node)
-    #   end
-
-    # if @q
-    #   @nodes = @nodes.where(
-    #     'name LiKE :q OR ' \
-    #     'hostname LIKE :q',
-    #     {q: "%#{@q}%"}
-    #   )
-    # end
-
-    # @nodes = @nodes
-    #   .includes(:user, :place, :hardware, :operating_system, nics: :network)
-    #   .page(params[:page])
   end
 
   # GET /nodes/1
@@ -134,18 +104,36 @@ class NodesController < ApplicationController
     @node = Node.new(node_params)
     authorize @node
 
+    if params['add_nic']
+      @node.nics << Nic.new
+      render :new
+      return
+    end
+
+    success = false
+
+    Node.transaction do
+      if !@node.save ||
+         @node.errors.present? ||
+         @node.place&.errors&.present? ||
+         @node.hardware&.errors&.present? ||
+         @node.operating_system&.errors&.present? ||
+         @node.nics.any? { |nic| nic.errors.present? }
+        raise ActiveRecord::Rollback
+      end
+
+      success = true
+    end
+
     respond_to do |format|
-      if params['commit']
-        if @node.save
-          format.html { redirect_to @node, notice: 'Node was successfully created.' }
-          format.json { render :show, status: :created, location: @node }
-        else
-          format.html { render :new }
-          format.json { render json: @node.errors, status: :unprocessable_entity }
-        end
-      elsif params['add_nic']
-        @node.nics << Nic.new
-        format.html { render :new }
+      if success
+        format.html { redirect_to @node, notice: '端末を登録しました。' }
+        format.json { render :show, status: :created, location: @node }
+      else
+        format.html {
+          flash.now[:alert] = '端末登録に失敗しました。'
+          render :new
+        }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -154,17 +142,34 @@ class NodesController < ApplicationController
   # PATCH/PUT /nodes/1
   # PATCH/PUT /nodes/1.json
   def update
+    @node.assign_attributes(node_params)
+
+    if params['add_nic']
+      @node.nics << Nic.new
+      render :edit
+      return
+    end
+
+    success = false
+
+    Node.transaction do
+      if !@node.save ||
+         @node.errors.present? ||
+         @node.place&.errors&.present? ||
+         @node.hardware&.errors&.present? ||
+         @node.operating_system&.errors&.present? ||
+         @node.nics.any? { |nic| nic.errors.present? }
+        raise ActiveRecord::Rollback
+      end
+
+      success = true
+    end
+
     respond_to do |format|
-      if params['commit']
-        if @node.update(node_params)
-          format.html { redirect_to @node, notice: 'Node was successfully updated.' }
-          format.json { render :show, status: :ok, location: @node }
-        else
-          format.html { render :edit }
-          format.json { render json: @node.errors, status: :unprocessable_entity }
-        end
-      elsif params['add_nic']
-        @node.nics << Nic.new
+      if success
+        format.html { redirect_to @node, notice: '端末を更新しました。' }
+        format.json { render :show, status: :ok, location: @node }
+      else
         format.html { render :edit }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
@@ -264,7 +269,8 @@ class NodesController < ApplicationController
 
       operating_system =
         if permitted_params[:operating_system][:os_category].present?
-          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
+          OperatingSystem.find_or_initialize_by(
+            permitted_params[:operating_system])
         end
 
       permitted_params.except(:place, :hardware, :operating_system).merge(

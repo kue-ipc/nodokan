@@ -6,8 +6,10 @@ class Place < ApplicationRecord
   validates :floor, numericality: {
     only_integer: true,
   }
-  validates :room, length: {maximum: 255},
-                   uniqueness: {scope: [:area, :building, :floor], case_sensitive: true}
+  validates :room, length: {maximum: 255}, uniqueness: {
+      scope: [:area, :building, :floor],
+      case_sensitive: true,
+    }
 
   def name
     [area, building, floor_human, room].select(&:present?).join(' ')

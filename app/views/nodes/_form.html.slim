@@ -1,144 +1,117 @@
-- if @node.errors.any?
-  #error_explanation
-    h2 = "#{pluralize(@node.errors.count, "error")} " \
-      "prohibited this node from being saved:"
-    ul
-      - @node.errors.full_messages.each do |message|
-        li = message
-
 p 【必須】の項目は入力が必須です。
 
-= form_for @node do |f|
+= bootstrap_form_for @node do |f|
   .d-none
     / ダミーでおいておかないと、NIC追加のサブミットが走る
     = f.submit class: 'btn btn-primary'
   .rounded.border.p-2.mb-2
     h4 端末基本情報
     .form-row
-      .form-group.col-md-4
-        = f.label :name, class: 'required-label'
-        = f.text_field :name, class: 'form-control', required: true
-      .form-group.col-md-3
-        = f.label :hostname
-        = f.text_field :hostname, class: 'form-control', pattern: "[0-9A-Za-z-]*"
-      .form-group.col-md-5
-        = f.label :domain, pattern: "[.0-9A-Za-z-]*"
-        = f.text_field :domain, class: 'form-control'
+      = f.text_field :name, required: true,
+        wrapper: {class: 'col-md-4'}
+      = f.text_field :hostname, pattern: "[0-9A-Za-z-]*",
+        wrapper: {class: 'col-md-3'}
+      = f.text_field :domain, pattern: "[.0-9A-Za-z-]*",
+        wrapper: {class: 'col-md-5'}
 
   .rounded.border.p-2.mb-2
     h4 設置場所
     small.text-muted 候補に現れない場合は、そのまま名称を入力してください。管理者によって名称が統合される場合があります。
     .form-row
       = f.fields_for :place, @node.place || Place.new do |place_f|
-        .form-group.col-md-3
-          = place_f.label :area
-          = place_f.text_field :area, class: 'form-control', \
-                               list: 'node_place_area-list'
-          - node_place_area_params = {\
-              parent: 'node', \
-              name: 'place', \
-              target: 'area', \
-              order: {area: 'asc'}, \
-              inputList: [], \
-              url: '/places.json', \
-            }
-          #node_place_area-app.datalist-canadidaiton(
-            data-params=node_place_area_params.to_json
-          )
-        .form-group.col-md-3
-          = place_f.label :building
-          = place_f.text_field :building, class: 'form-control', \
-                               list: 'node_place_building-list'
-          - node_place_building_params = {\
-              parent: 'node', \
-              name: 'place', \
-              target: 'building', \
-              order: {building: 'asc'}, \
-              inputList: ['area'], \
-              url: '/places.json', \
-            }
-          #node_place_building-app.datalist-canadidaiton(
-            data-params=node_place_building_params.to_json
-          )
-        .form-group.col-md-2
-          = place_f.label :floor
-          .input-group
-            = place_f.select :floor, \
-              10.downto(-5).map { |i| [t_floor(i), i] }, \
-              {},
-              class: 'custom-select'
-        .form-group.col-md-4
-          = place_f.label :room
-          = place_f.text_field :room, class: 'form-control', \
-                               list: 'node_place_room-list'
-          - node_place_room_params = {\
-              parent: 'node', \
-              name: 'place', \
-              target: 'room', \
-              order: {nodes_count: 'desc'}, \
-              inputList: ['area', 'building', 'floor'], \
-              url: '/places.json', \
-            }
-          #node_place_room-app.datalist-canadidaiton(
-            data-params=node_place_room_params.to_json
-          )
+        = place_f.text_field :area,
+                             list: 'node_place_area-list',
+                             wrapper: {class: 'col-md-3'}
+        - node_place_area_params = {parent: 'node',
+                                    name: 'place',
+                                    target: 'area',
+                                    order: {area: 'asc'},
+                                    inputList: [],
+                                    url: '/places.json'}
+        #node_place_area-app.datalist-canadidaiton(
+          data-params=node_place_area_params.to_json
+        )
+        = place_f.text_field :building,
+                             list: 'node_place_building-list',
+                             wrapper: {class: 'col-md-3'}
+        - node_place_building_params = {parent: 'node',
+                                        name: 'place',
+                                        target: 'building',
+                                        order: {building: 'asc'},
+                                        inputList: ['area'],
+                                        url: '/places.json',}
+        #node_place_building-app.datalist-canadidaiton(
+          data-params=node_place_building_params.to_json
+        )
+        = place_f.select :floor,
+          10.downto(-5).map { |i| [t_floor(i), i] },
+          {wrapper: {class: 'col-md-2'}},
+          class: 'custom-select'
+        = place_f.text_field :room,
+                             list: 'node_place_room-list',
+                             wrapper: {class: 'col-md-4'}
+        - node_place_room_params = {parent: 'node',
+                                    name: 'place',
+                                    target: 'room',
+                                    order: {nodes_count: 'desc'},
+                                    inputList: ['area', 'building', 'floor'],
+                                    url: '/places.json'}
+        #node_place_room-app.datalist-canadidaiton(
+          data-params=node_place_room_params.to_json
+        )
 
   .rounded.border.p-2.mb-2
-    h4 ハードウェア情報
+    h4 機器情報
     small.form-text.text-muted
       | 前の項目を埋めると候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
-        .form-group.col-md-2
-          = hardware_f.label :device_type
-          = hardware_f.select :device_type, t_enums(Hardware, :device_types),
-                              {prompt: '(未選択)'}, class: 'custom-select'
-        .form-group.col-md-3
-          = hardware_f.label :maker
-          = hardware_f.text_field :maker, class: 'form-control',
-                                  list: 'node_hardware_maker-list',
-                                  disabled: true
-          - node_hardware_maker_params = {parent: 'node',
-                                          name: 'hardware',
-                                          target: 'maker',
-                                          order: {maker: 'asc'},
-                                          inputList: ['device_type'],
-                                          url: '/hardwares.json'}
-          #node_hardware_maker-app.datalist-canadidaiton(
-            data-params=node_hardware_maker_params.to_json
-          )
-        .form-group.col-md-4
-          = hardware_f.label :product_name
-          = hardware_f.text_field :product_name, class: 'form-control',
-                                  list: 'node_hardware_product_name-list',
-                                  disabled: true
-          - node_hardware_product_name_params = {\
-              parent: 'node', \
-              name: 'hardware', \
-              target: 'product_name', \
-              order: {product_name: 'asc'}, \
-              inputList: ['device_type', 'maker'], \
-              url: '/hardwares.json', \
-            }
-          #node_hardware_product_name-app.datalist-canadidaiton(
-            data-params=node_hardware_product_name_params.to_json
-          )
-        .form-group.col-md-3
-          = hardware_f.label :model_number
-          = hardware_f.text_field :model_number, class: 'form-control',
-                                  list: 'node_hardware_model_number-list',
-                                  disabled: true
-          - node_hardware_model_number_params = {\
-              parent: 'node', \
-              name: 'hardware', \
-              target: 'model_number', \
-              order: {model_number: 'asc'}, \
-              inputList: ['device_type', 'maker', 'product_name'], \
-              url: '/hardwares.json', \
-            }
-          #node_hardware_model_number-app.datalist-canadidaiton(
-            data-params=node_hardware_model_number_params.to_json
-          )
+        = hardware_f.select :device_type, t_enums(Hardware, :device_types),
+                            {include_blank: '(未確認)',
+                             wrapper: {class: 'col-md-2'}},
+                            class: 'custom-select'
+        = hardware_f.text_field :maker,
+                                list: 'node_hardware_maker-list',
+                                disabled: true,
+                                wrapper: {class: 'col-md-3'}
+        - node_hardware_maker_params = {parent: 'node',
+                                        name: 'hardware',
+                                        target: 'maker',
+                                        order: {maker: 'asc'},
+                                        inputList: ['device_type'],
+                                        url: '/hardwares.json'}
+        #node_hardware_maker-app.datalist-canadidaiton(
+          data-params=node_hardware_maker_params.to_json
+        )
+        = hardware_f.text_field :product_name,
+                                list: 'node_hardware_product_name-list',
+                                disabled: true,
+                                wrapper: {class: 'col-md-4'}
+        - node_hardware_product_name_params = {parent: 'node',
+                                               name: 'hardware',
+                                               target: 'product_name',
+                                               order: {product_name: 'asc'},
+                                               inputList: ['device_type',
+                                                           'maker'],
+                                               url: '/hardwares.json'}
+        #node_hardware_product_name-app.datalist-canadidaiton(
+          data-params=node_hardware_product_name_params.to_json
+        )
+        = hardware_f.text_field :model_number,
+                                list: 'node_hardware_model_number-list',
+                                disabled: true,
+                                wrapper: {class: 'col-md-3'}
+        - node_hardware_model_number_params = {parent: 'node',
+                                               name: 'hardware',
+                                               target: 'model_number',
+                                               order: {model_number: 'asc'},
+                                               inputList: ['device_type',
+                                                           'maker',
+                                                          'product_name'],
+                                               url: '/hardwares.json'}
+        #node_hardware_model_number-app.datalist-canadidaiton(
+          data-params=node_hardware_model_number_params.to_json
+        )
 
   .rounded.border.p-2.mb-2
     h4 OS(オペレーティングシステム)情報
@@ -150,26 +123,26 @@ p 【必須】の項目は入力が必須です。
     .form-row
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
-        .form-group.col-md-4
-          = operating_system_f.label :os_category
-          = operating_system_f.select :os_category,
-            t_enums(OperatingSystem, :os_categories),
-            {prompt: '(未選択)'}, class: 'custom-select'
-        .form-group.col-md-8
-          = operating_system_f.label :name
-          = operating_system_f.text_field :name, class: 'form-control',
-            list: 'node_operating_system_name-list'
-          small#node_operating_system_name-description.form-text.text-muted
-          - node_operating_system_name_params = { \
-              parent: 'node',
-              name: 'operating_system',
-              target: 'name',
-              order: {nodes_count: 'desc'},
-              inputList: ['os_category'],
-              url: '/operating_systems.json',
-              description: true,
-            }
-          #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
+        = operating_system_f.select :os_category,
+          t_enums(OperatingSystem, :os_categories),
+          {include_blank: '(未確認)', wrapper: {class: 'col-md-4'}},
+          class: 'custom-select'
+        = operating_system_f.text_field :name,
+          list: 'node_operating_system_name-list',
+          disabled: false,
+          wrapper: {class: 'col-md-8'}
+
+        - node_operating_system_name_params = { \
+            parent: 'node',
+            name: 'operating_system',
+            target: 'name',
+            order: {nodes_count: 'desc'},
+            inputList: ['os_category'],
+            url: '/operating_systems.json',
+            description: true,
+          }
+        #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
+    small#node_operating_system_name-description.form-text
 
   .rounded.border.p-2.mb-2
     h4 NIC(ネットワークインターフェースコントローラー)情報
@@ -185,70 +158,53 @@ p 【必須】の項目は入力が必須です。
         h6
           => count
           | 番目のNIC
-        .custom-control.custom-checkbox
-          = nic_f.check_box :_destroy, class: 'custom-control-input'
-          = nic_f.label :_destroy, 'このINCを削除する', class: 'custom-control-label'
+        / .custom-control.custom-checkbox
+        /   = nic_f.check_box :_destroy, class: 'custom-control-input'
+        /   = nic_f.label :_destroy, 'このINCを削除する', class: 'custom-control-label'
+        = nic_f.check_box :_destroy, custom: true, label: 'このINCを削除する'
         .form-row.node-nic-form
-          .form-group.col-md-4
-            = nic_f.label :interface_type
-            = nic_f.select :interface_type, \
-                            t_enums(Nic, :interface_types), \
-                            {}, class: 'custom-select'
-          .form-group.col-md-8
-            = nic_f.label :name
-            = nic_f.text_field :name, class: 'form-control'
-          .form-group.col-md-4
-            = nic_f.label :network
-            = nic_f.collection_select :network_id,
-              @current_user.available_networks,
-              :id, :name,
-              {include_blank: '(接続しない)'},
-              class: 'custom-select'
-          .form-group.col-md-4
-            = nic_f.label :mac_address
-            = nic_f.text_field :mac_address, class: 'form-control', \
-              pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-              placeholder: '00-00-5E- ...'
-          .form-group.col-md-4
-            = nic_f.label :duid
-            = nic_f.text_field :duid, class: 'form-control',
-              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-              placeholder: '00-03-00- ...'
-          .form-group.col-md-4
-            = nic_f.label :ip_config
-            = nic_f.select :ip_config, \
-                            t_enums(Nic, :ip_configs), \
-                            {}, class: 'custom-select', disabled: true
-          .form-group.col-md-8
-            = nic_f.label :ip_address
-            = nic_f.text_field :ip_address, \
-                                class: 'form-control', disabled: true
-          .form-group.col-md-4
-            = nic_f.label :ip6_config
-            = nic_f.select :ip6_config, \
-                            t_enums(Nic, :ip6_configs), \
-                            {}, class: 'custom-select', disabled: true
-          .form-group.col-md-8
-            = nic_f.label :ip6_address
-            = nic_f.text_field :ip6_address, \
-                                class: 'form-control', disabled: true
+          = nic_f.select :interface_type,
+                          t_enums(Nic, :interface_types),
+                          {prompt: '(選択してください)',
+                           wrapper: {class: 'col-md-4'}},
+                          class: 'custom-select'
+          = nic_f.text_field :name, wrapper: {class: 'col-md-8'}
+          = nic_f.collection_select :network_id,
+            @current_user.available_networks,
+            :id, :name,
+            {include_blank: '(未接続)',
+            wrapper: {class: 'col-md-4'}},
+            class: 'custom-select'
+          = nic_f.text_field :mac_address,
+            pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
+            placeholder: '00-00-5E- ...',
+            wrapper: {class: 'col-md-4'}
+          = nic_f.text_field :duid,
+            pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+            placeholder: '00-03-00- ...',
+            wrapper: {class: 'col-md-4'}
+          = nic_f.select :ip_config,
+                          t_enums(Nic, :ip_configs),
+                          {wrapper: {class: 'col-md-4'}},
+                          class: 'custom-select', disabled: true
+          = nic_f.text_field :ip_address, wrapper: {class: 'col-md-8'},
+                             disabled: true
+          = nic_f.select :ip6_config, \
+                          t_enums(Nic, :ip6_configs), \
+                          {wrapper: {class: 'col-md-4'}}, class: 'custom-select', disabled: true
+          = nic_f.text_field :ip6_address, wrapper: {class: 'col-md-8'},
+                             disabled: true
     = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic',
       formnovalidate: true
     #node-nic-list.d-none data-list="#{nic_list.to_json}"
 
   .rounded.border.p-2.mb-2
-    .form-row
-      .form-group.col-md-12
-        = f.label :note
-        = f.text_area :note, class: 'form-control'
-      .form-group.col-md-12
-        = f.fields_for :user, @node.user || current_user do |user_f|
-          = user_f.label :username, '端末管理者名'
-          - if current_user.admin?
-            = user_f.text_field :username, class: 'form-control'
-          - else
-            = user_f.text_field :username, class: 'form-control-plaintext', readonly: true
-        end
+    = f.text_area :note
+    = f.fields_for :user, @node.user || current_user do |user_f|
+      - if current_user.admin?
+        = user_f.text_field :username
+      - else
+        = user_f.text_field :username, readonly: true
 
   = f.submit class: 'btn btn-primary', formnovalidate: true
 
