@@ -11,9 +11,6 @@ class User < ApplicationRecord
     admin: 1,
   }
 
-  belongs_to :network, optional: true
-  has_and_belongs_to_many :networks
-
   has_many :nodes, dependent: :nullify
 
   has_many :network_users, dependent: :destroy
