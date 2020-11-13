@@ -158,16 +158,13 @@ p 【必須】の項目は入力が必須です。
         h6
           => count
           | 番目のNIC
-        / .custom-control.custom-checkbox
-        /   = nic_f.check_box :_destroy, class: 'custom-control-input'
-        /   = nic_f.label :_destroy, 'このINCを削除する', class: 'custom-control-label'
         = nic_f.check_box :_destroy, custom: true, label: 'このINCを削除する'
         .form-row.node-nic-form
           = nic_f.select :interface_type,
                           t_enums(Nic, :interface_types),
                           {prompt: '(選択してください)',
                            wrapper: {class: 'col-md-4'}},
-                          class: 'custom-select'
+                          class: 'custom-select', required: true
           = nic_f.text_field :name, wrapper: {class: 'col-md-8'}
           = nic_f.collection_select :network_id,
             current_user.selectable_networks,
@@ -196,7 +193,8 @@ p 【必須】の項目は入力が必須です。
                              disabled: true
     = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic',
       formnovalidate: true
-    #node-nic-list.d-none data-list="#{nic_list.to_json}"
+    script#node-nic-info type="application/json"
+      == {list: nic_list, role: current_user.role}.to_json
 
   .rounded.border.p-2.mb-2
     = f.text_area :note
@@ -206,7 +204,7 @@ p 【必須】の項目は入力が必須です。
       - else
         = user_f.text_field :username, readonly: true
 
-  = f.submit class: 'btn btn-primary', formnovalidate: true
+  = f.submit class: 'btn btn-primary'
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
 = javascript_pack_tag 'node-nic', 'data-turbolinks-track': 'reload'

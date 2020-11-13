@@ -2,8 +2,11 @@ import {h, text, app} from 'hyperapp'
 import {request} from '@hyperapp/http'
 
 class DatalistCandidation
-  constructor: ({@parent, @name, @target, @order, @inputList, @url, @per = 100,
-                 @description = false}) ->
+  constructor: ({
+    @parent, @name, @target, @order, @inputList, @url,
+    @per = 100,
+    @description = false
+  }) ->
     @targetId = @attrId(@target)
     @appId = [@targetId, 'app'].join('-')
     @datalistId = [@targetId, 'list'].join('-')
