@@ -4,7 +4,7 @@ class NetworkPolicy < ApplicationPolicy
       if user.admin?
         scope.all
       else
-        scope.includes(:users).where(users: user.id)
+        scope.includes(:users).where(users: {id: user.id})
       end
     end
   end

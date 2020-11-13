@@ -170,7 +170,7 @@ p 【必須】の項目は入力が必須です。
                           class: 'custom-select'
           = nic_f.text_field :name, wrapper: {class: 'col-md-8'}
           = nic_f.collection_select :network_id,
-            @current_user.available_networks,
+            current_user.selectable_networks,
             :id, :name,
             {include_blank: '(未接続)',
             wrapper: {class: 'col-md-4'}},
