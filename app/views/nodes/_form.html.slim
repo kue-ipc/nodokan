@@ -79,6 +79,7 @@ p 【必須】の項目は入力が必須です。
                                         target: 'maker',
                                         order: {maker: 'asc'},
                                         inputList: ['device_type'],
+                                        requiredInput: 'device_type',
                                         url: '/hardwares.json'}
         #node_hardware_maker-app.datalist-canadidaiton(
           data-params=node_hardware_maker_params.to_json
@@ -93,6 +94,7 @@ p 【必須】の項目は入力が必須です。
                                                order: {product_name: 'asc'},
                                                inputList: ['device_type',
                                                            'maker'],
+                                               requiredInput: 'device_type',
                                                url: '/hardwares.json'}
         #node_hardware_product_name-app.datalist-canadidaiton(
           data-params=node_hardware_product_name_params.to_json
@@ -108,6 +110,7 @@ p 【必須】の項目は入力が必須です。
                                                inputList: ['device_type',
                                                            'maker',
                                                           'product_name'],
+                                               requiredInput: 'device_type',
                                                url: '/hardwares.json'}
         #node_hardware_model_number-app.datalist-canadidaiton(
           data-params=node_hardware_model_number_params.to_json
@@ -129,9 +132,8 @@ p 【必須】の項目は入力が必須です。
           class: 'custom-select'
         = operating_system_f.text_field :name,
           list: 'node_operating_system_name-list',
-          disabled: false,
+          disabled: true,
           wrapper: {class: 'col-md-8'}
-
         - node_operating_system_name_params = { \
             parent: 'node',
             name: 'operating_system',
@@ -139,6 +141,7 @@ p 【必須】の項目は入力が必須です。
             order: {nodes_count: 'desc'},
             inputList: ['os_category'],
             url: '/operating_systems.json',
+            requiredInput: 'os_category',
             description: true,
           }
         #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json

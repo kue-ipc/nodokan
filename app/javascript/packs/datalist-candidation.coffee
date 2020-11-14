@@ -4,6 +4,7 @@ import {request} from '@hyperapp/http'
 class DatalistCandidation
   constructor: ({
     @parent, @name, @target, @order, @inputList, @url,
+    @requiredInput = null,
     @per = 100,
     @description = false
   }) ->
@@ -16,10 +17,11 @@ class DatalistCandidation
     @appNode = document.getElementById(@appId)
     @descriptionNode = document.getElementById(@descriptionId)
 
-    @inputNodeList = for attr in @inputList
+    @inputAttrList = for name in @inputList
       {
-        name: attr
-        node: document.getElementById(@attrId(attr))
+        name
+        node: document.getElementById(@attrId(name))
+        required: name == @requiredInput
       }
     @initialState = {
       attrs: @inputValues()
@@ -59,7 +61,7 @@ class DatalistCandidation
         h 'option', {value}
 
   subscriptions: (state) =>
-    [@watchAttr, {attr}] for attr in @inputList
+    [@watchAttr, attr] for attr in @inputAttrList
 
   clearList: (state) =>
     {
@@ -95,28 +97,41 @@ class DatalistCandidation
     [@parent, @name, attr].join('_')
 
   inputValues: ->
-    for {name, node} in @inputNodeList
-      {
-        name
-        value: node.value
-      }
+    for {name, node, required} in @inputAttrList
+      value = node.value
+      if required
+        if value? and value.length > 0
+          @targetNode.disabled = false
+        else
+          @targetNode.disabled = true
+      {name, value}
 
-  watchAttr: (dispatch, {attr}) =>
-    watchId = @attrId(attr)
-    watchNode = document.getElementById(watchId)
+  watchAttr: (dispatch, {name, node, required}) =>
+    watchId = @attrId(name)
 
     handler = (e) =>
-      dispatch(@watchChange, {name: attr, value: e.target.value})
+      dispatch(@watchChange, {name, value: e.target.value, required})
 
-    watchNode.addEventListener('change', handler)
-    -> watchNode.removeEventListener('change', handler)
+    node.addEventListener('change', handler)
+    -> node.removeEventListener('change', handler)
 
-  watchChange: (state, {name, value}) =>
+  watchChange: (state, {name, value, required}) =>
     newAttrs = for attr in state.attrs
       if attr.name == name
         {name, value}
       else
         attr
+
+    if required
+      if value? and value.length > 0
+        @targetNode.disabled = false
+      else
+        @targetNode.disabled = true
+        return {
+          state...
+          attrs: newAttrs
+        }
+
     [
       {
         state...
