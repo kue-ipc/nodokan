@@ -42,9 +42,6 @@ sudo dnf install freeradius-mysql
 sudo dnf install freeradius-ldap
 ```
 
-/etc/raddb/mods-config/sql/main/mysql
-
-
 mysql -u root -p
 ```
 CREATE DATABASE radius;
@@ -63,6 +60,7 @@ mysql -u root -p radius < schema.sql
 cd /etc/raddb/mods-enabled
 ln -s ../mods-available/sql .
 chown -h root:radiusd sql
+```
 
 ```/etc/raddb/mods-available/sql
 sql {
@@ -81,6 +79,9 @@ ldapとのダブル認証
 
 ldapは"authentication"でチェックされるようにする？
 
+```
+sudo systemctl enable radiusd --now
+```
 
 ### Kea
 
@@ -90,7 +91,6 @@ ldapは"authentication"でチェックされるようにする？
 curl -1sLf \
   'https://dl.cloudsmith.io/public/isc/kea-1-8/cfg/setup/bash.rpm.sh' \
   | sudo -E bash
-
 sudo dnf install isc-kea
 ```
 
@@ -127,6 +127,12 @@ sudo dnf module install nodejs:12/common
 
 ### Yarn
 
+新バージョン
+```
+sudo npm install -g yarn
+```
+
+旧バージョン
 ```
 curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
 sudo dnf install yarn
@@ -145,7 +151,6 @@ ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password 
 
 sudo dnf module install nginx:1.16/common
 
-
 ### その他に必要な
 
 sudo dnf install zlib-devel
@@ -153,6 +158,8 @@ sudo dnf install mariadb-devel
 
 ## インストールなど
 
-bundle install --path vendor/bundle
+bundle install --deployment
 bundle exec rails yarn:install
 bundle exec rails db:setup
+
+開発環境では`bundle install`でもいいかも
