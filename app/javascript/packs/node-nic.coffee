@@ -27,6 +27,7 @@ class NodeNic
     @rootNode = @getNode()
     @inputNodes = {}
     for name in [
+      '_destroy'
       'interface_type'
       'name'
       'network_id'
@@ -42,16 +43,16 @@ class NodeNic
     @ipAddress = @inputNodes['ip_address'].value
     @ip6Address = @inputNodes['ip6_address'].value
 
-    destroyCheckboxNode = @getNode('_destroy')
-    destroyCheckboxNode.addEventListener 'change', (e) =>
-      if e.target.checked
-        @disableForm()
-      else
-        @enableForm()
+    @inputNodes['_destroy'].addEventListener 'change', (_e) =>
+      @checkDestroy()
 
-    @applyNetwork()
+    @inputNodes['interface_type'].addEventListener 'change', (_e) =>
+      @checkInterfaceType()
+
     @inputNodes['network_id'].addEventListener 'change', (_e) =>
       @applyNetwork()
+
+    @checkDestroy()
 
   getNodeId: (names...) ->
     listToSnake(@prefixList..., names...)
@@ -59,21 +60,54 @@ class NodeNic
   getNode: (names...) ->
     document.getElementById(@getNodeId(names...))
 
-  disableForm: ->
-    for node in Object.values(@inputNodes)
-      node.disabled = true
+  checkDestroy: ->
+    if @inputNodes['_destroy'].checked
+      @disableInputs(
+        'interface_type'
+        'name'
+        'network_id'
+        'mac_address'
+        'duid'
+        'ip_config'
+        'ip_address'
+        'ip6_config'
+        'ip6_address'
+      )
+      return
 
-  enableForm: ->
-    for name in [
-      'interface_type'
+    @enableInputs('interface_type')
+    @checkInterfaceType()
+
+  checkInterfaceType: ->
+    value = @inputNodes['interface_type'].value
+    if not value? or value.length == 0
+      @disableInputs(
+        'name'
+        'network_id'
+        'mac_address'
+        'duid'
+        'ip_config'
+        'ip_address'
+        'ip6_config'
+        'ip6_address'
+      )
+      return
+
+    @enableInputs(
       'name'
       'network_id'
       'mac_address'
       'duid'
-    ]
-      @inputNodes[name].disabled = false
-
+    )
     @applyNetwork()
+
+  disableInputs: (names...) ->
+    for name in names
+      @inputNodes[name].disabled = true
+
+  enableInputs: (names...) ->
+    for name in names
+      @inputNodes[name].disabled = false
 
   applyNetwork: (@networkId = @inputNodes['network_id'].value) ->
     network = await fetchNetwork(@networkId)

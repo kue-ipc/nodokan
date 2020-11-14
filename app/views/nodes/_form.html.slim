@@ -168,20 +168,25 @@ p 【必須】の項目は入力が必須です。
                           {prompt: '(選択してください)',
                            wrapper: {class: 'col-md-4'}},
                           class: 'custom-select', required: true
-          = nic_f.text_field :name, wrapper: {class: 'col-md-8'}
+          = nic_f.text_field :name,
+            disabled: true,
+            wrapper: {class: 'col-md-8'}
           = nic_f.collection_select :network_id,
             current_user.selectable_networks,
             :id, :name,
             {include_blank: '(未接続)',
             wrapper: {class: 'col-md-4'}},
+            disabled: true,
             class: 'custom-select'
           = nic_f.text_field :mac_address,
             pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
             placeholder: '00-00-5E- ...',
+            disabled: true,
             wrapper: {class: 'col-md-4'}
           = nic_f.text_field :duid,
             pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
             placeholder: '00-03-00- ...',
+            disabled: true,
             wrapper: {class: 'col-md-4'}
           = nic_f.select :ip_config,
                           t_enums(Nic, :ip_configs),
