@@ -127,5 +127,16 @@ module ApplicationHelper
   def html_datetime_zone(time)
     time.xmlschema
   end
+
+  def badge(name, id: nil, level: :primary, enabled: true)
+    badge_classes = ['badge']
+    if enabled
+      badge_classes << "badge-#{level}"
+    else
+      badge_classes << 'badge-light' << 'text-muted'
+    end
+    content_tag('span', name, class: badge_classes, id: id)
+  end
+
 end
 

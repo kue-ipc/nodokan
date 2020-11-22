@@ -188,6 +188,18 @@ p 【必須】の項目は入力が必須です。
             placeholder: '00-03-00- ...',
             disabled: true,
             wrapper: {class: 'col-md-4'}
+          .col-md-12.form-text
+            p
+              =<> badge(Network.human_attribute_name(:auth),
+                level: :danger,
+                enabled: false)
+              =<> badge(Network.human_attribute_name(:dhcp),
+                level: :primary,
+                enabled: false)
+              =<> badge(Network.human_attribute_name(:closed),
+                level: :dark,
+                enabled: false)
+              small
           = nic_f.select :ip_config,
                           t_enums(Nic, :ip_configs),
                           {wrapper: {class: 'col-md-4'}},

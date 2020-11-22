@@ -18,15 +18,15 @@ table.table.table-hover.table-sm
         td = network.name
         td = network.vlan
         td
-          - if network.auth
-           span.badge.badge-pill.badge-primary<>
-             = Network.human_attribute_name(:auth)
-          - if network.dhcp
-           span.badge.badge-pill.badge-secondary<>
-             = Network.human_attribute_name(:dhcp)
-          - if network.closed
-           span.badge.badge-pill.badge-dark<>
-             = Network.human_attribute_name(:closed)
+          =<> badge(Network.human_attribute_name(:auth),
+            level: :danger,
+            enabled: network.auth)
+          =<> badge(Network.human_attribute_name(:dhcp),
+            level: :primary,
+            enabled: network.dhcp)
+          =<> badge(Network.human_attribute_name(:closed),
+            level: :dark,
+            enabled: network.closed)
         td = network.ip_network.to_s
         td = network.ip6_network.to_s
 

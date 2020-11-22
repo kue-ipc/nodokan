@@ -48,7 +48,6 @@ class NodeNic
         node
         initialValue: node.value
       }
-    console.log @inputs
 
     @inputs['_destroy'].node.addEventListener 'change', (_e) =>
       @checkDestroy()

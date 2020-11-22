@@ -158,6 +158,7 @@ ja:
         mac_address: MACアドレス
         duid: DUID(DHCP固有識別子)
         network: ネットワーク
+        network_id: ネットワーク
         ip_config: IP設定
         ip_address: IPアドレス
         ip6_config: IPv6設定
