@@ -1,6 +1,9 @@
 # NodeのNICを色々操作するためのJavaScript
 
 import {listToSnake, listToField} from 'modules/string_utils'
+import ipaddr from 'ipaddr.js'
+
+console.log ipaddr
 
 NETWORK_MAP = new Map
 
@@ -20,36 +23,40 @@ fetchNetwork = (id) ->
   data
 
 class NodeNic
+  @NAMES = [
+    '_destroy'
+    'interface_type'
+    'name'
+    'network_id'
+    'mac_address'
+    'duid'
+    'ip_config'
+    'ip_address'
+    'ip6_config'
+    'ip6_address'
+  ]
+
   constructor: (@number, @role) ->
     @prefixList = ['node', 'nics_attributes', @number.toString()]
     @admin = @role == 'admin'
 
     @rootNode = @getNode()
-    @inputNodes = {}
-    for name in [
-      '_destroy'
-      'interface_type'
-      'name'
-      'network_id'
-      'mac_address'
-      'duid'
-      'ip_config'
-      'ip_address'
-      'ip6_config'
-      'ip6_address'
-    ]
-      @inputNodes[name] = @getNode(name)
+    @inputs = {}
+    for name in NodeNic.NAMES
+      node = @getNode(name)
+      @inputs[name] = {
+        node
+        initialValue: node.value
+      }
+    console.log @inputs
 
-    @ipAddress = @inputNodes['ip_address'].value
-    @ip6Address = @inputNodes['ip6_address'].value
-
-    @inputNodes['_destroy'].addEventListener 'change', (_e) =>
+    @inputs['_destroy'].node.addEventListener 'change', (_e) =>
       @checkDestroy()
 
-    @inputNodes['interface_type'].addEventListener 'change', (_e) =>
+    @inputs['interface_type'].node.addEventListener 'change', (_e) =>
       @checkInterfaceType()
 
-    @inputNodes['network_id'].addEventListener 'change', (_e) =>
+    @inputs['network_id'].node.addEventListener 'change', (_e) =>
       @applyNetwork()
 
     @checkDestroy()
@@ -61,7 +68,7 @@ class NodeNic
     document.getElementById(@getNodeId(names...))
 
   checkDestroy: ->
-    if @inputNodes['_destroy'].checked
+    if @inputs['_destroy'].node.checked
       @disableInputs(
         'interface_type'
         'name'
@@ -79,7 +86,7 @@ class NodeNic
     @checkInterfaceType()
 
   checkInterfaceType: ->
-    value = @inputNodes['interface_type'].value
+    value = @inputs['interface_type'].node.value
     if not value? or value.length == 0
       @disableInputs(
         'name'
@@ -103,34 +110,34 @@ class NodeNic
 
   disableInputs: (names...) ->
     for name in names
-      @inputNodes[name].disabled = true
+      @inputs[name].node.disabled = true
 
   enableInputs: (names...) ->
     for name in names
-      @inputNodes[name].disabled = false
+      @inputs[name].node.disabled = false
 
-  applyNetwork: (@networkId = @inputNodes['network_id'].value) ->
+  applyNetwork: (@networkId = @inputs['network_id'].node.value) ->
     network = await fetchNetwork(@networkId)
 
     console.log network
 
     unless network?
-      @inputNodes['ip_config'].selectedIndex = 0
-      @inputNodes['ip_config'].disabled = true
+      @inputs['ip_config'].node.selectedIndex = 0
+      @inputs['ip_config'].node.disabled = true
 
-      @inputNodes['ip_address'].value = ''
-      @inputNodes['ip_address'].disabled = true
+      @inputs['ip_address'].node.value = ''
+      @inputs['ip_address'].node.disabled = true
 
-      @inputNodes['ip6_config'].selectedIndex = 0
-      @inputNodes['ip6_config'].disabled = true
+      @inputs['ip6_config'].node.selectedIndex = 0
+      @inputs['ip6_config'].node.disabled = true
 
-      @inputNodes['ip6_address'].value = ''
-      @inputNodes['ip6_address'].disabled = true
+      @inputs['ip6_address'].node.value = ''
+      @inputs['ip6_address'].node.disabled = true
 
-      @inputNodes['mac_address'].required = false
+      @inputs['mac_address'].node.required = false
       return
 
-    @inputNodes['mac_address'].required = network['auth']
+    @inputs['mac_address'].node.required = network['auth']
 
     # 可能なIP設定
     availableIpConfigs = new Set
@@ -171,26 +178,22 @@ class NodeNic
     console.log availableIpConfigs
     console.log availableIp6Configs
 
-    for option in @inputNodes['ip_config'].options
+    for option in @inputs['ip_config'].node.options
       if availableIpConfigs.has(option.value)
         option.disabled = false
       else
         option.disabled = true
 
-    for option in @inputNodes['ip6_config'].options
+    for option in @inputs['ip6_config'].node.options
       if availableIp6Configs.has(option.value)
         option.disabled = false
       else
         option.disabled = true
 
-    @inputNodes['ip_config'].disabled = false
-    @inputNodes['ip_address'].disabled = false
-    @inputNodes['ip6_config'].disabled = false
-    @inputNodes['ip6_address'].disabled = false
-
-
-
-
+    @inputs['ip_config'].node.disabled = false
+    @inputs['ip_address'].node.disabled = false
+    @inputs['ip6_config'].node.disabled = false
+    @inputs['ip6_address'].node.disabled = false
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id, info.role) for id in info.list
