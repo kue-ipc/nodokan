@@ -12,6 +12,7 @@
     "coffee-loader": "^1.0.1",
     "coffeescript": "^2.5.1",
     "hyperapp": "^2.0.8",
+    "ipaddr.js": "^2.0.0",
     "turbolinks": "^5.2.0"
   },
   "version": "0.1.0",
