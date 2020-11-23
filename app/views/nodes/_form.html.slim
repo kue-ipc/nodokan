@@ -192,14 +192,17 @@ p 【必須】の項目は入力が必須です。
             p
               =<> badge(Network.human_attribute_name(:auth),
                 level: :danger,
-                enabled: false)
+                enabled: false,
+                id: "node_nics_attributes_#{nic_f.index}_badge_auth")
               =<> badge(Network.human_attribute_name(:dhcp),
                 level: :primary,
-                enabled: false)
+                enabled: false,
+                id: "node_nics_attributes_#{nic_f.index}_badge_dhcp")
               =<> badge(Network.human_attribute_name(:closed),
                 level: :dark,
-                enabled: false)
-              small
+                enabled: false,
+                id: "node_nics_attributes_#{nic_f.index}_badge_closed")
+              small id="node_nics_attributes_#{nic_f.index}_network_message"
           = nic_f.select :ip_config,
                           t_enums(Nic, :ip_configs),
                           {wrapper: {class: 'col-md-4'}},

@@ -49,6 +49,25 @@ class NodeNic
         initialValue: node.value
       }
 
+    @networkMessageNode = @getNode('network_message')
+    @badges = [
+      {
+        name: 'auth'
+        node: @getNode('badge_auth')
+        level: 'danger'
+      }
+      {
+        name: 'dhcp'
+        node: @getNode('badge_dhcp')
+        level: 'primary'
+      }
+      {
+        name: 'closed'
+        node: @getNode('badge_closed')
+        level: 'danger'
+      }
+    ]
+
     @inputs['_destroy'].node.addEventListener 'change', (_e) =>
       @checkDestroy()
 
@@ -118,25 +137,34 @@ class NodeNic
   applyNetwork: (@networkId = @inputs['network_id'].node.value) ->
     network = await fetchNetwork(@networkId)
 
-    console.log network
-
     unless network?
+      @disableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
+
       @inputs['ip_config'].node.selectedIndex = 0
-      @inputs['ip_config'].node.disabled = true
-
       @inputs['ip_address'].node.value = ''
-      @inputs['ip_address'].node.disabled = true
-
       @inputs['ip6_config'].node.selectedIndex = 0
-      @inputs['ip6_config'].node.disabled = true
-
       @inputs['ip6_address'].node.value = ''
-      @inputs['ip6_address'].node.disabled = true
 
       @inputs['mac_address'].node.required = false
+
+      for {node} in @badges
+        node.className = 'badge badge-light text-muted'
+
       return
 
-    @inputs['mac_address'].node.required = network['auth']
+    if network['auth']
+      @networkMessageNode.textContent = '認証ネットワークに接続するには、MACアドレスが必要です。'
+      # 管理者の場合は必須としない
+      @inputs['mac_address'].node.required = !@admin
+    else
+      @networkMessageNode.textContent = ''
+      @inputs['mac_address'].node.required = false
+
+    for {name, node, level} in @badges
+      if network[name]
+        node.className = "badge badge-#{level}"
+      else
+        node.className = 'badge badge-light text-muted'
 
     # 可能なIP設定
     availableIpConfigs = new Set
@@ -154,6 +182,9 @@ class NodeNic
               availableIpConfigs.add('dynamic')
       if not network['dhcp'] and network['closed']
         availableIpConfigs.add('link_local')
+      if @admin
+        # 管理者は固定で設定可能
+        availableIpConfigs.add('static')
     else
       availableIpConfigs.add('link_local')
 
@@ -171,11 +202,14 @@ class NodeNic
           when 'dynamic'
             # DHCPでなくても自動は可能
             availableIp6Configs.add('dynamic')
+      if @admin
+        # 管理者は固定で設定可能
+        availableIp6Configs.add('static')
     else
       availableIp6Configs.add('link_local')
 
-    console.log availableIpConfigs
-    console.log availableIp6Configs
+    # console.log availableIpConfigs
+    # console.log availableIp6Configs
 
     for option in @inputs['ip_config'].node.options
       if availableIpConfigs.has(option.value)
@@ -189,6 +223,8 @@ class NodeNic
       else
         option.disabled = true
 
+    @enableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
+
     @inputs['ip_config'].node.disabled = false
     @inputs['ip_address'].node.disabled = false
     @inputs['ip6_config'].node.disabled = false
@@ -196,4 +232,3 @@ class NodeNic
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id, info.role) for id in info.list
-
