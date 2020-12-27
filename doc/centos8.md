@@ -75,6 +75,8 @@ sql {
 }
 ```
 
+tlsの設定を外さないといけない？
+
 ldapとのダブル認証
 
 ldapは"authentication"でチェックされるようにする？
@@ -162,4 +164,4 @@ bundle install --deployment
 bundle exec rails yarn:install
 bundle exec rails db:setup
 
-開発環境では`bundle install`でもいいかも
+開発環境では`sudo bundle install`としないとコンパイルされたsoファイルが入らない。
