@@ -119,9 +119,10 @@ kea-admin db-init mysql -u kea -p keapass -n kea
 
 ### Ruby
 
-sudo dnf module install ruby:2.6/common
-sudo dnf install rubygem-bundler
+sudo dnf module install ruby:2.7/common
 sudo dnf install ruby-devel
+
+古いバージョンでは rubygem-bundler も必要になる。
 
 ### Node.js
 
@@ -164,4 +165,11 @@ bundle install --deployment
 bundle exec rails yarn:install
 bundle exec rails db:setup
 
-開発環境では`sudo bundle install`としないとコンパイルされたsoファイルが入らない。
+rbenv以外の開発環境では
+
+```
+bundle config set path 'vendor/bundle'
+bundle install
+```
+
+とする。

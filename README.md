@@ -1,3 +1,11 @@
+# nodekan
+
+## システム要件
+
+* Ruby 2.8
+* Node.js 14
+* MariaDB 10.3
+
 # README
 
 This README would normally document whatever steps are necessary to get the
