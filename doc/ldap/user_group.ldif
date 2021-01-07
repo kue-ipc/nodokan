@@ -46,7 +46,7 @@ displayName;lang-ja:: 566h55CG44CA5LiA6YOO
 givenName: Kanri
 givenName;lang-ja:: 5LiA6YOO
 mail: admin@example.jp
-userPassword: password
+userPassword: pass+admin42
 
 dn: uid=user01,ou=people,dc=example,dc=jp
 objectClass: posixAccount

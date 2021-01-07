@@ -20,4 +20,13 @@ curl -1sLf \
 sudo apt install isc-kea-admin isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent
 ```
 
+## 開発環境
+
 開発環境はopenldapを入れる
+
+
+DBは作成権限も付ける
+
+```
+GRANT ALL ON *.* TO 'nodokan'@'localhost' IDENTIFIED BY 'pass+nodokan42' WITH GRANT OPTION;
+```

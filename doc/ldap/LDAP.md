@@ -14,6 +14,7 @@ OUは作成済みのためuser_group.ldifのみldapadd
 
 ```
 sudo apt install slapd
+sudo apt install ldap-utils
 ```
 初期設定
 

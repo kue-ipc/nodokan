@@ -1,6 +1,6 @@
 site:
   title: null
 database:
-  username: root
-  password: pass
+  username: nodokan
+  password: pass+nodokan42
   host: localhost
