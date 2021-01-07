@@ -12,6 +12,9 @@ OUは作成済みのためuser_group.ldifのみldapadd
 
 ## OpenLDAP (Ubuntu)
 
+```
+sudo apt install slapd
+```
 初期設定
 
 DNS ドメイン名: example.jp
