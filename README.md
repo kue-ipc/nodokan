@@ -2,7 +2,7 @@
 
 ## システム要件
 
-* Ruby 2.8
+* Ruby 2.7
 * Node.js 14
 * MariaDB 10.3
 
