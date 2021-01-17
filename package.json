@@ -4,20 +4,21 @@
   "dependencies": {
     "@babel/preset-react": "^7.12.10",
     "@hyperapp/http": "^0.0.2",
-    "@rails/actioncable": "^6.1.0",
-    "@rails/activestorage": "^6.1.0",
-    "@rails/ujs": "^6.1.0",
+    "@rails/actioncable": "^6.1.1",
+    "@rails/activestorage": "^6.1.1",
+    "@rails/ujs": "^6.1.1",
     "@rails/webpacker": "^5.2.1",
     "bootstrap.native": "^3.0.14",
-    "coffee-loader": "^2.0.0",
+    "coffee-loader": "^1.0.1",
     "coffeescript": "^2.5.1",
     "hyperapp": "^2.0.8",
     "ipaddr.js": "^2.0.0",
+    "sass": "^1.32.4",
     "turbolinks": "^5.2.0"
   },
   "version": "0.1.0",
   "devDependencies": {
     "npm-check-updates": "^10.2.5",
-    "webpack-dev-server": "^3.11.1"
+    "webpack-dev-server": "^3.11.2"
   }
 }
