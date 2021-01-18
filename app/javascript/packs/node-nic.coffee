@@ -3,8 +3,6 @@
 import {listToSnake, listToField} from 'modules/string_utils'
 import ipaddr from 'ipaddr.js'
 
-console.log ipaddr
-
 NETWORK_MAP = new Map
 
 fetchNetwork = (id) ->
@@ -135,7 +133,14 @@ class NodeNic
       @inputs[name].node.disabled = false
 
   applyNetwork: (@networkId = @inputs['network_id'].node.value) ->
-    network = await fetchNetwork(@networkId)
+    try
+      network = await fetchNetwork(@networkId)
+    catch
+      @disableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
+      for {node} in @badges
+        node.className = 'badge badge-light text-muted'
+
+      return
 
     unless network?
       @disableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
@@ -208,9 +213,6 @@ class NodeNic
     else
       availableIp6Configs.add('link_local')
 
-    # console.log availableIpConfigs
-    # console.log availableIp6Configs
-
     for option in @inputs['ip_config'].node.options
       if availableIpConfigs.has(option.value)
         option.disabled = false
@@ -224,11 +226,6 @@ class NodeNic
         option.disabled = true
 
     @enableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
-
-    @inputs['ip_config'].node.disabled = false
-    @inputs['ip_address'].node.disabled = false
-    @inputs['ip6_config'].node.disabled = false
-    @inputs['ip6_address'].node.disabled = false
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id, info.role) for id in info.list

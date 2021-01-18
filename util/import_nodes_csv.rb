@@ -38,16 +38,20 @@ def register_node(data)
 
   network = Network.find_by(vlan: data['nic[network][vlan]'])
 
-  node.nics = [
-    Nic.new(
-      interface_type: data['nic[interface_type]'] || 'unknown',
-      name: data['nic[name]'],
-      mac_address: data['nic[mac_address]'],
-      network: Network.find_by(vlan: data['nic[network][vlan]']),
-      ip_config: data['nic[ip_config]'],
-      ip_address: data['nic[ip_address]'],
-    ),
-  ]
+  if network
+    node.nics = [
+      Nic.new(
+        interface_type: data['nic[interface_type]'] || 'unknown',
+        name: data['nic[name]'],
+        mac_address: data['nic[mac_address]'],
+        network: network,
+        ip_config: data['nic[ip_config]'],
+        ip_address: data['nic[ip_address]'],
+      ),
+    ]
+  else
+    raise 'no network'
+  end
 
   if node.save
     node.id
