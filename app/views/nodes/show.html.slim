@@ -4,6 +4,8 @@
 dl.row
   dt.col-md-5 = Node.human_attribute_name(:name)
   dd.col-md-5 = @node.name
+  dt.col-md-5 = Node.human_attribute_name(:note)
+  dd.col-md-5 = @node.note
   dt.col-md-5 = Node.human_attribute_name(:fqdn)
   dd.col-md-5 = @node.fqdn
   dt.col-md-5 = Node.human_attribute_name(:place)
@@ -13,162 +15,178 @@ dl.row
   dt.col-md-5 = Node.human_attribute_name(:operating_system)
   dd.col-md-5 = @node.operating_system&.name
   dt.col-md-5 = Node.human_attribute_name(:nics)
-  dd.col-md-5
-    - @node.nics.each do |nic|
+  - @node.nics.each do |nic|
+    dd.col-md-5
       = nic.mac_address
       = nic.ip_address
+      | (
+      = nic.network&.name
+      | )
 
 p
-  | 内容に違いがある場合は「編集」ボタンから編集を行ってください。
+  | 内容に間違いがある場合は「編集」ボタンから編集を行ってください。
   | 内容に問題がない場合は、確認を行ってください。
 
+button.btn.btn-primary type="button" data-toggle="modal" data-target="#confirm-form-modal"
+  = t(:confirm, scope: [:actions])
+=<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
+  class: 'btn btn-warning'
+=<> link_to t(:destroy, scope: [:actions]), @node,
+  data: { confirm: t(:corfirm_destroy, scope: [:messages]) }, method: :delete,
+  class: 'btn btn-danger'
+hr
+=< link_to t(:back, scope: [:actions]), nodes_path
+
+#confirm-form-modal.modal.fade tabindex="-1" role="dialog"
+  .modal-dialog.modal-xl role="document"
+    .modal-content
+      .modal-header
+        h5.modal-title 確認事項
+        button.close type="button" data-dismiss="modal" aria-label="Close"
+          span aria-hidden="true" &times;
+      = bootstrap_form_for @confirmation do |f|
+        .modal-body
+          = f.hidden_field :user_id
+          = f.hidden_field :node_id
+          p
+            | 端末について下記を確認・チェックし、「確認終了」を押してください。
+          = f.form_group :existence,
+            label: { text: tag.strong('設問1') + tag.span(' 該当の端末は存在しますか？') },
+            help: '「存在する」以外を選択した場合は、そのまま確認を終了してください。' do
+            - t_enums(Confirmation, :existences).each do |message, value|
+              = f.radio_button :existence, value, label: message
+          #node-confirm-questions.collapse
+            / .form-group
+            /   .form-text
+            /     strong> 設問1
+            /     | 該当の端末は存在しますか？
+            /   .custom-control.custom-radio
+            /     = f.radio_button_tag :existence, 'existing', false, class: 'custom-control-input'
+            /     = label_tag :existence_existing, '存在します。', class: 'custom-control-label'
+            /   .custom-control.custom-radio
+            /     = radio_button_tag :existence, 'missing', false, class: 'custom-control-input'
+            /     = label_tag :existence_missing, '行方不明です。', class: 'custom-control-label'
+            /   .custom-control.custom-radio
+            /     = radio_button_tag :existence, 'abandoned', false, class: 'custom-control-input'
+            /     = label_tag :existence_abandoned, '廃棄しました。', class: 'custom-control-label'
+            .form-group
+              .form-text
+                strong> 設問2
+                | 本システムに登録されていた情報は正しいですか？
+              .custom-control.custom-radio
+                = radio_button_tag :information, 'right', false, class: 'custom-control-input'
+                = label_tag :information_right, '正しい。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
+                = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
+                = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
+            .form-group
+              .form-text
+                strong> 設問3
+                | OSのアップデート(Windows Update、ソフトウェア・アップデート)はいつ実施しましたか？
+              .form-inline
+                .custom-control.custom-radio
+                  = radio_button_tag :os_update, 'manual', false, class: 'custom-control-input'
+                  = label_tag :os_update, '手動実施により全て正常にアップデートされ、セキュリティ更新がないことを確認した。', class: 'custom-control-label'
+                .input-group.mb-1
+                  .input-group-prepend
+                    span.input-group-text 実施日
+                  = date_field_tag :os_update_manual_date, nil, class: 'form-control'
+              .form-inline
+                .custom-control.custom-radio
+                  = radio_button_tag :os_update, 'auto', false, class: 'custom-control-input'
+                  = label_tag :information_wrong, '自動更新により全て正常にアップデートされ、「最新の状態」であることを確認した。', class: 'custom-control-label'
+                .input-group.mb-1
+                  .input-group-prepend
+                    span.input-group-text 前回の確認日
+                  = date_field_tag :os_update_auto_date, nil, class: 'form-control'
+              .form-inline
+                .custom-control.custom-radio
+                  = radio_button_tag :os_update, 'unnecessary', false, class: 'custom-control-input'
+                  = label_tag :information_wrong, '現在使用中のバージョンに対するセキュリティ更新がなく、アップデートが不要であることを確認した。(セルフアップデート機能を持たないアプライアンス製品やネットワーク機器等の場合のみ)', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :os_update, 'failed', false, class: 'custom-control-input'
+                = label_tag :information_wrong, 'アップデートに失敗し、最新の状態にならない。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :os_update, 'none', false, class: 'custom-control-input'
+                = label_tag :information_wrong, 'アップデートは実施していない。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'impossible', false, class: 'custom-control-input'
+                = label_tag :information_unknown, 'OSや機器のサポートが終了しているため、セキュリティ更新の提供を受けることができない。', class: 'custom-control-label'
+            .form-group
+              .form-text
+                strong> 設問3
+                | Microsoft Office製品について、アップデートはいつ実施しましたか？
+              .custom-control.custom-radio
+                = radio_button_tag :information, 'microsoft', false, class: 'custom-control-input'
+                = label_tag :information_right, 'Windowsの更新時に他のMicrosoft製品の更新プロフラムを受け取る機能を有効にしている。(Windowsのみ)', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :information, 'microsoft', false, class: 'custom-control-input'
+                = label_tag :information_right, 'Windowsの更新時に他のMicrosoft製品の更新プロフラムを受け取る機能を有効にしている。(Windowsのみ)', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
+                = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
+                = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
+            .form-group
+              .form-text
+                strong> 設問3
+                | ストア(Microsoft Store、App Store、Google Play)で、アップデートはいつ実施しましたか？
+              .custom-control.custom-radio
+                = radio_button_tag :information, 'right', false, class: 'custom-control-input'
+                = label_tag :information_right, '正しい。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
+                = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
+                = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
+
+            .form-group
+              .form-text
+                strong> 設問3
+                | その他のアプリケーション(Google Chrome、Mozilla Firefox、Mozilla Thunderbird、Adobe Reader)で、アップデートはいつ実施しましたか？
+              .custom-control.custom-radio
+                = radio_button_tag :information, 'right', false, class: 'custom-control-input'
+                = label_tag :information_right, '正しい。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
+                = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
+              .custom-control.custom-radio
+                = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
+                = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
+        .modal-footer
+          = f.submit '確認終了', class: 'btn btn-primary'
+          button.btn.btn-secondary data-dismiss="modal"
+            | 確認せずに
+            = t(:close, scope: [:do_actions])
+
+= javascript_pack_tag 'node-confirm', 'data-turbolinks-track': 'reload'
 
 
-= link_to '確認', '#'
-=> link_to 'Edit', edit_node_path(@node)
-'|
-= link_to 'Edit', edit_node_path(@node)
-= link_to 'Destroy', @node, data: { confirm: 'Are you sure?' }, method: :delete
+/ | セキュリティソフトウェア(ウイルス・マルウェア対策ソフトウェア)のインストール状況
 
-p
-  strong Name:
-  = @node.name
-p
-  strong Confirmed at:
-  = @node.confirmed_at
-p
-  strong Note:
-  = @node.note
-
-=< link_to 'Back', nodes_path
+/ | - OSに組み込まれた標準のセキュリティソフトウェアを使用しています。(Windows Defender)
+/ | - ディストリビューションまたはアプライアンス提供のセキュリティソフトウェアをインストールしています。(UbuntuのClamAV等)
+/ | - 高度に保護されたOSであるため、セキュリティソフトウェアは不要です。(macOS、)
+/ | - 開発元が承認したアプリケーション以外は実行できないスマートフォン・タブレット・表示デバイスであるため、セキュリティソフトウェアは不要です。(iOS、iPadOS、tvOS、watchOS、「提供元不明のアプリ」を有効にしていないAndroid)
+/ | - 機器・特定用途向け・アプライアンスの専用OSであるため、セキュリティソフトウェアは不要です。
+/ | - 情報管理部門が提供するセキュリティソフトウェアをインストールしています。
+/ | - 個別に購入したセキュリティソフトウェアをインストールしています。
+/ | - オープンソースのセキュリティソフトをインストールしています。(ClamAV)
+/ | - 無料のセキュリティソフトをインストールしています。(avast、Avira、AVG等)
+/ | セキュリティソフトウェア名:
 
 
-p
-  | 端末について下記を確認し、問題ないければ「確認終了」を押してください。
-= form_tag '/node', method: 'post' do
-  .form-group
-    .form-text
-      strong> 設問1
-      | 該当の端末は存在しますか？
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'existing', false, class: 'custom-control-input'
-      = label_tag :existence_existing, '存在します。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'missing', false, class: 'custom-control-input'
-      = label_tag :existence_missing, '行方不明です。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'abandoned', false, class: 'custom-control-input'
-      = label_tag :existence_abandoned, '廃棄しました。', class: 'custom-control-label'
-  .form-group
-    .form-text
-      strong> 設問2
-      | 本システムに登録されていた情報は正しいですか？
-    .custom-control.custom-radio
-      = radio_button_tag :information, 'right', false, class: 'custom-control-input'
-      = label_tag :information_right, '正しい。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
-      = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
-      = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
-  .form-group
-    .form-text
-      strong> 設問3
-      | OSのアップデート(Windows Update、ソフトウェア・アップデート)はいつ実施しましたか？
-    .form-inline
-      .custom-control.custom-radio
-        = radio_button_tag :os_update, 'manual', false, class: 'custom-control-input'
-        = label_tag :os_update, '手動実施により全て正常にアップデートされ、セキュリティ更新がないことを確認した。', class: 'custom-control-label'
-      .input-group.mb-1
-        .input-group-prepend
-          span.input-group-text 実施日
-        = date_field_tag :os_update_manual_date, nil, class: 'form-control'
-    .form-inline
-      .custom-control.custom-radio
-        = radio_button_tag :os_update, 'auto', false, class: 'custom-control-input'
-        = label_tag :information_wrong, '自動更新により全て正常にアップデートされ、「最新の状態」であることを確認した。', class: 'custom-control-label'
-      .input-group.mb-1
-        .input-group-prepend
-          span.input-group-text 前回の確認日
-        = date_field_tag :os_update_auto_date, nil, class: 'form-control'
-    .form-inline
-      .custom-control.custom-radio
-        = radio_button_tag :os_update, 'unnecessary', false, class: 'custom-control-input'
-        = label_tag :information_wrong, '現在使用中のバージョンに対するセキュリティ更新がなく、アップデートが不要であることを確認した。(セルフアップデート機能を持たないアプライアンス製品やネットワーク機器等の場合のみ)', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :os_update, 'failed', false, class: 'custom-control-input'
-      = label_tag :information_wrong, 'アップデートに失敗し、最新の状態にならない。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :os_update, 'none', false, class: 'custom-control-input'
-      = label_tag :information_wrong, 'アップデートは実施していない。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'impossible', false, class: 'custom-control-input'
-      = label_tag :information_unknown, 'OSや機器のサポートが終了しているため、セキュリティ更新の提供を受けることができない。', class: 'custom-control-label'
-  .form-group
-    .form-text
-      strong> 設問3
-      | Microsoft Office製品について、アップデートはいつ実施しましたか？
-    .custom-control.custom-radio
-      = radio_button_tag :information, 'microsoft', false, class: 'custom-control-input'
-      = label_tag :information_right, 'Windowsの更新時に他のMicrosoft製品の更新プロフラムを受け取る機能を有効にしている。(Windowsのみ)', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :information, 'microsoft', false, class: 'custom-control-input'
-      = label_tag :information_right, 'Windowsの更新時に他のMicrosoft製品の更新プロフラムを受け取る機能を有効にしている。(Windowsのみ)', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
-      = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
-      = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
-  .form-group
-    .form-text
-      strong> 設問3
-      | ストア(Microsoft Store、App Store、Google Play)で、アップデートはいつ実施しましたか？
-    .custom-control.custom-radio
-      = radio_button_tag :information, 'right', false, class: 'custom-control-input'
-      = label_tag :information_right, '正しい。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
-      = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
-      = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
-
-  .form-group
-    .form-text
-      strong> 設問3
-      | その他のアプリケーション(Google Chrome、Mozilla Firefox、Mozilla Thunderbird、Adobe Reader)で、アップデートはいつ実施しましたか？
-    .custom-control.custom-radio
-      = radio_button_tag :information, 'right', false, class: 'custom-control-input'
-      = label_tag :information_right, '正しい。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'wrong', false, class: 'custom-control-input'
-      = label_tag :information_wrong, '間違いがある。', class: 'custom-control-label'
-    .custom-control.custom-radio
-      = radio_button_tag :existence, 'unknown', false, class: 'custom-control-input'
-      = label_tag :information_unknown, 'わからない。', class: 'custom-control-label'
-
-| セキュリティソフトウェア(ウイルス・マルウェア対策ソフトウェア)のインストール状況
-
-| - OSに組み込まれた標準のセキュリティソフトウェアを使用しています。(Windows Defender)
-| - ディストリビューションまたはアプライアンス提供のセキュリティソフトウェアをインストールしています。(UbuntuのClamAV等)
-| - 高度に保護されたOSであるため、セキュリティソフトウェアは不要です。(macOS、)
-| - 開発元が承認したアプリケーション以外は実行できないスマートフォン・タブレット・表示デバイスであるため、セキュリティソフトウェアは不要です。(iOS、iPadOS、tvOS、watchOS、「提供元不明のアプリ」を有効にしていないAndroid)
-| - 機器・特定用途向け・アプライアンスの専用OSであるため、セキュリティソフトウェアは不要です。
-| - 情報管理部門が提供するセキュリティソフトウェアをインストールしています。
-| - 個別に購入したセキュリティソフトウェアをインストールしています。
-| - オープンソースのセキュリティソフトをインストールしています。(ClamAV)
-| - 無料のセキュリティソフトをインストールしています。(avast、Avira、AVG等)
-| セキュリティソフトウェア名:
+/ | セキュリティソフトウェアの更新状態
+/ | - ウイルス定義、スキャンエンジン、セキュリティソフトウェアが最新であることを確認しました。
+/ | - OS標準に組み込まれており、OSのアップデートで最新になっていることを確認しました。(Windows Defender)
+/ | - アプライアンス製品、組み込み機器、
+/ | - セキュリティソフトウェアをインストールしていません。
 
 
-| セキュリティソフトウェアの更新状態
-| - ウイルス定義、スキャンエンジン、セキュリティソフトウェアが最新であることを確認しました。
-| - OS標準に組み込まれており、OSのアップデートで最新になっていることを確認しました。(Windows Defender)
-| - アプライアンス製品、組み込み機器、
-| - セキュリティソフトウェアをインストールしていません。
-
-
-|
+/ |
 

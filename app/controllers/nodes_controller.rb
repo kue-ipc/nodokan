@@ -80,6 +80,10 @@ class NodesController < ApplicationController
   # GET /nodes/1
   # GET /nodes/1.json
   def show
+    @confirmation = Confirmation.new(
+      node: @node,
+      user: current_user
+    )
   end
 
   # GET /nodes/new

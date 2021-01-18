@@ -32,6 +32,7 @@ ja:
     fail: 失敗
     error: エラー
     start: 開始
+    confirm: 確認
 
   do_actions:
     close: 閉じる
@@ -255,6 +256,12 @@ ja:
         dynamic: 動的(自動取得)
         reserved: 予約(自動取得)
         link_local: リンクローカル(自動設定)
+      existences:
+        existing: 存在します。
+        abandoned: 廃棄しました。
+        missing: 行方不明です。
+        not_my_own: 私の管轄ではありません。
+        unknown: わかりません。
 
   helpers:
     page_entries_info:

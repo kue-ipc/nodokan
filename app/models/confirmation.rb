@@ -4,7 +4,7 @@ class Confirmation < ApplicationRecord
   belongs_to :security_software
 
   enum existence: {
-    existed: 0,
+    existing: 0,
     abandoned: 1,
     missing: 2,
     not_my_own: 3,
