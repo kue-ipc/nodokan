@@ -68,16 +68,10 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.1)
     attribute_normalizer (1.2.0)
-    autoprefixer-rails (10.2.0.0)
-      execjs
     bcrypt (3.1.16)
     bindex (0.8.1)
     bootsnap (1.5.1)
       msgpack (~> 1.0)
-    bootstrap (4.4.1)
-      autoprefixer-rails (>= 9.1.0)
-      popper_js (>= 1.14.3, < 2)
-      sassc-rails (>= 2.0.0)
     bootstrap_form (4.5.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
@@ -147,10 +141,7 @@ GEM
       dry-initializer (~> 3.0)
       dry-schema (~> 1.5, >= 1.5.2)
     erubi (1.10.0)
-    execjs (2.7.0)
     ffi (1.14.2)
-    font-awesome-sass (5.12.0)
-      sassc (>= 1.11)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     haml (5.2.1)
@@ -210,7 +201,6 @@ GEM
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
-    popper_js (1.16.0)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -378,7 +368,6 @@ PLATFORMS
 DEPENDENCIES
   attribute_normalizer
   bootsnap (>= 1.4.4)
-  bootstrap (~> 4.4.1)
   bootstrap_form (~> 4.0)
   byebug
   capybara (>= 3.26)
@@ -386,7 +375,6 @@ DEPENDENCIES
   devise
   devise-i18n
   devise_ldap_authenticatable
-  font-awesome-sass (~> 5.12.0)
   ipaddress_2
   jbuilder (~> 2.7)
   listen (~> 3.3)
