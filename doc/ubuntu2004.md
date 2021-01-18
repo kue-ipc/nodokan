@@ -4,7 +4,7 @@
 sudo apt install mariadb-server
 ```
 ```
-sudo apt install libmariadb-dev
+sudo apt install libmariadbclient-dev
 or
 sudo apt install default-libmysqlclient-dev
 ```
@@ -78,7 +78,7 @@ ldapとのダブル認証
 ldapは"authentication"でチェックされるようにする？
 
 ```
-sudo systemctl enable radiusd --now
+sudo systemctl enable freeradius --now
 ```
 ## 開発環境
 
