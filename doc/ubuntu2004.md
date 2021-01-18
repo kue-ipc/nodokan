@@ -19,7 +19,7 @@ sudo apt install isc-kea-admin isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea
 
 本番ではパスワードを適当に変える。
 
-mysql -u root -p
+sudo mysql -u root
 ```
 CREATE DATABASE kea;
 CREATE USER 'kea'@'localhost' IDENTIFIED BY 'keapass';
