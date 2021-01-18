@@ -6,6 +6,8 @@
 * Node.js 14
 * MariaDB 10.3
 
+本番環境ではmemcachedが必要
+
 # README
 
 This README would normally document whatever steps are necessary to get the
