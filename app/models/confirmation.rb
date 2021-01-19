@@ -41,7 +41,7 @@ class Confirmation < ApplicationRecord
     unknown: 255,
   }, _prefix: true
 
-  enum software_update: {
+  enum soft_update: {
     auto: 0,
     manual: 1,
     not: 2,
@@ -54,6 +54,13 @@ class Confirmation < ApplicationRecord
     manual: 1,
     not: 2,
     eol: 3,
+    unknown: 255,
+  }, _prefix: true
+
+  enum security_scan: {
+    auto: 0,
+    manual: 1,
+    not: 2,
     unknown: 255,
   }, _prefix: true
 

@@ -62,6 +62,20 @@ hr
             href="#node-confirm-fields"]
             | 端末存在
           #node-confirm-fields.collapse
+            = f.form_group :content,
+              label: { text: tag.strong('設問2') + tag.span(' 本システムに登録されていた情報は正しいですか？') },
+              help: '「間違いがある」を選択した場合は、修正してから再度確認作業を行ってください。' do
+              - t_enums(Confirmation, :contents).each do |message, value|
+                = f.radio_button :content, value, label: message
+
+            / = f.form_group :existence,
+            /   label: { text: tag.strong('設問3') + tag.span(' 本システムに登録されていた情報は正しいですか？') },
+            /   help: '「間違いがある」を選択した場合は、修正してから再度確認作業を行ってください。' do
+            /   - t_enums(Confirmation, :contents).each do |message, value|
+            /     = f.radio_button :content, value, label: message
+
+
+
             .form-group
               .form-text
                 strong> 設問2
