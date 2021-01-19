@@ -55,7 +55,10 @@ hr
             help: '「存在する」以外を選択した場合は、そのまま確認を終了してください。' do
             - t_enums(Confirmation, :existences).each do |message, value|
               = f.radio_button :existence, value, label: message
-          #node-confirm-questions.collapse
+          .d-none
+            a id="node-confirm-collapse-link" class="btn btn-primary" role="button" aria-expanded="false" aria-controls="node-confirm-fields" data-toggle="collapse" href="#node-confirm-fields"
+              | 端末存在
+          #node-confirm-fields.collapse
             / .form-group
             /   .form-text
             /     strong> 設問1
