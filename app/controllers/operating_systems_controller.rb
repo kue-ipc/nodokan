@@ -29,7 +29,7 @@ class OperatingSystemsController < ApplicationController
         @operating_systems = @operating_systems.select(@target).distinct
       else
         raise ActionController::BadRequest,
-          "[places#index] invalid target: #{@target}"
+          "[operating_systems#index] invalid target: #{@target}"
       end
     end
 
