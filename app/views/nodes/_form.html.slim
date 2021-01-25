@@ -172,7 +172,8 @@ p 【必須】の項目は入力が必須です。
             disabled: true,
             wrapper: {class: 'col-md-8'}
           = nic_f.collection_select :network_id,
-            (current_user.selectable_networks + [nic_f.object.network]).uniq,
+            (current_user.selectable_networks + \
+              [nic_f.object.network]).compact.uniq,
             :id, :name,
             {include_blank: '(未接続)',
             wrapper: {class: 'col-md-4'}},

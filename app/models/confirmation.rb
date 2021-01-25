@@ -5,62 +5,49 @@ class Confirmation < ApplicationRecord
 
   enum existence: {
     existing: 0,
-    abandoned: 1,
-    missing: 2,
-    not_my_own: 3,
+    abandoned: 16,
+    missing: 17,
+    not_my_own: 18,
     unknown: 255,
   }, _prefix: true
 
   enum content: {
     correct: 0,
-    incorrect: 1,
+    incorrect: 16,
     unknown: 255,
   }, _prefix: true
 
   enum os_update: {
     auto: 0,
     manual: 1,
-    not: 2,
-    eol: 3,
+    unecessary: 8,
+    not_do: 16,
+    eol: 17,
     unknown: 255,
   }, _prefix: true
 
-  enum ms_update: {
+  enum app_update: {
     auto: 0,
     manual: 1,
-    not: 2,
-    eol: 3,
-    unknown: 255,
-  }, _prefix: true
-
-  enum store_update: {
-    auto: 0,
-    manual: 1,
-    not: 2,
-    eol: 3,
-    unknown: 255,
-  }, _prefix: true
-
-  enum soft_update: {
-    auto: 0,
-    manual: 1,
-    not: 2,
-    eol: 3,
+    unecessary: 8,
+    not_do: 16,
+    eol: 17,
     unknown: 255,
   }, _prefix: true
 
   enum security_update: {
     auto: 0,
-    manual: 1,
-    not: 2,
-    eol: 3,
+    not_implemented: 9,
+    not_do: 16,
+    eol: 17,
     unknown: 255,
   }, _prefix: true
 
   enum security_scan: {
     auto: 0,
     manual: 1,
-    not: 2,
+    not_implemented: 9,
+    not_do: 16,
     unknown: 255,
   }, _prefix: true
 

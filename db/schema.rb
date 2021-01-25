@@ -2,8 +2,8 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
@@ -12,19 +12,16 @@
 
 ActiveRecord::Schema.define(version: 2020_10_20_041622) do
 
-  create_table "confirmations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "confirmations", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "node_id", null: false
     t.bigint "security_software_id"
     t.integer "existence", null: false
     t.integer "content", null: false
     t.integer "os_update", null: false
-    t.integer "ms_upadte", null: false
-    t.integer "store_update", null: false
-    t.integer "soft_update", null: false
+    t.integer "app_upadte", null: false
     t.integer "security_update", null: false
     t.integer "security_scan", null: false
-    t.date "updated_date", null: false
     t.boolean "approved"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -33,7 +30,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["user_id"], name: "index_confirmations_on_user_id"
   end
 
-  create_table "hardwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "hardwares", charset: "utf8mb4", force: :cascade do |t|
     t.integer "device_type", null: false
     t.string "maker", default: "", null: false
     t.string "product_name", default: "", null: false
@@ -48,7 +45,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["product_name"], name: "index_hardwares_on_product_name"
   end
 
-  create_table "ip6_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "ip6_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip6_config", null: false
     t.string "first6_address", limit: 40, null: false
@@ -58,7 +55,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["network_id"], name: "index_ip6_pools_on_network_id"
   end
 
-  create_table "ip_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "ip_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip_config", null: false
     t.string "first_address", limit: 16, null: false
@@ -68,7 +65,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["network_id"], name: "index_ip_pools_on_network_id"
   end
 
-  create_table "network_users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "network_users", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.bigint "user_id", null: false
     t.boolean "available", default: false, null: false
@@ -79,7 +76,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["user_id"], name: "index_network_users_on_user_id"
   end
 
-  create_table "networks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "networks", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.integer "vlan"
     t.boolean "dhcp", default: false, null: false
@@ -97,7 +94,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["name"], name: "index_networks_on_name", unique: true
   end
 
-  create_table "nics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "nics", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "node_id", null: false
     t.bigint "network_id"
     t.string "name"
@@ -118,7 +115,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["node_id"], name: "index_nics_on_node_id"
   end
 
-  create_table "nodes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "nodes", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id"
     t.string "name", null: false
     t.string "hostname"
@@ -141,7 +138,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["user_id"], name: "index_nodes_on_user_id"
   end
 
-  create_table "operating_systems", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "operating_systems", charset: "utf8mb4", force: :cascade do |t|
     t.integer "os_category", null: false
     t.string "name", null: false
     t.date "eol"
@@ -155,7 +152,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["os_category"], name: "index_operating_systems_on_os_category"
   end
 
-  create_table "places", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "places", charset: "utf8mb4", force: :cascade do |t|
     t.string "area", default: "", null: false
     t.string "building", default: "", null: false
     t.integer "floor", default: 0, null: false
@@ -170,7 +167,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["room"], name: "index_places_on_room"
   end
 
-  create_table "security_softwares", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "security_softwares", charset: "utf8mb4", force: :cascade do |t|
     t.integer "state", null: false
     t.integer "os_category", null: false
     t.string "name", null: false
@@ -184,7 +181,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["state", "os_category"], name: "index_security_softwares_on_state_and_os_category"
   end
 
-  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", force: :cascade do |t|
     t.string "username", null: false
     t.string "email", null: false
     t.string "fullname"
@@ -197,7 +194,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  create_table "version_associations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "version_associations", charset: "utf8mb4", force: :cascade do |t|
     t.integer "version_id"
     t.string "foreign_key_name", null: false
     t.integer "foreign_key_id"
@@ -206,7 +203,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.index ["version_id"], name: "index_version_associations_on_version_id"
   end
 
-  create_table "versions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "versions", charset: "utf8mb4", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
     t.string "event", null: false

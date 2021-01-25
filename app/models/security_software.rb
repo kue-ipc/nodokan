@@ -9,6 +9,6 @@ class SecuritySoftware < ApplicationRecord
     pre_installed: 4,
     unnecessary: 8,
     not_installed: 16,
-    unknown: -1,
+    unknown: 255,
   }, _prefix: true
 end

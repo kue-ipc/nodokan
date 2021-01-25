@@ -82,7 +82,10 @@ class NodesController < ApplicationController
   def show
     @confirmation = Confirmation.new(
       node: @node,
-      user: current_user
+      user: current_user,
+      security_software: @node.operating_system && SecuritySoftware.new(
+        os_category: @node.operating_system.os_category
+      )
     )
   end
 
