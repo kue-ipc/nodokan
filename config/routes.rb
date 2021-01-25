@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   resources :places, only: [:index, :edit, :update]
   resources :hardwares, only: [:index, :edit, :update]
   resources :operating_systems, only: [:index]
+  resources :security_softwares, only: [:index]
 
   resources :users, only: [:index, :show, :create, :update] do
     collection do

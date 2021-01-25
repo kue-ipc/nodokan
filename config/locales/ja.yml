@@ -234,6 +234,9 @@ ja:
         state: 状態
         name: ソフトウェア名
         description: 詳細
+        approved: 承認済
+        confirmed: 確認済
+        config: 設定
       user:
         username: ユーザー名
         password: パスワード
@@ -365,13 +368,13 @@ ja:
           フルスキャンを実行していません。
         unknown: わかりません。
       states:
-        built_in: OS標準または組み込みのソフトウェア
-        distributed: 管理者が配布しているソフトウェア
-        purchased: 購入したソフトウェア
-        free: 無償のソフトウェア
-        pre_installed: プレインストールされていたソフトウェア
-        unnecessary: セキュリティソフトウェアは不要
-        not_installed: インストールされていない
+        built_in: OS標準または組み込み
+        distributed: 管理者配布
+        purchased: 購入製品
+        free: 無償製品
+        pre_installed: プレインストール版
+        unnecessary: 不要
+        not_installed: 未インストール
         unknown: 不明
 
 
