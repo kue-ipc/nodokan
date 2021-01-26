@@ -17,6 +17,7 @@
     "ipaddr.js": "^2.0.0",
     "resolve-url-loader": "^3.1.2",
     "sass": "^1.32.4",
+    "simple-icons": "^4.8.0",
     "turbolinks": "^5.2.0"
   },
   "version": "0.1.0",
