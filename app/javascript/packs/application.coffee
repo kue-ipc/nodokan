@@ -9,3 +9,4 @@ activestorage.start()
 import 'channels'
 
 import 'modules/bootstrap-native'
+import 'modules/simple-icons'

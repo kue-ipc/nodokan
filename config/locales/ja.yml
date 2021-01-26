@@ -278,8 +278,8 @@ ja:
         android: Android
         dedicated: 専用OS
         embedded: 組込みOS
-        os_less: OS無し
         other: その他
+        less: OS無し
         unknown: 不明
       interface_types:
         wired: 有線
@@ -368,12 +368,12 @@ ja:
           フルスキャンを実行していません。
         unknown: わかりません。
       states:
-        built_in: OS標準または組み込み
-        distributed: 管理者配布
-        purchased: 購入製品
-        free: 無償製品
-        pre_installed: プレインストール版
         unnecessary: 不要
+        built_in: OS標準
+        distributed: 管理者配布
+        purchased: 購入
+        free: 無償
+        pre_installed: プレインストール
         not_installed: 未インストール
         unknown: 不明
 

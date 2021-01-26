@@ -4,21 +4,57 @@
 dl.row
   dt.col-md-5 = Node.human_attribute_name(:name)
   dd.col-md-5 = @node.name
-  dt.col-md-5 = Node.human_attribute_name(:note)
+  dt.col-md-5
   dd.col-md-5 = @node.note
   dt.col-md-5 = Node.human_attribute_name(:fqdn)
-  dd.col-md-5 = @node.fqdn
+  dd.col-md-5
+    - if @node.fqdn.present?
+      = @node.fqdn
+    - else
+      .text-muted
+        | (未入力)
   dt.col-md-5 = Node.human_attribute_name(:place)
-  dd.col-md-5 = @node.place&.name
+  dd.col-md-5
+    - if @node.place&.name.present?
+      = @node.place.name
+    - else
+      .text-muted
+        | (未入力)
   dt.col-md-5 = Node.human_attribute_name(:hardware)
-  dd.col-md-5 = @node.hardware&.name
+  dd.col-md-5
+    - if @node.hardware
+      = @node.hardware.name
+    - else
+      .text-muted
+        | (未入力)
   dt.col-md-5 = Node.human_attribute_name(:operating_system)
-  dd.col-md-5 = @node.operating_system&.name
+  dd.col-md-5
+    - if @node.operating_system
+      - case @node.operating_system.os_category
+      - when 'windows_client'
+        i.si.si-windows
+      - when 'windowsn_server'
+        i.si.si-microsoft
+      - when 'mac'
+        i.si.si-apple
+      - when 'apple'
+        i.si.si-ios
+      - when 'android'
+        i.si.si-android
+      - when 'linux'
+        i.si.si-linux
+      - when 'bsd'
+        i.si.si-freebsd
+      =< @node.operating_system.name
+    - else
+      .text-muted
+        | (未入力)
+
   dt.col-md-5 = Node.human_attribute_name(:nics)
   - @node.nics.each do |nic|
     dd.col-md-5
-      = nic.mac_address
-      = nic.ip_address
+      => nic.mac_address
+      => nic.ip_address
       | (
       = nic.network&.name
       | )

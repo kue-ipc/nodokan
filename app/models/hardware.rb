@@ -17,6 +17,6 @@ class Hardware < ApplicationRecord
   validates :device_type, presence: true
 
   def name
-    "#{I18n.t(device_type, scope: [:activerecord, :enums, :device_types])} #{[maker, product_name].select(&:present?).join(' ')}"
+    [maker, product_name].select(&:present?).join(' ')
   end
 end
