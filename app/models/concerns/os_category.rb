@@ -13,9 +13,9 @@ module OsCategory
       unix: 10,
       dedicated: 128,
       embedded: 129,
-      less: 130,
-      other: 255,
-      unknown: -1,
-    }, prefix: :os
+      other: 130,
+      less: 192,
+      unknown: 255,
+    }, _prefix: :os
   end
 end

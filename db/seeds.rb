@@ -16,7 +16,7 @@ if OperatingSystem.count.zero?
 end
 
 if SecuritySoftware.count.zero?
-  YAML.load_file(seeds_path / 'security_softwares.yml').each do |data|
+  YAML.load(ERB.new((seeds_path / 'security_softwares.yml.erb').read).result).each do |data|
     SecuritySoftware.create(data)
   end
 end

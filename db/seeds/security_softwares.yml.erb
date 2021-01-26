@@ -1,0 +1,217 @@
+<%
+os_categories = %w[
+  windows_client
+  windows_server
+  mac
+  apple
+  android
+  linux
+  bsd
+  unix
+  dedicated
+  embedded
+  other
+  less
+  unknown
+]
+normal_os_categories = os_categories - %w[less unknown]
+
+states = %[
+  unnecessary
+  built_in
+  distributed
+  purchased
+  free
+  pre_installed
+  not_installed
+  unknown
+]
+%>
+
+- state: :unnecessary
+  os_category: :mac
+  name: ''
+  approved: true
+  confirmed: true
+  description: >
+    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、
+    最新の状態であれば、macOSは高度なセキュリティを内蔵しているため、
+    セキュリティソフトウェアは不要です。
+
+- state: :unnecessary
+  os_category: :apple
+  name: ''
+  approved: true
+  confirmed: true
+  description: >
+    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、
+    最新の状態であれば、iOS等は高度なセキュリティを内蔵しているため、
+    セキュリティソフトウェアは不要です。
+    ただし、App Storeのアプリのみ使用していること、
+    脱獄等の改造をしていないことが前提となります。
+
+- state: :unnecessary
+  os_category: :android
+  name: ''
+  approved: true
+  confirmed: true
+  description: >
+    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、
+    最新の状態であれば、Androidは高度なセキュリティを内蔵しているため、
+    セキュリティソフトウェアは不要です。
+    ただし、Google Playまたは端末ベンダー提供のアプリのみ使用していること、
+    開発者モードを無効にしていること、
+    root化を実施していないこと、
+    その他の改造をしていないことが前提となります。
+
+<% %w[linux bsd unix].each do |os_category| %>
+- state: :unnecessary
+  os_category: :<%= os_category %>
+  name: ''
+  approved: true
+  confirmed: true
+  description: >
+    GUIが無いサーバー用途で、管理者以外が通常の書き込みを行わない場合、
+    セキュリティソフトウェアは不要です。
+
+<% end %>
+
+<% %w[dedicated embedded other].each do |os_category| %>
+- state: :unnecessary
+  os_category: :<%= os_category %>
+  name: ''
+  approved: true
+  confirmed: true
+  description: >
+    専用・組み込み製品ではセキュリティソフトウェアは不要です。
+
+<% end %>
+
+- state: :unnecessary
+  os_category: :less
+  name: ''
+  approved: true
+  confirmed: true
+  description: >
+    OSが存在しない場合は、セキュリティソフトウェアは不要です。
+
+# built-in
+- state: :built_in
+  os_category: :windows_client
+  name: Windows Defender
+  approved: true
+  confirmed: true
+  description: |
+    Windows標準のセキュリティ対策ソフトウェアです。
+    有効になっているかを確認してください。
+
+- state: :built_in
+  os_category: :windows_server
+  name: Windows Defender
+  approved: true
+  confirmed: true
+  description: |
+    Windows Server標準のセキュリティ対策ソフトウェアです。
+    有効になっているかを確認してください。
+
+- state: :built_in
+  os_category: :linux
+  name: ClamAV
+  approved: true
+  confirmed: true
+  description: |
+    ディストリビューションのパッケージとして提供さているClamAVです。
+
+- state: :built_in
+  os_category: :bsd
+  name: ClamAV
+  approved: true
+  confirmed: true
+  description: |
+    ports等のパッケージとして提供さているClamAVです。'
+
+# distributed
+<% %w[windows_client windows_server mac linux].each do |os_category| %>
+- state: :distributed
+  os_category: :<%= os_category %>
+  name: 管理者配布ソフトウェア(仮名)
+  approved: true
+  confirmed: true
+  description: 管理者が配布しているソフトウェアです。
+
+<% end %>
+
+# purchased
+<% normal_os_categories.each do |os_category| %>
+- state: :purchased
+  os_category: :<%= os_category %>
+  name: ''
+  approved: false
+  confirmed: true
+  description: >
+    有償のセキュリティソフトウェアを購入している場合です。
+    使用期限が切れたセキュリティソフトウェアは使用できませんので、
+    ご注意ください。
+    ソフトウェアの名前を入れてください。
+
+<% end %>
+
+<% normal_os_categories.each do |os_category| %>
+- state: :free
+  os_category: :<%= os_category %>
+  name: ''
+  approved: false
+  confirmed: true
+  description: >
+    無償のセキュリティソフトウェアを使用している場合です。
+    個人利用のみ等の制限があるソフトウェアは使用できませんので、
+    ご注意ください。
+    ソフトウェアの名前を入れてください。
+
+<% end %>
+
+- state: :pre_installed
+  os_category: :windows_client
+  name: ''
+  approved: fales
+  confirmed: true
+  description: >
+    パソコン購入時にインストールされていたセキュリティソフトウェアを使用している場合です。
+    購入直後は試用版となっており、使用期限が数ヶ月と短い場合があります。
+    使用期限が切れたセキュリティソフトウェアは使用できませんので、
+    ご注意ください。
+    ソフトウェアの名前を入れてください。
+
+<% %w[windows_client windows_server mac apple android linux bsd unix]
+  .each do |os_category| %>
+- state: :not_installed
+  os_category: :<%= os_category %>
+  name: ''
+  approved: false
+  confirmed: true
+  description: >
+    セキュリティソフトウェアをインストールしていない状態です。
+    セキュリティソフトウェアが必須であるため、
+    対応が必要になります。
+
+<% end %>
+
+
+<% normal_os_categories.each do |os_category| %>
+- state: :unknown
+  os_category: :<%= os_category %>
+  name: ''
+  approved: false
+  confirmed: true
+  description: >
+    セキュリティソフトについてがわからない状態です。
+
+<% end %>
+
+- state: :unknown
+  os_category: :unknown
+  name: ''
+  approved: false
+  confirmed: true
+  description: >
+    OSの種類がわからないため、セキュリティソフトが確認できません。
