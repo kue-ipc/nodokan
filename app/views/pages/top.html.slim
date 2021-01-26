@@ -1,6 +1,7 @@
 - if @unconfirmed_nodes_count.positive?
   .alert.alert-danger.alertdismissible.fade.show role="alert"
     strong
+      i.fas.fa-exclamation-triangle>
       | 未確認または期限切れの端末が
       =<> @unconfirmed_nodes_count
       | 台あります。

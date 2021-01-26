@@ -15,6 +15,7 @@ javascript:
 - if alert
   - [*alert].each do |msg|
     .alert.alert-danger.alertdismissible.fade.show role="alert"
+      i.fas.fa-exclamation-triangle>
       = msg
       button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
         span aria-hidden="true" &times;

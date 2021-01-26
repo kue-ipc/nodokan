@@ -137,18 +137,5 @@ module ApplicationHelper
     end
     content_tag('span', name, class: badge_classes, id: id)
   end
-
-  # Bootstrap Icons
-  def bi_icon(name, **opts)
-    class_value = ["bi-#{name}"]
-    case opts[:class]
-    when Array
-      class_value.concat(opts[:class])
-    when String
-      class_value.concat(opts[:class].split)
-    end
-    content_tag('i', '', **opts, class: class_value)
-  end
-
 end
 

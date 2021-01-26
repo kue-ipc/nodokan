@@ -32,19 +32,19 @@ dl.row
     - if @node.operating_system
       - case @node.operating_system.os_category
       - when 'windows_client'
-        i.si.si-windows
+        i.fab.fa-windows
       - when 'windowsn_server'
-        i.si.si-microsoft
+        i.fab.fa-microsoft
       - when 'mac'
-        i.si.si-apple
+        i.fab.fa-apple
       - when 'apple'
-        i.si.si-ios
+        i.fab.fa-apple
       - when 'android'
-        i.si.si-android
+        i.fab.fa-android
       - when 'linux'
-        i.si.si-linux
+        i.fab.fa-linux
       - when 'bsd'
-        i.si.si-freebsd
+        i.fab.fa-freebsd
       =< @node.operating_system.name
     - else
       .text-muted
