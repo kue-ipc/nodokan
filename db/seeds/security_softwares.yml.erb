@@ -16,7 +16,7 @@ os_categories = %w[
 ]
 normal_os_categories = os_categories - %w[less unknown]
 
-states = %[
+installation_methods = %[
   unnecessary
   built_in
   distributed
@@ -28,7 +28,7 @@ states = %[
 ]
 %>
 
-- state: :unnecessary
+- installation_method: :unnecessary
   os_category: :mac
   name: ''
   approved: true
@@ -38,7 +38,7 @@ states = %[
     最新の状態であれば、macOSは高度なセキュリティを内蔵しているため、
     セキュリティソフトウェアは不要です。
 
-- state: :unnecessary
+- installation_method: :unnecessary
   os_category: :apple
   name: ''
   approved: true
@@ -50,7 +50,7 @@ states = %[
     ただし、App Storeのアプリのみ使用していること、
     脱獄等の改造をしていないことが前提となります。
 
-- state: :unnecessary
+- installation_method: :unnecessary
   os_category: :android
   name: ''
   approved: true
@@ -65,7 +65,7 @@ states = %[
     その他の改造をしていないことが前提となります。
 
 <% %w[linux bsd unix].each do |os_category| %>
-- state: :unnecessary
+- installation_method: :unnecessary
   os_category: :<%= os_category %>
   name: ''
   approved: true
@@ -77,7 +77,7 @@ states = %[
 <% end %>
 
 <% %w[dedicated embedded other].each do |os_category| %>
-- state: :unnecessary
+- installation_method: :unnecessary
   os_category: :<%= os_category %>
   name: ''
   approved: true
@@ -87,7 +87,7 @@ states = %[
 
 <% end %>
 
-- state: :unnecessary
+- installation_method: :unnecessary
   os_category: :less
   name: ''
   approved: true
@@ -96,7 +96,7 @@ states = %[
     OSが存在しない場合は、セキュリティソフトウェアは不要です。
 
 # built-in
-- state: :built_in
+- installation_method: :built_in
   os_category: :windows_client
   name: Windows Defender
   approved: true
@@ -105,7 +105,7 @@ states = %[
     Windows標準のセキュリティ対策ソフトウェアです。
     有効になっているかを確認してください。
 
-- state: :built_in
+- installation_method: :built_in
   os_category: :windows_server
   name: Windows Defender
   approved: true
@@ -114,7 +114,7 @@ states = %[
     Windows Server標準のセキュリティ対策ソフトウェアです。
     有効になっているかを確認してください。
 
-- state: :built_in
+- installation_method: :built_in
   os_category: :linux
   name: ClamAV
   approved: true
@@ -122,7 +122,7 @@ states = %[
   description: |
     ディストリビューションのパッケージとして提供さているClamAVです。
 
-- state: :built_in
+- installation_method: :built_in
   os_category: :bsd
   name: ClamAV
   approved: true
@@ -132,7 +132,7 @@ states = %[
 
 # distributed
 <% %w[windows_client windows_server mac linux].each do |os_category| %>
-- state: :distributed
+- installation_method: :distributed
   os_category: :<%= os_category %>
   name: 管理者配布ソフトウェア(仮名)
   approved: true
@@ -143,7 +143,7 @@ states = %[
 
 # purchased
 <% normal_os_categories.each do |os_category| %>
-- state: :purchased
+- installation_method: :purchased
   os_category: :<%= os_category %>
   name: ''
   approved: false
@@ -157,7 +157,7 @@ states = %[
 <% end %>
 
 <% normal_os_categories.each do |os_category| %>
-- state: :free
+- installation_method: :free
   os_category: :<%= os_category %>
   name: ''
   approved: false
@@ -170,7 +170,7 @@ states = %[
 
 <% end %>
 
-- state: :pre_installed
+- installation_method: :pre_installed
   os_category: :windows_client
   name: ''
   approved: fales
@@ -184,7 +184,7 @@ states = %[
 
 <% %w[windows_client windows_server mac apple android linux bsd unix]
   .each do |os_category| %>
-- state: :not_installed
+- installation_method: :not_installed
   os_category: :<%= os_category %>
   name: ''
   approved: false
@@ -198,7 +198,7 @@ states = %[
 
 
 <% normal_os_categories.each do |os_category| %>
-- state: :unknown
+- installation_method: :unknown
   os_category: :<%= os_category %>
   name: ''
   approved: false
@@ -208,7 +208,7 @@ states = %[
 
 <% end %>
 
-- state: :unknown
+- installation_method: :unknown
   os_category: :unknown
   name: ''
   approved: false

@@ -1,7 +1,7 @@
 class CreateNetworks < ActiveRecord::Migration[6.0]
   def change
     create_table :networks do |t|
-      t.string :name, null: false
+      t.string :name, null: false, index: {unique: true}
       t.integer :vlan
       t.boolean :dhcp, null: false, default: false
       t.boolean :auth, null: false, default: false
@@ -17,6 +17,5 @@ class CreateNetworks < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
-    add_index :networks, :name, unique: true
   end
 end

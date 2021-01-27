@@ -7,8 +7,8 @@ class SecuritySoftwaresController < ApplicationController
       :per,
       :target,
       :format,
-      order: [:id, :os_category, :state, :name],
-      condition: [:os_category, :state, :name]
+      order: [:id, :os_category, :installation_method, :name],
+      condition: [:os_category, :installation_method, :name]
     )
 
     @page = permitted_params[:page]

@@ -10,7 +10,7 @@ table.table.table-sm
       - if @target
         th = SecuritySoftware.human_attribute_name(@target)
       - else
-        th = SecuritySoftware.human_attribute_name(:state)
+        th = SecuritySoftware.human_attribute_name(:installation_method)
         th = SecuritySoftware.human_attribute_name(:os_category)
         th = SecuritySoftware.human_attribute_name(:name)
         th = SecuritySoftware.human_attribute_name(:config)
@@ -22,8 +22,8 @@ table.table.table-sm
           td = security_software[@target]
         - else
           td
-            = t(security_software.state,
-              scope: [:activerecord, :enums, :states])
+            = t(security_software.installation_method,
+              scope: [:activerecord, :enums, :installation_methods])
           td
             = t(security_software.os_category,
               scope: [:activerecord, :enums, :os_categories])

@@ -3,9 +3,9 @@ class CreateNodes < ActiveRecord::Migration[6.0]
     create_table :nodes do |t|
       t.references :user, foreign_key: true
 
-      t.string :name, null: false
-      t.string :hostname
-      t.string :domain
+      t.string :name, null: false, index: true
+      t.string :hostname, index: true
+      t.string :domain, index: true
 
       t.references :place, foreign_key: true
       t.references :hardware, foreign_key: true
@@ -13,14 +13,8 @@ class CreateNodes < ActiveRecord::Migration[6.0]
 
       t.text :note
 
-      t.timestamp :confirmed_at
-      t.boolean :approved, null: false, default: false
-
       t.timestamps
     end
-    add_index :nodes, :name
-    add_index :nodes, :hostname
-    add_index :nodes, :domain
     add_index :nodes, [:hostname, :domain], name: :fqdn, unique: true
   end
 end

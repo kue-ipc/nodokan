@@ -2,14 +2,14 @@
 
 one:
   os_category: :windows_client
-  state: :built_in
+  installation_method: :built_in
   name: Windows Defender
   approved: true
   description: Windows 10 標準
 
 two:
   os_category: :windows_client
-  state: :not_installed
+  installation_method: :not_installed
   name: ''
   approved: false
   description: 未インストール

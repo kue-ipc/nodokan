@@ -1,7 +1,7 @@
 class SecuritySoftware < ApplicationRecord
   include OsCategory
 
-  enum state: {
+  enum installation_method: {
     unnecessary: 8,
     built_in: 0,
     distributed: 1,
@@ -12,8 +12,8 @@ class SecuritySoftware < ApplicationRecord
     unknown: 255,
   }, _prefix: true
 
-  def self.conf_states
-    @@conf_states ||= {
+  def self.conf_installation_methods
+    @@conf_installation_methods ||= {
       unnecessary: {},
       built_in: {
         name_required: true,

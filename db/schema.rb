@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_20_041622) do
+ActiveRecord::Schema.define(version: 2020_09_25_011323) do
 
   create_table "confirmations", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -22,10 +22,12 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.integer "app_upadte", null: false
     t.integer "security_update", null: false
     t.integer "security_scan", null: false
-    t.boolean "approved"
+    t.timestamp "confirmed_at", default: -> { "current_timestamp()" }, null: false
+    t.timestamp "expiration", null: false
+    t.boolean "approved", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["node_id"], name: "index_confirmations_on_node_id"
+    t.index ["node_id"], name: "index_confirmations_on_node_id", unique: true
     t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
     t.index ["user_id"], name: "index_confirmations_on_user_id"
   end
@@ -124,8 +126,6 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.bigint "hardware_id"
     t.bigint "operating_system_id"
     t.text "note"
-    t.timestamp "confirmed_at"
-    t.boolean "approved", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["domain"], name: "index_nodes_on_domain"
@@ -168,17 +168,19 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
   end
 
   create_table "security_softwares", charset: "utf8mb4", force: :cascade do |t|
-    t.integer "state", null: false
+    t.integer "installation_method", null: false
     t.integer "os_category", null: false
     t.string "name", null: false
     t.boolean "approved", default: false, null: false
     t.boolean "confirmed", default: false, null: false
     t.text "description"
+    t.integer "confirmations_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["installation_method", "os_category", "name"], name: "security_softoware_name", unique: true
+    t.index ["installation_method"], name: "index_security_softwares_on_installation_method"
     t.index ["name"], name: "index_security_softwares_on_name"
-    t.index ["state", "os_category", "name"], name: "index_security_softwares_on_state_and_os_category_and_name", unique: true
-    t.index ["state", "os_category"], name: "index_security_softwares_on_state_and_os_category"
+    t.index ["os_category"], name: "index_security_softwares_on_os_category"
   end
 
   create_table "users", charset: "utf8mb4", force: :cascade do |t|
@@ -187,10 +189,13 @@ ActiveRecord::Schema.define(version: 2020_10_20_041622) do
     t.string "fullname"
     t.integer "role", default: 0, null: false
     t.boolean "deleted", default: false, null: false
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "nodes_count", default: 0, null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 

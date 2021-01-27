@@ -231,7 +231,7 @@ ja:
         room: 部屋
         nodes_count: 端末数
       security_software:
-        state: 状態
+        installation_method: インストール方法
         name: ソフトウェア名
         description: 詳細
         approved: 承認済
@@ -367,7 +367,7 @@ ja:
           定期的なスキャンが実行されていない、または、
           フルスキャンを実行していません。
         unknown: わかりません。
-      states:
+      installation_methods:
         unnecessary: 不要
         built_in: OS標準
         distributed: 管理者配布

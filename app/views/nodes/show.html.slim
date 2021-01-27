@@ -173,8 +173,8 @@ hr
                   = f.fields_for :security_software, \
                     @confirmation.security_software do |security_software_f|
                     = security_software_f.hidden_field :os_category
-                    = security_software_f.select :state,
-                      t_enums(SecuritySoftware, :states),
+                    = security_software_f.select :installation_method,
+                      t_enums(SecuritySoftware, :installation_methods),
                       {include_blank: '(未選択)', wrapper: {class: 'col-md-4'}},
                       class: 'custom-select'
                     = security_software_f.text_field :name,
@@ -186,9 +186,9 @@ hr
                         name: 'security_software',
                         target: 'name',
                         order: {nodes_count: 'desc'},
-                        inputList: ['os_category', 'state'],
+                        inputList: ['os_category', 'installation_method'],
                         url: '/security_software.json',
-                        requiredInput: 'state',
+                        requiredInput: 'installation_method',
                         description: true,
                       }
                     #confirmation_security_software_name-app.datalist-canadidaiton data-params=confirmation_security_software_name_params.to_json

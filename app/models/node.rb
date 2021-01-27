@@ -8,6 +8,8 @@ class Node < ApplicationRecord
   has_many :nics, dependent: :destroy
   accepts_nested_attributes_for :nics, allow_destroy: true
 
+  has_one :confirmation, dependent: :destroy
+
   validates :name, presence: true
   validates :hostname, allow_nil: true,
                        format: {

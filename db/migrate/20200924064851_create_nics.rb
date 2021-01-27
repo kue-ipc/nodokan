@@ -5,20 +5,14 @@ class CreateNics < ActiveRecord::Migration[6.0]
       t.references :network, foreign_key: true
       t.string :name
       t.integer :interface_type, null: false
-      t.string :mac_address, limit: 18
-      t.string :duid
+      t.string :mac_address, limit: 18, index: true
+      t.string :duid, index: true
       t.integer :ip_config
-      t.string :ip_address, limit: 16
+      t.string :ip_address, limit: 16, index: true
       t.integer :ip6_config
-      t.string :ip6_address, limit: 40
+      t.string :ip6_address, limit: 40, index: true
 
       t.timestamps
     end
-
-    add_index :nics, :mac_address
-    add_index :nics, :duid
-
-    add_index :nics, :ip_address
-    add_index :nics, :ip6_address
   end
 end
