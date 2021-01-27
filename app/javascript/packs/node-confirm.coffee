@@ -9,13 +9,21 @@ collapseLinkEl = document.getElementById(collapseLinkId)
 
 collapesShown = false
 
+formModal = document.getElementById('confirm-form-modal')
+formModal.addEventListener 'shown.bs.modal', (e) ->
+  if document.getElementById('confirmation_existence_existing').checked
+    unless collapesShown
+      collapseLinkEl.Collapse.show()
+      collapesShown = true
+
 for el in document.querySelectorAll 'input[name="confirmation[existence]"]'
-  el.addEventListener 'change', (e) ->
-    if e.target.value == 'existing'
+  if el.value == 'existing'
+    el.addEventListener 'change', (e) ->
       unless collapesShown
         collapseLinkEl.Collapse.show()
         collapesShown = true
-    else
+  else
+    el.addEventListener 'change', (e) ->
       if collapesShown
         collapseLinkEl.Collapse.hide()
         collapesShown = false

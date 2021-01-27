@@ -139,14 +139,14 @@ ja:
   date:
     formats:
       default: "%Y年%m月%d日(%a)"
-      long: "%Y/%m/%d"
-      short: "%m/%d"
+      long: "%Y年%m月%d日"
+      short: "%m月%d日"
 
   time:
     formats:
       default: "%Y年%m月%d日(%a) %H時%M分%S秒 %z"
-      long: "%Y/%m/%d %H:%M:%S"
-      short: "%m/%d %H:%M"
+      long: "%Y年%m月%d日 %H時%M分%S秒"
+      short: "%m月%d日 %H時%M分"
 
   activerecord:
     models:

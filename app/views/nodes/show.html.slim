@@ -93,6 +93,15 @@ dl.row
       | (
       = nic.network&.name
       | )
+  dt.col-md-5 = Node.human_attribute_name(:confirmation)
+  dd.col-md-5
+    - if @node.confirmation&.confirmed_at
+      = l(@node.confirmation.confirmed_at.to_date, format: :long)
+    - else
+      .text-muted
+        | (
+        = t(:unconfirmed, scope: :messages)
+        | )
 
 p
   | 内容に問題がない場合は、「確認」ボタンから確認を行ってください。

@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     member do
       get 'copy'
     end
-    resource :confirmation, only: [:show, :create, :update]
+    resource :confirmation, only: [:create, :update]
   end
 
   resources :networks
