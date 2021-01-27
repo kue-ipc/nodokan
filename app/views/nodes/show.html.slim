@@ -23,7 +23,28 @@ dl.row
   dt.col-md-5 = Node.human_attribute_name(:hardware)
   dd.col-md-5
     - if @node.hardware
-      = @node.hardware.name
+      - case @node.hardware.device_type
+      - when 'desktop'
+        i.fas.fa-desktop
+      - when 'laptop'
+        i.fas.fa-laptop
+      - when 'tablet'
+        i.fas.fa-tablet-alt
+      - when 'mobile'
+        i.fas.fa-mobile-alt
+      - when 'server'
+        i.fas.fa-server
+      - when 'appliance'
+        i.fas.fa-hdd
+      - when 'network'
+        i.fas.fa-network-wired
+      - when 'virtual'
+        i.fas.fa-cloud
+      - when 'other'
+        i.fas.fa-blender-phone
+      - when 'unknown'
+        i.fas.fa-question-circle
+      =< @node.hardware.name
     - else
       .text-muted
         | (未入力)
@@ -33,18 +54,32 @@ dl.row
       - case @node.operating_system.os_category
       - when 'windows_client'
         i.fab.fa-windows
-      - when 'windowsn_server'
+      - when 'windows_server'
         i.fab.fa-microsoft
       - when 'mac'
         i.fab.fa-apple
       - when 'apple'
-        i.fab.fa-apple
+        span.fa-stack style="font-size: 0.5em;"
+          i.fas.fa-tablet.fa-stack-2x
+          i.fab.fa-apple.fa-stack-1x.fa-inverse
       - when 'android'
         i.fab.fa-android
       - when 'linux'
         i.fab.fa-linux
       - when 'bsd'
         i.fab.fa-freebsd
+      - when 'unix'
+        i.fas.fa-university
+      - when 'dedicated'
+        i.fas.fa-compact-disc
+      - when 'embedded'
+        i.fas.fa-microchip
+      - when 'other'
+        i.fas.fa-blender-phone
+      - when 'less'
+        i.fas.fa-ghost
+      - when 'unknown'
+        i.fas.fa-question-circle
       =< @node.operating_system.name
     - else
       .text-muted
