@@ -1,37 +1,43 @@
+p 端末の操作（確認、変更、削除）を行う場合は、列をクリックしてください。
+
 table.table.table-hover.table-sm
   thead
     tr
-      th scope="col" = Node.human_attribute_name(:name)
-      th scope="col" = Node.human_attribute_name(:hostname)
       - if current_user.admin?
         th scope="col" = Node.human_attribute_name(:user)
+      th scope="col" = Node.human_attribute_name(:name)
+      th scope="col" = Node.human_attribute_name(:hostname)
       th scope="col" = Node.human_attribute_name(:place)
-      th scope="col" = Hardware.human_attribute_name(:product_name)
+      th scope="col" = Hardware.model_name.human
+      th scope="col" = OperatingSystem.model_name.human
       th scope="col" = Nic.human_attribute_name(:ip_address)
-      th scope="col" = Node.human_attribute_name(:confirmed_at)
+      th scope="col" = Node.human_attribute_name(:confirmation)
 
   tbody
     - @nodes.each do |node|
       tr.clickable-row data-href="#{node_path(node)}"
-        td  = node.name
-        td  = node.hostname
         - if current_user.admin?
           td.text-nowrap = node.user.username
+        td = node.name
+        td
+          - if node.hostname.present?
+            = node.hostname
+          - else
+            span.text-muted
+              | (
+              = t(:not_entered, scope: :messages)
+              | )
         td = node.place&.name
         td = node.hardware&.product_name
+        td = node.operating_system&.name
         td.text-nowrap
           = node.nics.map(&:ip_address).compact.join("\n")
         td.text-nowrap
-          - if node.confirmed_at
-            - if node.confirmed_at <= Time.current.months_ago(13)
-              span.text-danager
-                = node.confirmed_at
-            - elsif node.confirmed_at <= Time.current.yeras_ago(11)
-              span.text-warning
-                = node.confirmed_at
-              span.text-success
-                = node.confirmed_at
+          - if node.confirmation
+            - if node.confirmation.expiration >= Time.current
+              span.text-success 確認済み
             - else
+              span.text-warning 期限切れ
           - else
             span.text-danger 未確認
 
@@ -40,6 +46,4 @@ table.table.table-hover.table-sm
 = paginate @nodes
 p
   = page_entries_info @nodes
-
-p 端末の操作（確認、変更、削除）を行う場合は、該当の列をクリックしてください。
 

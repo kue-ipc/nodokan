@@ -1,5 +1,4 @@
 class Confirmation < ApplicationRecord
-  belongs_to :user
   belongs_to :node
   belongs_to :security_software
 

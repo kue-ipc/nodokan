@@ -13,7 +13,6 @@
 ActiveRecord::Schema.define(version: 2020_09_25_011323) do
 
   create_table "confirmations", charset: "utf8mb4", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.bigint "node_id", null: false
     t.bigint "security_software_id"
     t.integer "existence", null: false
@@ -29,7 +28,6 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["node_id"], name: "index_confirmations_on_node_id", unique: true
     t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
-    t.index ["user_id"], name: "index_confirmations_on_user_id"
   end
 
   create_table "hardwares", charset: "utf8mb4", force: :cascade do |t|
@@ -223,7 +221,6 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
 
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
-  add_foreign_key "confirmations", "users"
   add_foreign_key "ip6_pools", "networks"
   add_foreign_key "ip_pools", "networks"
   add_foreign_key "network_users", "networks"

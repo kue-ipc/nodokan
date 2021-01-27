@@ -1,5 +1,6 @@
 class SecuritySoftware < ApplicationRecord
   include OsCategory
+  has_many :confirmations
 
   enum installation_method: {
     unnecessary: 8,

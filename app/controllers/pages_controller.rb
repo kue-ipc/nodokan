@@ -8,9 +8,12 @@ class PagesController < ApplicationController
       return
     end
 
-    @unconfirmed_nodes_count =
-      policy_scope(Node).where.not(confirmed_at: Time.current.ago(1.year)..)
-        .or(policy_scope(Node).where(confirmed_at: nil)).count
+    @need_confirm_count =
+      policy_scope(Node).includes(:confirmation)
+        .where.not(confirmations: Confirmation.all)
+        .or(policy_scope(Node).includes(:confirmation)
+          .where(confirmations: {expiration: Time.current..}))
+        .count
     @networks = policy_scope(Network).all
 
     # flash[:alert] ||= []

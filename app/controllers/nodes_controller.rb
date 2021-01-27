@@ -12,11 +12,11 @@ class NodesController < ApplicationController
       :query,
       :search,
       order: [
-        :id, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id, :confirmed_at,
+        :id, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id,
       ],
       condition: [
         :name, :hostname, :domain, :place_id, :hardware_id,
-        :operating_system_id, :confirmed_at,
+        :operating_system_id,
       ]
     )
 
@@ -34,7 +34,9 @@ class NodesController < ApplicationController
     @condition = permitted_params[:condition]
 
     @nodes = policy_scope(Node)
-      .includes(:user, :place, :hardware, :operating_system, nics: :network)
+      .includes(:user, :place, :hardware, :operating_system,
+        :confirmation,
+        nics: :network)
 
     if @query.present?
       query_places = Place.where(
@@ -80,13 +82,23 @@ class NodesController < ApplicationController
   # GET /nodes/1
   # GET /nodes/1.json
   def show
-    @confirmation = Confirmation.new(
-      node: @node,
-      user: current_user,
-      security_software: @node.operating_system && SecuritySoftware.new(
-        os_category: @node.operating_system.os_category
-      )
-    )
+    @confirmation = @node.confirmation || @node.build_confirmation
+    if @node.operating_system
+      @installation_methods = policy_scope(SecuritySoftware)
+        .where(os_category: @node.operating_system.os_category)
+        .select(:installation_method)
+        .distinct
+        .map(&:installation_method)
+      if @confirmation.security_software&.os_category != \
+        @node.operating_system.os_category
+        @confirmation.security_software = SecuritySoftware.new(
+          os_category: @node.operating_system.os_category
+        )
+      end
+    else
+      @installtaion_methods = []
+      @confirmation.security_software = nil
+    end
   end
 
   # GET /nodes/new

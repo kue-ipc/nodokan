@@ -65,6 +65,12 @@ ja:
   messages:
     comment: コメント
     comment_of_action: "%{action}時のコメント"
+    not_entered: 未入力
+    confirmed: 確認済み
+    unconfirmed: 未確認
+    expired: 期限切れ
+    approved: 承認済み
+    unapproved: 未承認
     content: 内容
     content_of_action: "%{action}内容"
     corfirm_destroy: "本当に削除してもよろしいですか？"
@@ -124,16 +130,12 @@ ja:
             ウェブブラウザー</li>
           <li>Adobe Reader、Adobe CC等のAdobe社製ソフトウェア</li>
         </ul>
-      security_software: |
-        NASやルーター等の専用機器/アプライアンス製品の場合は、
-        セキュリティソフトウェアは不要です。
       security_update: |
         セキュリティソフトウェア自体とウイルス定義やマルウェア検知エンジン等の
         アップデート状況について確認してください。
       security_scan: |
         体的なフルスキャンが実施されていない場合は、
         手動でフルスキャンを実施してください。
-
   date:
     formats:
       default: "%Y年%m月%d日(%a)"
@@ -217,7 +219,7 @@ ja:
         nic: NIC(ネットワークインターフェースコントローラー)
         nics: NIC(ネットワークインターフェースコントローラー)
         note: 備考
-        confirmed_at: 確認日
+        confirmation: 確認
         user: 管理者
       operating_system:
         os_category: OS種別
@@ -376,9 +378,6 @@ ja:
         pre_installed: プレインストール
         not_installed: 未インストール
         unknown: 不明
-
-
-
 
   helpers:
     page_entries_info:

@@ -142,7 +142,7 @@ class DatalistCandidation
 
   updateDescription: =>
     message = @targetDescriptions.get(@targetNode.value)
-    @descriptionNode.innerText = message ? ''
+    @descriptionNode.textContent = message ? ''
 
 for node in document.getElementsByClassName('datalist-canadidaiton')
   dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
