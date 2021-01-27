@@ -6,7 +6,7 @@ one:
   existence: 1
   content: 1
   os_update: 1
-  ms_upadte: 1
+  app_update: 1
   store_update: 1
   soft_update: 1
   security_software: one
@@ -20,7 +20,7 @@ two:
   existence: 2
   content: 2
   os_update: 2
-  ms_upadte: 2
+  app_update: 2
   store_update: 2
   soft_update: 2
   security_software: two

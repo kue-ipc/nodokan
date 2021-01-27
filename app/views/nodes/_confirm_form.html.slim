@@ -5,9 +5,8 @@
         h5.modal-title 確認事項
         button.close type="button" data-dismiss="modal" aria-label="Close"
           span aria-hidden="true" &times;
-      = bootstrap_form_for @confirmation do |f|
+      = bootstrap_form_for @confirmation, url: node_confirmation_path(@node) do |f|
         .modal-body
-          = f.hidden_field :node_id
           - question_count = 1
           p
             = t(:node_confirmation, scope: :messages)

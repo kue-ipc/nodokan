@@ -15,7 +15,7 @@ class ConfirmationsTest < ApplicationSystemTestCase
   #   click_on "New Confirmation"
 
   #   fill_in "Existence", with: @confirmation.existence
-  #   fill_in "Ms upadte", with: @confirmation.ms_upadte
+  #   fill_in "Ms update", with: @confirmation.app_update
   #   fill_in "Node", with: @confirmation.node_id
   #   fill_in "Os update", with: @confirmation.os_update
   #   fill_in "Registered content", with: @confirmation.registered_content
@@ -37,7 +37,7 @@ class ConfirmationsTest < ApplicationSystemTestCase
   #   click_on "Edit", match: :first
 
   #   fill_in "Existence", with: @confirmation.existence
-  #   fill_in "Ms upadte", with: @confirmation.ms_upadte
+  #   fill_in "Ms update", with: @confirmation.app_update
   #   fill_in "Node", with: @confirmation.node_id
   #   fill_in "Os update", with: @confirmation.os_update
   #   fill_in "Registered content", with: @confirmation.registered_content

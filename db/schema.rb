@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2020_09_25_011323) do
     t.integer "existence", null: false
     t.integer "content", null: false
     t.integer "os_update", null: false
-    t.integer "app_upadte", null: false
+    t.integer "app_update", null: false
     t.integer "security_update", null: false
     t.integer "security_scan", null: false
     t.timestamp "confirmed_at", default: -> { "current_timestamp()" }, null: false
