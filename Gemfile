@@ -34,8 +34,9 @@ gem 'jbuilder', '~> 2.7'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
-# IP Address
+# IP Address / MAC Address
 gem 'ipaddress_2'
+gem 'mac_address'
 
 # Attribute Normalizer
 gem 'attribute_normalizer'

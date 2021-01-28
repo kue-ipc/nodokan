@@ -67,7 +67,7 @@ p 【必須】の項目は入力が必須です。
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         = hardware_f.select :device_type, t_enums(Hardware, :device_types),
-                            {include_blank: '(未確認)',
+                            {include_blank: '(未選択)',
                              wrapper: {class: 'col-md-2'}},
                             class: 'custom-select'
         = hardware_f.text_field :maker,
@@ -128,7 +128,7 @@ p 【必須】の項目は入力が必須です。
         @node.operating_system || OperatingSystem.new do |operating_system_f|
         = operating_system_f.select :os_category,
           t_enums(OperatingSystem, :os_categories),
-          {include_blank: '(未確認)', wrapper: {class: 'col-md-4'}},
+          {include_blank: '(未選択)', wrapper: {class: 'col-md-4'}},
           class: 'custom-select'
         = operating_system_f.text_field :name,
           list: 'node_operating_system_name-list',
@@ -150,7 +150,7 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     h4 NIC(ネットワークインターフェースコントローラー)情報
     small.form-text.text-muted
-      | 端末に備わっているネットワーク接続のインターフェースです。複数のネットワークに接続する場合は複数記載してください。
+      | 端末に備わっているネットワーク接続のインターフェースです。複数のネットワークに接続する場合はNICを追加してください。不要なNICは削除してください。
     - count = 0
     - nic_list = []
     = f.fields_for :nics do |nic_f|
@@ -179,54 +179,43 @@ p 【必須】の項目は入力が必須です。
             wrapper: {class: 'col-md-4'}},
             disabled: true,
             class: 'custom-select'
-          = nic_f.text_field :mac_address,
-            pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-            placeholder: '00-00-5E- ...',
-            disabled: true,
-            wrapper: {class: 'col-md-4'}
-          = nic_f.text_field :duid,
-            pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-            placeholder: '00-03-00- ...',
-            disabled: true,
-            wrapper: {class: 'col-md-4'}
-          .col-md-12.form-text
-            p
-              =<> badge(Network.human_attribute_name(:auth),
-                level: :danger,
-                enabled: false,
-                id: "node_nics_attributes_#{nic_f.index}_badge_auth")
-              =<> badge(Network.human_attribute_name(:dhcp),
-                level: :primary,
-                enabled: false,
-                id: "node_nics_attributes_#{nic_f.index}_badge_dhcp")
-              =<> badge(Network.human_attribute_name(:closed),
-                level: :dark,
-                enabled: false,
-                id: "node_nics_attributes_#{nic_f.index}_badge_closed")
-              small id="node_nics_attributes_#{nic_f.index}_network_message"
           = nic_f.select :ip_config,
                           t_enums(Nic, :ip_configs),
                           {wrapper: {class: 'col-md-4'}},
                           class: 'custom-select', disabled: true
-          = nic_f.text_field :ip_address, wrapper: {class: 'col-md-8'},
-                             disabled: true
-          = nic_f.select :ip6_config, \
-                          t_enums(Nic, :ip6_configs), \
-                          {wrapper: {class: 'col-md-4'}}, class: 'custom-select', disabled: true
-          = nic_f.text_field :ip6_address, wrapper: {class: 'col-md-8'},
-                             disabled: true
+          = nic_f.text_field :mac_address,
+            pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
+            disabled: true,
+            wrapper: {class: 'col-md-4'}
+          - if Settings.config.ip6
+            = nic_f.select :ip6_config, \
+                            t_enums(Nic, :ip6_configs), \
+                            {wrapper: {class: 'offset-md-4 col-md-4'}}, class: 'custom-select', disabled: true
+            = nic_f.text_field :duid,
+              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+              disabled: true,
+              wrapper: {class: 'col-md-4'}
+          .col-md-12.form-text
+            =<> badge(Network.human_attribute_name(:auth),
+              level: :danger,
+              enabled: false,
+              id: "node_nics_attributes_#{nic_f.index}_badge_auth")
+            =<> badge(Network.human_attribute_name(:dhcp),
+              level: :primary,
+              enabled: false,
+              id: "node_nics_attributes_#{nic_f.index}_badge_dhcp")
+            =<> badge(Network.human_attribute_name(:closed),
+              level: :dark,
+              enabled: false,
+              id: "node_nics_attributes_#{nic_f.index}_badge_closed")
+            small id="node_nics_attributes_#{nic_f.index}_network_message"
     = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic',
       formnovalidate: true
     script#node-nic-info type="application/json"
-      == {list: nic_list, role: current_user.role}.to_json
+      == {list: nic_list}.to_json
 
   .rounded.border.p-2.mb-2
     = f.text_area :note
-    = f.fields_for :user, @node.user || current_user do |user_f|
-      - if current_user.admin?
-        = user_f.text_field :username
-      - else
-        = user_f.text_field :username, readonly: true
 
   = f.submit class: 'btn btn-primary'
 

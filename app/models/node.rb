@@ -21,9 +21,9 @@ class Node < ApplicationRecord
       with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
     }
 
-  normalize_attribute :hostname, with: [:nilify, :downcase]
-  normalize_attribute :domain, with: [:nilify, :downcase]
-  normalize_attribute :note, :nilify
+  normalize_attribute :hostname, with: [:strip, :blank, :downcase]
+  normalize_attribute :domain, with: [:strip, :blank, :downcase]
+  normalize_attribute :note
 
   def fqdn
     return if hostname.blank?

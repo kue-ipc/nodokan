@@ -4,3 +4,5 @@ database:
   username: nodokan
   password: pass+nodokan42
   host: localhost
+config:
+  ip6: false

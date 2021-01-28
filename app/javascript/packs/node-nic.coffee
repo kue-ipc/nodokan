@@ -1,4 +1,4 @@
-# NodeのNICを色々操作するためのJavaScript
+# NodeのNICを操作するためのJavaScript
 
 import {listToSnake, listToField} from 'modules/string_utils'
 import ipaddr from 'ipaddr.js'
@@ -29,9 +29,7 @@ class NodeNic
     'mac_address'
     'duid'
     'ip_config'
-    'ip_address'
     'ip6_config'
-    'ip6_address'
   ]
 
   constructor: (@number, @role) ->
@@ -42,10 +40,11 @@ class NodeNic
     @inputs = {}
     for name in NodeNic.NAMES
       node = @getNode(name)
-      @inputs[name] = {
-        node
-        initialValue: node.value
-      }
+      if node?
+        @inputs[name] = {
+          node
+          initialValue: node.value
+        }
 
     @networkMessageNode = @getNode('network_message')
     @badges = [
@@ -92,9 +91,7 @@ class NodeNic
         'mac_address'
         'duid'
         'ip_config'
-        'ip_address'
         'ip6_config'
-        'ip6_address'
       )
       return
 
@@ -110,9 +107,7 @@ class NodeNic
         'mac_address'
         'duid'
         'ip_config'
-        'ip_address'
         'ip6_config'
-        'ip6_address'
       )
       return
 
@@ -126,29 +121,27 @@ class NodeNic
 
   disableInputs: (names...) ->
     for name in names
-      @inputs[name].node.disabled = true
+      @inputs[name]?.node?.disabled = true
 
   enableInputs: (names...) ->
     for name in names
-      @inputs[name].node.disabled = false
+      @inputs[name]?.node?.disabled = false
 
   applyNetwork: (@networkId = @inputs['network_id'].node.value) ->
     try
       network = await fetchNetwork(@networkId)
     catch
-      @disableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
+      @disableInputs('ip_config', 'ip6_config')
       for {node} in @badges
         node.className = 'badge badge-light text-muted'
 
       return
 
     unless network?
-      @disableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
+      @disableInputs('ip_config', 'ip6_config')
 
       @inputs['ip_config'].node.selectedIndex = 0
-      @inputs['ip_address'].node.value = ''
       @inputs['ip6_config'].node.selectedIndex = 0
-      @inputs['ip6_address'].node.value = ''
 
       @inputs['mac_address'].node.required = false
 
@@ -225,7 +218,7 @@ class NodeNic
       else
         option.disabled = true
 
-    @enableInputs('ip_config', 'ip_address', 'ip6_config', 'ip6_address')
+    @enableInputs('ip_config', 'ip6_config')
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id, info.role) for id in info.list

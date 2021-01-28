@@ -121,6 +121,7 @@ class NodesController < ApplicationController
   # POST /nodes.json
   def create
     @node = Node.new(node_params)
+    @node.user = current_user
     authorize @node
 
     if params['add_nic']
@@ -168,6 +169,10 @@ class NodesController < ApplicationController
       render :edit
       return
     end
+
+    # @node.nics.each do |nic|
+    #   nic.set_ip!
+    # end
 
     success = false
 
@@ -243,9 +248,6 @@ class NodesController < ApplicationController
         :hostname,
         :domain,
         :note,
-        user: [
-          :username,
-        ],
         place: [
           :area,
           :building,
@@ -271,13 +273,9 @@ class NodesController < ApplicationController
           :duid,
           :network_id,
           :ip_config,
-          :ip_address,
           :ip6_config,
-          :ip6_address,
         ]
       )
-
-      user = User.find_by(permitted_params[:user])
 
       place = Place.find_or_initialize_by(permitted_params[:place])
 
@@ -294,7 +292,6 @@ class NodesController < ApplicationController
 
       permitted_params.except(:place, :hardware, :operating_system).merge(
         {
-          user: user,
           place: place,
           hardware: hardware,
           operating_system: operating_system,

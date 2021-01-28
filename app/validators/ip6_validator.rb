@@ -7,11 +7,14 @@ class Ip6Validator < ActiveModel::EachValidator
   PATTERN = /\A#{PATTERN_STR}\z/.freeze
 
   def validate_each(record, attribute, value)
-    unless value =~ PATTERN
-      record.errors[attribute] << (options[:message] || 'はIPv6アドレスではありません。')
+    puts '-------'
+    pp value
+    unless value =~ PATTERN && IPAddr.new(value).ipv6?
+      record.errors[attribute] << (options[:message] ||
+        'IPv6アドレスではありません。')
     end
-    IPAddr.new(value)
   rescue IPAddr::InvalidAddressError
-    record.errors[attribute] << (options[:message] || 'はIPv6アドレスではありません。')
+    record.errors[attribute] << (options[:message] ||
+      'IPv6アドレスではありません。')
   end
 end
