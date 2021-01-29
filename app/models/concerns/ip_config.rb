@@ -3,12 +3,12 @@ module IpConfig
 
   included do
     enum ip_config: {
-      disabled: 0,
-      static: 1,
-      dynamic: 2,
-      reserved: 3,
-      link_local: 4,
-      manual: 5,
+      dynamic: 0,
+      reserved: 1,
+      static: 2,
+      link_local: 8,
+      manual: 9,
+      disabled: 255,
     }, _prefix: :ip
   end
 end

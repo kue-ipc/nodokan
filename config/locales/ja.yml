@@ -293,19 +293,19 @@ ja:
         other: その他
         unknown: 不明
       ip_configs:
-        disabled: 無効
-        static: 固定(手動)
-        dynamic: 動的(DHCP)
-        reserved: 予約(DHCP)
-        link_local: リンクローカル(自動)
-        manual: 手動(手動)
-      ip6_configs:
-        disabled: 無効
-        static: 固定(手動)
-        dynamic: 動的(自動)
-        reserved: 予約(自動)
-        link_local: リンクローカル(自動)
+        dynamic: 動的
+        reserved: 予約
+        static: 固定
+        link_local: リンクローカル
         manual: 手動
+        disabled: 無効
+      ip6_configs:
+        dynamic: 動的
+        reserved: 予約
+        static: 固定
+        link_local: リンクローカル
+        manual: 手動
+        disabled: 無効
       existences:
         existing: 存在します。
         abandoned: 廃棄しました。

@@ -1,6 +1,6 @@
 module ApplicationHelper
+  # traslation
   def t_enums(model_class, attr_name)
-    class_name = model_class.name.underscore.to_sym
     model_class.__send__(attr_name).keys.index_by do |key|
       t(key, scope: [:activerecord, :enums, attr_name])
     end
@@ -18,6 +18,7 @@ module ApplicationHelper
     end
   end
 
+  # build node
   def dt_col
     %w[col-sm-6 col-md-4 col-xl-2 col-print-full]
   end
@@ -138,4 +139,3 @@ module ApplicationHelper
     content_tag('span', name, class: badge_classes, id: id)
   end
 end
-
