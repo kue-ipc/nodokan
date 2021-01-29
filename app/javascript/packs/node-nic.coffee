@@ -206,13 +206,13 @@ class NodeNic
     else
       availableIp6Configs.add('link_local')
 
-    for option in @inputs['ip_config'].node.options
+    for option in @inputs['ip_config']?.node?.options ? []
       if availableIpConfigs.has(option.value)
         option.disabled = false
       else
         option.disabled = true
 
-    for option in @inputs['ip6_config'].node.options
+    for option in @inputs['ip6_config']?.node?.options ? []
       if availableIp6Configs.has(option.value)
         option.disabled = false
       else
@@ -221,4 +221,4 @@ class NodeNic
     @enableInputs('ip_config', 'ip6_config')
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
-new NodeNic(id, info.role) for id in info.list
+new NodeNic(id) for id in info.list
