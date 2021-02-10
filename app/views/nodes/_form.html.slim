@@ -172,8 +172,7 @@ p 【必須】の項目は入力が必須です。
             disabled: true,
             wrapper: {class: 'col-md-8'}
           = nic_f.collection_select :network_id,
-            (current_user.selectable_networks + \
-              [nic_f.object.network]).compact.uniq,
+            (current_user.selectable_networks + [nic_f.object.network]).compact.uniq,
             :id, :name,
             {include_blank: '(未接続)',
             wrapper: {class: 'col-md-4'}},
@@ -188,8 +187,7 @@ p 【必須】の項目は入力が必須です。
             disabled: true,
             wrapper: {class: 'col-md-4'}
           - if Settings.config.ip6
-            = nic_f.select :ip6_config, \
-                            t_enums(Nic, :ip6_configs), \
+            = nic_f.select :ip6_config, t_enums(Nic, :ip6_configs),
                             {wrapper: {class: 'offset-md-4 col-md-4'}}, class: 'custom-select', disabled: true
             = nic_f.text_field :duid,
               pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',

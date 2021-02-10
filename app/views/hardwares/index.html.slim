@@ -21,8 +21,7 @@ table.table.table-sm
           td = hardware[@target]
         - else
           td
-            = t(hardware.device_type, \
-                scope: [:activerecord, :enums, :device_types])
+            = t(hardware.device_type, scope: [:activerecord, :enums, :device_types])
           td = hardware.maker
           td = hardware.product_name
           td = hardware.model_number

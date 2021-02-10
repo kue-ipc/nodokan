@@ -3,11 +3,8 @@
     = Network.model_name.human
 
 - if current_user.admin?
-  =<> link_to t('actions.edit'), edit_network_path(@network), \
-    class: 'btn btn-primary'
-  =<> link_to t('actions.destroy'), @network, \
-    data: { confirm: t('actions.corfirm_destroy') },
-    method: :delete
+  =<> link_to t('actions.edit'), edit_network_path(@network), class: 'btn btn-primary'
+  =<> link_to t('actions.destroy'), @network, data: { confirm: t('actions.corfirm_destroy') }, method: :delete
 hr
 
 dl

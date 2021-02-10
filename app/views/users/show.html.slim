@@ -41,10 +41,10 @@ h4 紐付けられたネットワーク
           .mx-1
             = f.submit '更新'
           .mx-1
-            = link_to '削除', \
-              network_user_path(network_user, redirect: user_path(@user)), \
-              data: { confirm: '本当に削除しますか？' }, \
-              method: :delete, \
+            = link_to '削除',
+              network_user_path(network_user, redirect: user_path(@user)),
+              data: { confirm: '本当に削除しますか？' },
+              method: :delete,
               class: 'btn btn-danger'
 
   - if current_user.admin?
@@ -60,8 +60,8 @@ h4 紐付けられたネットワーク
       = bootstrap_form_for NetworkUser.new(user: @user), layout: :inline do |f|
         = hidden_field_tag :redirect, user_path(@user)
         = f.hidden_field :user_id
-        = f.collection_select :network_id, unregistered_networks, :id, :name, \
-          prompt: '選択してください。', \
+        = f.collection_select :network_id, unregistered_networks, :id, :name,
+          prompt: '選択してください。',
           label: '新規'
         = f.form_group :available, class: 'mx-1' do
           = f.check_box :available, custom: :switch

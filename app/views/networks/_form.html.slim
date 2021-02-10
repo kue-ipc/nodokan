@@ -40,9 +40,7 @@
             span.input-group-text
               | /
           / = f.text_field :ip_mask, class: 'form-control'
-          = f.select :ip_mask, \
-                          [''] + Network::IP_MASKS, \
-                          {}, class: 'custom-select'
+          = f.select :ip_mask, [''] + Network::IP_MASKS, {}, class: 'custom-select'
       .form-group.col-md-4
         = f.label :ip_gateway
         = f.text_field :ip_gateway, class: 'form-control'
@@ -54,8 +52,7 @@
             = ip_pool_f.check_box :_destroy, class: 'custom-control-input'
             = ip_pool_f.label :_destroy, '削除', class: 'custom-control-label'
         .form-group.col-md-3
-          = ip_pool_f.select :ip_config, t_enums(IpPool, :ip_configs), \
-            {}, class: 'custom-select'
+          = ip_pool_f.select :ip_config, t_enums(IpPool, :ip_configs), {}, class: 'custom-select'
 
         .form-group.col-md-4
           = ip_pool_f.text_field :first_address, class: 'form-control'

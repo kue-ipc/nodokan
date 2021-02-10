@@ -22,14 +22,12 @@ header.mb-2
         ul.navbar-nav
           - if current_user.admin?
             li.nav-item
-              = link_to t('pages.admin'), rails_admin_path, \
-                class: 'btn btn-outline-danger my-2 my-sm-0 mr-1'
+              = link_to t('pages.admin'), rails_admin_path, class: 'btn btn-outline-danger my-2 my-sm-0 mr-1'
           li.nav-item.px-1
             span.navbar-text.mx-1
               = link_to current_user.username, '/user'
           li.nav-item.px-1
             span.navbar-text.mx-1
-              = link_to destroy_user_session_path, method: :delete,
-                  title: t('actions.sign_out'),
-                  'data-toggle': 'tooltip' do
+              = link_to destroy_user_session_path,
+                method: :delete, title: t('actions.sign_out'), 'data-toggle': 'tooltip' do
                 i.fas.fa-sign-out-alt
