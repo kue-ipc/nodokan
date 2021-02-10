@@ -89,7 +89,7 @@
   eol: 2015-07-14
 
 - os_category: :mac
-  name: 'macOS 11.0 Big Sur'
+  name: 'macOS 11 Big Sur'
 
 - os_category: :mac
   name: 'macOS 10.15 Catalina'
@@ -121,6 +121,9 @@
 - os_category: :apple
   name: 'watchOS'
 
+- os_category: :apple
+  name: 'tvOS'
+
 - os_category: :linux
   name: 'Red Hat Enterprise Linux 8'
   eol: 2029-05-01
@@ -139,8 +142,11 @@
   description: '追加費用のELS契約をしているRed Hat Etnerprise Linux 6です。'
 
 - os_category: :linux
+  name: 'CentOS Stream'
+
+- os_category: :linux
   name: 'CentOS 8'
-  eol: 2029-05-01
+  eol: 2021-12-31
 
 - os_category: :linux
   name: 'CentOS 7'
@@ -161,6 +167,12 @@
 - os_category: :linux
   name: 'Ubuntu 16.04 LTS'
   eol: 2021-04-01
+
+- os_category: bsd
+  name: 'FreeBSD'
+
+- os_category: bsd
+  name: 'OpenBSD'
 
 - os_category: :embedded
   name: 'Cisco IOS'
