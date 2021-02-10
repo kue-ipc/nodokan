@@ -67,7 +67,7 @@ Metrics/CyclomaticComplexity:
 
 Metrics/MethodLength:
   Max: 15
-  CountAsOne: ['array', 'hash', 'hearedoc']
+  CountAsOne: ['array', 'hash', 'heredoc']
   Exclude:
     - 'db/migrate/*.rb'
 
