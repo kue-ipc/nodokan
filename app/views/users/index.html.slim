@@ -9,7 +9,7 @@ table.table.table-sm
       th = User.human_attribute_name(:username)
       th = User.human_attribute_name(:email)
       th = User.human_attribute_name(:fullname)
-      th = User.human_attribute_name(:role)
+      th = User.human_attribute_name(:admin?)
       th = User.human_attribute_name(:deleted)
   tbody
     - @users.each do |user|
@@ -18,5 +18,15 @@ table.table.table-sm
           = link_to user.username, user
         td = user.email
         td = user.fullname
-        td = user.role
+        td
+          - if current_user == user
+            .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="自分自身は変更不可"
+              = check_box_tag "admin_#{user.id}", '1', user.admin?, disabled: true, class: 'custom-control-input'
+              = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
+          - else
+            = link_to user_path(user,params: {user: {role: (user.admin? ? :user : :admin)}, redirect_to: :index}),
+              method: :patch
+              .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="クリックして変更"
+                = check_box_tag "admin_#{user.id}", '1', user.admin?, class: 'custom-control-input'
+                = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
         td = user.deleted

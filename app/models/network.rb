@@ -180,6 +180,10 @@ class Network < ApplicationRecord
   end
 
   def name_vlan
-    "#{name}(#{vlan})"
+    if vlan.present?
+      "#{name} (VLAN #{vlan})"
+    else
+      name
+    end
   end
 end

@@ -129,7 +129,9 @@ module ApplicationHelper
     time.xmlschema
   end
 
-  def badge(name, id: nil, level: :primary, enabled: true)
+  def badge(name, id: nil, level: :primary, enabled: true, hidden: false)
+    return if hidden
+
     badge_classes = ['badge']
     if enabled
       badge_classes << "badge-#{level}"

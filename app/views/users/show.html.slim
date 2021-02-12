@@ -1,83 +1,82 @@
 - content_for :heading
   h2
     = User.model_name.human
-    = t('actions.show')
+    =< t('actions.information')
 
 dl.row
   dt.col-md-5 = User.human_attribute_name(:username)
-  dd.col-md-5 = @user.username
+  dd.col-md-5
+    = @user.username
+    - if current_user.admin? && @user.deleted
+      | (
+      = User.human_attribute_name(:deleted)
+      | )
   dt.col-md-5 = User.human_attribute_name(:email)
   dd.col-md-5 = @user.email
   dt.col-md-5 = User.human_attribute_name(:fullname)
   dd.col-md-5 = @user.fullname
-  dt.col-md-5 = User.human_attribute_name(:role)
-  dd.col-md-5 = @user.role
   - if current_user.admin?
+    dt.col-md-5 = User.human_attribute_name(:admin?)
+    dd.col-md-5 = @user.admin?
     dt.col-md-5 = User.human_attribute_name(:deleted)
     dd.col-md-5 = @user.deleted
-
-hr
-
-h4 認証ネットワーク
-
-= bootstrap_form_for @user do |f|
-  = f.collection_select :auth_network, Network.where(auth: true), :id, :name_vlan,
-    {prompt: '(なし)'},
-    {}
-
-
-h4 紐付けられたネットワーク
+  dt.col-md-5 = User.human_attribute_name(:auth_network)
+  dd.col-md-5
+    - if current_user.admin?
+      = bootstrap_form_for @user, layout: :inline do |f|
+        = f.collection_select :auth_network_id, Network.where(auth: true), :id, :name_vlan,
+          {include_blank: t('values.none'), hide_label: true},
+          {}
+        = f.submit '変更', class: 'btn btn-warning ml-1'
+    - else
+      = @user.auth_network&.name_vlan || t('values.none')
 
 
-
+h4 = User.human_attribute_name(:networks)
 
 - if @user.networks.count.zero?
   p ユーザーに紐付けられたネットワークはありません。
 - else
-  - @user.networks.each do |network_user|
-    - form_id = "networck_user-#{network_user.id}"
-    .mb-2
-      = bootstrap_form_for network_user, layout: :inline, namespace: form_id do |f|
-        = hidden_field_tag :redirect, user_path(@user)
-        = f.form_group :network
-          / = f.label :network_id, class: 'mr-sr-2'
-          input.form-control-plaintext type="text" readonly="readonly" value=network_user.network.name
-        = f.form_group :available, class: 'mx-1' do
-          = f.check_box :available, custom: :switch, disabled: !current_user.admin?
-        = f.form_group :managable, class: 'mx-1' do
-          = f.check_box :managable, custom: :switch, disabled: !current_user.admin?
-        = f.form_group :assigned, class: 'mx-1' do
-          = f.check_box :assigned, custom: :switch, disabled: !current_user.admin?
-        - if current_user.admin?
-          .mx-1
-            = f.submit '更新'
-          .mx-1
-            = link_to '削除',
-              network_user_path(network_user, redirect: user_path(@user)),
-              data: { confirm: '本当に削除しますか？' },
-              method: :delete,
-              class: 'btn btn-danger'
-
+  table.table.table-hover.table-sm
+    thead
+      tr
+        th scope="col" = Network.human_attribute_name(:name)
+        th scope="col" = Network.human_attribute_name(:vlan)
+        th scope="col" = Network.human_attribute_name(:config)
+        th scope="col" = Network.human_attribute_name(:ip_network)
+        th scope="col" = Network.human_attribute_name(:ip6_network)
+        th scope="col"
+    tbody
+      - @user.networks.each do |network|
+        tr.clickable-row data-href="#{network_path(network)}"
+          td = network.name
+          td = network.vlan
+          td
+            = badge(Network.human_attribute_name(:auth),
+              level: :primary,
+              hidden: !network.auth)
+          td = network.ip_network.to_s
+          td = network.ip6_network.to_s
+          - if current_user.admin?
+            td
+              = link_to '解除',
+                network_user_path(@user, network),
+                data: { confirm: '本当に解除しますか？' },
+                method: :delete,
+                class: 'btn btn-danger'
   - if current_user.admin?
-    p 利用済みのネットワークをユーザーの割当から削除しても、端末への紐付けは削除されません。
+    p 利用済みのネットワークをユーザーの紐付けを解除しても、端末への紐付けは削除されません。
 
 - if current_user.admin?
-  hr
   .mb-2
     - unregistered_networks = Network.where.not(id: @user.network_ids)
     - if unregistered_networks.count.zero?
       p 登録できるネットワークはありません
     - else
-      = bootstrap_form_for NetworkUser.new(user: @user), layout: :inline do |f|
-        = hidden_field_tag :redirect, user_path(@user)
-        = f.hidden_field :user_id
-        = f.collection_select :network_id, unregistered_networks, :id, :name,
-          prompt: '選択してください。',
-          label: '新規'
-        = f.form_group :available, class: 'mx-1' do
-          = f.check_box :available, custom: :switch
-        = f.form_group :managable, class: 'mx-1' do
-          = f.check_box :managable, custom: :switch
-        = f.form_group :assigned, class: 'mx-1' do
-          = f.check_box :assigned, custom: :switch
-        = f.submit '追加', class: 'btn btn-primary'
+      = bootstrap_form_tag url: networks_user_path(@user), layout: :inline do |f|
+        = f.collection_select :network_id, unregistered_networks, :id, :name_vlan,
+          {prompt: '選択してください。', hide_label: true},
+          {required: true}
+        = f.submit '追加', class: 'btn btn-primary ml-1'
+
+= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'

@@ -21,10 +21,15 @@ Rails.application.routes.draw do
     collection do
       put 'sync'
     end
-  end
-  resource :user, only: [:show]
+    # resources :networks, only: [:create, :destroy], controller: 'user_networks'
 
-  resources :network_users, only: [:show, :create, :update, :destroy]
+    member do
+      post 'networks', to: 'users#create_network', as: 'networks'
+      delete 'networks/:network_id', to: 'users#delete_network', as: 'network'
+    end
+  end
+
+  resource :user, only: [:show]
 
   devise_for :users
 

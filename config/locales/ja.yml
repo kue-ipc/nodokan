@@ -33,6 +33,7 @@ ja:
     error: エラー
     start: 開始
     confirm: 確認
+    information: 情報
 
   do_actions:
     close: 閉じる
@@ -245,19 +246,18 @@ ja:
         fullname: フルネーム
         role: 役割
         deleted: 削除済み
-      network_user:
-        user: ユーザー
-        user_id: ユーザー
-        network: ネットワーク
-        network_id: ネットワーク
-        available: 利用可能
-        managable: 管理可能
-        assigned: 割当
+        auth_network: 認証ネットワーク
+        networks: 利用可能ネットワーク
+        admin?: 管理者権限
       ip_pool:
         ip_config: IP設定
         first_address: 最初のアドレス
         last_address: 最後のアドレス
     enums:
+      roles:
+        admin: 管理者
+        user: 利用者
+        guest: ゲスト
       device_types:
         desktop: デスクトップPC
         laptop: ノートPC (2-in-1を含む)
@@ -408,7 +408,8 @@ ja:
       truncate: "&hellip;"
 
   values:
-    none: 無し
+    none: (無し)
+    empty: (空)
 
   errors:
     format: "%{attribute}は%{message}"
