@@ -15,9 +15,6 @@ class Network < ApplicationRecord
   has_many :auth_users, class_name: 'User', foreign_key: 'auth_network_id', dependent: :nullify
   has_and_belongs_to_many :users
 
-  # has_many :network_users, dependent: :destroy
-  # has_many :users, through: :network_users
-
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true,
                    numericality: {

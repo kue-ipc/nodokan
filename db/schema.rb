@@ -65,17 +65,6 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.index ["network_id"], name: "index_ip_pools_on_network_id"
   end
 
-  create_table "network_users", charset: "utf8mb4", force: :cascade do |t|
-    t.bigint "network_id", null: false
-    t.bigint "user_id", null: false
-    t.boolean "available", default: false, null: false
-    t.boolean "managable", default: false, null: false
-    t.boolean "assigned", default: false, null: false
-    t.index ["network_id", "user_id"], name: "index_network_users_on_network_id_and_user_id", unique: true
-    t.index ["network_id"], name: "index_network_users_on_network_id"
-    t.index ["user_id"], name: "index_network_users_on_user_id"
-  end
-
   create_table "networks", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.integer "vlan"
@@ -231,8 +220,6 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "ip6_pools", "networks"
   add_foreign_key "ip_pools", "networks"
-  add_foreign_key "network_users", "networks"
-  add_foreign_key "network_users", "users"
   add_foreign_key "networks_users", "networks"
   add_foreign_key "networks_users", "users"
   add_foreign_key "nics", "networks"
