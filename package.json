@@ -2,26 +2,26 @@
   "name": "nodokan",
   "private": true,
   "dependencies": {
-    "@babel/preset-react": "^7.12.10",
+    "@babel/preset-react": "^7.12.13",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@hyperapp/http": "^0.0.2",
-    "@rails/actioncable": "^6.1.1",
-    "@rails/activestorage": "^6.1.1",
-    "@rails/ujs": "^6.1.1",
+    "@rails/actioncable": "^6.1.2-1",
+    "@rails/activestorage": "^6.1.2-1",
+    "@rails/ujs": "^6.1.2-1",
     "@rails/webpacker": "^5.2.1",
-    "bootstrap": "^4.5.3",
-    "bootstrap.native": "^3.0.14",
+    "bootstrap": "^4.6.0",
+    "bootstrap.native": "^3.0.14-e",
     "coffee-loader": "^1.0.1",
     "coffeescript": "^2.5.1",
-    "hyperapp": "^2.0.8",
+    "hyperapp": "^2.0.12",
     "ipaddr.js": "^2.0.0",
     "resolve-url-loader": "^3.1.2",
-    "sass": "^1.32.4",
+    "sass": "^1.32.7",
     "turbolinks": "^5.2.0"
   },
   "version": "0.1.0",
   "devDependencies": {
-    "npm-check-updates": "^10.2.5",
+    "npm-check-updates": "^11.1.1",
     "webpack-dev-server": "^3.11.2"
   }
 }
