@@ -140,4 +140,18 @@ module ApplicationHelper
     end
     content_tag('span', name, class: badge_classes, id: id)
   end
+
+  def badge_boolean(model, attr, id: nil, level: :primary, disabled_show: false)
+    enabled = model.__send__(attr)
+    return if !disabled_show && !enabled
+
+    name = model.class.human_attribute_name(attr)
+    badge_classes = ['badge']
+    if enabled
+      badge_classes << "badge-#{level}"
+    else
+      badge_classes << 'badge-light' << 'text-muted'
+    end
+    content_tag('span', name, class: badge_classes, id: id)
+  end
 end

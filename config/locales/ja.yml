@@ -253,6 +253,7 @@ ja:
         ip_config: IP設定
         first_address: 最初のアドレス
         last_address: 最後のアドレス
+        _destroy: 削除
     enums:
       roles:
         admin: 管理者

@@ -10,9 +10,7 @@ hr
 dl
   = dt_dd_for @network, :name
   = dt_dd_for @network, :vlan
-  = dt_dd_for @network, :dhcp
   = dt_dd_for @network, :auth
-  = dt_dd_for @network, :closed
   = dt_dd_for @network, :ip_network
   = dt_dd_for @network, :ip_gateway
   = dt_dd_for @network, :ip6_network
@@ -22,6 +20,14 @@ dl
   = dt_dd_tag '端末数' do
     span.badge.badge-primary
       = @network.nodes.count
+
+  = dt_dd_tag '利用可能ユーザー数' do
+    span.badge.badge-primary
+      = @network.users.count
+
+  = dt_dd_tag '認証ユーザー数' do
+    span.badge.badge-primary
+      = @network.auth_users.count
 
 h3 = IpPool.model_name.human
 

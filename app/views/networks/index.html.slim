@@ -17,16 +17,7 @@ table.table.table-hover.table-sm
       tr.clickable-row data-href="#{network_path(network)}"
         td = network.name
         td = network.vlan
-        td
-          =<> badge(Network.human_attribute_name(:auth),
-            level: :danger,
-            enabled: network.auth)
-          =<> badge(Network.human_attribute_name(:dhcp),
-            level: :primary,
-            enabled: network.dhcp)
-          =<> badge(Network.human_attribute_name(:closed),
-            level: :dark,
-            enabled: network.closed)
+        td = badge_boolean(network, :auth, level: :primary)
         td = network.ip_network.to_s
         td = network.ip6_network.to_s
 

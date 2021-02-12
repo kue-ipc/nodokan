@@ -12,7 +12,7 @@ class Network < ApplicationRecord
   has_many :ip6_pools, dependent: :destroy
   accepts_nested_attributes_for :ip6_pools, allow_destroy: true
 
-  has_many :auth_users, class_name: 'User', dependent: :nullify
+  has_many :auth_users, class_name: 'User', foreign_key: 'auth_network_id', dependent: :nullify
   has_and_belongs_to_many :users
 
   # has_many :network_users, dependent: :destroy
