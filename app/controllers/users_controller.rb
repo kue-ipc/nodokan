@@ -26,7 +26,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = @user
   end
 
   def create

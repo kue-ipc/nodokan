@@ -5,6 +5,7 @@ class CreateNics < ActiveRecord::Migration[6.0]
       t.references :network, foreign_key: true
       t.string :name
       t.integer :interface_type, null: false
+      t.boolean :mac_registration, null: false, default: false
       t.string :mac_address, limit: 18, index: true
       t.string :duid, index: true
       t.integer :ip_config

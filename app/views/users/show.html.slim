@@ -18,12 +18,23 @@ dl.row
 
 hr
 
+h4 認証ネットワーク
+
+= bootstrap_form_for @user do |f|
+  = f.collection_select :auth_network, Network.where(auth: true), :id, :name_vlan,
+    {prompt: '(なし)'},
+    {}
+
+
 h4 紐付けられたネットワーク
 
-- if @user.network_users.count.zero?
+
+
+
+- if @user.networks.count.zero?
   p ユーザーに紐付けられたネットワークはありません。
 - else
-  - @user.network_users.each do |network_user|
+  - @user.networks.each do |network_user|
     - form_id = "networck_user-#{network_user.id}"
     .mb-2
       = bootstrap_form_for network_user, layout: :inline, namespace: form_id do |f|

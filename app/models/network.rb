@@ -12,8 +12,11 @@ class Network < ApplicationRecord
   has_many :ip6_pools, dependent: :destroy
   accepts_nested_attributes_for :ip6_pools, allow_destroy: true
 
-  has_many :network_users, dependent: :destroy
-  has_many :users, through: :network_users
+  has_many :auth_users, class_name: 'User', dependent: :nullify
+  has_and_belongs_to_many :users
+
+  # has_many :network_users, dependent: :destroy
+  # has_many :users, through: :network_users
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true,
@@ -174,5 +177,9 @@ class Network < ApplicationRecord
         end
       end
     end
+  end
+
+  def name_vlan
+    "#{name}(#{vlan})"
   end
 end

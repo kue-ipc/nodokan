@@ -1,3 +1,5 @@
+# https://docs.rubocop.org/rubycop/
+
 require:
   - rubocop-rails
 
@@ -11,6 +13,9 @@ AllCops:
 
 Rails:
   Enabled: true
+
+# Bundler
+# https://docs.rubocop.org/rubocop/cops_bundler.html
 
 Bundler/OrderedGems:
   Enabled: false
@@ -104,9 +109,6 @@ Layout/FirstArrayElementIndentation:
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
-Rails/BulkChangeTable:
-  Enabled: false
-
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
@@ -115,3 +117,12 @@ Style/TrailingCommaInArrayLiteral:
 
 Style/SpecialGlobalVars:
   EnforcedStyle: use_perl_names
+
+# Rails
+# https://docs.rubocop.org/rubocop-rails/cops_rails.html
+
+Rails/BulkChangeTable:
+  Enabled: false
+
+Rails/HasAndBelongsToMany:
+  Enabled: false

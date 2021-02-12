@@ -13,21 +13,24 @@ class User < ApplicationRecord
 
   has_many :nodes, dependent: :nullify
 
-  has_many :network_users, dependent: :destroy
-  has_many :available_network_users,
-    -> { where(available: true) }, class_name: 'NetworkUser'
-  has_many :managable_network_users,
-    -> { where(managable: true) }, class_name: 'NetworkUser'
-  has_many :assigned_network_users,
-    -> { where(assigned: true) }, class_name: 'NetworkUser'
+  has_and_belongs_to_many :networks
+  belongs_to :auth_network, optional: true, class_name: 'Network'
 
-  has_many :networks, through: :network_users
-  has_many :available_networks, through: :available_network_users,
-                                source: :network
-  has_many :managable_networks, through: :managable_network_users,
-                                source: :network
-  has_many :assigned_networks, through: :assigned_network_users,
-                               source: :network
+  # has_many :network_users, dependent: :destroy
+  # has_many :available_network_users,
+  #   -> { where(available: true) }, class_name: 'NetworkUser'
+  # has_many :managable_network_users,
+  #   -> { where(managable: true) }, class_name: 'NetworkUser'
+  # has_many :assigned_network_users,
+  #   -> { where(assigned: true) }, class_name: 'NetworkUser'
+
+  # has_many :networks, through: :network_users
+  # has_many :available_networks, through: :available_network_users,
+  #                               source: :network
+  # has_many :managable_networks, through: :managable_network_users,
+  #                               source: :network
+  # has_many :assigned_networks, through: :assigned_network_users,
+  #                              source: :network
 
   validates :username, presence: true,
                        uniqueness: {case_sensitive: true},

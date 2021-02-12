@@ -1,8 +1,6 @@
 - name: 'サーバー'
   vlan: 101
-  dhcp: false
   auth: false
-  closed: false
   ip_address: '192.168.1.0'
   ip_mask: '255.255.255.0'
   ip_gateway: '192.168.1.254'
@@ -10,9 +8,7 @@
 
 - name: 'クライアント'
   vlan: 102
-  dhcp: true
   auth: true
-  closed: false
   ip_address: '192.168.2.0'
   ip_mask: '255.255.255.0'
   ip_gateway: '192.168.2.254'
