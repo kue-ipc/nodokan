@@ -183,4 +183,20 @@ class Network < ApplicationRecord
       name
     end
   end
+
+  def available_ip_configs
+    configs = IpPool.ip_configs.transform_values { |_| 0 }
+    ip_pools.each do |ip_pool|
+      configs[ip_pool.ip_config] += 1
+    end
+    configs
+  end
+
+  def available_ip6_configs
+    configs = Ip6Pool.ip6_configs.transform_values { |_| 0 }
+    ip6_pools.each do |ip6_pool|
+      configs[ip6_pool.ip6_config] += 1
+    end
+    configs
+  end
 end

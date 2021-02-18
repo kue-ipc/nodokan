@@ -81,13 +81,4 @@ class User < ApplicationRecord
   def authorizable?
     Devise::LDAP::Adapter.authorizable?(username)
   end
-
-  def selectable_networks
-    @selectable_networks ||=
-      if admin?
-        Network.all
-      else
-        available_networks
-      end
-  end
 end
