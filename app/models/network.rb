@@ -48,7 +48,7 @@ class Network < ApplicationRecord
   # readonly
   def ip_network
     @ip_network ||= ip_network_data.presence &&
-                    IPAdrress::IPv4.parse_data(ip_network_data, ip_prefixlen)
+                    IPAddress::IPv4.parse_data(ip_network_data, ip_prefixlen)
   end
 
   def ip_network_address
@@ -78,7 +78,7 @@ class Network < ApplicationRecord
   # readonly
   def ip_gateway
     @ip_gateway ||= ip_gateway_data.presence &&
-                    IPAdrress::IPv4.parse_data(ip_gateway_data)
+                    IPAddress::IPv4.parse_data(ip_gateway_data)
   end
 
   def ip_gateway_address
@@ -98,7 +98,7 @@ class Network < ApplicationRecord
   # readonly
   def ip6_network
     @ip6_network ||= ip6_network_data.presence &&
-                     IPAdrress::IPv6.parse_data(ip6_network_data, ip6_prefixlen)
+                     IPAddress::IPv6.parse_data(ip6_network_data, ip6_prefixlen)
   end
 
   def ip6_network_address
@@ -116,7 +116,7 @@ class Network < ApplicationRecord
   # readonly
   def ip6_gateway
     @ip6_gateway ||= ip6_gateway_data.presence &&
-                     IPAdrress::IPv6.parse_data(ip6_gateway_data)
+                     IPAddress::IPv6.parse_data(ip6_gateway_data)
   end
 
   def ip6_gateway_address

@@ -9,15 +9,13 @@ def register_network(data)
   network = Network.new(
     name: data['name'],
     vlan: data['vlan'],
-    dhcp: data['dhcp'].presence || false,
     auth: data['auth'].presence || false,
-    closed: data['closed'].presence || false,
-    ip_gateway: data['ip_gateway'],
+    ip_gateway_address: data['ip_gateway'],
   )
   if data['ip_network'].present?
     address, mask = data['ip_network'].split('/')
-    network[:ip_address] = address
-    network[:ip_mask] = mask
+    network.ip_network_address = address
+    network.ip_prefixlen = mask
   end
 
   ['static', 'dynamic', 'reserved'].each do |ip_config|
@@ -26,7 +24,7 @@ def register_network(data)
       data[data_name].split('|').each do |ip_range|
         first, last = ip_range.split('-')
         network.ip_pools << IpPool.new(
-          ip_config: ip_config, first_address: first, last_address: last)
+          ip_config: ip_config, ip_first_address: first, ip_last_address: last)
       end
     end
   end
