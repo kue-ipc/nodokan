@@ -1,6 +1,7 @@
 # NodeのNICを操作するためのJavaScript
 
 import {listToSnake, listToField} from 'modules/string_utils'
+import Network from 'models/network'
 import ipaddr from 'ipaddr.js'
 
 NETWORK_MAP = new Map
@@ -128,14 +129,16 @@ class NodeNic
       @inputs[name]?.node?.disabled = false
 
   applyNetwork: (@networkId = @inputs['network_id'].node.value) ->
-    try
-      network = await fetchNetwork(@networkId)
-    catch
+    unless @networkId? && @networkId != ''
       @disableInputs('ip_config', 'ip6_config')
       for {node} in @badges
         node.className = 'badge badge-light text-muted'
-
       return
+
+    console.log @networkId
+    network_2 = await Network.fetch(@networkId)
+    console.log network_2
+    network = await fetchNetwork(@networkId)
 
     unless network?
       @disableInputs('ip_config', 'ip6_config')

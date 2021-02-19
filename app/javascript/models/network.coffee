@@ -1,4 +1,4 @@
-import ApplicationRecord from './application_recored'
+import ApplicationRecord from './application_record'
 import IpPool from './ip_pool'
 import Ip6Pool from './ip6_pool'
 import ipaddr from 'ipaddr.js'
@@ -29,6 +29,7 @@ export default class Network extends ApplicationRecord
       ip_address, ip_mask, ip_gateway, ip6_address, ip6_prefix, ip6_gateway,
       ip_pools, ip6_pools, props...}) ->
     super(props)
+    console.log "#{ip_address}/#{ip_mask}"
     @ip_network = if ip_address? then ipaddr.parse("#{ip_address}/#{ip_mask}")
     @ip_gateway = if ip_gateway? then ipaddr.parse(ip_gateway)
     @ip6_network = if ip6_address? then ipaddr.parse("#{ip6_address}/#{ip_prefix}")
