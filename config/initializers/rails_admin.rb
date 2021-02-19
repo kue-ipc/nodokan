@@ -1,3 +1,5 @@
+require 'rails_admin_version_proxy_modified'
+
 RailsAdmin.config do |config|
   ### Popular gems integration
 

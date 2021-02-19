@@ -17,7 +17,7 @@
     ip_first_address: '192.168.2.1'
     ip_last_address: '192.168.2.99'
   - ip_config: :reserved
-    ip_fisnt_address: '192.168.2.100'
+    ip_first_address: '192.168.2.100'
     ip_last_address: '192.168.2.199'
   - ip_config: static
     ip_first_address: '192.168.2.200'
