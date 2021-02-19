@@ -48,8 +48,8 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
   create_table "ip6_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip6_config", null: false
-    t.string "first6_address", limit: 40, null: false
-    t.string "last6_address", limit: 40, null: false
+    t.binary "ip6_first_data", limit: 16, null: false
+    t.binary "ip6_last_data", limit: 16, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip6_pools_on_network_id"
@@ -58,8 +58,8 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
   create_table "ip_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ip_config", null: false
-    t.string "first_address", limit: 16, null: false
-    t.string "last_address", limit: 16, null: false
+    t.binary "ip_first_data", limit: 4, null: false
+    t.binary "ip_last_data", limit: 4, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip_pools_on_network_id"
@@ -69,12 +69,12 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.string "name", null: false
     t.integer "vlan"
     t.boolean "auth", default: false, null: false
-    t.string "ip_address", limit: 16
-    t.string "ip_mask", limit: 16
-    t.string "ip_gateway", limit: 16
-    t.string "ip6_address", limit: 40
-    t.integer "ip6_prefix"
-    t.string "ip6_gateway", limit: 40
+    t.binary "ip_network_data", limit: 4
+    t.integer "ip_prefixlen"
+    t.binary "ip_gateway_data", limit: 4
+    t.binary "ip6_network_data", limit: 16
+    t.integer "ip6_prefixlen"
+    t.binary "ip6_gateway_data", limit: 16
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -94,18 +94,18 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.string "name"
     t.integer "interface_type", null: false
     t.boolean "mac_registration", default: false, null: false
-    t.string "mac_address", limit: 18
-    t.string "duid"
+    t.binary "mac_address_data", limit: 6
+    t.binary "duid_data", limit: 130
     t.integer "ip_config"
-    t.string "ip_address", limit: 16
+    t.binary "ip_data", limit: 4
     t.integer "ip6_config"
-    t.string "ip6_address", limit: 40
+    t.binary "ip6_data", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["duid"], name: "index_nics_on_duid"
-    t.index ["ip6_address"], name: "index_nics_on_ip6_address"
-    t.index ["ip_address"], name: "index_nics_on_ip_address"
-    t.index ["mac_address"], name: "index_nics_on_mac_address"
+    t.index ["duid_data"], name: "index_nics_on_duid_data"
+    t.index ["ip6_data"], name: "index_nics_on_ip6_data"
+    t.index ["ip_data"], name: "index_nics_on_ip_data"
+    t.index ["mac_address_data"], name: "index_nics_on_mac_address_data"
     t.index ["network_id"], name: "index_nics_on_network_id"
     t.index ["node_id"], name: "index_nics_on_node_id"
   end

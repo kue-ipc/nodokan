@@ -1,26 +1,26 @@
 - name: 'サーバー'
   vlan: 101
   auth: false
-  ip_address: '192.168.1.0'
-  ip_mask: '255.255.255.0'
-  ip_gateway: '192.168.1.254'
+  ip_network_address: '192.168.1.0'
+  ip_netmask: '255.255.255.0'
+  ip_gateway_address: '192.168.1.254'
   note: サーバー用ネットワークのサンプル
 
 - name: 'クライアント'
   vlan: 102
   auth: true
-  ip_address: '192.168.2.0'
-  ip_mask: '255.255.255.0'
-  ip_gateway: '192.168.2.254'
+  ip_network_address: '192.168.2.0'
+  ip_netmask: '255.255.255.0'
+  ip_gateway_address: '192.168.2.254'
   ip_pools_attributes:
   - ip_config: :dynamic
-    first_address: '192.168.2.1'
-    last_address: '192.168.2.99'
+    ip_first_address: '192.168.2.1'
+    ip_last_address: '192.168.2.99'
   - ip_config: :reserved
-    first_address: '192.168.2.100'
-    last_address: '192.168.2.199'
+    ip_fisnt_address: '192.168.2.100'
+    ip_last_address: '192.168.2.199'
   - ip_config: static
-    first_address: '192.168.2.200'
-    last_address: '192.168.2.240'
+    ip_first_address: '192.168.2.200'
+    ip_last_address: '192.168.2.240'
   note: クライアント用ネットワークのサンプル
 

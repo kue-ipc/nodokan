@@ -6,12 +6,12 @@ class CreateNics < ActiveRecord::Migration[6.0]
       t.string :name
       t.integer :interface_type, null: false
       t.boolean :mac_registration, null: false, default: false
-      t.string :mac_address, limit: 18, index: true
-      t.string :duid, index: true
+      t.binary :mac_address_data, limit: 6, index: true
+      t.binary :duid_data, limit: 130, index: true
       t.integer :ip_config
-      t.string :ip_address, limit: 16, index: true
+      t.binary :ip_data, limit: 4, index: true
       t.integer :ip6_config
-      t.string :ip6_address, limit: 40, index: true
+      t.binary :ip6_data, limit: 16, index: true
 
       t.timestamps
     end
