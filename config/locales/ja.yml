@@ -249,8 +249,8 @@ ja:
         admin?: 管理者権限
       ip_pool:
         ip_config: IP設定
-        first_address: 最初のアドレス
-        last_address: 最後のアドレス
+        ip_first_address: 最初のアドレス
+        ip_last_address: 最後のアドレス
         _destroy: 削除
     enums:
       roles:

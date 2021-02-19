@@ -10,7 +10,7 @@ class Ip6Pool < ApplicationRecord
   end
 
   def ip6_first_address
-    @ip6_first_address ||= @ip6_first.address
+    @ip6_first_address ||= ip6_first.address
   end
 
   def ip6_first_address=(value)
@@ -26,7 +26,7 @@ class Ip6Pool < ApplicationRecord
   end
 
   def ip6_last_address
-    @ip6_last_address ||= @ip6_last.address
+    @ip6_last_address ||= ip6_last.address
   end
 
   def ip6_last_address=(value)

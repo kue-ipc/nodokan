@@ -2,9 +2,10 @@
   h2
     = Network.model_name.human
 
+=<> link_to t('actions.index'), networks_path, class: 'btn btn-secondary'
 - if current_user.admin?
   =<> link_to t('actions.edit'), edit_network_path(@network), class: 'btn btn-primary'
-  =<> link_to t('actions.destroy'), @network, data: { confirm: t('actions.corfirm_destroy') }, method: :delete
+  =<> link_to t('actions.destroy'), @network, data: { confirm: t('messages.corfirm_destroy') }, method: :delete, class: 'btn btn-danger'
 hr
 
 dl
@@ -31,17 +32,19 @@ dl
 
 h3 = IpPool.model_name.human
 
-table.table.table-sm
-  thead
-    tr
-      th = IpPool.human_attribute_name(:ip_config)
-      th = IpPool.human_attribute_name(:first_address)
-      th = IpPool.human_attribute_name(:last_address)
-  tbody
-    - @network.ip_pools.sort_by(&:first).each do |ip_pool|
+- if @network.ip_pools.empty?
+  p
+    | IPアドレスのプールが設定されていません。
+- else
+  table.table.table-sm
+    thead
       tr
-        td = t(ip_pool.ip_config, scope: [:activerecord, :enums, :ip_configs])
-        td = ip_pool.first_address
-        td = ip_pool.last_address
-
-=<> link_to t('actions.index'), networks_path
+        th = IpPool.human_attribute_name(:ip_config)
+        th = IpPool.human_attribute_name(:ip_first_address)
+        th = IpPool.human_attribute_name(:ip_last_address)
+    tbody
+      - @network.ip_pools.sort_by(&:ip_first_data).each do |ip_pool|
+        tr
+          td = t(ip_pool.ip_config, scope: [:activerecord, :enums, :ip_configs])
+          td = ip_pool.ip_first_address
+          td = ip_pool.ip_last_address

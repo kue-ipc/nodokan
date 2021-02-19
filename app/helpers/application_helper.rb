@@ -30,7 +30,7 @@ module ApplicationHelper
   def dt_dd_tag(term, &block)
     content_tag('div', class: 'row border-bottom mb-2 pb-2') do
       content_tag('dt', term, class: dt_col) +
-        content_tag('dd', class: dt_col + ['mb-0'], &block)
+        content_tag('dd', class: dd_col + ['mb-0'], &block)
     end
   end
 
@@ -54,21 +54,19 @@ module ApplicationHelper
       content_tag('span', opts[:blank_alt] || t(:empty, scope: :values), class: 'font-italic text-muted')
     when String
       case opts[:format]
-      when :mail_body
-        mail_body_tag(value, **opts)
       when :translate
         span_text_tag(t(value, scope: opts[:scope]), **opts)
       else
         span_text_tag(value, **opts)
       end
     when Time, Date, DateTime, ActiveSupport::TimeWithZone
-      content_tag('span', l(value, format: opts[:format]))
+      span_text_tag(l(value, format: opts[:format]), **opts)
     when true, false
       content_tag('div', class: 'custom-control custom-switch') do
         check_box_tag(:admin?, '1', value, disabled: true, class: 'custom-control-input') +
           label_tag(:admin?, '', class: 'custom-control-label')
       end
-    when Enumerable
+    when Array
       content_tag('ul', class: 'list-inline mb-0') do
         list_html = sanitize('')
         value.each do |v|
@@ -78,16 +76,16 @@ module ApplicationHelper
         end
         list_html
       end
+    when IPAddress
+      if value.network?
+        span_text_tag(value.to_string, **opts)
+      else
+        span_text_tag(value.to_s, **opts)
+      end
     when ApplicationRecord
       link_to(value.to_s, value)
     else
-      content_tag('span', value.to_s, class: '')
-    end
-  end
-
-  def mail_body_tag(value, **opts)
-    content_tag('pre', value, class: 'border rounded mb-0 mail-body line-76-80') do
-      span_text_tag(value, **opts)
+      span_text_tag(value.to_s, **opts)
     end
   end
 
