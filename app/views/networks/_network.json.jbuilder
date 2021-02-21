@@ -1,8 +1,7 @@
 json.extract! network, :id, :name,
   :vlan, :auth,
-  :ip_address, :ip_mask, :ip_gateway,
-  :ip6_address, :ip6_prefix, :ip6_gateway,
-  :available_ip_configs, :available_ip6_configs,
+  :ip_network_address, :ip_netmask, :ip_prefixlen, :ip_gateway_address,
+  :ip6_network_address, :ip6_prefixlen, :ip6_gateway_address,
   :note, :created_at, :updated_at
 json.url network_url(network, format: :json)
 json.ip_pools do

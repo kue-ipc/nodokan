@@ -2,7 +2,7 @@ import ApplicationRecord from './application_record'
 import ipaddr from 'ipaddr.js'
 
 export default class IpPool extends ApplicationRecord
-  constructor: ({@ip_config, first_address, last_addres, props...}) ->
+  constructor: ({@ip_config, ip_first_address, ip_last_address, props...}) ->
     super(props)
-    @first_address = ipaddr.pares(first_address)
-    @last_address = ipaddr.pares(last_address)
+    @ip_first_address = ipaddr.parse(ip_first_address)
+    @ip_last_address = ipaddr.parse(ip_last_address)

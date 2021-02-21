@@ -26,13 +26,15 @@ export default class Network extends ApplicationRecord
     network
 
   constructor: ({@name, @vlan, @auth, @note,
-      ip_address, ip_mask, ip_gateway, ip6_address, ip6_prefix, ip6_gateway,
+      ip_network_address, ip_prefixle, ip_gateway_address,
+      ip6_network_address, ip6_prefixlen, ip6_gateway_address,
       ip_pools, ip6_pools, props...}) ->
     super(props)
-    console.log "#{ip_address}/#{ip_mask}"
-    @ip_network = if ip_address? then ipaddr.parse("#{ip_address}/#{ip_mask}")
-    @ip_gateway = if ip_gateway? then ipaddr.parse(ip_gateway)
-    @ip6_network = if ip6_address? then ipaddr.parse("#{ip6_address}/#{ip_prefix}")
-    @ip6_gateway = if ip6_gateway? then ipaddr.parse(ip6_gateway)
+    console.log 
+    @ip_network = if ip_network_address then ipaddr.parse(ip_network_address)
+    @ip_gateway = if ip_gateway_address then ipaddr.parse(ip_gateway_address)
+    @ip6_network = if ip6_network_address then ipaddr.parse(ip6_network_address)
+    @ip6_gateway = if ip6_gateway_address then ipaddr.parse(ip6_gateway_address)
+
     @ip_pools = ip_pools.map (ip_pool) -> new IpPool(ip_pool)
-    @ip6_pools = ip6_pools.mpa (ip6_pool) -> new Ip6Pool(ip6_pool)
+    @ip6_pools = ip6_pools.map (ip6_pool) -> new Ip6Pool(ip6_pool)
