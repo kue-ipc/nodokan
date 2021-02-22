@@ -30,7 +30,6 @@ export default class Network extends ApplicationRecord
       ip6_network_address, ip6_prefixlen, ip6_gateway_address,
       ip_pools, ip6_pools, props...}) ->
     super(props)
-    console.log 
     @ip_network = if ip_network_address then ipaddr.parse(ip_network_address)
     @ip_gateway = if ip_gateway_address then ipaddr.parse(ip_gateway_address)
     @ip6_network = if ip6_network_address then ipaddr.parse(ip6_network_address)
