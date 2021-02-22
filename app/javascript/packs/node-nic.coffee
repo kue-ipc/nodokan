@@ -4,22 +4,22 @@ import {listToSnake, listToField} from 'modules/string_utils'
 import Network from 'models/network'
 import ipaddr from 'ipaddr.js'
 
-NETWORK_MAP = new Map
+# NETWORK_MAP = new Map
 
-fetchNetwork = (id) ->
-  unless id? and /^\d+$/.test(id)
-    return null
+# fetchNetwork = (id) ->
+#   unless id? and /^\d+$/.test(id)
+#     return null
 
-  if NETWORK_MAP.has(id)
-    return NETWORK_MAP.get(id)
+#   if NETWORK_MAP.has(id)
+#     return NETWORK_MAP.get(id)
 
-  url = "/networks/#{id}.json"
+#   url = "/networks/#{id}.json"
 
-  response = await fetch(url)
-  data = await response.json()
+#   response = await fetch(url)
+#   data = await response.json()
 
-  NETWORK_MAP.set(id, data)
-  data
+#   NETWORK_MAP.set(id, data)
+#   data
 
 class NodeNic
   @NAMES = [
@@ -73,7 +73,7 @@ class NodeNic
       @checkInterfaceType()
 
     @inputs['network_id'].node.addEventListener 'change', (_e) =>
-      @applyNetwork()
+      @checkNetwork()
 
     @checkDestroy()
 
@@ -82,6 +82,14 @@ class NodeNic
 
   getNode: (names...) ->
     document.getElementById(@getNodeId(names...))
+
+  disableInputs: (names...) ->
+    for name in names
+      @inputs[name]?.node?.disabled = true
+
+  enableInputs: (names...) ->
+    for name in names
+      @inputs[name]?.node?.disabled = false
 
   checkDestroy: ->
     if @inputs['_destroy'].node.checked
@@ -118,27 +126,20 @@ class NodeNic
       'mac_address'
       'duid'
     )
-    @applyNetwork()
+    @checkNetwork()
 
-  disableInputs: (names...) ->
-    for name in names
-      @inputs[name]?.node?.disabled = true
-
-  enableInputs: (names...) ->
-    for name in names
-      @inputs[name]?.node?.disabled = false
-
-  applyNetwork: (@networkId = @inputs['network_id'].node.value) ->
+  checkNetwork: (@networkId = @inputs['network_id'].node.value) ->
     unless @networkId? && @networkId != ''
+      @inputs['ip_config']?.node?.selectedIndex = 0
+      @inputs['ip6_config']?.node?.selectedIndex = 0
+
       @disableInputs('ip_config', 'ip6_config')
       for {node} in @badges
         node.className = 'badge badge-light text-muted'
+
       return
 
-    console.log @networkId
-    network_2 = await Network.fetch(@networkId)
-    console.log network_2
-    network = await fetchNetwork(@networkId)
+    network = await Network.fetch(@networkId)
 
     unless network?
       @disableInputs('ip_config', 'ip6_config')
