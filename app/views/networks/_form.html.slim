@@ -29,8 +29,8 @@
           = ip_pool_f.check_box :_destroy, custom: true
         = ip_pool_f.select :ip_config, t_enums(IpPool, :ip_configs),
                            hide_label: true, custom: true, wrapper: {class: 'col-md-3'}
-        = ip_pool_f.text_field :first_address, hide_label: true, wrapper: {class: 'col-md-4'}
-        = ip_pool_f.text_field :last_address, hide_label: true, wrapper: {class: 'col-md-4'}
+        = ip_pool_f.text_field :ip_first_address, hide_label: true, wrapper: {class: 'col-md-4'}
+        = ip_pool_f.text_field :ip_last_address, hide_label: true, wrapper: {class: 'col-md-4'}
     .form-row
       = f.submit 'IPプールを追加', class: 'btn btn-secondary', name: 'add_ip_pool'
 
