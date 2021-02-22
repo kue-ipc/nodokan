@@ -79,7 +79,7 @@ class NetworksController < ApplicationController
         next_ip6 = @network.next_ip6_pool
         @network.ip6_pools << Ip6Pool.new(
           ip6_config: :static,
-          ip6_first_address: next_ip6&.address,
+          first6_address: next_ip6&.address,
           ip6_last_address: next_ip6&.address
         )
         format.html { render :new }
@@ -118,7 +118,7 @@ class NetworksController < ApplicationController
         next_ip6 = @network.next_ip6_pool
         @network.ip6_pools << Ip6Pool.new(
           ip6_config: :static,
-          ip6_first_address: next_ip6&.address,
+          first6_address: next_ip6&.address,
           ip6_last_address: next_ip6&.address
         )
         format.html { render :edit }
@@ -175,7 +175,7 @@ class NetworksController < ApplicationController
           :id,
           :_destroy,
           :ip6_config,
-          :ip6_first_address,
+          :first6_address,
           :ip6_last_address,
         ]
       )

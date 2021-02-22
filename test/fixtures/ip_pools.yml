@@ -3,17 +3,17 @@
 one:
   network: two
   ip_config: :dynamic
-  first_address: '192.168.2.1'
-  last_address: '192.168.2.99'
+  ip_first_address: '192.168.2.1'
+  ip_last_address: '192.168.2.99'
 
 two:
   network: two
   ip_config: :reserved
-  first_address: '192.168.2.100'
-  last_address: '192.168.2.199'
+  ip_first_address: '192.168.2.100'
+  ip_last_address: '192.168.2.199'
 
 three:
   network: two
   ip_config: :static
-  first_address: '192.168.2.200'
-  last_address: '192.168.2.240'
+  ip_first_address: '192.168.2.200'
+  ip_last_address: '192.168.2.240'

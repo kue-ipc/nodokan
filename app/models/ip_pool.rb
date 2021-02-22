@@ -1,12 +1,18 @@
 class IpPool < ApplicationRecord
   include IpConfig
+  include Enumerable
+
   belongs_to :network
 
   validates :ip_first_address, allow_blank: false, ip: true
   validates :ip_last_address, allow_blank: false, ip: true
 
+  def ip_prefixlen
+    network.ip_prefixlen
+  end
+
   def ip_first
-    @ip_first ||= IPAddress::IPv4.parse_data(ip_first_data)
+    @ip_first ||= IPAddress::IPv4.parse_data(ip_first_data, ip_prefixlen)
   end
 
   def ip_first_address
@@ -22,7 +28,7 @@ class IpPool < ApplicationRecord
   end
 
   def ip_last
-    @ip_last ||= IPAddress::IPv4.parse_data(ip_last_data)
+    @ip_last ||= IPAddress::IPv4.parse_data(ip_last_data, ip_prefixlen)
   end
 
   def ip_last_address
@@ -41,8 +47,15 @@ class IpPool < ApplicationRecord
     @ip_range ||= Range.new(ip_first, ip_last)
   end
 
-  def include?(addr)
-    addr = IPAddress::IPv4.new(addr.to_s) unless addr.is_a?(IPAddress::IPv4)
+  def cover?(addr)
     ip_range.cover?(addr)
+  end
+
+  def each(&block)
+    if block_given?
+      ip_range.each(&block)
+    else
+      ip_range.each
+    end
   end
 end
