@@ -27,8 +27,8 @@ class Nic < ApplicationRecord
     message: 'DUIDの形式ではありません。' \
       '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
   }
-  validates :ipv4_address, allow_blank: true, ip: true
-  validates :ipv6_address, allow_blank: true, ip6: true
+  validates :ipv4_address, allow_blank: true, ipv4: true
+  validates :ipv6_address, allow_blank: true, ipv6: true
 
   normalize_attribute :name
   normalize_attribute :mac_address
@@ -62,13 +62,13 @@ class Nic < ApplicationRecord
   end
 
   # readonly
-  def ip
-    @ip ||= ipv4_data.presence &&
+  def ipv4
+    @ipv4 ||= ipv4_data.presence &&
             IPAddress::IPv4.parse_data(ipv4_data)
   end
 
   def ipv4_address
-    @ipv4_address ||= (ip&.address || '')
+    @ipv4_address ||= (ipv4&.address || '')
   end
 
   def ipv4_address=(value)
@@ -80,13 +80,13 @@ class Nic < ApplicationRecord
   end
 
   # readonly
-  def ip6
-    @ip6 ||= ipv6_data.presence &&
+  def ipv6
+    @ipv6 ||= ipv6_data.presence &&
              IPAddress::IPv6.parse_data(ipv6_data)
   end
 
   def ipv6_address
-    @ipv6_address ||= (ip6&.address || '')
+    @ipv6_address ||= (ipv6&.address || '')
   end
 
   def ipv6_address=(value)
@@ -101,7 +101,7 @@ class Nic < ApplicationRecord
     @old_nic ||= id && Nic.find(id)
   end
 
-  def set_ip!
+  def set_ipv4!
     case ipv4_config
     when 'disabled'
       self.ipv4_address = nil
@@ -126,6 +126,6 @@ class Nic < ApplicationRecord
     ipv4_normalize!
   end
 
-  def set_ip6!
+  def set_ipv6!
   end
 end

@@ -4,8 +4,8 @@ class Ipv4Pool < ApplicationRecord
 
   belongs_to :network
 
-  validates :ipv4_first_address, allow_blank: false, ip: true
-  validates :ipv4_last_address, allow_blank: false, ip: true
+  validates :ipv4_first_address, allow_blank: false, ipv4: true
+  validates :ipv4_last_address, allow_blank: false, ipv4: true
 
   def ipv4_prefixlen
     network.ipv4_prefixlen

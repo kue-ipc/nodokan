@@ -171,7 +171,7 @@ class NodesController < ApplicationController
     end
 
     # @node.nics.each do |nic|
-    #   nic.set_ip!
+    #   nic.set_ipv4!
     # end
 
     success = false

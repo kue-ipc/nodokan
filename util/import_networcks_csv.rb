@@ -63,7 +63,7 @@ if $0 == __FILE__
     rescue StandardError => e
       logger.error(e.message)
       data['id'] = 'E'
-      data['note'] = e.message
+      warn "#{idx}:#{e.message}"
     ensure
       io.puts data.to_csv
     end

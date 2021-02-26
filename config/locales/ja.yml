@@ -424,8 +424,8 @@ ja:
       greater_than_or_equal_to: "%{count}以上の値にしてください"
       inclusion: 一覧にありません
       invalid: 不正な値です
-      invalid_ip_address: IPv4アドレスではありません
-      invalid_ip6_address: IPv6アドレスではありません
+      invalid_ipv4_address: IPv4アドレスではありません
+      invalid_ipv6_address: IPv6アドレスではありません
       less_than: "%{count}より小さい値にしてください"
       less_than_or_equal_to: "%{count}以下の値にしてください"
       model_invalid: "バリデーションに失敗しました: %{errors}"

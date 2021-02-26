@@ -2,8 +2,8 @@ class Ipv6Pool < ApplicationRecord
   include Ipv6Config
   belongs_to :network
 
-  validates :ipv6_first_address, allow_blank: false, ip: true
-  validates :ipv6_last_address, allow_blank: false, ip: true
+  validates :ipv6_first_address, allow_blank: false, ipv6: true
+  validates :ipv6_last_address, allow_blank: false, ipv6: true
 
   def ipv6_prefixlen
     network.ipv6_prefixlen

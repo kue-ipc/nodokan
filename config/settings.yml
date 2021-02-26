@@ -5,4 +5,4 @@ database:
   password: pass+nodokan42
   host: localhost
 config:
-  ip6: false
+  ipv6: true

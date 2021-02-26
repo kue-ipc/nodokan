@@ -22,10 +22,10 @@ class Network < ApplicationRecord
                      less_than_or_equal_to: 4094,
                    }
 
-  validates :ipv4_network_address, allow_blank: true, ip: true
-  validates :ipv4_gateway_address, allow_blank: true, ip: true
-  validates :ipv6_network_address, allow_blank: true, ip6: true
-  validates :ipv6_gateway_address, allow_blank: true, ip6: true
+  validates :ipv4_network_address, allow_blank: true, ipv4: true
+  validates :ipv4_gateway_address, allow_blank: true, ipv4: true
+  validates :ipv6_network_address, allow_blank: true, ipv6: true
+  validates :ipv6_gateway_address, allow_blank: true, ipv6: true
 
   validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
 
@@ -141,34 +141,34 @@ class Network < ApplicationRecord
   end
 
   # 空いている次のIPアドレス
-  def next_ip(ipv4_config)
+  def next_ipv4(ipv4_config)
     return unless ipv4_network
 
     selected_ip_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
     return if selected_ip_pools.empty?
 
-    nics_ips = nics.map(:ip).compact
+    nics_ipv4s = nics.map(:ipv4).compact
 
     selected_ip_pools.each do |ipv4_pool|
-      ipv4_pool.each do |ip|
-        return ip if ip != ipv4_gateway && nics_ips.exclude?(ip)
+      ipv4_pool.each do |ipv4|
+        return ipv4 if ipv4 != ipv4_gateway && nics_ips.exclude?(ipv4)
       end
     end
 
     nil
   end
 
-  def next_ip6(ipv6_config)
+  def next_ipv6(ipv6_config)
     return unless ipv6_network
 
-    selected_ip6_pools = ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
-    return if selected_ip6_pools.empty?
+    selected_ipv6_pools = ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
+    return if selected_ipv6_pools.empty?
 
-    nics_ip6s = nics.map(:ip6).compact
+    nics_ipv6s = nics.map(:ipv6).compact
 
-    selected_ip6_pools.each do |ipv6_pool|
-      ipv6_pool.each do |ip6|
-        return ip6 if ip6 != ipv6_gateway && nics_ip6s.exclude?(ip6)
+    selected_ipv6_pools.each do |ipv6_pool|
+      ipv6_pool.each do |ipv6|
+        return ipv6 if ipv6 != ipv6_gateway && nics_ipv6s.exclude?(ipv6)
       end
     end
 
@@ -179,23 +179,23 @@ class Network < ApplicationRecord
   def next_ip_pool
     return unless ipv4_network
 
-    (ipv4_network.first..ipv4_network.last).find do |ip|
-      next if ip == ipv4_gateway
+    (ipv4_network.first..ipv4_network.last).find do |ipv4|
+      next if ipv4 == ipv4_gateway
 
       ipv4_pools.all? do |ipv4_pool|
-        ipv4_pool.exclude?(ip)
+        ipv4_pool.exclude?(ipv4)
       end
     end
   end
 
-  def next_ip6_pool
+  def next_ipv6_pool
     return unless ipv6_network
 
-    (ipv6_network.first..ipv4_network.last).find do |ip6|
-      next if ip6 == ipv6_gateway
+    (ipv6_network.first..ipv4_network.last).find do |ipv6|
+      next if ipv6 == ipv6_gateway
 
       ipv6_pools.all? do |ipv6_pool|
-        ipv6_pool.exclude?(ip6)
+        ipv6_pool.exclude?(ipv6)
       end
     end
   end

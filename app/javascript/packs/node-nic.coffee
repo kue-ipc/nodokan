@@ -194,8 +194,8 @@ class NodeNic
     availableIp6Configs = new Set
     availableIp6Configs.add('disabled')
     if network['ipv6_address']?
-      for ip6Pool in network['ipv6_pools']
-        switch ip6Pool['ipv6_config']
+      for ipv6Pool in network['ipv6_pools']
+        switch ipv6Pool['ipv6_config']
           when 'static'
             availableIp6Configs.add('static')
           when 'reserved'
