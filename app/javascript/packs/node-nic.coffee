@@ -33,46 +33,42 @@ class NodeNic
     'ipv6_config'
   ]
 
-  constructor: (@number, @role) ->
+  constructor: (@number, ipv6: true) ->
     @prefixList = ['node', 'nics_attributes', @number.toString()]
-    @admin = @role == 'admin'
+
+    @ip_versions =
+      if ipv6
+        ['ipv4', 'ipv6']
+      else
+        ['ipv4']
+
 
     @rootNode = @getNode()
-    @inputs = {}
-    for name in NodeNic.NAMES
-      node = @getNode(name)
-      if node?
-        @inputs[name] = {
-          node
-          initialValue: node.value
-        }
+    @inputs = new Map(
+      for name in NodeNic.NAMES
+        node = @getNode(name)
+        [
+          name,
+          {node, initialValue: node?.value}
+        ]
+    )
+
+    for name in ['ipv4_config', 'ipv6_config']
+      inputData = @inputs.get(name)
+      inputData['options'] = new Map(
+        for node, index in inputData.node?.options ? []
+          [node.value, {node, index}]
+      )
 
     @networkMessageNode = @getNode('network_message')
-    @badges = [
-      {
-        name: 'auth'
-        node: @getNode('badge_auth')
-        level: 'danger'
-      }
-      {
-        name: 'dhcp'
-        node: @getNode('badge_dhcp')
-        level: 'primary'
-      }
-      {
-        name: 'closed'
-        node: @getNode('badge_closed')
-        level: 'danger'
-      }
-    ]
 
-    @inputs['_destroy'].node.addEventListener 'change', (_e) =>
+    @inputs.get('_destroy').node.addEventListener 'change', (_e) =>
       @checkDestroy()
 
-    @inputs['interface_type'].node.addEventListener 'change', (_e) =>
+    @inputs.get('interface_type').node.addEventListener 'change', (_e) =>
       @checkInterfaceType()
 
-    @inputs['network_id'].node.addEventListener 'change', (_e) =>
+    @inputs.get('network_id').node.addEventListener 'change', (_e) =>
       @checkNetwork()
 
     @checkDestroy()
@@ -85,14 +81,14 @@ class NodeNic
 
   disableInputs: (names...) ->
     for name in names
-      @inputs[name]?.node?.disabled = true
+      @inputs.get(name)?.node?.disabled = true
 
   enableInputs: (names...) ->
     for name in names
-      @inputs[name]?.node?.disabled = false
+      @inputs.get(name)?.node?.disabled = false
 
   checkDestroy: ->
-    if @inputs['_destroy'].node.checked
+    if @inputs.get('_destroy').node.checked
       @disableInputs(
         'interface_type'
         'name'
@@ -108,7 +104,7 @@ class NodeNic
     @checkInterfaceType()
 
   checkInterfaceType: ->
-    value = @inputs['interface_type'].node.value
+    value = @inputs.get('interface_type').node.value
     if not value? or value.length == 0
       @disableInputs(
         'name'
@@ -128,10 +124,10 @@ class NodeNic
     )
     @checkNetwork()
 
-  checkNetwork: (@networkId = @inputs['network_id'].node.value) ->
+  checkNetwork: (@networkId = @inputs.egt('network_id').node.value) ->
     unless @networkId? && @networkId != ''
-      @inputs['ipv4_config']?.node?.selectedIndex = 0
-      @inputs['ipv6_config']?.node?.selectedIndex = 0
+      @inputs.get('ipv4_config')?.node?.selectedIndex = @inputs.get('ipv4_config').opitons
+      @inputs.get('ipv6_config')?.node?.selectedIndex = 0
 
       @disableInputs('ipv4_config', 'ipv6_config')
       for {node} in @badges
@@ -225,4 +221,4 @@ class NodeNic
     @enableInputs('ipv4_config', 'ipv6_config')
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
-new NodeNic(id) for id in info.list
+new NodeNic(id, ipv6: info.ipv6) for id in info.list

@@ -180,39 +180,41 @@ p 【必須】の項目は入力が必須です。
             wrapper: {class: 'col-md-4'}},
             disabled: true,
             class: 'custom-select'
-          = nic_f.select :ipv4_config,
-                          t_enums(Nic, :ipv4_configs),
-                          {wrapper: {class: 'col-md-4'}},
-                          class: 'custom-select', disabled: true
+          = nic_f.form_group :mac_registration, label: { text: 'MACアドレス登録' }, class: 'col-md-4' do
+            = nic_f.check_box :mac_registration,
+              disabled: true,
+              custome: true,
+              label: 'MACアドレスを登録する'
           = nic_f.text_field :mac_address,
             pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
             disabled: true,
             wrapper: {class: 'col-md-4'}
+          = nic_f.select :ipv4_config,
+                          t_enums(Nic, :ipv4_configs),
+                          {wrapper: {class: 'col-md-4'}},
+                          class: 'custom-select', disabled: true
           - if Settings.config.ipv6
             = nic_f.select :ipv6_config, t_enums(Nic, :ipv6_configs),
-                            {wrapper: {class: 'offset-md-4 col-md-4'}}, class: 'custom-select', disabled: true
+                            {wrapper: {class: 'col-md-4'}}, class: 'custom-select', disabled: true
             = nic_f.text_field :duid,
               pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
               disabled: true,
               wrapper: {class: 'col-md-4'}
+
+
+          .col-md-12.form-text.d-none id="node_nics_attributes_#{nic_f.index}_network_message"
           .col-md-12.form-text
+
+
             =<> badge(Network.human_attribute_name(:auth),
               level: :danger,
               enabled: false,
               id: "node_nics_attributes_#{nic_f.index}_badge_auth")
-            =<> badge(Network.human_attribute_name(:dhcp),
-              level: :primary,
-              enabled: false,
-              id: "node_nics_attributes_#{nic_f.index}_badge_dhcp")
-            =<> badge(Network.human_attribute_name(:closed),
-              level: :dark,
-              enabled: false,
-              id: "node_nics_attributes_#{nic_f.index}_badge_closed")
             small id="node_nics_attributes_#{nic_f.index}_network_message"
     = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic',
       formnovalidate: true
     script#node-nic-info type="application/json"
-      == {list: nic_list}.to_json
+      == {list: nic_list, ipv6: Settings.config.ipv6}.to_json
 
   .rounded.border.p-2.mb-2
     = f.text_area :note

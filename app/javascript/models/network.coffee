@@ -26,7 +26,7 @@ export default class Network extends ApplicationRecord
     network
 
   constructor: ({@name, @vlan, @auth, @note,
-      ipv4_network_address, ipv4_prefixle, ipv4_gateway_address,
+      ipv4_network_address, ipv4_prefixlen, ipv4_gateway_address,
       ipv6_network_address, ipv6_prefixlen, ipv6_gateway_address,
       ipv4_pools, ipv6_pools, props...}) ->
     super(props)
