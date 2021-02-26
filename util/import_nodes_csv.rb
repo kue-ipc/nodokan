@@ -45,8 +45,8 @@ def register_node(data)
         name: data['nic[name]'],
         mac_address: data['nic[mac_address]'],
         network: network,
-        ip_config: data['nic[ip_config]'],
-        ip_address: data['nic[ip_address]'],
+        ipv4_config: data['nic[ipv4_config]'],
+        ipv4_address: data['nic[ipv4_address]'],
       ),
     ]
   else

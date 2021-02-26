@@ -1,1 +1,1 @@
-json.array! @ip_pools, partial: "ip_pools/ip_pool", as: :ip_pool
+json.array! @ipv4_pools, partial: "ipv4_pools/ipv4_pool", as: :ipv4_pool

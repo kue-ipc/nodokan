@@ -1,1 +1,1 @@
-﻿id,name,vlan,dhcp,auth,closed,ip_network,ip_gateway,ip_pools[static],ip_pools[dynamic],ip_pools[reserved],note
+﻿id,name,vlan,dhcp,auth,closed,ipv4_network,ipv4_gateway,ipv4_pools[static],ipv4_pools[dynamic],ipv4_pools[reserved],note

@@ -45,21 +45,21 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.index ["product_name"], name: "index_hardwares_on_product_name"
   end
 
-  create_table "ip6_pools", charset: "utf8mb4", force: :cascade do |t|
+  create_table "ipv6_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
-    t.integer "ip6_config", null: false
-    t.binary "ip6_first_data", limit: 16, null: false
-    t.binary "ip6_last_data", limit: 16, null: false
+    t.integer "ipv6_config", null: false
+    t.binary "ipv6_first_data", limit: 16, null: false
+    t.binary "ipv6_last_data", limit: 16, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip6_pools_on_network_id"
   end
 
-  create_table "ip_pools", charset: "utf8mb4", force: :cascade do |t|
+  create_table "ipv4_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
-    t.integer "ip_config", null: false
-    t.binary "ip_first_data", limit: 4, null: false
-    t.binary "ip_last_data", limit: 4, null: false
+    t.integer "ipv4_config", null: false
+    t.binary "ipv4_first_data", limit: 4, null: false
+    t.binary "ipv4_last_data", limit: 4, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ip_pools_on_network_id"
@@ -69,12 +69,12 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.string "name", null: false
     t.integer "vlan"
     t.boolean "auth", default: false, null: false
-    t.binary "ip_network_data", limit: 4
-    t.integer "ip_prefixlen"
-    t.binary "ip_gateway_data", limit: 4
-    t.binary "ip6_network_data", limit: 16
-    t.integer "ip6_prefixlen"
-    t.binary "ip6_gateway_data", limit: 16
+    t.binary "ipv4_network_data", limit: 4
+    t.integer "ipv4_prefixlen"
+    t.binary "ipv4_gateway_data", limit: 4
+    t.binary "ipv6_network_data", limit: 16
+    t.integer "ipv6_prefixlen"
+    t.binary "ipv6_gateway_data", limit: 16
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -96,15 +96,15 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.boolean "mac_registration", default: false, null: false
     t.binary "mac_address_data", limit: 6
     t.binary "duid_data", limit: 130
-    t.integer "ip_config"
-    t.binary "ip_data", limit: 4
-    t.integer "ip6_config"
-    t.binary "ip6_data", limit: 16
+    t.integer "ipv4_config"
+    t.binary "ipv4_data", limit: 4
+    t.integer "ipv6_config"
+    t.binary "ipv6_data", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["duid_data"], name: "index_nics_on_duid_data"
-    t.index ["ip6_data"], name: "index_nics_on_ip6_data"
-    t.index ["ip_data"], name: "index_nics_on_ip_data"
+    t.index ["ipv6_data"], name: "index_nics_on_ip6_data"
+    t.index ["ipv4_data"], name: "index_nics_on_ip_data"
     t.index ["mac_address_data"], name: "index_nics_on_mac_address_data"
     t.index ["network_id"], name: "index_nics_on_network_id"
     t.index ["node_id"], name: "index_nics_on_node_id"
@@ -218,8 +218,8 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
 
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
-  add_foreign_key "ip6_pools", "networks"
-  add_foreign_key "ip_pools", "networks"
+  add_foreign_key "ipv6_pools", "networks"
+  add_foreign_key "ipv4_pools", "networks"
   add_foreign_key "networks_users", "networks"
   add_foreign_key "networks_users", "users"
   add_foreign_key "nics", "networks"

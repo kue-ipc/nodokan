@@ -153,8 +153,8 @@ ja:
     models:
       confirmation: 確認
       hardware: 機器
-      ip6_pool: IPv6プール
-      ip_pool: IPプール
+      ipv4_pool: IPv4プール
+      ipv6_pool: IPv6プール
       network: ネットワーク
       nic: NIC
       node: 端末
@@ -164,8 +164,8 @@ ja:
     long_models:
       confirmation: 端末の確認
       hardware: 機器
-      ip6_pool: IPv6アドレス プール
-      ip_pool: IPアドレス プール
+      ipv6_pool: IPv6アドレス プール
+      ipv4_pool: IPv4アドレス プール
       network: ネットワーク
       nic: ネットワークインタフェースコントローラー
       node: 端末
@@ -185,15 +185,15 @@ ja:
         dhcp: DHCP
         auth: 認証
         closed: 閉域
-        ip_address: IPアドレス
-        ip_mask: IPサブネットマスク
-        ip_gateway: IPゲートウェイ
-        ip6_address: IPv6アドレス
-        ip6_prefix: IPv6プレフィックス
-        ip6_gateway: IPv6ゲートウェイ
+        ipv4_address: IPv4アドレス
+        ipv4_mask: IPv4サブネットマスク
+        ipv4_gateway: IPv4ゲートウェイ
+        ipv6_address: IPv6アドレス
+        ipv6_prefix: IPv6プレフィックス
+        ipv6_gateway: IPv6ゲートウェイ
         note: 備考
-        ip_network: IPネットワーク
-        ip6_network: IPv6ネットワーク
+        ipv4_network: IPv4ネットワーク
+        ipv6_network: IPv6ネットワーク
         config: 設定
       nic:
         node: 端末
@@ -203,10 +203,10 @@ ja:
         duid: DUID(DHCP固有識別子)
         network: ネットワーク
         network_id: ネットワーク
-        ip_config: IP設定
-        ip_address: IPアドレス
-        ip6_config: IPv6設定
-        ip6_address: IPv6アドレス
+        ipv4_config: IPv4設定
+        ipv4_address: IPv4アドレス
+        ipv6_config: IPv6設定
+        ipv6_address: IPv6アドレス
       node:
         name: 端末名
         hostname: ホスト名
@@ -247,10 +247,10 @@ ja:
         auth_network: 認証ネットワーク
         networks: 利用可能ネットワーク
         admin?: 管理者権限
-      ip_pool:
-        ip_config: IP設定
-        ip_first_address: 最初のアドレス
-        ip_last_address: 最後のアドレス
+      ipv4_pool:
+        ipv4_config: IPv4設定
+        ipv4_first_address: 最初のアドレス
+        ipv4_last_address: 最後のアドレス
         _destroy: 削除
     enums:
       roles:
@@ -291,14 +291,14 @@ ja:
         vpn: VPN
         other: その他
         unknown: 不明
-      ip_configs:
+      ipv4_configs:
         dynamic: 動的
         reserved: 予約
         static: 固定
         link_local: リンクローカル
         manual: 手動
         disabled: 無効
-      ip6_configs:
+      ipv6_configs:
         dynamic: 動的
         reserved: 予約
         static: 固定
@@ -424,7 +424,7 @@ ja:
       greater_than_or_equal_to: "%{count}以上の値にしてください"
       inclusion: 一覧にありません
       invalid: 不正な値です
-      invalid_ip_address: IPアドレスではありません
+      invalid_ip_address: IPv4アドレスではありません
       invalid_ip6_address: IPv6アドレスではありません
       less_than: "%{count}より小さい値にしてください"
       less_than_or_equal_to: "%{count}以下の値にしてください"

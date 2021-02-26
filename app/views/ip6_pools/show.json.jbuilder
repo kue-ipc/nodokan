@@ -1,1 +1,1 @@
-json.partial! "ip6_pools/ip6_pool", ip6_pool: @ip6_pool
+json.partial! "ipv6_pools/ipv6_pool", ipv6_pool: @ipv6_pool

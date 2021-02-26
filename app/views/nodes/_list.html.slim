@@ -10,7 +10,7 @@ table.table.table-hover.table-sm
       th scope="col" = Node.human_attribute_name(:place)
       th scope="col" = Hardware.model_name.human
       th scope="col" = OperatingSystem.model_name.human
-      th scope="col" = Nic.human_attribute_name(:ip_address)
+      th scope="col" = Nic.human_attribute_name(:ipv4_address)
       th scope="col" = Node.human_attribute_name(:confirmation)
 
   tbody
@@ -31,7 +31,7 @@ table.table.table-hover.table-sm
         td = node.hardware&.product_name
         td = node.operating_system&.name
         td.text-nowrap
-          = node.nics.map(&:ip_address).compact.join("\n")
+          = node.nics.map(&:ipv4_address).compact.join("\n")
         td.text-nowrap
           - if node.confirmation
             - if node.confirmation.expiration >= Time.current

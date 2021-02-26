@@ -1,10 +1,10 @@
 module NetworksHelper
   def pool_range(pool)
     case pool
-    when IpPool
-      "#{pool.ip_first_address}-#{pool.ip_last_address}"
-    when Ip6Pool
-      "#{pool.ip6_first_address}-#{pool.ip6_last_address}"
+    when Ipv4Pool
+      "#{pool.ipv4_first_address}-#{pool.ipv4_last_address}"
+    when Ipv6Pool
+      "#{pool.ipv6_first_address}-#{pool.ipv6_last_address}"
     else
       pool.range.then { |r| "#{r.first}-#{r.last}"}
     end

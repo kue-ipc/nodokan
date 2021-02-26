@@ -4,20 +4,20 @@ one:
   node: one
   network: one
   name: MyString
-  mac_address: 
-  duid: 
-  ip_config: 1
-  ip_address: 
-  ip6_config: 1
-  ip6_address: 
+  mac_address:
+  duid:
+  ipv4_config: 1
+  ipv4_address:
+  ipv6_config: 1
+  ipv6_address:
 
 two:
   node: two
   network: two
   name: MyString
-  mac_address: 
-  duid: 
-  ip_config: 1
-  ip_address: 
-  ip6_config: 1
-  ip6_address: 
+  mac_address:
+  duid:
+  ipv4_config: 1
+  ipv4_address:
+  ipv6_config: 1
+  ipv6_address:

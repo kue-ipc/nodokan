@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class Ip6PoolTest < ActiveSupport::TestCase
+class Ipv4PoolTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

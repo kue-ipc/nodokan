@@ -55,8 +55,8 @@ class NodesController < ApplicationController
 
       query_nics = Nic.where(
         'name LIKE :query OR ' \
-        'ip_address LIKE :query OR ' \
-        'ip6_address LIKE :query',
+        'ipv4_address LIKE :query OR ' \
+        'ipv6_address LIKE :query',
         {query: "%#{@query}%"}
       )
 
@@ -224,8 +224,8 @@ class NodesController < ApplicationController
           name: nic.name,
           interface_type: nic.interface_type,
           network: nic.network,
-          ip_config: nic.ip_config,
-          ip6_config: nic.ip6_config,
+          ipv4_config: nic.ipv4_config,
+          ipv6_config: nic.ipv6_config,
         )
       end
     )
@@ -272,8 +272,8 @@ class NodesController < ApplicationController
           :mac_address,
           :duid,
           :network_id,
-          :ip_config,
-          :ip6_config,
+          :ipv4_config,
+          :ipv6_config,
         ]
       )
 

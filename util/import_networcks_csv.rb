@@ -10,21 +10,21 @@ def register_network(data)
     name: data['name'],
     vlan: data['vlan'],
     auth: data['auth'].presence || false,
-    ip_gateway_address: data['ip_gateway'],
+    ipv4_gateway_address: data['ipv4_gateway'],
   )
-  if data['ip_network'].present?
-    address, mask = data['ip_network'].split('/')
-    network.ip_network_address = address
-    network.ip_prefixlen = mask
+  if data['ipv4_network'].present?
+    address, mask = data['ipv4_network'].split('/')
+    network.ipv4_network_address = address
+    network.ipv4_prefixlen = mask
   end
 
-  ['static', 'dynamic', 'reserved'].each do |ip_config|
-    data_name = "ip_pools[#{ip_config}]"
+  ['static', 'dynamic', 'reserved'].each do |ipv4_config|
+    data_name = "ipv4_pools[#{ipv4_config}]"
     if data[data_name].present?
-      data[data_name].split('|').each do |ip_range|
-        first, last = ip_range.split('-')
-        network.ip_pools << IpPool.new(
-          ip_config: ip_config, ip_first_address: first, ip_last_address: last)
+      data[data_name].split('|').each do |ipv4_range|
+        first, last = ipv4_range.split('-')
+        network.ipv4_pools << Ipv4Pool.new(
+          ipv4_config: ipv4_config, ipv4_first_address: first, ipv4_last_address: last)
       end
     end
   end

@@ -12,10 +12,10 @@ dl
   = dt_dd_for @network, :name
   = dt_dd_for @network, :vlan
   = dt_dd_for @network, :auth
-  = dt_dd_for @network, :ip_network
-  = dt_dd_for @network, :ip_gateway
-  = dt_dd_for @network, :ip6_network
-  = dt_dd_for @network, :ip6_gateway
+  = dt_dd_for @network, :ipv4_network
+  = dt_dd_for @network, :ipv4_gateway
+  = dt_dd_for @network, :ipv6_network
+  = dt_dd_for @network, :ipv6_gateway
   = dt_dd_for @network, :note
 
   = dt_dd_tag '端末数' do
@@ -30,21 +30,21 @@ dl
     span.badge.badge-primary
       = @network.auth_users.count
 
-h3 = IpPool.model_name.human
+h3 = Ipv4Pool.model_name.human
 
-- if @network.ip_pools.empty?
+- if @network.ipv4_pools.empty?
   p
     | IPアドレスのプールが設定されていません。
 - else
   table.table.table-sm
     thead
       tr
-        th = IpPool.human_attribute_name(:ip_config)
-        th = IpPool.human_attribute_name(:ip_first_address)
-        th = IpPool.human_attribute_name(:ip_last_address)
+        th = Ipv4Pool.human_attribute_name(:ipv4_config)
+        th = Ipv4Pool.human_attribute_name(:ipv4_first_address)
+        th = Ipv4Pool.human_attribute_name(:ipv4_last_address)
     tbody
-      - @network.ip_pools.sort_by(&:ip_first_data).each do |ip_pool|
+      - @network.ipv4_pools.sort_by(&:ipv4_first_data).each do |ipv4_pool|
         tr
-          td = t(ip_pool.ip_config, scope: [:activerecord, :enums, :ip_configs])
-          td = ip_pool.ip_first_address
-          td = ip_pool.ip_last_address
+          td = t(ipv4_pool.ipv4_config, scope: [:activerecord, :enums, :ipv4_configs])
+          td = ipv4_pool.ipv4_first_address
+          td = ipv4_pool.ipv4_last_address

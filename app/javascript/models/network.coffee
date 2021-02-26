@@ -1,6 +1,6 @@
 import ApplicationRecord from './application_record'
-import IpPool from './ip_pool'
-import Ip6Pool from './ip6_pool'
+import Ipv4Pool from './ipv4_pool'
+import Ipv6Pool from './ipv6_pool'
 import ipaddr from 'ipaddr.js'
 
 export default class Network extends ApplicationRecord
@@ -26,14 +26,14 @@ export default class Network extends ApplicationRecord
     network
 
   constructor: ({@name, @vlan, @auth, @note,
-      ip_network_address, ip_prefixle, ip_gateway_address,
-      ip6_network_address, ip6_prefixlen, ip6_gateway_address,
-      ip_pools, ip6_pools, props...}) ->
+      ipv4_network_address, ipv4_prefixle, ipv4_gateway_address,
+      ipv6_network_address, ipv6_prefixlen, ipv6_gateway_address,
+      ipv4_pools, ipv6_pools, props...}) ->
     super(props)
-    @ip_network = if ip_network_address then ipaddr.parse(ip_network_address)
-    @ip_gateway = if ip_gateway_address then ipaddr.parse(ip_gateway_address)
-    @ip6_network = if ip6_network_address then ipaddr.parse(ip6_network_address)
-    @ip6_gateway = if ip6_gateway_address then ipaddr.parse(ip6_gateway_address)
+    @ipv4_network = if ipv4_network_address then ipaddr.parse(ipv4_network_address)
+    @ipv4_gateway = if ipv4_gateway_address then ipaddr.parse(ipv4_gateway_address)
+    @ipv6_network = if ipv6_network_address then ipaddr.parse(ipv6_network_address)
+    @ipv6_gateway = if ipv6_gateway_address then ipaddr.parse(ipv6_gateway_address)
 
-    @ip_pools = ip_pools.map (ip_pool) -> new IpPool(ip_pool)
-    @ip6_pools = ip6_pools.map (ip6_pool) -> new Ip6Pool(ip6_pool)
+    @ipv4_pools = ipv4_pools.map (ipv4_pool) -> new Ipv4Pool(ipv4_pool)
+    @ipv6_pools = ipv6_pools.map (ipv6_pool) -> new Ipv6Pool(ipv6_pool)

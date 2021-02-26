@@ -6,12 +6,12 @@ one:
   dhcp: false
   auth: false
   closed: false
-  ip_address: '192.168.1.0'
-  ip_mask: 1
-  ip_gateway: '192.168.1.254'
-  ip6_address: 'fd00:1::'
-  ip6_prefix: 64
-  ip6_gateway: 'fd00:1::FFFF'
+  ipv4_address: '192.168.1.0'
+  ipv4_mask: 1
+  ipv4_gateway: '192.168.1.254'
+  ipv6_address: 'fd00:1::'
+  ipv6_prefix: 64
+  ipv6_gateway: 'fd00:1::FFFF'
 
 two:
   name: クライアント
@@ -19,9 +19,9 @@ two:
   dhcp: false
   auth: false
   closed: false
-  ip_address: '192.168.2.0'
-  ip_mask: '255.255.255.0'
-  ip_gateway: '192.168.2.254'
-  ip6_address: 'fd00:2::'
-  ip6_prefix: 64
-  ip6_gateway: 'fd00:2::FFFF'
+  ipv4_address: '192.168.2.0'
+  ipv4_mask: '255.255.255.0'
+  ipv4_gateway: '192.168.2.254'
+  ipv6_address: 'fd00:2::'
+  ipv6_prefix: 64
+  ipv6_gateway: 'fd00:2::FFFF'

@@ -1,6 +1,6 @@
 class Nic < ApplicationRecord
-  include IpConfig
-  include Ip6Config
+  include Ipv4Config
+  include Ipv6Config
 
   belongs_to :node
   belongs_to :network, optional: true
@@ -27,14 +27,14 @@ class Nic < ApplicationRecord
     message: 'DUIDの形式ではありません。' \
       '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
   }
-  validates :ip_address, allow_blank: true, ip: true
-  validates :ip6_address, allow_blank: true, ip6: true
+  validates :ipv4_address, allow_blank: true, ip: true
+  validates :ipv6_address, allow_blank: true, ip6: true
 
   normalize_attribute :name
   normalize_attribute :mac_address
   normalize_attribute :duid
-  normalize_attribute :ip_address
-  normalize_attribute :ip6_address
+  normalize_attribute :ipv4_address
+  normalize_attribute :ipv6_address
 
   def mac_address
     @mac_address ||=
@@ -63,38 +63,38 @@ class Nic < ApplicationRecord
 
   # readonly
   def ip
-    @ip ||= ip_data.presence &&
-            IPAddress::IPv4.parse_data(ip_data)
+    @ip ||= ipv4_data.presence &&
+            IPAddress::IPv4.parse_data(ipv4_data)
   end
 
-  def ip_address
-    @ip_address ||= (ip&.address || '')
+  def ipv4_address
+    @ipv4_address ||= (ip&.address || '')
   end
 
-  def ip_address=(value)
-    @ip_address = value
-    self.ip_data = @ip_address.presence &&
-                   IPAddress::IPv4.new(@ip_address).data
+  def ipv4_address=(value)
+    @ipv4_address = value
+    self.ipv4_data = @ipv4_address.presence &&
+                   IPAddress::IPv4.new(@ipv4_address).data
   rescue ArgumentError
-    self.ip_data = nil
+    self.ipv4_data = nil
   end
 
   # readonly
   def ip6
-    @ip6 ||= ip6_data.presence &&
-             IPAddress::IPv6.parse_data(ip6_data)
+    @ip6 ||= ipv6_data.presence &&
+             IPAddress::IPv6.parse_data(ipv6_data)
   end
 
-  def ip6_address
-    @ip6_address ||= (ip6&.address || '')
+  def ipv6_address
+    @ipv6_address ||= (ip6&.address || '')
   end
 
-  def ip6_address=(value)
-    @ip6_address = value
-    self.ip6_data = @ip6_address.presence &&
-                    IPAddress::IPv6.new(@ip6_address).data
+  def ipv6_address=(value)
+    @ipv6_address = value
+    self.ipv6_data = @ipv6_address.presence &&
+                    IPAddress::IPv6.new(@ipv6_address).data
   rescue ArgumentError
-    self.ip6_data = nil
+    self.ipv6_data = nil
   end
 
   def old_nic
@@ -102,28 +102,28 @@ class Nic < ApplicationRecord
   end
 
   def set_ip!
-    case ip_config
+    case ipv4_config
     when 'disabled'
-      self.ip_address = nil
+      self.ipv4_address = nil
     when 'static'
       # if id
-      #   old_nic = Nic.find(id).ip_address
+      #   old_nic = Nic.find(id).ipv4_address
       # end
-      network.pools.where(ip_config: 'satic')
+      network.pools.where(ipv4_config: 'satic')
     when 'dynamic'
-      network.pools.where(ip_config: 'dynamic')
+      network.pools.where(ipv4_config: 'dynamic')
     when 'reserved'
-      network.pools.where(ip_config: 'reserved')
+      network.pools.where(ipv4_config: 'reserved')
     when 'link_local'
-      unless ip_address &&
-        IPAddr.new('127.0.0.0/8').include?(IPAddr.new(ip_address))
-        self.ip_address = '127.0.0.1'
+      unless ipv4_address &&
+        IPAddr.new('127.0.0.0/8').include?(IPAddr.new(ipv4_address))
+        self.ipv4_address = '127.0.0.1'
       end
     else
       raise 'Invalid IP Config'
     end
 
-    ip_normalize!
+    ipv4_normalize!
   end
 
   def set_ip6!

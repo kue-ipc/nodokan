@@ -20,8 +20,8 @@ nic[interface_type]
 nic[name]
 nic[mac_address]
 nic[network][vlan]
-nic[ip_config]
-nic[ip_address]
+nic[ipv4_config]
+nic[ipv4_address]
 note
 ].join(',') %>
 <%- @nodes.each do |node| -%>
@@ -46,8 +46,8 @@ note
   node.nics.first&.name,
   node.nics.first&.mac_address,
   node.nics.first&.network&.vlan,
-  node.nics.first&.ip_config,
-  node.nics.first&.ip_address,
+  node.nics.first&.ipv4_config,
+  node.nics.first&.ipv4_address,
   node.note
 ].to_csv
 -%>

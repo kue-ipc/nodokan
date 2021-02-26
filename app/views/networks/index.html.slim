@@ -9,8 +9,8 @@ table.table.table-hover.table-sm
       th scope="col" = Network.human_attribute_name(:name)
       th scope="col" = Network.human_attribute_name(:vlan)
       th scope="col" = Network.human_attribute_name(:config)
-      th scope="col" = Network.human_attribute_name(:ip_network)
-      th scope="col" = Network.human_attribute_name(:ip6_network)
+      th scope="col" = Network.human_attribute_name(:ipv4_network)
+      th scope="col" = Network.human_attribute_name(:ipv6_network)
 
   tbody
     - @networks.each do |network|
@@ -18,8 +18,8 @@ table.table.table-hover.table-sm
         td = network.name
         td = network.vlan
         td = badge_boolean(network, :auth, level: :primary)
-        td = network.ip_network.to_s
-        td = network.ip6_network.to_s
+        td = network.ipv4_network.to_s
+        td = network.ipv6_network.to_s
 
 = javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
 

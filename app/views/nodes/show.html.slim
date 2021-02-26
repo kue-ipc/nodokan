@@ -89,7 +89,7 @@ dl.row
   - @node.nics.each do |nic|
     dd.col-md-5
       => nic.mac_address
-      => nic.ip_address
+      => nic.ipv4_address
       | (
       = nic.network&.name
       | )

@@ -6,10 +6,10 @@ class Network < ApplicationRecord
   has_many :nics, dependent: :nullify
   has_many :nodes, through: :nics
 
-  has_many :ip_pools, dependent: :destroy
-  accepts_nested_attributes_for :ip_pools, allow_destroy: true
-  has_many :ip6_pools, dependent: :destroy
-  accepts_nested_attributes_for :ip6_pools, allow_destroy: true
+  has_many :ipv4_pools, dependent: :destroy
+  accepts_nested_attributes_for :ipv4_pools, allow_destroy: true
+  has_many :ipv6_pools, dependent: :destroy
+  accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
   has_many :auth_users, class_name: 'User', foreign_key: 'auth_network_id', dependent: :nullify
   has_and_belongs_to_many :users
@@ -22,113 +22,113 @@ class Network < ApplicationRecord
                      less_than_or_equal_to: 4094,
                    }
 
-  validates :ip_network_address, allow_blank: true, ip: true
-  validates :ip_gateway_address, allow_blank: true, ip: true
-  validates :ip6_network_address, allow_blank: true, ip6: true
-  validates :ip6_gateway_address, allow_blank: true, ip6: true
+  validates :ipv4_network_address, allow_blank: true, ip: true
+  validates :ipv4_gateway_address, allow_blank: true, ip: true
+  validates :ipv6_network_address, allow_blank: true, ip6: true
+  validates :ipv6_gateway_address, allow_blank: true, ip6: true
 
-  validates :ip_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
+  validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
 
-  validates :ip_prefixlen, allow_blank: true, numericality: {
+  validates :ipv4_prefixlen, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: 32,
   }
 
-  validates :ip6_prefixlen, allow_blank: true, numericality: {
+  validates :ipv6_prefixlen, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: 128,
   }
 
-  # before_save :ip_normalize!, :ip6_normalize!
+  # before_save :ipv4_normalize!, :ipv6_normalize!
 
   # IPv4
 
   # readonly
-  def ip_network
-    @ip_network ||= ip_network_data.presence &&
-                    IPAddress::IPv4.parse_data(ip_network_data, ip_prefixlen)
+  def ipv4_network
+    @ipv4_network ||= ipv4_network_data.presence &&
+                    IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefixlen)
   end
 
-  def ip_network_address
-    @ip_network_address ||= (ip_network&.address || '')
+  def ipv4_network_address
+    @ipv4_network_address ||= (ipv4_network&.address || '')
   end
 
-  def ip_network_address=(value)
-    @ip_network_address = value
-    self.ip_network_data = @ip_network_address.presence &&
-                           IPAddress::IPv4.new(@ip_network_address).data
+  def ipv4_network_address=(value)
+    @ipv4_network_address = value
+    self.ipv4_network_data = @ipv4_network_address.presence &&
+                           IPAddress::IPv4.new(@ipv4_network_address).data
   rescue ArgumentError
-    self.ip_network_data = nil
+    self.ipv4_network_data = nil
   end
 
-  def ip_netmask
-    @ip_netmask ||= (ip_network&.netmask || '')
+  def ipv4_netmask
+    @ipv4_netmask ||= (ipv4_network&.netmask || '')
   end
 
-  def ip_netmask=(value)
-    @ip_netmask = value
-    self.ip_prefixlen = @ip_netmask.presence &&
-                        IPAddress::Prefix32.parse_netmask(@ip_netmask).to_i
+  def ipv4_netmask=(value)
+    @ipv4_netmask = value
+    self.ipv4_prefixlen = @ipv4_netmask.presence &&
+                        IPAddress::Prefix32.parse_netmask(@ipv4_netmask).to_i
   rescue ArgumentError
-    self.ip_prefixlen = nil
+    self.ipv4_prefixlen = nil
   end
 
   # readonly
-  def ip_gateway
-    @ip_gateway ||= ip_gateway_data.presence &&
-                    IPAddress::IPv4.parse_data(ip_gateway_data, ip_prefixlen)
+  def ipv4_gateway
+    @ipv4_gateway ||= ipv4_gateway_data.presence &&
+                    IPAddress::IPv4.parse_data(ipv4_gateway_data, ipv4_prefixlen)
   end
 
-  def ip_gateway_address
-    @ip_gateway_address ||= (ip_gateway&.address || '')
+  def ipv4_gateway_address
+    @ipv4_gateway_address ||= (ipv4_gateway&.address || '')
   end
 
-  def ip_gateway_address=(value)
-    @ip_gateway_address = value
-    self.ip_gateway_data = @ip_gateway_address.presence &&
-                           IPAddress::IPv4.new(@ip_gateway_address).data
+  def ipv4_gateway_address=(value)
+    @ipv4_gateway_address = value
+    self.ipv4_gateway_data = @ipv4_gateway_address.presence &&
+                           IPAddress::IPv4.new(@ipv4_gateway_address).data
   rescue ArgumentError
-    self.ip_gateway_data = nil
+    self.ipv4_gateway_data = nil
   end
 
   # Ipv6
 
   # readonly
-  def ip6_network
-    @ip6_network ||= ip6_network_data.presence &&
-                     IPAddress::IPv6.parse_data(ip6_network_data, ip6_prefixlen)
+  def ipv6_network
+    @ipv6_network ||= ipv6_network_data.presence &&
+                     IPAddress::IPv6.parse_data(ipv6_network_data, ipv6_prefixlen)
   end
 
-  def ip6_network_address
-    @ip6_network_address ||= (ip6_network&.address || '')
+  def ipv6_network_address
+    @ipv6_network_address ||= (ipv6_network&.address || '')
   end
 
-  def ip6_network_address=(value)
-    @ip6_network_address = value
-    self.ip6_network_data = @ip6_network_address.presence &&
-                            IPAddress::IPv6.new(@ip6_network_address).data
+  def ipv6_network_address=(value)
+    @ipv6_network_address = value
+    self.ipv6_network_data = @ipv6_network_address.presence &&
+                            IPAddress::IPv6.new(@ipv6_network_address).data
   rescue
-    self.ip6_network_data = nil
+    self.ipv6_network_data = nil
   end
 
   # readonly
-  def ip6_gateway
-    @ip6_gateway ||= ip6_gateway_data.presence &&
-                     IPAddress::IPv6.parse_data(ip6_gateway_data, ip6_prefixlen)
+  def ipv6_gateway
+    @ipv6_gateway ||= ipv6_gateway_data.presence &&
+                     IPAddress::IPv6.parse_data(ipv6_gateway_data, ipv6_prefixlen)
   end
 
-  def ip6_gateway_address
-    @ip6_gateway_address ||= (ip6_gateway&.address || '')
+  def ipv6_gateway_address
+    @ipv6_gateway_address ||= (ipv6_gateway&.address || '')
   end
 
-  def ip6_gateway_address=(value)
-    @ip6_gateway_address = value
-    self.ip6_gateway_data = @ip6_gateway_address.presence &&
-                            IPAddress::IPv6.new(@ip6_address).data
+  def ipv6_gateway_address=(value)
+    @ipv6_gateway_address = value
+    self.ipv6_gateway_data = @ipv6_gateway_address.presence &&
+                            IPAddress::IPv6.new(@ipv6_address).data
   rescue ArgumentError
-    self.ip6_gateway_data = nil
+    self.ipv6_gateway_data = nil
   end
 
   # other
@@ -141,34 +141,34 @@ class Network < ApplicationRecord
   end
 
   # 空いている次のIPアドレス
-  def next_ip(ip_config)
-    return unless ip_network
+  def next_ip(ipv4_config)
+    return unless ipv4_network
 
-    selected_ip_pools = ip_pools.where(ip_config: ip_config).order(:ip_first_data)
+    selected_ip_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
     return if selected_ip_pools.empty?
 
     nics_ips = nics.map(:ip).compact
 
-    selected_ip_pools.each do |ip_pool|
-      ip_pool.each do |ip|
-        return ip if ip != ip_gateway && nics_ips.exclude?(ip)
+    selected_ip_pools.each do |ipv4_pool|
+      ipv4_pool.each do |ip|
+        return ip if ip != ipv4_gateway && nics_ips.exclude?(ip)
       end
     end
 
     nil
   end
 
-  def next_ip6(ip6_config)
-    return unless ip6_network
+  def next_ip6(ipv6_config)
+    return unless ipv6_network
 
-    selected_ip6_pools = ip6_pools.where(ip6_config: ip6_config).order(:ip6_first_data)
+    selected_ip6_pools = ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
     return if selected_ip6_pools.empty?
 
     nics_ip6s = nics.map(:ip6).compact
 
-    selected_ip6_pools.each do |ip6_pool|
-      ip6_pool.each do |ip6|
-        return ip6 if ip6 != ip6_gateway && nics_ip6s.exclude?(ip6)
+    selected_ip6_pools.each do |ipv6_pool|
+      ipv6_pool.each do |ip6|
+        return ip6 if ip6 != ipv6_gateway && nics_ip6s.exclude?(ip6)
       end
     end
 
@@ -177,25 +177,25 @@ class Network < ApplicationRecord
 
   # 空いている次のプールのIPアドレス
   def next_ip_pool
-    return unless ip_network
+    return unless ipv4_network
 
-    (ip_network.first..ip_network.last).find do |ip|
-      next if ip == ip_gateway
+    (ipv4_network.first..ipv4_network.last).find do |ip|
+      next if ip == ipv4_gateway
 
-      ip_pools.all? do |ip_pool|
-        ip_pool.exclude?(ip)
+      ipv4_pools.all? do |ipv4_pool|
+        ipv4_pool.exclude?(ip)
       end
     end
   end
 
   def next_ip6_pool
-    return unless ip6_network
+    return unless ipv6_network
 
-    (ip6_network.first..ip_network.last).find do |ip6|
-      next if ip6 == ip6_gateway
+    (ipv6_network.first..ipv4_network.last).find do |ip6|
+      next if ip6 == ipv6_gateway
 
-      ip6_pools.all? do |ip6_pool|
-        ip6_pool.exclude?(ip6)
+      ipv6_pools.all? do |ipv6_pool|
+        ipv6_pool.exclude?(ip6)
       end
     end
   end

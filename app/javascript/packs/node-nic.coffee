@@ -29,8 +29,8 @@ class NodeNic
     'network_id'
     'mac_address'
     'duid'
-    'ip_config'
-    'ip6_config'
+    'ipv4_config'
+    'ipv6_config'
   ]
 
   constructor: (@number, @role) ->
@@ -99,8 +99,8 @@ class NodeNic
         'network_id'
         'mac_address'
         'duid'
-        'ip_config'
-        'ip6_config'
+        'ipv4_config'
+        'ipv6_config'
       )
       return
 
@@ -115,8 +115,8 @@ class NodeNic
         'network_id'
         'mac_address'
         'duid'
-        'ip_config'
-        'ip6_config'
+        'ipv4_config'
+        'ipv6_config'
       )
       return
 
@@ -130,10 +130,10 @@ class NodeNic
 
   checkNetwork: (@networkId = @inputs['network_id'].node.value) ->
     unless @networkId? && @networkId != ''
-      @inputs['ip_config']?.node?.selectedIndex = 0
-      @inputs['ip6_config']?.node?.selectedIndex = 0
+      @inputs['ipv4_config']?.node?.selectedIndex = 0
+      @inputs['ipv6_config']?.node?.selectedIndex = 0
 
-      @disableInputs('ip_config', 'ip6_config')
+      @disableInputs('ipv4_config', 'ipv6_config')
       for {node} in @badges
         node.className = 'badge badge-light text-muted'
 
@@ -142,10 +142,10 @@ class NodeNic
     network = await Network.fetch(@networkId)
 
     unless network?
-      @disableInputs('ip_config', 'ip6_config')
+      @disableInputs('ipv4_config', 'ipv6_config')
 
-      @inputs['ip_config'].node.selectedIndex = 0
-      @inputs['ip6_config'].node.selectedIndex = 0
+      @inputs['ipv4_config'].node.selectedIndex = 0
+      @inputs['ipv6_config'].node.selectedIndex = 0
 
       @inputs['mac_address'].node.required = false
 
@@ -171,9 +171,9 @@ class NodeNic
     # 可能なIP設定
     availableIpConfigs = new Set
     availableIpConfigs.add('disabled')
-    if network['ip_address']?
-      for ipPool in network['ip_pools']
-        switch ipPool['ip_config']
+    if network['ipv4_address']?
+      for ipPool in network['ipv4_pools']
+        switch ipPool['ipv4_config']
           when 'static'
             availableIpConfigs.add('static')
           when 'reserved'
@@ -193,9 +193,9 @@ class NodeNic
     # 可能なIPv6設定
     availableIp6Configs = new Set
     availableIp6Configs.add('disabled')
-    if network['ip6_address']?
-      for ip6Pool in network['ip6_pools']
-        switch ip6Pool['ip6_config']
+    if network['ipv6_address']?
+      for ip6Pool in network['ipv6_pools']
+        switch ip6Pool['ipv6_config']
           when 'static'
             availableIp6Configs.add('static')
           when 'reserved'
@@ -210,19 +210,19 @@ class NodeNic
     else
       availableIp6Configs.add('link_local')
 
-    for option in @inputs['ip_config']?.node?.options ? []
+    for option in @inputs['ipv4_config']?.node?.options ? []
       if availableIpConfigs.has(option.value)
         option.disabled = false
       else
         option.disabled = true
 
-    for option in @inputs['ip6_config']?.node?.options ? []
+    for option in @inputs['ipv6_config']?.node?.options ? []
       if availableIp6Configs.has(option.value)
         option.disabled = false
       else
         option.disabled = true
 
-    @enableInputs('ip_config', 'ip6_config')
+    @enableInputs('ipv4_config', 'ipv6_config')
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id) for id in info.list

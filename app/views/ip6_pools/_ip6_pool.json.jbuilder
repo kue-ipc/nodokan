@@ -1,2 +1,2 @@
-json.extract! ip6_pool, :id, :ip6_config, :ip6_first_address, :ip6_last_address, :created_at, :updated_at
-json.url ip6_pool_url(ip6_pool, format: :json)
+json.extract! ipv6_pool, :id, :ipv6_config, :ipv6_first_address, :ipv6_last_address, :created_at, :updated_at
+json.url ipv6_pool_url(ipv6_pool, format: :json)

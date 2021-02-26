@@ -1,26 +1,26 @@
 - name: 'サーバー'
   vlan: 101
   auth: false
-  ip_network_address: '192.168.1.0'
-  ip_netmask: '255.255.255.0'
-  ip_gateway_address: '192.168.1.254'
+  ipv4_network_address: '192.168.1.0'
+  ipv4_netmask: '255.255.255.0'
+  ipv4_gateway_address: '192.168.1.254'
   note: サーバー用ネットワークのサンプル
 
 - name: 'クライアント'
   vlan: 102
   auth: true
-  ip_network_address: '192.168.2.0'
-  ip_netmask: '255.255.255.0'
-  ip_gateway_address: '192.168.2.254'
-  ip_pools_attributes:
-  - ip_config: :dynamic
-    ip_first_address: '192.168.2.1'
-    ip_last_address: '192.168.2.99'
-  - ip_config: :reserved
-    ip_first_address: '192.168.2.100'
-    ip_last_address: '192.168.2.199'
-  - ip_config: static
-    ip_first_address: '192.168.2.200'
-    ip_last_address: '192.168.2.240'
+  ipv4_network_address: '192.168.2.0'
+  ipv4_netmask: '255.255.255.0'
+  ipv4_gateway_address: '192.168.2.254'
+  ipv4_pools_attributes:
+  - ipv4_config: :dynamic
+    ipv4_first_address: '192.168.2.1'
+    ipv4_last_address: '192.168.2.99'
+  - ipv4_config: :reserved
+    ipv4_first_address: '192.168.2.100'
+    ipv4_last_address: '192.168.2.199'
+  - ipv4_config: static
+    ipv4_first_address: '192.168.2.200'
+    ipv4_last_address: '192.168.2.240'
   note: クライアント用ネットワークのサンプル
 

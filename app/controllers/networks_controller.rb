@@ -27,7 +27,7 @@ class NetworksController < ApplicationController
     @condition = permitted_params[:condition]
 
     @networks = policy_scope(Network)
-      .includes(:ip_pools, :ip6_pools)
+      .includes(:ipv4_pools, :ipv6_pools)
 
     @networks = @networks.where(@condition) if @condition
 
@@ -66,21 +66,21 @@ class NetworksController < ApplicationController
           format.html { render :new }
           format.json { render json: @network.errors, status: :unprocessable_entity }
         end
-      elsif params['add_ip_pool'] && @network.ip_network
+      elsif params['add_ip_pool'] && @network.ipv4_network
         next_ip = @network.next_ip_pool
-        @network.ip_pools << IpPool.new(
-          ip_config: :static,
-          ip_first_address: next_ip&.address,
-          ip_last_address: next_ip&.address
+        @network.ipv4_pools << Ipv4Pool.new(
+          ipv4_config: :static,
+          ipv4_first_address: next_ip&.address,
+          ipv4_last_address: next_ip&.address
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params['add_ip6_pool'] && @network.ip6_network
+      elsif params['add_ip6_pool'] && @network.ipv6_network
         next_ip6 = @network.next_ip6_pool
-        @network.ip6_pools << Ip6Pool.new(
-          ip6_config: :static,
-          ip6_first_address: next_ip6&.address,
-          ip6_last_address: next_ip6&.address
+        @network.ipv6_pools << Ipv6Pool.new(
+          ipv6_config: :static,
+          ipv6_first_address: next_ip6&.address,
+          ipv6_last_address: next_ip6&.address
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -106,20 +106,20 @@ class NetworksController < ApplicationController
       elsif params['add_ip_pool']
         @network.assign_attributes(network_params)
         next_ip = @network.next_ip_pool
-        @network.ip_pools << IpPool.new(
-          ip_config: :static,
-          ip_first_address: next_ip&.address,
-          ip_last_address: next_ip&.address
+        @network.ipv4_pools << Ipv4Pool.new(
+          ipv4_config: :static,
+          ipv4_first_address: next_ip&.address,
+          ipv4_last_address: next_ip&.address
         )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params['add_ip6_pool'] && @network.ip6_network
+      elsif params['add_ip6_pool'] && @network.ipv6_network
         @network.assign_attributes(network_params)
         next_ip6 = @network.next_ip6_pool
-        @network.ip6_pools << Ip6Pool.new(
-          ip6_config: :static,
-          ip6_first_address: next_ip6&.address,
-          ip6_last_address: next_ip6&.address
+        @network.ipv6_pools << Ipv6Pool.new(
+          ipv6_config: :static,
+          ipv6_first_address: next_ip6&.address,
+          ipv6_last_address: next_ip6&.address
         )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -157,26 +157,26 @@ class NetworksController < ApplicationController
         :dhcp,
         :auth,
         :closed,
-        :ip_address,
-        :ip_mask,
-        :ip_gateway,
-        :ip6_address,
-        :ip6_prefix,
-        :ip6_gateway,
+        :ipv4_address,
+        :ipv4_mask,
+        :ipv4_gateway,
+        :ipv6_address,
+        :ipv6_prefix,
+        :ipv6_gateway,
         :note,
-        ip_pools_attributes: [
+        ipv4_pools_attributes: [
           :id,
           :_destroy,
-          :ip_config,
-          :ip_first_address,
-          :ip_last_address,
+          :ipv4_config,
+          :ipv4_first_address,
+          :ipv4_last_address,
         ],
-        ip6_pools_attributes: [
+        ipv6_pools_attributes: [
           :id,
           :_destroy,
-          :ip6_config,
-          :ip6_first_address,
-          :ip6_last_address,
+          :ipv6_config,
+          :ipv6_first_address,
+          :ipv6_last_address,
         ]
       )
     end

@@ -17,12 +17,12 @@ class NetworksTest < ApplicationSystemTestCase
   #   check "Auth" if @network.auth
   #   check "Closed" if @network.closed
   #   check "Dhcp" if @network.dhcp
-  #   fill_in "Ip6 address", with: @network.ip6_address
-  #   fill_in "Ip6 gateway", with: @network.ip6_gateway
-  #   fill_in "Ip6 prefix", with: @network.ip6_prefix
-  #   fill_in "Ip address", with: @network.ip_address
-  #   fill_in "Ip gateway", with: @network.ip_gateway
-  #   fill_in "Ip mask", with: @network.ip_mask
+  #   fill_in "Ip6 address", with: @network.ipv6_address
+  #   fill_in "Ip6 gateway", with: @network.ipv6_gateway
+  #   fill_in "Ip6 prefix", with: @network.ipv6_prefix
+  #   fill_in "Ip address", with: @network.ipv4_address
+  #   fill_in "Ip gateway", with: @network.ipv4_gateway
+  #   fill_in "Ip mask", with: @network.ipv4_mask
   #   fill_in "Name", with: @network.name
   #   fill_in "Vlan", with: @network.vlan
   #   click_on "Create Network"
@@ -38,12 +38,12 @@ class NetworksTest < ApplicationSystemTestCase
   #   check "Auth" if @network.auth
   #   check "Closed" if @network.closed
   #   check "Dhcp" if @network.dhcp
-  #   fill_in "Ip6 address", with: @network.ip6_address
-  #   fill_in "Ip6 gateway", with: @network.ip6_gateway
-  #   fill_in "Ip6 prefix", with: @network.ip6_prefix
-  #   fill_in "Ip address", with: @network.ip_address
-  #   fill_in "Ip gateway", with: @network.ip_gateway
-  #   fill_in "Ip mask", with: @network.ip_mask
+  #   fill_in "Ip6 address", with: @network.ipv6_address
+  #   fill_in "Ip6 gateway", with: @network.ipv6_gateway
+  #   fill_in "Ip6 prefix", with: @network.ipv6_prefix
+  #   fill_in "Ip address", with: @network.ipv4_address
+  #   fill_in "Ip gateway", with: @network.ipv4_gateway
+  #   fill_in "Ip mask", with: @network.ipv4_mask
   #   fill_in "Name", with: @network.name
   #   fill_in "Vlan", with: @network.vlan
   #   click_on "Update Network"

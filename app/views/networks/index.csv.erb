@@ -7,11 +7,11 @@
   dhcp
   auth
   closed
-  ip_network
-  ip_gateway
-  ip_pools[static]
-  ip_pools[dynamic]
-  ip_pools[reserved]
+  ipv4_network
+  ipv4_gateway
+  ipv4_pools[static]
+  ipv4_pools[dynamic]
+  ipv4_pools[reserved]
   note
 ].join(',') %>
 <%- @networks.each do |network| -%>
@@ -23,11 +23,11 @@
   network.dhcp,
   network.auth,
   network.closed,
-  network.ip_network,
-  network.ip_gateway,
-  network.ip_pools.select(&:ip_static?).map { |pl| pool_range(pl) }.join('|'),
-  network.ip_pools.select(&:ip_dynamic?).map { |pl| pool_range(pl) }.join('|'),
-  network.ip_pools.select(&:ip_reserved?).map { |pl| pool_range(pl) }.join('|'),
+  network.ipv4_network,
+  network.ipv4_gateway,
+  network.ipv4_pools.select(&:ipv4_static?).map { |pl| pool_range(pl) }.join('|'),
+  network.ipv4_pools.select(&:ipv4_dynamic?).map { |pl| pool_range(pl) }.join('|'),
+  network.ipv4_pools.select(&:ipv4_reserved?).map { |pl| pool_range(pl) }.join('|'),
   network.note
 ].to_csv
 -%>
