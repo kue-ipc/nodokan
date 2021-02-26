@@ -3,10 +3,10 @@ json.extract! network, :id, :name,
   :ipv4_network_address, :ipv4_netmask, :ipv4_prefixlen, :ipv4_gateway_address,
   :ipv6_network_address, :ipv6_prefixlen, :ipv6_gateway_address,
   :note, :created_at, :updated_at
-json.url network_url(network, format: :json)
 json.ipv4_pools do
   json.array! network.ipv4_pools, partial: 'ipv4_pools/ipv4_pool', as: :ipv4_pool
 end
 json.ipv6_pools do
   json.array! network.ipv6_pools, partial: 'ipv6_pools/ipv6_pool', as: :ipv4_pool
 end
+json.url network_url(network, format: :json)

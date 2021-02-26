@@ -9,6 +9,6 @@ module Ipv4Config
       link_local: 8,
       manual: 9,
       disabled: 255,
-    }, _prefix: :ipv6
+    }, _prefix: :ipv4
   end
 end

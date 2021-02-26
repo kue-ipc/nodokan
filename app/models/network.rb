@@ -176,7 +176,7 @@ class Network < ApplicationRecord
   end
 
   # 空いている次のプールのIPアドレス
-  def next_ip_pool
+  def next_ipv4_pool
     return unless ipv4_network
 
     (ipv4_network.first..ipv4_network.last).find do |ipv4|
