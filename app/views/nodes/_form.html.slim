@@ -68,12 +68,12 @@ p 【必須】の項目は入力が必須です。
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         = hardware_f.select :device_type, t_enums(Hardware, :device_types),
                             {include_blank: '(未選択)',
-                             wrapper: {class: 'col-md-2'}},
+                             wrapper: {class: 'col-md-3'}},
                             class: 'custom-select'
         = hardware_f.text_field :maker,
                                 list: 'node_hardware_maker-list',
                                 disabled: true,
-                                wrapper: {class: 'col-md-3'}
+                                wrapper: {class: 'col-md-2'}
         - node_hardware_maker_params = {parent: 'node',
                                         name: 'hardware',
                                         target: 'maker',
