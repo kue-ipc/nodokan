@@ -4,23 +4,6 @@ import {listToSnake, listToField} from 'modules/string_utils'
 import Network from 'models/network'
 import ipaddr from 'ipaddr.js'
 
-# NETWORK_MAP = new Map
-
-# fetchNetwork = (id) ->
-#   unless id? and /^\d+$/.test(id)
-#     return null
-
-#   if NETWORK_MAP.has(id)
-#     return NETWORK_MAP.get(id)
-
-#   url = "/networks/#{id}.json"
-
-#   response = await fetch(url)
-#   data = await response.json()
-
-#   NETWORK_MAP.set(id, data)
-#   data
-
 class NodeNic
   @NAMES = [
     '_destroy'
@@ -54,14 +37,9 @@ class NodeNic
 
     @networkMessageNode = @getNode('network_message')
 
-    @inputs.get('_destroy').node.addEventListener 'change', (_e) =>
-      @checkDestroy()
-
-    @inputs.get('interface_type').node.addEventListener 'change', (_e) =>
-      @checkInterfaceType()
-
-    @inputs.get('network_id').node.addEventListener 'change', (_e) =>
-      @checkNetwork()
+    @inputs.get('_destroy').node.addEventListener 'change', (_e) => @checkDestroy()
+    @inputs.get('interface_type').node.addEventListener 'change', (_e) => @checkInterfaceType()
+    @inputs.get('network_id').node.addEventListener 'change', (_e) => @checkNetwork()
 
     @checkDestroy()
 
@@ -71,49 +49,28 @@ class NodeNic
   getNode: (names...) ->
     document.getElementById(@getNodeId(names...))
 
-  disableInputs: (names...) ->
-    for name in names
+  disableInputs: (names, {excludes = []}) ->
+    for name in names when !excludes.includes(name)
       @inputs.get(name)?.node?.disabled = true
 
-  enableInputs: (names...) ->
-    for name in names
+  enableInputs: (names, {excludes = []}) ->
+    for name in names when !excludes.includes(name)
       @inputs.get(name)?.node?.disabled = false
 
   checkDestroy: ->
     if @inputs.get('_destroy').node.checked
-      @disableInputs(
-        'interface_type'
-        'name'
-        'network_id'
-        'mac_address'
-        'duid'
-        'ipv4_config'
-        'ipv6_config'
-      )
+      @disableInputs(@names, excludes: ['_destroy'])
       return
 
-    @enableInputs('interface_type')
+    @enableInputs(['interface_type'])
     @checkInterfaceType()
 
   checkInterfaceType: ->
-    value = @inputs.get('interface_type').node.value
-    if not value? or value.length == 0
-      @disableInputs(
-        'name'
-        'network_id'
-        'mac_address'
-        'duid'
-        'ipv4_config'
-        'ipv6_config'
-      )
+    unless @inputs.get('interface_type').node.value
+      @disableInputs(@names, excludes: ['_destroy', 'interface_type'])
       return
 
-    @enableInputs(
-      'name'
-      'network_id'
-      'mac_address'
-      'duid'
-    )
+    @enableInputs(['name', 'network_id', 'mac_address', 'duid'])
     @checkNetwork()
 
   checkNetwork: (@networkId = @inputs.egt('network_id').node.value) ->
