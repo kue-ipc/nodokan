@@ -8,7 +8,7 @@ module Ipv6Config
       static: 2,
       link_local: 8,
       manual: 9,
-      disabled: 255,
+      disabled: -1,
     }, _prefix: :ipv6
   end
 end

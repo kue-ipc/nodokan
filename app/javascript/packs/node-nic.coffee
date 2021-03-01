@@ -29,36 +29,28 @@ class NodeNic
     'network_id'
     'mac_address'
     'duid'
-    'ipv4_config'
-    'ipv6_config'
   ]
 
-  constructor: (@number, ipv6: true) ->
+  constructor: (@number, {ipv6 = true}) ->
     @prefixList = ['node', 'nics_attributes', @number.toString()]
 
-    @ip_versions =
-      if ipv6
-        ['ipv4', 'ipv6']
-      else
-        ['ipv4']
+    @ip_versions = ['ipv4']
+    @ip_versions.push('ipv6') if ipv6
 
+    @names = NodeNic.NAMES.concat(@ip_versions.map((ip_version) -> "#{ip_version}_config"))
 
     @rootNode = @getNode()
     @inputs = new Map(
-      for name in NodeNic.NAMES
+      for name in @names
         node = @getNode(name)
-        [
-          name,
-          {node, initialValue: node?.value}
-        ]
+        initialValue = node?.value
+        options =
+          if node?.tagName?.toUpperCase() == 'SELECT'
+            new Map([option.value, {option, index}] for option, index in node.options ? [])
+        [name, {node, initialValue, options}]
     )
 
-    for name in ['ipv4_config', 'ipv6_config']
-      inputData = @inputs.get(name)
-      inputData['options'] = new Map(
-        for node, index in inputData.node?.options ? []
-          [node.value, {node, index}]
-      )
+    console.log @inputs
 
     @networkMessageNode = @getNode('network_message')
 

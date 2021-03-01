@@ -8,7 +8,7 @@ module Ipv4Config
       static: 2,
       link_local: 8,
       manual: 9,
-      disabled: 255,
+      disabled: -1,
     }, _prefix: :ipv4
   end
 end

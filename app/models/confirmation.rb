@@ -7,13 +7,13 @@ class Confirmation < ApplicationRecord
     abandoned: 16,
     missing: 17,
     not_my_own: 18,
-    unknown: 255,
+    unknown: -1,
   }, _prefix: true
 
   enum content: {
     correct: 0,
     incorrect: 16,
-    unknown: 255,
+    unknown: -1,
   }, _prefix: true
 
   enum os_update: {
@@ -22,7 +22,7 @@ class Confirmation < ApplicationRecord
     unnecessary: 8,
     not_do: 16,
     eol: 17,
-    unknown: 255,
+    unknown: -1,
   }, _prefix: true
 
   enum app_update: {
@@ -31,7 +31,7 @@ class Confirmation < ApplicationRecord
     unnecessary: 8,
     not_do: 16,
     eol: 17,
-    unknown: 255,
+    unknown: -1,
   }, _prefix: true
 
   enum security_update: {
@@ -39,7 +39,7 @@ class Confirmation < ApplicationRecord
     not_implemented: 9,
     not_do: 16,
     eol: 17,
-    unknown: 255,
+    unknown: -1,
   }, _prefix: true
 
   enum security_scan: {
@@ -47,6 +47,6 @@ class Confirmation < ApplicationRecord
     manual: 1,
     not_implemented: 9,
     not_do: 16,
-    unknown: 255,
+    unknown: -1,
   }, _prefix: true
 end

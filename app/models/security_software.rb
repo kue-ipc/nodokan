@@ -10,7 +10,8 @@ class SecuritySoftware < ApplicationRecord
     free: 3,
     pre_installed: 4,
     not_installed: 16,
-    unknown: 255,
+    other: 255,
+    unknown: -1,
   }, _prefix: true
 
   def self.conf_installation_methods
