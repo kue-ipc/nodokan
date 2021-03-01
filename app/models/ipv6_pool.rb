@@ -5,12 +5,12 @@ class Ipv6Pool < ApplicationRecord
   validates :ipv6_first_address, allow_blank: false, ipv6: true
   validates :ipv6_last_address, allow_blank: false, ipv6: true
 
-  def ipv6_prefixlen
-    network.ipv6_prefixlen
+  def ipv6_prefix_length
+    network.ipv6_prefix_length
   end
 
   def ipv6_first
-    @ipv6_first ||= IPAddress::IPv6.parse_data(ipv6_first_data, ipv6_prefixlen)
+    @ipv6_first ||= IPAddress::IPv6.parse_data(ipv6_first_data, ipv6_prefix_length)
   end
 
   def ipv6_first_address
@@ -26,7 +26,7 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def ipv6_last
-    @ipv6_last ||= IPAddress::IPv6.parse_data(ipv6_last_data, ipv6_prefixlen)
+    @ipv6_last ||= IPAddress::IPv6.parse_data(ipv6_last_data, ipv6_prefix_length)
   end
 
   def ipv6_last_address

@@ -15,7 +15,7 @@ def register_network(data)
   if data['ipv4_network'].present?
     address, mask = data['ipv4_network'].split('/')
     network.ipv4_network_address = address
-    network.ipv4_prefixlen = mask
+    network.ipv4_prefix_length = mask
   end
 
   ['static', 'dynamic', 'reserved'].each do |ipv4_config|

@@ -29,13 +29,13 @@ class Network < ApplicationRecord
 
   validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
 
-  validates :ipv4_prefixlen, allow_blank: true, numericality: {
+  validates :ipv4_prefix_length, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: 32,
   }
 
-  validates :ipv6_prefixlen, allow_blank: true, numericality: {
+  validates :ipv6_prefix_length, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: 128,
@@ -48,7 +48,7 @@ class Network < ApplicationRecord
   # readonly
   def ipv4_network
     @ipv4_network ||= ipv4_network_data.presence &&
-                    IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefixlen)
+                    IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefix_length)
   end
 
   def ipv4_network_address
@@ -69,16 +69,16 @@ class Network < ApplicationRecord
 
   def ipv4_netmask=(value)
     @ipv4_netmask = value
-    self.ipv4_prefixlen = @ipv4_netmask.presence &&
+    self.ipv4_prefix_length = @ipv4_netmask.presence &&
                         IPAddress::Prefix32.parse_netmask(@ipv4_netmask).to_i
   rescue ArgumentError
-    self.ipv4_prefixlen = nil
+    self.ipv4_prefix_length = nil
   end
 
   # readonly
   def ipv4_gateway
     @ipv4_gateway ||= ipv4_gateway_data.presence &&
-                    IPAddress::IPv4.parse_data(ipv4_gateway_data, ipv4_prefixlen)
+                    IPAddress::IPv4.parse_data(ipv4_gateway_data, ipv4_prefix_length)
   end
 
   def ipv4_gateway_address
@@ -98,7 +98,7 @@ class Network < ApplicationRecord
   # readonly
   def ipv6_network
     @ipv6_network ||= ipv6_network_data.presence &&
-                     IPAddress::IPv6.parse_data(ipv6_network_data, ipv6_prefixlen)
+                     IPAddress::IPv6.parse_data(ipv6_network_data, ipv6_prefix_length)
   end
 
   def ipv6_network_address
@@ -116,7 +116,7 @@ class Network < ApplicationRecord
   # readonly
   def ipv6_gateway
     @ipv6_gateway ||= ipv6_gateway_data.presence &&
-                     IPAddress::IPv6.parse_data(ipv6_gateway_data, ipv6_prefixlen)
+                     IPAddress::IPv6.parse_data(ipv6_gateway_data, ipv6_prefix_length)
   end
 
   def ipv6_gateway_address

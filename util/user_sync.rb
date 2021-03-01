@@ -1,5 +1,3 @@
-#!/usr/bin/env rails runner
-
 require 'net/ldap'
 
 if $0 == __FILE__
