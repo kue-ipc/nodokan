@@ -10,38 +10,54 @@ class NodeNic
     'interface_type'
     'name'
     'network_id'
+    'mac_registration'
     'mac_address'
-    'duid'
   ]
+
+  @NAMES_IP = {
+    ipv4: ['ipv4_config']
+    ipv6: ['ipv6_config', 'duid']
+  }
 
   constructor: (@number, {ipv6 = true}) ->
     @prefixList = ['node', 'nics_attributes', @number.toString()]
 
     @ip_versions = ['ipv4']
     @ip_versions.push('ipv6') if ipv6
+    @ip_configs = @ip_versions.map((ip_version) -> "#{ip_version}_config")
 
-    @names = NodeNic.NAMES.concat(@ip_versions.map((ip_version) -> "#{ip_version}_config"))
+    @names = [NodeNic.NAMES...]
+    for ip_version in @ip_versions
+      @names = [@names..., NodeNic.NAMES_IP[ip_version]...]
 
     @rootNode = @getNode()
     @inputs = new Map(
       for name in @names
         node = @getNode(name)
-        initialValue = node?.value
+        init = {
+          value: node.value
+          checked: node.checked
+          selectedIndex: node.selectedIndex
+        }
         options =
           if node?.tagName?.toUpperCase() == 'SELECT'
-            new Map([option.value, {option, index}] for option, index in node.options ? [])
-        [name, {node, initialValue, options}]
+            new Map([optionNode.value, {node: optionNode, index}] for optionNode, index in node.options ? [])
+        [name, {node, init, options}]
     )
-
-    console.log @inputs
 
     @networkMessageNode = @getNode('network_message')
 
-    @inputs.get('_destroy').node.addEventListener 'change', (_e) => @checkDestroy()
-    @inputs.get('interface_type').node.addEventListener 'change', (_e) => @checkInterfaceType()
-    @inputs.get('network_id').node.addEventListener 'change', (_e) => @checkNetwork()
+    @inputs.get('_destroy').node.addEventListener 'change', (_e) => @changeDestroy()
+    @inputs.get('interface_type').node.addEventListener 'change', (_e) => @changeInterfaceType()
+    @inputs.get('network_id').node.addEventListener 'change', (_e) => @changeNetwork()
 
-    @checkDestroy()
+    @inputs.get('mac_registration').node.addEventListener 'change', (_e) => @requireMacAddress()
+    @inputs.get('ipv4_config').node.addEventListener 'change', (_e) => @requireMacAddress()
+    @inputs.get('ipv6_config').node.addEventListener 'change', (_e) => @requireDuid()
+
+    @requireMacAddress()
+    @requireDuid()
+    @changeDestroy()
 
   getNodeId: (names...) ->
     listToSnake(@prefixList..., names...)
@@ -49,125 +65,149 @@ class NodeNic
   getNode: (names...) ->
     document.getElementById(@getNodeId(names...))
 
-  disableInputs: (names, {excludes = []}) ->
+  disableInputs: (names, {excludes = []} = {}) ->
     for name in names when !excludes.includes(name)
       @inputs.get(name)?.node?.disabled = true
 
-  enableInputs: (names, {excludes = []}) ->
+  enableInputs: (names, {excludes = []} = {}) ->
     for name in names when !excludes.includes(name)
       @inputs.get(name)?.node?.disabled = false
 
-  checkDestroy: ->
+  adjustSelect: (name, list) ->
+    {node, init, options} = @inputs.get(name)
+    selectedIndex = -1
+    disabledIndex = -1
+    availableIndices = []
+    for [value, option] from options
+      disabledIndex = option.index if value == 'disabled'
+
+      if list.includes(value)
+        availableIndices.push(option.index)
+        selectedIndex = option.index if option.node.selected
+        option.node.disabled = false
+      else
+        option.node.disabled = true
+
+    node.selectedIndex =
+      if selectedIndex >= 0 && selectedIndex != disabledIndex
+        selectedIndex
+      else if @checkInitInput('network_id')
+        init.selectedIndex
+      else
+        availableIndices[0] ? -1
+
+  requireMacAddress: ->
+    @inputs.get('mac_address').node.required =
+      @inputs.get('mac_registration').node.checked ||
+      @inputs.get('ipv4_config').node.value == 'reserved'
+
+  requireDuid: ->
+    @inputs.get('duid').node.required =
+      @inputs.get('ipv6_config').node.value == 'reserved'
+
+  setInitInput: (name) ->
+    {node, init} = @inputs.get(name)
+    switch node.tagName.toUpperCase()
+      when 'INPUT'
+        if node.getAttribute('type').toLowerCase() == 'checkbox'
+          node.checked = init.checked
+        else
+          node.value = init.value
+      when 'SELECT'
+        node.selectedIndex = init.selectedIndex
+
+  checkInitInput: (name) ->
+    {node, init} = @inputs.get(name)
+    switch node.tagName.toUpperCase()
+      when 'INPUT'
+        if node.getAttribute('type').toLowerCase() == 'checkbox'
+          node.checked == init.checked
+        else
+          node.value == init.value
+      when 'SELECT'
+        node.selectedIndex == init.selectedIndex
+      else
+        false
+
+  changeDestroy: ->
     if @inputs.get('_destroy').node.checked
       @disableInputs(@names, excludes: ['_destroy'])
       return
 
     @enableInputs(['interface_type'])
-    @checkInterfaceType()
+    @changeInterfaceType()
 
-  checkInterfaceType: ->
+  changeInterfaceType: ->
     unless @inputs.get('interface_type').node.value
       @disableInputs(@names, excludes: ['_destroy', 'interface_type'])
       return
 
     @enableInputs(['name', 'network_id', 'mac_address', 'duid'])
-    @checkNetwork()
+    @changeNetwork()
 
-  checkNetwork: (@networkId = @inputs.egt('network_id').node.value) ->
-    unless @networkId? && @networkId != ''
-      @inputs.get('ipv4_config')?.node?.selectedIndex = @inputs.get('ipv4_config').opitons
-      @inputs.get('ipv6_config')?.node?.selectedIndex = 0
+  changeNetwork: ->
+    @networkMessageNode.innerText = ''
 
-      @disableInputs('ipv4_config', 'ipv6_config')
-      for {node} in @badges
-        node.className = 'badge badge-light text-muted'
+    networkId = @inputs.get('network_id').node.value
+    unless networkId
+      for name in @ip_configs
+        @adjustSelect(name, ['disabled'])
+      @disableInputs(@ip_configs)
 
+      @inputs.get('mac_registration').node.checked = false
+      @requireMacAddress()
+      @disableInputs(['mac_registration'])
+
+      @networkMessageNode.innerText = '''
+        どのネットワークにも接続していません。接続するネットワークを選択してください。
+      '''
       return
 
-    network = await Network.fetch(@networkId)
+    network = await Network.fetch(networkId)
 
+    # 設定不可能なネットワーク
     unless network?
-      @disableInputs('ipv4_config', 'ipv6_config')
+      for name in @ip_configs
+        @setInitInput(name)
+      @disableInputs(@ip_configs)
 
-      @inputs['ipv4_config'].node.selectedIndex = 0
-      @inputs['ipv6_config'].node.selectedIndex = 0
+      @setInitInput('mac_registration')
+      @requireMacAddress()
+      @disableInputs(['mac_registration'])
 
-      @inputs['mac_address'].node.required = false
-
-      for {node} in @badges
-        node.className = 'badge badge-light text-muted'
-
+      @networkMessageNode.innerText = '''
+        あなたの権限では設定できないネットワークが設定されています。
+        これは既存の接続を維持するために管理者によって設定されました。
+        設定を変更したい場合は別のネットワークを選択してください。
+        ただし、ネットワークの変更を一度設定した後に元のネットワークに戻すことはできません。
+      '''
       return
+
+    messages = []
 
     if network['auth']
-      @networkMessageNode.textContent = '認証ネットワークに接続するには、MACアドレスが必要です。'
-      # 管理者の場合は必須としない
-      @inputs['mac_address'].node.required = !@admin
-    else
-      @networkMessageNode.textContent = ''
-      @inputs['mac_address'].node.required = false
-
-    for {name, node, level} in @badges
-      if network[name]
-        node.className = "badge badge-#{level}"
+      messages.push("このネットワークは認証ネットワークです。")
+      if @checkInitInput('network_id')
+        @setInitInput('mac_registration')
       else
-        node.className = 'badge badge-light text-muted'
+        @inputs.get('mac_registration').node.checked = true
+      @requireMacAddress()
+      @enableInputs(['mac_registration'])
+    else
+      @inputs.get('mac_registration').node.checked = false
+      @requireMacAddress()
+      @disableInputs(['mac_registration'])
 
     # 可能なIP設定
-    availableIpConfigs = new Set
-    availableIpConfigs.add('disabled')
-    if network['ipv4_address']?
-      for ipPool in network['ipv4_pools']
-        switch ipPool['ipv4_config']
-          when 'static'
-            availableIpConfigs.add('static')
-          when 'reserved'
-            if network['dhcp']
-              availableIpConfigs.add('reserved')
-          when 'dynamic'
-            if network['dhcp']
-              availableIpConfigs.add('dynamic')
-      if not network['dhcp'] and network['closed']
-        availableIpConfigs.add('link_local')
-      if @admin
-        # 管理者は固定で設定可能
-        availableIpConfigs.add('static')
-    else
-      availableIpConfigs.add('link_local')
+    for name in @ip_configs
+      @adjustSelect(name, network["#{name}_list"])
+    @enableInputs(@ip_configs)
 
-    # 可能なIPv6設定
-    availableIp6Configs = new Set
-    availableIp6Configs.add('disabled')
-    if network['ipv6_address']?
-      for ipv6Pool in network['ipv6_pools']
-        switch ipv6Pool['ipv6_config']
-          when 'static'
-            availableIp6Configs.add('static')
-          when 'reserved'
-            if network['dhcp']
-              availableIp6Configs.add('reserved')
-          when 'dynamic'
-            # DHCPでなくても自動は可能
-            availableIp6Configs.add('dynamic')
-      if @admin
-        # 管理者は固定で設定可能
-        availableIp6Configs.add('static')
-    else
-      availableIp6Configs.add('link_local')
+    @requireMacAddress()
+    @requireDuid()
 
-    for option in @inputs['ipv4_config']?.node?.options ? []
-      if availableIpConfigs.has(option.value)
-        option.disabled = false
-      else
-        option.disabled = true
+    @networkMessageNode.innerText = messages.join("\n")
 
-    for option in @inputs['ipv6_config']?.node?.options ? []
-      if availableIp6Configs.has(option.value)
-        option.disabled = false
-      else
-        option.disabled = true
-
-    @enableInputs('ipv4_config', 'ipv6_config')
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id, ipv6: info.ipv6) for id in info.list
