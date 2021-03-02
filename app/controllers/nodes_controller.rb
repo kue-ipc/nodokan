@@ -165,7 +165,7 @@ class NodesController < ApplicationController
     @node.assign_attributes(node_params)
 
     if params['add_nic']
-      @node.nics << Nic.new
+      @node.nics << Nic.new(interface_type: :wired)
       render :edit
       return
     end
