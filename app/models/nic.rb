@@ -37,28 +37,21 @@ class Nic < ApplicationRecord
   normalize_attribute :ipv6_address
 
   def mac_address
-    @mac_address ||=
-      mac_address_data.presence&.unpack('H2' * 6)&.join(':') || ''
+    @mac_address ||= mac_address_data.presence&.unpack('H2' * 6)&.join(':') || ''
   end
 
   def mac_address=(value)
     @mac_address = value
-    self.mac_address_data = @mac_address.presence &&
-                            MacAddress.new(@mac_address).data
-  rescue ArgumentError
-    self.mac_address_data = nil
+    self.mac_address_data = @mac_address.presence && [@mac_address.delete('-:')].pack('H12')
   end
 
   def duid
-    @duid ||=
-      duid_data.presence&.unpack('H2' * duid_data.size)&.join('-') || ''
+    @duid ||= duid_data.presence&.unpack('H2' * duid_data.size)&.join('-') || ''
   end
 
   def duid=(value)
     @duid = value
-    self.duid_data = @duid.presence && @duid.delete('-:').pack('H*')
-  rescue ArgumentError
-    self.duid_data = nil
+    self.duid_data = @duid.presence && [@duid.delete('-:')].pack('H*')
   end
 
   # readonly

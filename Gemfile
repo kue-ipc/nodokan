@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '>= 2.7.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.2'
+gem 'rails', '~> 6.1.3'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3', '~> 1.4'
 # Use mysql as the database for Active Record
@@ -36,7 +36,6 @@ gem 'bootsnap', '>= 1.4.4', require: false
 
 # IP Address / MAC Address
 gem 'ipaddress_2'
-gem 'mac_address'
 
 # Attribute Normalizer
 gem 'attribute_normalizer'

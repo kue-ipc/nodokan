@@ -4,13 +4,11 @@
 p
   | 1年に1度、端末の確認を行ってください。
 
-p
-  = link_to '新規登録', new_node_path, class: 'btn btn-primary'
-
-
 .mb-3
   = bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
-    .input-group.mr-1
+    .mr-2
+      = link_to '新規登録', new_node_path, class: 'btn btn-primary'
+    .input-group
       = f.search_field :query, hide_label: true, value: @query
       .input-group-append
         = f.primary name: :search, class: 'btn btn-primary' do

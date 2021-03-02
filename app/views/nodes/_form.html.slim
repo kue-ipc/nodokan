@@ -148,6 +148,8 @@ p 【必須】の項目は入力が必須です。
     small#node_operating_system_name-description.form-text
 
   .rounded.border.p-2.mb-2
+    .float-right
+      = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic', formnovalidate: true
     h4 NIC(ネットワークインターフェースコントローラー)情報
     small.form-text.text-muted
       | 端末に備わっているネットワーク接続のインターフェースです。複数のネットワークに接続する場合はNICを追加してください。不要なNICは削除してください。
@@ -201,8 +203,6 @@ p 【必須】の項目は入力が必須です。
               disabled: true,
               wrapper: {class: 'col-md-4'}
           .col-md-12.form-text id="node_nics_attributes_#{nic_f.index}_network_message"
-    = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic',
-      formnovalidate: true
     script#node-nic-info type="application/json"
       == {list: nic_list, ipv6: Settings.config.ipv6}.to_json
 
