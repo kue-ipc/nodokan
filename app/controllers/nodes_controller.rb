@@ -132,6 +132,49 @@ class NodesController < ApplicationController
 
     success = false
 
+    @node.nics.each do |nic|
+      case nic.ipv4_config
+      when 'dynamic'
+        unless nic.network.ipv4_pools.any?(&:ipv4_dynamic?)
+          nic.errors[:ipv4_config] << '動的IPv4プールがありません。'
+          next
+        end
+      when 'reserved'
+        unless nic.network.ipv4_pools.any?(&:ipv4_reserved?)
+          nic.errors[:ipv4_config] << '予約IPv4プールがありません。'
+          next
+        end
+
+        ipv4 = nic.network.next_ipv4('reserved')
+        if ipv4
+          nic.ipv4_address = ipv4.address
+        else
+          nic.errors[:ipv4_config] << '予約IPv4の空きがありません。'
+        end
+      when 'static'
+        unless nic.network.ipv4_pools.any?(&:ipv4_satic?)
+          nic.errors[:ipv4_config] << '固定IPv4プールがありません。'
+          next
+        end
+
+        ipv4 = nic.network.next_ipv4('static')
+        if ipv4
+          nic.ipv4_address = ipv4.address
+        else
+          nic.errors[:ipv4_config] << '固定IPv4の空きがありません。'
+        end
+      when 'link_local'
+      when 'manual'
+        unless current_user.admin?
+          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
+          next
+        end
+      when 'disabled'
+      else
+        nic.errors[:ipv4_config] << '不正な設定です。'
+      end
+    end
+
     Node.transaction do
       if !@node.save ||
          @node.errors.present? ||
@@ -248,27 +291,15 @@ class NodesController < ApplicationController
         :hostname,
         :domain,
         :note,
-        place: [
-          :area,
-          :building,
-          :floor,
-          :room,
-        ],
-        hardware: [
-          :device_type,
-          :maker,
-          :product_name,
-          :model_number,
-        ],
-        operating_system: [
-          :os_category,
-          :name,
-        ],
+        place: [:area, :building, :floor, :room],
+        hardware: [:device_type, :maker, :product_name, :model_number],
+        operating_system: [:os_category, :name],
         nics_attributes: [
           :id,
           :_destroy,
           :name,
           :interface_type,
+          :mac_registration,
           :mac_address,
           :duid,
           :network_id,
@@ -286,8 +317,7 @@ class NodesController < ApplicationController
 
       operating_system =
         if permitted_params[:operating_system][:os_category].present?
-          OperatingSystem.find_or_initialize_by(
-            permitted_params[:operating_system])
+          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
         end
 
       permitted_params.except(:place, :hardware, :operating_system).merge(

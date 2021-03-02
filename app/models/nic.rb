@@ -56,8 +56,7 @@ class Nic < ApplicationRecord
 
   # readonly
   def ipv4
-    @ipv4 ||= ipv4_data.presence &&
-            IPAddress::IPv4.parse_data(ipv4_data)
+    @ipv4 ||= ipv4_data.presence && IPAddress::IPv4.parse_data(ipv4_data, network.ipv4_prefix_length)
   end
 
   def ipv4_address
@@ -74,8 +73,7 @@ class Nic < ApplicationRecord
 
   # readonly
   def ipv6
-    @ipv6 ||= ipv6_data.presence &&
-             IPAddress::IPv6.parse_data(ipv6_data)
+    @ipv6 ||= ipv6_data.presence && IPAddress::IPv6.parse_data(ipv6_data, network.ipv6_prefix_length)
   end
 
   def ipv6_address

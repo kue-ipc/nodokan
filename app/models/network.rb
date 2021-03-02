@@ -147,11 +147,11 @@ class Network < ApplicationRecord
     selected_ip_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
     return if selected_ip_pools.empty?
 
-    nics_ipv4s = nics.map(:ipv4).compact
+    nics_ipv4s = nics.map(&:ipv4).compact
 
     selected_ip_pools.each do |ipv4_pool|
       ipv4_pool.each do |ipv4|
-        return ipv4 if ipv4 != ipv4_gateway && nics_ips.exclude?(ipv4)
+        return ipv4 if ipv4 != ipv4_gateway && nics_ipv4s.exclude?(ipv4)
       end
     end
 
