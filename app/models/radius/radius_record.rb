@@ -39,6 +39,9 @@ module Radius
           will_save_change_to_%s?
           %s_change_to_be_saved
           %s_in_database
+          %s_for_database
+          %s_previously_was
+          clear_%s_change
         ].map { |s| s % attr_name }
         # rubocop:enable Metrics/NestedPercentLiteral
       end
