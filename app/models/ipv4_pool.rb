@@ -12,7 +12,8 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def ipv4_first
-    @ipv4_first ||= IPAddress::IPv4.parse_data(ipv4_first_data, ipv4_prefix_length)
+    @ipv4_first ||=
+      IPAddress::IPv4.parse_data(ipv4_first_data, ipv4_prefix_length)
   end
 
   def ipv4_first_address
@@ -28,7 +29,8 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def ipv4_last
-    @ipv4_last ||= IPAddress::IPv4.parse_data(ipv4_last_data, ipv4_prefix_length)
+    @ipv4_last ||=
+      IPAddress::IPv4.parse_data(ipv4_last_data, ipv4_prefix_length)
   end
 
   def ipv4_last_address

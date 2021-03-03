@@ -199,4 +199,20 @@ class Network < ApplicationRecord
       end
     end
   end
+
+  def ipv4_configs
+    @ipv4_configs ||=
+      ipv4_pools.map(&:ipv4_config).then do |list|
+        list += ['link_local'] unless list.include?('dynamic')
+        (list + ['manual', 'disabled']).uniq
+      end
+  end
+
+  def ipv6_configs
+    @ipv6_configs ||=
+      ipv6_pools.map(&:ipv6_config).then do |list|
+        list += ['link_local'] unless list.include?('dynamic')
+        (list + ['manual', 'disabled']).uniq
+      end
+  end
 end

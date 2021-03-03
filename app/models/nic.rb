@@ -92,31 +92,87 @@ class Nic < ApplicationRecord
     @old_nic ||= id && Nic.find(id)
   end
 
+  def same_old_nic?(*list)
+    return false if old_nic.nil?
+
+    list.all? do |name|
+      __send__(name) == old_nic.__send__(name)
+    end
+  end
+
   def set_ipv4!
-    case ipv4_config
-    when 'disabled'
-      self.ipv4_address = nil
-    when 'static'
-      # if id
-      #   old_nic = Nic.find(id).ipv4_address
-      # end
-      network.pools.where(ipv4_config: 'satic')
-    when 'dynamic'
-      network.pools.where(ipv4_config: 'dynamic')
-    when 'reserved'
-      network.pools.where(ipv4_config: 'reserved')
-    when 'link_local'
-      unless ipv4_address &&
-        IPAddr.new('127.0.0.0/8').include?(IPAddr.new(ipv4_address))
-        self.ipv4_address = '127.0.0.1'
-      end
-    else
-      raise 'Invalid IP Config'
+    if same_old_nic?(:network_id, :ipv4_config)
+      self.ipv4_address = old_nic.ipv4_address
+      return true
     end
 
-    ipv4_normalize!
+    unless network.ipv4_configs.include?(ipv4_config)
+      errors[:ipv4_config] << 'このネットワークに設定することはできません。'
+      return false
+    end
+
+    case ipv4_config
+    when 'dynamic', 'link_local', 'disabled'
+      self.ipv4_address = ''
+    when 'reserved'
+      unless (ipv4 = network.next_ipv4('reserved'))
+        errors[:ipv4_config] << '予約用アドレスの空きがありません。'
+        return false
+      end
+
+      self.ipv4_address = ipv4.address
+    when 'static'
+      unless (ipv4 = network.next_ipv4('static'))
+        errors[:ipv4_config] << '固定用アドレスの空きがありません。'
+        return false
+      end
+
+      self.ipv4_address = ipv4.address
+    when 'manual'
+      # do nothing
+    else
+      errors[:ipv4_config] << '不正な設定です。'
+      return false
+    end
+
+    true
   end
 
   def set_ipv6!
+    if same_old_nic?(:network_id, :ipv6_config)
+      self.ipv6_address = old_nic.ipv6_address
+      return true
+    end
+
+    unless network.ipv6_configs.include?(ipv6_config)
+      errors[:ipv6_config] << 'このネットワークに設定することはできません。'
+      return false
+    end
+
+    case ipv6_config
+    when 'dynamic', 'link_local', 'disabled'
+      self.ipv6_address = ''
+    when 'reserved'
+      unless (ipv6 = network.next_ipv6('reserved'))
+        errors[:ipv6_config] << '予約用アドレスの空きがありません。'
+        return false
+      end
+
+      self.ipv6_address = ipv6.address
+    when 'static'
+      unless (ipv6 = network.next_ipv6('static'))
+        errors[:ipv6_config] << '固定用アドレスの空きがありません。'
+        return false
+      end
+
+      self.ipv6_address = ipv6.address
+    when 'manual'
+      # do nothing
+    else
+      errors[:ipv6_config] << '不正な設定です。'
+      return false
+    end
+
+    true
   end
 end

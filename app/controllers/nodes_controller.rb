@@ -130,50 +130,21 @@ class NodesController < ApplicationController
       return
     end
 
-    success = false
-
     @node.nics.each do |nic|
-      case nic.ipv4_config
-      when 'dynamic'
-        unless nic.network.ipv4_pools.any?(&:ipv4_dynamic?)
-          nic.errors[:ipv4_config] << '動的IPv4プールがありません。'
-          next
-        end
-      when 'reserved'
-        unless nic.network.ipv4_pools.any?(&:ipv4_reserved?)
-          nic.errors[:ipv4_config] << '予約IPv4プールがありません。'
-          next
-        end
-
-        ipv4 = nic.network.next_ipv4('reserved')
-        if ipv4
-          nic.ipv4_address = ipv4.address
-        else
-          nic.errors[:ipv4_config] << '予約IPv4の空きがありません。'
-        end
-      when 'static'
-        unless nic.network.ipv4_pools.any?(&:ipv4_satic?)
-          nic.errors[:ipv4_config] << '固定IPv4プールがありません。'
-          next
-        end
-
-        ipv4 = nic.network.next_ipv4('static')
-        if ipv4
-          nic.ipv4_address = ipv4.address
-        else
-          nic.errors[:ipv4_config] << '固定IPv4の空きがありません。'
-        end
-      when 'link_local'
-      when 'manual'
-        unless current_user.admin?
+      unless current_user.admin?
+        if nic.ipv4_config == 'manual'
           nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
-          next
         end
-      when 'disabled'
-      else
-        nic.errors[:ipv4_config] << '不正な設定です。'
+        if nic.ipv6_config == 'manual'
+          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
+        end
       end
+
+      nic.set_ipv4!
+      nic.set_ipv6!
     end
+
+    success = false
 
     Node.transaction do
       if !@node.save ||
@@ -213,9 +184,21 @@ class NodesController < ApplicationController
       return
     end
 
-    # @node.nics.each do |nic|
-    #   nic.set_ipv4!
-    # end
+    @node.nics.each do |nic|
+      unless current_user.admin?
+        if nic.ipv4_config == 'manual' &&
+           !same_old_nic?(:network_id, :ipv4_config)
+          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
+        end
+        if nic.ipv6_config == 'manual' &&
+           !same_old_nic?(:network_id, :ipv6_config)
+          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
+        end
+      end
+
+      nic.set_ipv4!
+      nic.set_ipv6!
+    end
 
     success = false
 

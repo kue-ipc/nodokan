@@ -38,7 +38,7 @@ class ConfirmationsController < ApplicationController
       )
 
       security_software =
-        if permitted_params[:security_software][:installation_method].present?
+        if permitted_params.dig(:security_software, :installation_method).present?
           SecuritySoftware.find_or_initialize_by(
             permitted_params[:security_software]
           )
@@ -54,28 +54,24 @@ class ConfirmationsController < ApplicationController
     def check_and_save
       @confirmation.approved = true
 
-      if Confirmation.existences[@confirmation.existence] >= 16
-        @confirmation.content_unknown!
-        @confirmation.os_update_unknown!
-        @confirmation.app_update_unknown!
-        @confirmation.security_update_unknown!
-        @confirmation.security_scan_unknown!
-        @confirmation.secruity_software_unknown!
-        @confirmation.approved = fales
-      elsif  Confirmation.contents[@confirmation.content] >= 16 ||
-        Confirmation.os_updates[@confirmation.os_update] >= 16 ||
-        Confirmation.app_updates[@confirmation.app_update] >= 16 ||
-        Confirmation.security_updates[@confirmation.security_update] >= 16 ||
-        Confirmation.security_scans[@confirmation.security_scan] >= 16
-        @confirmation.approved = fales
+      if !@confirmation.exist?
+        @confirmation.content = :unknown
+        @confirmation.os_update = :unknown
+        @confirmation.app_update = :unknown
+        @confirmation.security_update = :unknown
+        @confirmation.security_scan = :unknown
+        @confirmation.security_software = nil
       end
 
+      @confirmation.approved = @confirmation.approvable?
+
       @confirmation.confirmed_at = Time.current
-      if @confirmation.approved
-        @confirmation.expiration = Time.current + 396.days
-      else
-        @confirmation.expiration = Time.current + 30.days
-      end
+      @confirmation.expiration = Time.current +
+                                 if @confirmation.approved
+                                   396.days
+                                 else
+                                   30.days
+                                 end
 
       if @confirmation.save
         if @confirmation.approved
