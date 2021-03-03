@@ -43,7 +43,7 @@ Layout/IndentationConsistency:
   EnforcedStyle: indented_internal_methods
 
 Layout/LineLength:
-  Max: 120
+  Max: 80
 
 Style/NumericLiterals:
   Enabled: false
