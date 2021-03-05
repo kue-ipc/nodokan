@@ -3,6 +3,7 @@
 require 'devise_ldap_authenticatable_authorizable'
 require 'devise_ldap_authenticatable_check_group_policy'
 require 'devise_ldap_authenticatable_nis_group_check'
+require 'devise_ldap_authenticatable_login_list'
 
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
