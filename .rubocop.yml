@@ -34,7 +34,7 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/SymbolArray:
-  EnforcedStyle: brackets
+  MinSize: 2
 
 Layout/EndOfLine:
   EnforcedStyle: lf

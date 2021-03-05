@@ -19,7 +19,7 @@ module Radius
       end
 
       def list_attribute_methods(attr_name)
-        # rubocop:disable Metrics/NestedPercentLiteral
+        # rubocop:disable Lint/NestedPercentLiteral
         %w[
           %s
           %s=
@@ -43,7 +43,7 @@ module Radius
           %s_previously_was
           clear_%s_change
         ].map { |s| s % attr_name }
-        # rubocop:enable Metrics/NestedPercentLiteral
+        # rubocop:enable Lint/NestedPercentLiteral
       end
     end
   end
