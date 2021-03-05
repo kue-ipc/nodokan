@@ -5,4 +5,11 @@ database:
   password: pass+nodokan42
   host: localhost
 config:
+  radius_mac_password: null
   ipv6: true
+  mac_address_style:
+    char_case: upper
+    sep: '-'
+  duid_style:
+    char_case: upper
+    sep: '-'

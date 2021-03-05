@@ -36,17 +36,38 @@ class Nic < ApplicationRecord
   normalize_attribute :ipv4_address
   normalize_attribute :ipv6_address
 
-  def mac_address
-    @mac_address ||= mac_address_data.presence&.unpack('H2' * 6)&.join(':') || ''
+  def mac_address_raw
+    @mac_address ||= mac_address_data.presence&.unpack('H12').first
+  end
+
+  def mac_address(char_case: Settings.config.mac_address_style.char_case,
+                  sep: Settings.config.mac_address_style.sep)
+    @mac_address_list ||= mac_address_data.presence&.unpack('H2' * 6) || []
+    convert =
+      if char_case == :upper
+        :upcase
+      else
+        :itself
+      end
+    @mac_address_list.join(sep).then(&convert)
   end
 
   def mac_address=(value)
     @mac_address = value
-    self.mac_address_data = @mac_address.presence && [@mac_address.delete('-:')].pack('H12')
+    self.mac_address_data = @mac_address.presence &&
+      [@mac_address.delete('-:')].pack('H12')
   end
 
-  def duid
-    @duid ||= duid_data.presence&.unpack('H2' * duid_data.size)&.join('-') || ''
+  def duid(char_case: Settings.config.duid_style.char_case,
+           sep: Settings.config.duid_style.sep)
+    @duid_list ||= duid_data.presence&.unpack('H2' * duid_data.size) || []
+    convert =
+      if char_case == :upper
+        :upcase
+      else
+        :itself
+      end
+    @duid_list.join(sep).then(&convert)
   end
 
   def duid=(value)

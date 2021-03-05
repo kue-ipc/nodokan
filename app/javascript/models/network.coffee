@@ -35,10 +35,14 @@ export default class Network extends ApplicationRecord
       ipv6_network_address, ipv6_prefix_length, ipv6_gateway_address,
       ipv4_pools, ipv6_pools, props...}) ->
     super(props)
-    @ipv4_network = if ipv4_network_address then ipaddr.parse(ipv4_network_address)
-    @ipv4_gateway = if ipv4_gateway_address then ipaddr.parse(ipv4_gateway_address)
-    @ipv6_network = if ipv6_network_address then ipaddr.parse(ipv6_network_address)
-    @ipv6_gateway = if ipv6_gateway_address then ipaddr.parse(ipv6_gateway_address)
+    @ipv4_network = if ipv4_network_address
+      ipaddr.parse(ipv4_network_address)
+    @ipv4_gateway = if ipv4_gateway_address
+      ipaddr.parse(ipv4_gateway_address)
+    @ipv6_network = if ipv6_network_address
+      ipaddr.parse(ipv6_network_address)
+    @ipv6_gateway = if ipv6_gateway_address
+      ipaddr.parse(ipv6_gateway_address)
     @ipv4_pools = (new Ipv4Pool(ipv4_pool) for ipv4_pool in ipv4_pools)
     @ipv6_pools = (new Ipv6Pool(ipv6_pool) for ipv6_pool in ipv6_pools)
 

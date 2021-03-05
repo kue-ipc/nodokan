@@ -41,19 +41,28 @@ class NodeNic
         }
         options =
           if node?.tagName?.toUpperCase() == 'SELECT'
-            new Map([optionNode.value, {node: optionNode, index}] for optionNode, index in node.options ? [])
+            new Map(
+              for optionNode, index in node.options ? []
+                [optionNode.value, {node: optionNode, index}]
+            )
         [name, {node, init, options}]
     )
 
     @networkMessageNode = @getNode('network_message')
 
-    @inputs.get('_destroy').node.addEventListener 'change', (_e) => @changeDestroy()
-    @inputs.get('interface_type').node.addEventListener 'change', (_e) => @changeInterfaceType()
-    @inputs.get('network_id').node.addEventListener 'change', (_e) => @changeNetwork()
+    @inputs.get('_destroy').node.addEventListener 'change', (_e) =>
+      @changeDestroy()
+    @inputs.get('interface_type').node.addEventListener 'change', (_e) =>
+      @changeInterfaceType()
+    @inputs.get('network_id').node.addEventListener 'change', (_e) =>
+      @changeNetwork()
 
-    @inputs.get('mac_registration').node.addEventListener 'change', (_e) => @requireMacAddress()
-    @inputs.get('ipv4_config').node.addEventListener 'change', (_e) => @requireMacAddress()
-    @inputs.get('ipv6_config').node.addEventListener 'change', (_e) => @requireDuid()
+    @inputs.get('mac_registration').node.addEventListener 'change', (_e) =>
+      @requireMacAddress()
+    @inputs.get('ipv4_config').node.addEventListener 'change', (_e) =>
+      @requireMacAddress()
+    @inputs.get('ipv6_config').node.addEventListener 'change', (_e) =>
+      @requireDuid()
 
     @requireMacAddress()
     @requireDuid()
@@ -159,7 +168,8 @@ class NodeNic
       @disableInputs(['mac_registration'])
 
       @networkMessageNode.innerText = '''
-        どのネットワークにも接続していません。接続するネットワークを選択してください。
+        どのネットワークにも接続していません。
+        接続するネットワークを選択してください。
       '''
       return
 
@@ -179,7 +189,8 @@ class NodeNic
         あなたの権限では設定できないネットワークが設定されています。
         これは既存の接続を維持するために管理者によって設定されました。
         設定を変更したい場合は別のネットワークを選択してください。
-        ただし、ネットワークの変更を一度設定した後に元のネットワークに戻すことはできません。
+        ただし、ネットワークの変更を一度設定した後に元のネットワークに
+        戻すことはできません。
       '''
       return
 
