@@ -1,6 +1,6 @@
 require "test_helper"
 
-class NicRegistAuthJobTest < ActiveJob::TestCase
+class RadiusUnregisterMacJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end

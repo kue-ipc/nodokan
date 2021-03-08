@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UserRegistAuthJobTest < ActiveJob::TestCase
+class RadiusRegisterUserJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end
