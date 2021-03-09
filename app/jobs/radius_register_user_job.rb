@@ -3,7 +3,7 @@ class RadiusRegisterUserJob < ApplicationJob
 
   def perform(username, vlan)
     unless username =~ /\A[0-9a-f]{12}\z/
-      logger.error("MACアドレスと同じユーザー名です: #{username}")
+      logger.error("MACアドレスと同じ形式のユーザー名は処理で来ません: #{username}")
       return
     end
 
