@@ -10,11 +10,11 @@ sudo apt install default-libmysqlclient-dev
 ```
 
 ## kea
+
+keaは標準のものを使用する。
+
 ```
-curl -1sLf \
-  'https://dl.cloudsmith.io/public/isc/kea-1-8/cfg/setup/bash.deb.sh' \
-  | sudo -E bash
-sudo apt install isc-kea-admin isc-kea-dhcp4-server isc-kea-dhcp6-server isc-kea-ctrl-agent
+sudo apt install kea-admin kea-dhcp4-server kea-dhcp6-server kea-ctrl-agent
 ```
 
 本番ではパスワードを適当に変える。

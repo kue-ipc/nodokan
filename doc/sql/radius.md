@@ -5,3 +5,8 @@
 ```
 mysql -u root -p radius < views.sql
 ```
+
+初期登録
+```
+rails runner util/setup_radius.rb
+```

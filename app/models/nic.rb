@@ -65,15 +65,15 @@ class Nic < ApplicationRecord
   end
 
   def mac_address_raw
-    mac_address(char_case :lower, sep: '')
+    mac_address(char_case: :lower, sep: '')
   end
 
   def mac_address_win
-    mac_address(char_case :upper, sep: '-')
+    mac_address(char_case: :upper, sep: '-')
   end
 
   def mac_address_colon
-    mac_address(char_case :upper, sep: ':')
+    mac_address(char_case: :upper, sep: ':')
   end
 
   def mac_address(char_case: Settings.config.mac_address_style.char_case,
@@ -88,15 +88,15 @@ class Nic < ApplicationRecord
   end
 
   def duid_raw
-    duid(char_case :lower, sep: '')
+    duid(char_case: :lower, sep: '')
   end
 
   def duid_win
-    duid(char_case :upper, sep: '-')
+    duid(char_case: :upper, sep: '-')
   end
 
   def duid_colon
-    duid(char_case :lower, sep: ':')
+    duid(char_case: :lower, sep: ':')
   end
 
   def duid_list
@@ -116,7 +116,7 @@ class Nic < ApplicationRecord
   # readonly
   def ipv4
     @ipv4 ||= ipv4_data.presence &&
-      IPAddress::IPv4.parse_data(ipv4_data, network.ipv4_prefix_length)
+              IPAddress::IPv4.parse_data(ipv4_data, network.ipv4_prefix_length)
   end
 
   def ipv4_address
@@ -126,7 +126,7 @@ class Nic < ApplicationRecord
   def ipv4_address=(value)
     @ipv4_address = value
     self.ipv4_data = @ipv4_address.presence &&
-      IPAddress::IPv4.new(@ipv4_address).data
+                     IPAddress::IPv4.new(@ipv4_address).data
   rescue ArgumentError
     self.ipv4_data = nil
   end
@@ -134,7 +134,7 @@ class Nic < ApplicationRecord
   # readonly
   def ipv6
     @ipv6 ||= ipv6_data.presence &&
-      IPAddress::IPv6.parse_data(ipv6_data, network.ipv6_prefix_length)
+              IPAddress::IPv6.parse_data(ipv6_data, network.ipv6_prefix_length)
   end
 
   def ipv6_address
