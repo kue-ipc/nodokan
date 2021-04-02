@@ -36,6 +36,5 @@ module Kea
 
     belongs_to :dhcp4_subnet, optional: true
     belongs_to :dhcp6_subnet, optional: true
-
   end
 end
