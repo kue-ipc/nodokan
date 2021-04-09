@@ -24,6 +24,8 @@ class User < ApplicationRecord
                     length: {maximum: 255}
   validates :fullname, allow_blank: true, length: {maximum: 255}
 
+  after_commit :radius_user
+
   def ldap_before_save
     sync_ldap!
     # The first user is the admin.
@@ -81,5 +83,14 @@ class User < ApplicationRecord
 
   def authorizable?
     Devise::LDAP::Adapter.authorizable?(username)
+  end
+
+  def radius_user
+    if !deleted? && auth_network&.auth
+      RadiusRegisterUserJob.perform_later(username,
+                                          auth_network.vlan)
+    else
+      RadiusUnregisterUserJob.perform_later(username)
+    end
   end
 end

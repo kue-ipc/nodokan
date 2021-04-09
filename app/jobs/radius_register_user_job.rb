@@ -2,13 +2,13 @@ class RadiusRegisterUserJob < ApplicationJob
   queue_as :default
 
   def perform(username, vlan)
-    unless username =~ /\A[0-9a-f]{12}\z/
+    if username =~ /\A[0-9a-f]{12}\z/
       logger.error("MACアドレスと同じ形式のユーザー名は処理で来ません: #{username}")
       return
     end
 
     # Auth-Typeを設定
-    Radius::Radcheck.find_or_initialize_by(username: mac_address)
+    Radius::Radcheck.find_or_initialize_by(username: username)
       .tap do |radcheck|
       radcheck.attr = 'Auth-Type'
       radcheck.op = ':='

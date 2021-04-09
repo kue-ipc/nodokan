@@ -9,12 +9,12 @@ class RadiusCheckAllJob < ApplicationJob
     # MACアドレス
     mac_address_list = Nic.includes(:network)
       .where(network: {auth: true})
-      .where.not(mac_address: nil)
+      .where.not(mac_address_data: nil)
       .map(&:mac_address_raw)
 
     # ユーザー名
-    username_list = User.include(:network)
-      .where(network: {auth: true})
+    username_list = User.includes(:auth_network)
+      .where(auth_network: {auth: true})
       .map(&:username)
 
     Radius::Radcheck.where.not(username: username_list).destroy_all
