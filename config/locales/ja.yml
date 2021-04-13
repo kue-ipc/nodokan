@@ -185,16 +185,25 @@ ja:
         dhcp: DHCP
         auth: 認証
         closed: 閉域
-        ipv4_address: IPv4アドレス
-        ipv4_mask: IPv4サブネットマスク
+        ipv4_network_address: IPv4ネットワークアドレス
+        ipv4_netmask: IPv4サブネットマスク
+        ipv4_prefix_length: IPv4プレフィックス長
         ipv4_gateway: IPv4ゲートウェイ
-        ipv6_address: IPv6アドレス
-        ipv6_prefix: IPv6プレフィックス
+        ipv4_gateway_address: IPv4ゲートウェイアドレス
+        ipv6_network_address: IPv6ネットワークアドレス
+        ipv6_prefix_length: IPv6プレフィックス長
         ipv6_gateway: IPv6ゲートウェイ
+        ipv6_gateway_address: IPv6ゲートウェイアドレス
         note: 備考
         ipv4_network: IPv4ネットワーク
         ipv6_network: IPv6ネットワーク
         config: 設定
+        network: ネットワーク
+        network_address: ネットワークアドレス
+        netmask: サブネットマスク
+        prefix_length: プレフィックス長
+        gateway: ゲートウェイ
+        gateway_address: ゲートウェイアドレス
       nic:
         node: 端末
         name: 名前
@@ -207,6 +216,8 @@ ja:
         ipv4_address: IPv4アドレス
         ipv6_config: IPv6設定
         ipv6_address: IPv6アドレス
+        ip_config: IP設定
+        ip_address: IPアドレス
       node:
         name: 端末名
         hostname: ホスト名

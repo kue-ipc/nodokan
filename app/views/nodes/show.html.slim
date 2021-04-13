@@ -1,11 +1,11 @@
 - content_for :heading
   h1 端末情報
 
-dl.row
+dl.row.line
   dt.col-md-2 = Node.human_attribute_name(:name)
   dd.col-md-10 = @node.name
   dt.col-md-2 = Node.human_attribute_name(:note)
-  dd.col-md-10 = @node.note
+  dd.col-md-10 = @node.note.presence || raw('&nbsp;')
   dt.col-md-2 = Node.human_attribute_name(:fqdn)
   dd.col-md-10
     - if @node.fqdn.present?
@@ -142,42 +142,48 @@ p
     端末のネットワーク設定は次のようにしてください。
 
 - @node.nics.each do |nic|
-  h3 = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
-  のネットワーク
+  h3
+    = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
+    | のネットワーク
   - if nic.name.present?
     | (
     = nic.name
     | )
-  h4 IPv4
-  div
-    dt 割当
-    dd
-      - case nic.ipv4_config
-      - when 'dypanmic', 'reserved', 'link_local'
-        | 自動
-      - when 'static', 'manual'
-        | 手動
-      - when 'disabled'
-        | 無効
-    dt = Nic.human_attribute_name(:address)
-    dt = Nic.human_attribute_name(:ipv4_mask)
-    dt = Nic.human_attribuet_name(:ipv4_gateway)
-    dt 優先 DNS
-    dt 代替 DNS
-  h4 IPv6
-  div
-    dt 割当
-    dd
-      - case nic.ipv4_config
-      - when 'dypanmic', 'reserved', 'link_local'
-        | 自動
-      - when 'static', 'manual'
-        | 手動
-      - when 'disabled'
-        | 無効
-    dt IPアドレス
-    dt プレフィックス長
-    dt ゲートウェイ
-    dt 優先 DNS
-    dt 代替 DNS
+  .row
+    .col-md-6
+      h4 IPv4
+      dl.row.line
+        dt.col-md-6 割り当て
+        dd.col-md-6
+          - case nic.ipv4_config
+          - when 'dypanmic', 'reserved', 'link_local'
+            | 自動
+          - when 'static', 'manual'
+            | 手動
+          - when 'disabled'
+            | 無効
+        dt.col-md-6 = Nic.human_attribute_name(:ip_address)
+        dd.col-md-6 = nic.ipv4_address.presence || raw('&nbsp;')
+        dt.col-md-6 = Network.human_attribute_name(:netmask)
+        dd.col-md-6 = nic.network.ipv4_netmask.presence || raw('&nbsp;')
+        dt.col-md-6 = Network.human_attribute_name(:gateway)
+        dd.col-md-6 = nic.network.ipv4_gateway.presence || raw('&nbsp;')
+    .col-md-6
+      h4 IPv6
+      dl.row.line
+        dt.col-md-6 割り当て
+        dd.col-md-6
+          - case nic.ipv6_config
+          - when 'dypanmic', 'reserved', 'link_local'
+            | 自動
+          - when 'static', 'manual'
+            | 手動
+          - when 'disabled'
+            | 無効
+        dt.col-md-6 = Nic.human_attribute_name(:ip_address)
+        dd.col-md-6 = nic.ipv6_address.presence || raw('&nbsp;')
+        dt.col-md-6 = Network.human_attribute_name(:prefix_length)
+        dd.col-md-6 = nic.network.ipv6_prefix_length.presence || raw('&nbsp;')
+        dt.col-md-6 = Network.human_attribute_name(:gateway)
+        dd.col-md-6 = nic.network.ipv6_gateway.presence || raw('&nbsp;')
 
