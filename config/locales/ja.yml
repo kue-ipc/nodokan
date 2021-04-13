@@ -211,12 +211,12 @@ ja:
         name: 端末名
         hostname: ホスト名
         domain: ドメイン名
-        fqdn: FQDN(完全修飾ドメイン名)
+        fqdn: FQDN
         place: 設置場所
         hardware: 機器情報
-        operating_system: OS(オペレーティングシステム)
-        nic: NIC(ネットワークインターフェースコントローラー)
-        nics: NIC(ネットワークインターフェースコントローラー)
+        operating_system: OS
+        nic: NIC
+        nics: NIC
         note: 備考
         confirmation: 確認
         user: 管理者
@@ -252,6 +252,20 @@ ja:
         ipv4_first_address: 最初のアドレス
         ipv4_last_address: 最後のアドレス
         _destroy: 削除
+    full_name_attributes:
+      node:
+        name: 端末名
+        hostname: ホスト名
+        domain: ドメイン名
+        fqdn: 完全修飾ドメイン名
+        place: 設置場所
+        hardware: 機器情報
+        operating_system: オペレーティングシステム
+        nic: ネットワークインターフェースコントローラー
+        nics: ネットワークインターフェースコントローラー
+        note: 備考
+        confirmation: 確認
+        user: 管理者
     enums:
       roles:
         admin: 管理者

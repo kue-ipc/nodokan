@@ -2,26 +2,26 @@
   h1 端末情報
 
 dl.row
-  dt.col-md-5 = Node.human_attribute_name(:name)
-  dd.col-md-5 = @node.name
-  dt.col-md-5
-  dd.col-md-5 = @node.note
-  dt.col-md-5 = Node.human_attribute_name(:fqdn)
-  dd.col-md-5
+  dt.col-md-2 = Node.human_attribute_name(:name)
+  dd.col-md-10 = @node.name
+  dt.col-md-2 = Node.human_attribute_name(:note)
+  dd.col-md-10 = @node.note
+  dt.col-md-2 = Node.human_attribute_name(:fqdn)
+  dd.col-md-10
     - if @node.fqdn.present?
       = @node.fqdn
     - else
       .text-muted
         | (未入力)
-  dt.col-md-5 = Node.human_attribute_name(:place)
-  dd.col-md-5
+  dt.col-md-2 = Node.human_attribute_name(:place)
+  dd.col-md-10
     - if @node.place&.name.present?
       = @node.place.name
     - else
       .text-muted
         | (未入力)
-  dt.col-md-5 = Node.human_attribute_name(:hardware)
-  dd.col-md-5
+  dt.col-md-2 = Node.human_attribute_name(:hardware)
+  dd.col-md-10
     - if @node.hardware
       - case @node.hardware.device_type
       - when 'desktop'
@@ -48,8 +48,8 @@ dl.row
     - else
       .text-muted
         | (未入力)
-  dt.col-md-5 = Node.human_attribute_name(:operating_system)
-  dd.col-md-5
+  dt.col-md-2 = Node.human_attribute_name(:operating_system)
+  dd.col-md-10
     - if @node.operating_system
       - case @node.operating_system.os_category
       - when 'windows_client'
@@ -85,16 +85,32 @@ dl.row
       .text-muted
         | (未入力)
 
-  dt.col-md-5 = Node.human_attribute_name(:nics)
-  - @node.nics.each do |nic|
-    dd.col-md-5
-      => nic.mac_address
-      => nic.ipv4_address
-      | (
-      = nic.network&.name
-      | )
-  dt.col-md-5 = Node.human_attribute_name(:confirmation)
-  dd.col-md-5
+  dt.col-md-2 = Node.human_attribute_name(:nics)
+  dd.col-md-10
+    table.table.table-sm
+      thead
+        tr
+          th = Nic.human_attribute_name(:name)
+          th = Nic.human_attribute_name(:interface_type)
+          th = Nic.human_attribute_name(:mac_address)
+          th = Nic.human_attribute_name(:network)
+          th = Nic.human_attribute_name(:ipv4_config)
+          th = Nic.human_attribute_name(:ipv4_address)
+          th = Nic.human_attribute_name(:ipv6_config)
+          th = Nic.human_attribute_name(:ipv6_address)
+      tbody
+        - @node.nics.each do |nic|
+          tr
+            td = nic.name
+            td = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
+            td = nic.mac_address
+            td = nic.network&.name
+            td = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
+            td = nic.ipv4_address
+            td = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
+            td = nic.ipv6_address
+  dt.col-md-2 = Node.human_attribute_name(:confirmation)
+  dd.col-md-10
     - if @node.confirmation&.confirmed_at
       = l(@node.confirmation.confirmed_at.to_date, format: :long)
     - else
@@ -118,3 +134,50 @@ hr
 =< link_to t(:back, scope: [:actions]), nodes_path
 
 = render 'confirm_form'
+
+hr
+
+p
+  |
+    端末のネットワーク設定は次のようにしてください。
+
+- @node.nics.each do |nic|
+  h3 = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
+  のネットワーク
+  - if nic.name.present?
+    | (
+    = nic.name
+    | )
+  h4 IPv4
+  div
+    dt 割当
+    dd
+      - case nic.ipv4_config
+      - when 'dypanmic', 'reserved', 'link_local'
+        | 自動
+      - when 'static', 'manual'
+        | 手動
+      - when 'disabled'
+        | 無効
+    dt = Nic.human_attribute_name(:address)
+    dt = Nic.human_attribute_name(:ipv4_mask)
+    dt = Nic.human_attribuet_name(:ipv4_gateway)
+    dt 優先 DNS
+    dt 代替 DNS
+  h4 IPv6
+  div
+    dt 割当
+    dd
+      - case nic.ipv4_config
+      - when 'dypanmic', 'reserved', 'link_local'
+        | 自動
+      - when 'static', 'manual'
+        | 手動
+      - when 'disabled'
+        | 無効
+    dt IPアドレス
+    dt プレフィックス長
+    dt ゲートウェイ
+    dt 優先 DNS
+    dt 代替 DNS
+

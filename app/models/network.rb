@@ -11,7 +11,8 @@ class Network < ApplicationRecord
   has_many :ipv6_pools, dependent: :destroy
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
-  has_many :auth_users, class_name: 'User', foreign_key: 'auth_network_id', dependent: :nullify
+  has_many :auth_users, class_name: 'User', foreign_key: 'auth_network_id',
+                        dependent: :nullify
   has_and_belongs_to_many :users
 
   validates :name, presence: true, uniqueness: true
@@ -47,8 +48,9 @@ class Network < ApplicationRecord
 
   # readonly
   def ipv4_network
-    @ipv4_network ||= ipv4_network_data.presence &&
-                    IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefix_length)
+    @ipv4_network ||=
+      ipv4_network_data.presence &&
+      IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefix_length)
   end
 
   def ipv4_network_address
@@ -58,7 +60,7 @@ class Network < ApplicationRecord
   def ipv4_network_address=(value)
     @ipv4_network_address = value
     self.ipv4_network_data = @ipv4_network_address.presence &&
-                           IPAddress::IPv4.new(@ipv4_network_address).data
+                             IPAddress::IPv4.new(@ipv4_network_address).data
   rescue ArgumentError
     self.ipv4_network_data = nil
   end
@@ -69,16 +71,18 @@ class Network < ApplicationRecord
 
   def ipv4_netmask=(value)
     @ipv4_netmask = value
-    self.ipv4_prefix_length = @ipv4_netmask.presence &&
-                        IPAddress::Prefix32.parse_netmask(@ipv4_netmask).to_i
+    self.ipv4_prefix_length =
+      @ipv4_netmask.presence &&
+      IPAddress::Prefix32.parse_netmask(@ipv4_netmask).to_i
   rescue ArgumentError
     self.ipv4_prefix_length = nil
   end
 
   # readonly
   def ipv4_gateway
-    @ipv4_gateway ||= ipv4_gateway_data.presence &&
-                    IPAddress::IPv4.parse_data(ipv4_gateway_data, ipv4_prefix_length)
+    @ipv4_gateway ||=
+      ipv4_gateway_data.presence &&
+      IPAddress::IPv4.parse_data(ipv4_gateway_data, ipv4_prefix_length)
   end
 
   def ipv4_gateway_address
@@ -88,7 +92,7 @@ class Network < ApplicationRecord
   def ipv4_gateway_address=(value)
     @ipv4_gateway_address = value
     self.ipv4_gateway_data = @ipv4_gateway_address.presence &&
-                           IPAddress::IPv4.new(@ipv4_gateway_address).data
+                             IPAddress::IPv4.new(@ipv4_gateway_address).data
   rescue ArgumentError
     self.ipv4_gateway_data = nil
   end
@@ -97,8 +101,9 @@ class Network < ApplicationRecord
 
   # readonly
   def ipv6_network
-    @ipv6_network ||= ipv6_network_data.presence &&
-                     IPAddress::IPv6.parse_data(ipv6_network_data, ipv6_prefix_length)
+    @ipv6_network ||=
+      ipv6_network_data.presence &&
+      IPAddress::IPv6.parse_data(ipv6_network_data, ipv6_prefix_length)
   end
 
   def ipv6_network_address
@@ -108,15 +113,16 @@ class Network < ApplicationRecord
   def ipv6_network_address=(value)
     @ipv6_network_address = value
     self.ipv6_network_data = @ipv6_network_address.presence &&
-                            IPAddress::IPv6.new(@ipv6_network_address).data
-  rescue
+                             IPAddress::IPv6.new(@ipv6_network_address).data
+  rescue ArgumentError
     self.ipv6_network_data = nil
   end
 
   # readonly
   def ipv6_gateway
-    @ipv6_gateway ||= ipv6_gateway_data.presence &&
-                     IPAddress::IPv6.parse_data(ipv6_gateway_data, ipv6_prefix_length)
+    @ipv6_gateway ||=
+      ipv6_gateway_data.presence &&
+      IPAddress::IPv6.parse_data(ipv6_gateway_data, ipv6_prefix_length)
   end
 
   def ipv6_gateway_address
@@ -126,7 +132,7 @@ class Network < ApplicationRecord
   def ipv6_gateway_address=(value)
     @ipv6_gateway_address = value
     self.ipv6_gateway_data = @ipv6_gateway_address.presence &&
-                            IPAddress::IPv6.new(@ipv6_address).data
+                             IPAddress::IPv6.new(@ipv6_address).data
   rescue ArgumentError
     self.ipv6_gateway_data = nil
   end
@@ -144,7 +150,8 @@ class Network < ApplicationRecord
   def next_ipv4(ipv4_config)
     return unless ipv4_network
 
-    selected_ip_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
+    selected_ip_pools = ipv4_pools
+      .where(ipv4_config: ipv4_config).order(:ipv4_first_data)
     return if selected_ip_pools.empty?
 
     nics_ipv4s = nics.map(&:ipv4).compact
@@ -161,7 +168,8 @@ class Network < ApplicationRecord
   def next_ipv6(ipv6_config)
     return unless ipv6_network
 
-    selected_ipv6_pools = ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
+    selected_ipv6_pools = ipv6_pools
+      .where(ipv6_config: ipv6_config).order(:ipv6_first_data)
     return if selected_ipv6_pools.empty?
 
     nics_ipv6s = nics.map(:ipv6).compact
