@@ -7,19 +7,14 @@ dl.row.line
   dt.col-md-2 = Node.human_attribute_name(:note)
   dd.col-md-10 = @node.note.presence || raw('&nbsp;')
   dt.col-md-2 = Node.human_attribute_name(:fqdn)
-  dd.col-md-10
-    - if @node.fqdn.present?
-      = @node.fqdn
-    - else
-      .text-muted
-        | (未入力)
+  dd.col-md-10 = @node.fqdn.presence || raw('&nbsp;')
   dt.col-md-2 = Node.human_attribute_name(:place)
   dd.col-md-10
     - if @node.place&.name.present?
       = @node.place.name
     - else
-      .text-muted
-        | (未入力)
+      .text-warning
+        | (設置場所が未登録です。「編集」を押して設置場所を登録してください。)
   dt.col-md-2 = Node.human_attribute_name(:hardware)
   dd.col-md-10
     - if @node.hardware
@@ -46,8 +41,8 @@ dl.row.line
         i.fas.fa-question-circle
       =< @node.hardware.name
     - else
-      .text-muted
-        | (未入力)
+      .text-warning
+        | (機器情報が未登録です。「編集」を押して機器情報を登録してください。)
   dt.col-md-2 = Node.human_attribute_name(:operating_system)
   dd.col-md-10
     - if @node.operating_system
@@ -82,33 +77,37 @@ dl.row.line
         i.fas.fa-question-circle
       =< @node.operating_system.name
     - else
-      .text-muted
-        | (未入力)
+      .text-danger
+        | (OSが未登録です。「編集」を押してOSを登録してください。)
 
   dt.col-md-2 = Node.human_attribute_name(:nics)
   dd.col-md-10
-    table.table.table-sm
-      thead
-        tr
-          th = Nic.human_attribute_name(:name)
-          th = Nic.human_attribute_name(:interface_type)
-          th = Nic.human_attribute_name(:mac_address)
-          th = Nic.human_attribute_name(:network)
-          th = Nic.human_attribute_name(:ipv4_config)
-          th = Nic.human_attribute_name(:ipv4_address)
-          th = Nic.human_attribute_name(:ipv6_config)
-          th = Nic.human_attribute_name(:ipv6_address)
-      tbody
-        - @node.nics.each do |nic|
+    - if @node.nics.count.zero?
+      .text-danger
+        | (NICが未登録です。「編集」を押してNICを登録してください。)
+    - else
+      table.table.table-sm
+        thead
           tr
-            td = nic.name
-            td = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
-            td = nic.mac_address
-            td = nic.network&.name
-            td = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
-            td = nic.ipv4_address
-            td = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
-            td = nic.ipv6_address
+            th = Nic.human_attribute_name(:name)
+            th = Nic.human_attribute_name(:interface_type)
+            th = Nic.human_attribute_name(:mac_address)
+            th = Nic.human_attribute_name(:network)
+            th = Nic.human_attribute_name(:ipv4_config)
+            th = Nic.human_attribute_name(:ipv4_address)
+            th = Nic.human_attribute_name(:ipv6_config)
+            th = Nic.human_attribute_name(:ipv6_address)
+        tbody
+          - @node.nics.each do |nic|
+            tr
+              td = nic.name
+              td = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
+              td = nic.mac_address
+              td = nic.network&.name
+              td = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
+              td = nic.ipv4_address
+              td = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
+              td = nic.ipv6_address
   dt.col-md-2 = Node.human_attribute_name(:confirmation)
   dd.col-md-10
     - if @node.confirmation&.confirmed_at
@@ -121,7 +120,7 @@ dl.row.line
 
 p
   | 内容に問題がない場合は、「確認」ボタンから確認を行ってください。
-  | 内容に間違いがある場合は「編集」ボタンから編集を行ってください。
+  | 内容に間違いや不足がある場合は「編集」ボタンから編集を行ってください。
 
 button.btn.btn-primary type="button" data-toggle="modal" data-target="#confirm-form-modal"
   = t(:confirm, scope: [:actions])
@@ -130,11 +129,6 @@ button.btn.btn-primary type="button" data-toggle="modal" data-target="#confirm-f
 =<> link_to t(:destroy, scope: [:actions]), @node,
   data: { confirm: t(:corfirm_destroy, scope: [:messages]) }, method: :delete,
   class: 'btn btn-danger'
-hr
-=< link_to t(:back, scope: [:actions]), nodes_path
-
-= render 'confirm_form'
-
 hr
 
 p
@@ -186,4 +180,9 @@ p
         dd.col-md-6 = nic.network.ipv6_prefix_length.presence || raw('&nbsp;')
         dt.col-md-6 = Network.human_attribute_name(:gateway)
         dd.col-md-6 = nic.network.ipv6_gateway.presence || raw('&nbsp;')
+
+hr
+=< link_to t(:back, scope: [:actions]), nodes_path
+
+= render 'confirm_form'
 

@@ -34,6 +34,7 @@ ja:
     start: 開始
     confirm: 確認
     information: 情報
+    back: 戻る
 
   do_actions:
     close: 閉じる
