@@ -253,9 +253,9 @@ class Nic < ApplicationRecord
       hex =
         case char_case.intern
         when :upper
-          '%2X'
+          '%02X'
         when :lower
-          '%2x'
+          '%02x'
         else
           raise ArgumentError, "invalid char_case: #{char_case}"
         end

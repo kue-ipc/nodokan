@@ -63,9 +63,12 @@ export default class Network extends ApplicationRecord
 
   # disabledは常に設定可能
   availableIpConfig: (ip_version) ->
+    # ネットワークがない場合は disabled のみ
+    return ['disabled'] unless @[ip_version].network
+
     configs = new Set(pool.ip_config() for pool in @[ip_version].pools)
-    unless configs.has('dynamic') || configs.has('reserved')
-      configs.add('link_local')
+    # unless configs.has('dynamic') || configs.has('reserved')
+    #   configs.add('link_local')
     # configs.add('manual')
     configs.add('disabled')
     [...configs]

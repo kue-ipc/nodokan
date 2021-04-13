@@ -1,11 +1,7 @@
 class NetworkPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      if user.admin?
-        scope.all
-      else
-        scope.includes(:users).where(users: {id: user.id})
-      end
+      scope.all
     end
   end
 
@@ -14,7 +10,6 @@ class NetworkPolicy < ApplicationPolicy
   end
 
   def show?
-    user.admin? ||
-      record.users.include?(user)
+    true
   end
 end

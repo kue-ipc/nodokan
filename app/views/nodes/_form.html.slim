@@ -173,10 +173,10 @@ p 【必須】の項目は入力が必須です。
           = nic_f.text_field :name,
             disabled: true,
             wrapper: {class: 'col-md-8'}
-          - selectable_networks = policy_scope(Network)
-          - if nic_f.object.network && !selectable_networks.include?(nic_f.object.network)
-            - selectable_networks = selectable_networks.to_a + [nic_f.object.network]
-          = nic_f.collection_select :network_id, selectable_networks,
+          - nic_networks = current_user.selectable_networks.dup
+          - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
+            - nic_networks << nic_f.object.network
+          = nic_f.collection_select :network_id, nic_networks,
             :id, :name,
             {include_blank: '(未接続)',
             wrapper: {class: 'col-md-4'}},
