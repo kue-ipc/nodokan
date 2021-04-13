@@ -36,6 +36,8 @@ class Nic < ApplicationRecord
   normalize_attribute :ipv4_address
   normalize_attribute :ipv6_address
 
+  after_commit :radius_mac
+
   def mac_address_gl
     @mac_address_gl ||= !((mac_address_list.first || 0) & 0x02).zero?
   end
@@ -237,10 +239,19 @@ class Nic < ApplicationRecord
     true
   end
 
+  def radius_mac
+    if mac_registration
+      RadiusRegisterMacJob.perform_later(mac_address_raw, network.vlan)
+    else
+      RadiusUnregisterMacJob.perform_later(mac_address_raw)
+    end
+  end
+
   private
+
     def hex_str(list, char_case: :lower, sep: nil)
       hex =
-        case char_case
+        case char_case.intern
         when :upper
           '%2X'
         when :lower

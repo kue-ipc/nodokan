@@ -10,6 +10,7 @@ table.table.table-sm
       th = User.human_attribute_name(:email)
       th = User.human_attribute_name(:fullname)
       th = User.human_attribute_name(:admin?)
+      th = User.human_attribute_name(:auth_network)
       th = User.human_attribute_name(:deleted)
   tbody
     - @users.each do |user|
@@ -29,4 +30,5 @@ table.table.table-sm
               .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="クリックして変更"
                 = check_box_tag "admin_#{user.id}", '1', user.admin?, class: 'custom-control-input'
                 = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
+        td = user.auth_network_id.present?
         td = user.deleted

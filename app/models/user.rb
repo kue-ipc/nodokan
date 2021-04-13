@@ -20,7 +20,7 @@ class User < ApplicationRecord
   validates :username, presence: true,
                        uniqueness: {case_sensitive: true},
                        length: {maximum: 255}
-  validates :email, presence: true, uniqueness: {case_sensitive: true},
+  validates :email, presence: true,
                     length: {maximum: 255}
   validates :fullname, allow_blank: true, length: {maximum: 255}
 
@@ -48,16 +48,12 @@ class User < ApplicationRecord
   end
 
   def sync_ldap!
-    if deleted
-      errors.add(:deleted, 'のため、LDAP同期はできません。')
-      return
-    end
-
     unless ldap_entry
       errors.add(:username, 'はLDAP上にないため、同期できません。')
       return
     end
 
+    self.deleted = fales
     self.email = ldap_mail
     self.fullname = ldap_display_name
 
@@ -87,8 +83,7 @@ class User < ApplicationRecord
 
   def radius_user
     if !deleted? && auth_network&.auth
-      RadiusRegisterUserJob.perform_later(username,
-                                          auth_network.vlan)
+      RadiusRegisterUserJob.perform_later(username, auth_network.vlan)
     else
       RadiusUnregisterUserJob.perform_later(username)
     end

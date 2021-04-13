@@ -26,7 +26,6 @@ class UsersSyncJob < ApplicationJob
         counter[:update] += 1
       else
         logger.info("ユーザーを削除済みとマーク: #{user.username}")
-        user.username = '#' + user.id.to_s + '#' + user.username
         user.deleted = true
         counter[:delete] += 1
       end
@@ -48,7 +47,8 @@ class UsersSyncJob < ApplicationJob
         next
       end
 
-      user = User.new(username: username)
+      # 削除済みユーザーも復活させる。
+      user = User.find_or_initialize_by(username: username)
 
       unless user.sync_ldap!
         logger.warn("登録不可: #{username}")

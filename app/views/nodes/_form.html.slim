@@ -184,7 +184,6 @@ p 【必須】の項目は入力が必須です。
             class: 'custom-select'
           = nic_f.form_group :mac_registration, label: { text: 'MACアドレス登録' }, class: 'col-md-4' do
             = nic_f.check_box :mac_registration,
-              disabled: true,
               custome: true,
               label: 'MACアドレスを登録する'
           = nic_f.text_field :mac_address,
