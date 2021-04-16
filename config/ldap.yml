@@ -1,7 +1,7 @@
 authorizations: &AUTHORIZATIONS
   host: <%= Settings.ldap.host.to_json %>
   port: <%= Settings.ldap.port.to_json %>
-  attribute: <%= Settings.ldap.attributeuid.to_json %>
+  attribute: <%= Settings.ldap.attribute.to_json %>
   base: <%= Settings.ldap.base.to_json %>
   admin_user: <%= (Rails.application.credentials.dig(:ldap, :admin_user) || Settings.ldap.admin_user).to_json %>
   admin_password: <%= (Rails.application.credentials.dig(:ldap, :admin_password) || Settings.ldap.admin_password).to_json %>
