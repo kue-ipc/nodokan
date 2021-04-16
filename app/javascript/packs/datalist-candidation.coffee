@@ -1,5 +1,5 @@
 import {h, text, app} from 'hyperapp'
-import {request} from '@hyperapp/http'
+# import {request} from '@hyperapp/http'
 
 class DatalistCandidation
   constructor: ({
