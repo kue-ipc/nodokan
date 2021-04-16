@@ -1,36 +1,16 @@
-## Authorizations
-# Uncomment out the merging for each environment that you'd like to include.
-# You can also just copy and paste the tree (do not include the "authorizations") to each
-# environment if you need something different per environment.
 authorizations: &AUTHORIZATIONS
-  host: localhost
-  port: 389
-  attribute: uid
-  base: ou=people,dc=example,dc=jp
-  admin_user: cn=admin,dc=example,dc=jp
-  admin_password: admin_password
-  ssl: false
-  allow_unauthenticated_bind: false
-  group_base: ou=groups,dc=example,dc=jp
-  ## Requires config.ldap_check_group_membership in devise.rb be true
-  # Can have multiple values, must match all to be authorized
-  required_groups:
-    # If only a group name is given, membership will be checked against "uniqueMember"
-    - cn=admin,ou=groups,dc=example,dc=jp
-    - cn=staff,ou=groups,dc=example,dc=jp
-    # If an array is given, the first element will be the attribute to check against, the second the group name
-    # - ["moreMembers", "cn=users,ou=groups,dc=test,dc=com"]
-  ## Requires config.ldap_check_attributes in devise.rb to be true
-  ## Can have multiple attributes and values, must match all to be authorized
-  require_attribute:
-    objectClass: posixAccount
-    # authorizationRole: postsAdmin
-  ## Requires config.ldap_check_attributes_presence in devise.rb to be true
-  ## Can have multiple attributes set to true or false to check presence, all must match all to be authorized
-  require_attribute_presence:
-    mail: true
-    # telephoneNumber: true
-    # serviceAccount: false
+  host: <%= Settings.ldap.host.to_json %>
+  port: <%= Settings.ldap.port.to_json %>
+  attribute: <%= Settings.ldap.attributeuid.to_json %>
+  base: <%= Settings.ldap.base.to_json %>
+  admin_user: <%= (Rails.application.credentials.dig(:ldap, :admin_user) || Settings.ldap.admin_user).to_json %>
+  admin_password: <%= (Rails.application.credentials.dig(:ldap, :admin_password) || Settings.ldap.admin_password).to_json %>
+  ssl: <%= Settings.ldap.ssl.to_json %>
+  allow_unauthenticated_bind: <%= Settings.ldap.allow_unauthenticated_bind.to_json %>
+  group_base: <%= Settings.ldap.group_base.to_json %>
+  required_groups: <%= Settings.ldap.required_groups.to_json %>
+  require_attribute: <%= Settings.ldap.require_attribute.to_json %>
+  require_attribute_presence: <%= Settings.ldap.require_attribute_presence.to_json %>
 
 ## Environment
 
