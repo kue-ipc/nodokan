@@ -68,10 +68,16 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
     attribute_normalizer (1.2.0)
+    autoprefixer-rails (10.2.4.0)
+      execjs
     bcrypt (3.1.16)
     bindex (0.8.1)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
+    bootstrap (4.6.0)
+      autoprefixer-rails (>= 9.1.0)
+      popper_js (>= 1.14.3, < 2)
+      sassc-rails (>= 2.0.0)
     bootstrap_form (4.5.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
@@ -140,6 +146,7 @@ GEM
       dry-initializer (~> 3.0)
       dry-schema (~> 1.5, >= 1.5.2)
     erubi (1.10.0)
+    execjs (2.7.0)
     ffi (1.15.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -198,6 +205,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.1.0)
       ast (~> 2.4.1)
+    popper_js (1.16.0)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -365,6 +373,7 @@ PLATFORMS
 DEPENDENCIES
   attribute_normalizer
   bootsnap (>= 1.4.4)
+  bootstrap (~> 4.6)
   bootstrap_form (~> 4.0)
   byebug
   capybara (>= 3.26)
