@@ -23,8 +23,6 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 /config/credentials.yml.enc
-/config/settings/production.yml
-/config/environments/production.rb
 
 /public/packs
 /public/packs-test
