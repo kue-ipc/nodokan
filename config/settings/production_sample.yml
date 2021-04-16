@@ -1,0 +1,4 @@
+site:
+  title: 端末管理システム
+database:
+  host: localhost
