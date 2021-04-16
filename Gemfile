@@ -55,7 +55,7 @@ gem 'devise_ldap_authenticatable'
 gem 'pundit'
 
 # Paper Trail
-gem 'paper_trail'
+gem 'paper_trail', '~> 11.0'
 gem 'paper_trail-association_tracking'
 
 # Rails Admin

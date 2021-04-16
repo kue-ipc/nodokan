@@ -874,11 +874,6 @@
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.15.2.tgz#218cd7276ab4f9ab57cc3d2efa2697e6a579f25d"
   integrity sha512-7l/AX41m609L/EXI9EKH3Vs3v0iA8tKlIOGtw+kgcoanI7p+e4I4GYLqW3UXWiTnjSFymKSmTTPKYrivzbxxqA==
 
-"@hyperapp/http@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@hyperapp/http/-/http-0.0.2.tgz#9e742416e7577e850dbddfc18c994318ee25ed8f"
-  integrity sha512-/OROJdjfcTQKKpwgBmZA8OOXzUWjvUU/eSDUW/YujUlyfIjdbFkIioRiNQfIds+r8KG6rsxkI31Gv2DLXZR0jw==
-
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.4.tgz#d4b3549a5db5de2683e0c1071ab4f140904bbf69"
