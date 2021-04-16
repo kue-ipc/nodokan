@@ -1,21 +1,36 @@
 # メモ
 
-```
-sudo apt install mariadb-server
-```
-```
-sudo apt install libmariadbclient-dev
-or
-sudo apt install default-libmysqlclient-dev
-```
+## Ruby
 
-## kea
+インストールパッケージ
+
+- ruby
+- ruby-bundler
+- ruby-railties
+- build-essential
+- ruby-dev
+- libmariadbclient-dev or default-libmysqlclient-dev
+
+ruby-railtiesはrailsコマンドを使えるようにするためだけに入れています。
+
+## MariaDB
+
+- mariadb-server
+
+MariadDBはデフォルトでutf8mb4、utf8mb4_general_ciのため、設定変更は不要です。キーのサイズの変更も不要です。
+
+rootのみ、mysqlでrootになれるため、rootのパスワードは設定しない。
+
+rootはlocalhostのみ、匿名ユーザーもなし、testデータベースもないため、mysql_secure_installationの実行も不要です。
+
+## ISC Kea DHCP
 
 keaは標準のものを使用する。
 
-```
-sudo apt install kea-admin kea-dhcp4-server kea-dhcp6-server kea-ctrl-agent
-```
+- kea-admin
+- kea-dhcp4-server
+- kea-dhcp6-server
+- kea-ctrl-agent
 
 本番ではパスワードを適当に変える。
 
@@ -82,6 +97,11 @@ sudo systemctl enable freeradius --now
 ```
 ## 開発環境
 
+rbenv以外の場合は
+
+```
+bundle config set path 'vendor/bundle'
+```
 開発環境はopenldapを入れる
 
 
@@ -91,3 +111,11 @@ DBは作成権限も付ける
 GRANT ALL ON *.* TO 'nodokan'@'localhost' IDENTIFIED BY 'pass+nodokan42' WITH GRANT OPTION;
 ```
 
+## デプロイメント
+
+```
+git clone https://github.com/kue-ipc/nodokan
+cd nodokan
+bundle install --deployment --without development test
+EDITOR=vim rails credentials:edit
+```
