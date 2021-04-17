@@ -53,7 +53,7 @@ class User < ApplicationRecord
       return
     end
 
-    self.deleted = fales
+    self.deleted = false
     self.email = ldap_mail
     self.fullname = ldap_display_name
 
