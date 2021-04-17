@@ -9,7 +9,7 @@ default: &default
 
 development:
   <<: *default
-  database: <%= Settings.database.database.to_json || 'nodokan_development' %>
+  database: <%= (Settings.database.database || 'nodokan_development').to_json %>
 
 test:
   <<: *default
@@ -17,7 +17,7 @@ test:
 
 production:
   <<: *default
-  database: <%= Settings.database.database.to_json || 'nodokan' %>
+  database: <%= (Settings.database.database || 'nodokan').to_json %>
 
 # FreeRADIUS Database (RADIUS)
 radius:
