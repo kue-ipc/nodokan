@@ -13,6 +13,38 @@
 
 ruby-railtiesはrailsコマンドを使えるようにするためだけに入れています。
 
+## Node
+
+公式レポジトリを使用するか、snapでstable/latestをいれる。
+
+- nodejs
+- yarn
+
+### 公式レポジトリ
+
+https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+
+```
+curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt install nodejs
+```
+
+https://classic.yarnpkg.com/en/docs/install/#debian-stable
+
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update && sudo apt install yarn
+```
+
+### snap
+
+https://snapcraft.io/node
+
+```
+sudo snap install node --classic
+```
+
 ## MariaDB
 
 - mariadb-server
