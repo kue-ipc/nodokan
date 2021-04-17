@@ -31,7 +31,7 @@ Rails.application.routes.draw do
 
   resource :user, only: [:show]
 
-  devise_for :users
+  devise_for :users, path: 'auth'
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end
