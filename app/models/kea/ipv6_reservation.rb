@@ -14,6 +14,7 @@
 
 module Kea
   class Ipv6Reservation < KeaRecord
+    self.table_name = 'ipv6_reservations_alt'
     self.primary_key = 'reservation_id'
 
     belongs_to :host, optional: true, primary_key: 'host_id'
