@@ -1,1 +1,1 @@
-﻿id,name,vlan,dhcp,auth,closed,ipv4_network,ipv4_gateway,ipv4_pools[static],ipv4_pools[dynamic],ipv4_pools[reserved],note
+﻿action,id,name,vlan,auth,ipv4_network,ipv4_gateway,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_pools,note,result,message

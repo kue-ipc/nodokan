@@ -103,7 +103,9 @@ class Network < ApplicationRecord
   def ipv6_network
     @ipv6_network ||=
       ipv6_network_data.presence &&
-      IPAddress::IPv6.parse_data(ipv6_network_data, ipv6_prefix_length)
+      IPAddress::IPv6.parse_data(ipv6_network_data).tap do |ipv6|
+        ipv6.prefix = ipv6_prefix_length
+      end
   end
 
   def ipv6_network_address

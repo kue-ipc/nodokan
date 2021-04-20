@@ -8,7 +8,7 @@ table.table.table-hover.table-sm
     tr
       th scope="col" = Network.human_attribute_name(:name)
       th scope="col" = Network.human_attribute_name(:vlan)
-      th scope="col" = Network.human_attribute_name(:config)
+      th scope="col" = Network.human_attribute_name(:auth)
       th scope="col" = Network.human_attribute_name(:ipv4_network)
       th scope="col" = Network.human_attribute_name(:ipv6_network)
 
@@ -17,9 +17,13 @@ table.table.table-hover.table-sm
       tr.clickable-row data-href="#{network_path(network)}"
         td = network.name
         td = network.vlan
-        td = badge_boolean(network, :auth, level: :primary)
-        td = network.ipv4_network.to_s
-        td = network.ipv6_network.to_s
+        td
+          - if network.auth
+            i.far.fa-check-square
+          - else
+            i.far.fa-square
+        td = network.ipv4_network&.to_string
+        td = network.ipv6_network&.to_string
 
 = javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
 
