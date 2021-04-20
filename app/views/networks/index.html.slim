@@ -10,53 +10,19 @@ table.table.table-hover.table-sm
     tr
       th scope="col"
         = Network.human_attribute_name(:name)
-        - case @order&.[](:name)
-        - when 'asc'
-          = link_to networks_path(page: @page, per: @per, order: {name: 'desc'}) do
-            i.fas.fa-sort-down
-        - when 'desc'
-          = link_to networks_path(page: @page, per: @per, order: {}) do
-            i.fas.fa-sort-up
-        - else
-          = link_to networks_path(page: @page, per: @per, order: {name: 'asc'}) do
-            i.fas.fa-sort
+        =< sort_link(:name)
       th scope="col"
         = Network.human_attribute_name(:vlan)
-        - case @order&.[](:vlan)
-        - when 'asc'
-          = link_to networks_path(page: @page, per: @per, order: {vlan: 'desc'}) do
-            i.fas.fa-sort-down
-        - when 'desc'
-          = link_to networks_path(page: @page, per: @per, order: {}) do
-            i.fas.fa-sort-up
-        - else
-          = link_to networks_path(page: @page, per: @per, order: {vlan: 'asc'}) do
-            i.fas.fa-sort
-      th scope="col" = Network.human_attribute_name(:auth)
+        =< sort_link(:vlan)
+      th scope="col"
+        = Network.human_attribute_name(:auth)
+        =< filter_link(:auth)
       th scope="col"
         = Network.human_attribute_name(:ipv4_network)
-        - case @order&.[](:ipv4_network)
-        - when 'asc'
-          = link_to networks_path(page: @page, per: @per, order: {ipv4_network: 'desc'}) do
-            i.fas.fa-sort-down
-        - when 'desc'
-          = link_to networks_path(page: @page, per: @per, order: {}) do
-            i.fas.fa-sort-up
-        - else
-          = link_to networks_path(page: @page, per: @per, order: {ipv4_network: 'asc'}) do
-            i.fas.fa-sort
+        =< sort_link(:ipv4_network)
       th scope="col"
         = Network.human_attribute_name(:ipv6_network)
-        - case @order&.[](:ipv6_network)
-        - when 'asc'
-          = link_to networks_path(page: @page, per: @per, order: {ipv6_network: 'desc'}) do
-            i.fas.fa-sort-down
-        - when 'desc'
-          = link_to networks_path(page: @page, per: @per, order: {}) do
-            i.fas.fa-sort-up
-        - else
-          = link_to networks_path(page: @page, per: @per, order: {ipv6_network: 'asc'}) do
-            i.fas.fa-sort
+        =< sort_link(:ipv6_network)
 
   tbody
     - @networks.each do |network|
