@@ -32,3 +32,8 @@ table.table.table-sm
                 = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
         td = user.auth_network_id.present?
         td = user.deleted
+
+= paginate @users
+p
+  = page_entries_info @users
+
