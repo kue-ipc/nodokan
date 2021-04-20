@@ -10,9 +10,9 @@ class NetworksController < ApplicationController
       :per,
       :format,
       order: [
-        :id, :name, :vlan,
+        :id, :name, :vlan, :ipv4_network, :ipv6_network
       ],
-      condition: [:dhcp, :auth, :closed]
+      condition: [:auth]
     )
 
     @page = permitted_params[:page]
@@ -26,12 +26,20 @@ class NetworksController < ApplicationController
 
     @condition = permitted_params[:condition]
 
-    @networks = policy_scope(Network)
-      .includes(:ipv4_pools, :ipv6_pools)
+    @networks = policy_scope(Network).includes(:ipv4_pools, :ipv6_pools)
 
     @networks = @networks.where(@condition) if @condition
 
-    @networks = @networks.order(@order.to_h) if @order
+    if @order
+      order_hash = @order.to_h.transform_keys do |key|
+        if ['ipv4_network', 'ipv6_network'].include?(key)
+          key + '_data'
+        else
+          key
+        end
+      end
+      @networks = @networks.order(order_hash)
+    end
 
     @networks = @networks.page(@page).per(@per)
  end
@@ -154,15 +162,13 @@ class NetworksController < ApplicationController
       params.require(:network).permit(
         :name,
         :vlan,
-        :dhcp,
         :auth,
-        :closed,
-        :ipv4_address,
-        :ipv4_mask,
-        :ipv4_gateway,
-        :ipv6_address,
-        :ipv6_prefix,
-        :ipv6_gateway,
+        :ipv4_network_address,
+        :ipv4_prefix_length,
+        :ipv4_gateway_address,
+        :ipv6_network_address,
+        :ipv6_prefix_length,
+        :ipv6_gateway_address,
         :note,
         ipv4_pools_attributes: [
           :id,
