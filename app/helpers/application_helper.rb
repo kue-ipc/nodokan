@@ -91,10 +91,10 @@ module ApplicationHelper
   def span_text_tag(value = nil, around: nil, **_, &block)
     if around.present?
       content_tag('span', around[0], class: 'text-muted') +
-        content_tag('span', &block) +
+        content_tag('span', value, &block) +
         content_tag('span', around[1], class: 'text-muted')
     else
-      content_tag('span', &block)
+      content_tag('span', value, &block)
     end
   end
 

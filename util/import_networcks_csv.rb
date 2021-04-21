@@ -199,7 +199,7 @@ if $0 == __FILE__
 
       case data['action'].first.upcase
       when ''
-        data['result'] = 'SKIP'
+        data['result'] = 'skip'
       when 'C'
         create_network(data)
       when 'R'

@@ -89,6 +89,7 @@ group :development do
   # RuboCop
   gem 'rubocop'
   gem 'rubocop-rails'
+  gem 'parser', '~> 2.7.0.0'
   # pry
   gem 'pry-rails'
   gem 'pry-byebug'
