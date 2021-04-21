@@ -42,7 +42,7 @@ h4 = User.human_attribute_name(:networks)
       tr
         th scope="col" = Network.human_attribute_name(:name)
         th scope="col" = Network.human_attribute_name(:vlan)
-        th scope="col" = Network.human_attribute_name(:config)
+        th scope="col" = Network.human_attribute_name(:auth)
         th scope="col" = Network.human_attribute_name(:ipv4_network)
         th scope="col" = Network.human_attribute_name(:ipv6_network)
         th scope="col"
@@ -52,11 +52,12 @@ h4 = User.human_attribute_name(:networks)
           td = network.name
           td = network.vlan
           td
-            = badge(Network.human_attribute_name(:auth),
-              level: :primary,
-              hidden: !network.auth)
-          td = network.ipv4_network.to_s
-          td = network.ipv6_network.to_s
+            - if network.auth
+              i.far.fa-check-square
+            - else
+              i.far.fa-square
+          td = network.ipv4_network&.to_string
+          td = network.ipv6_network&.to_string
           - if current_user.admin?
             td
               = link_to '解除',

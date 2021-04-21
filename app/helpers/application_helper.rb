@@ -61,11 +61,10 @@ module ApplicationHelper
       end
     when Time, Date, DateTime, ActiveSupport::TimeWithZone
       span_text_tag(l(value, format: opts[:format]), **opts)
-    when true, false
-      content_tag('div', class: 'custom-control custom-switch') do
-        check_box_tag(:admin?, '1', value, disabled: true, class: 'custom-control-input') +
-          label_tag(:admin?, '', class: 'custom-control-label')
-      end
+    when true
+      content_tag('i', '', class: 'far fa-check-square')
+    when false
+      content_tag('i', '', class: 'far fa-square')
     when Array
       content_tag('ul', class: 'list-inline mb-0') do
         list_html = sanitize('')
