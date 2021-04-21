@@ -3,11 +3,9 @@
 one:
   name: MyString
   user: one
-  confirmed_at: 2020-03-25 14:35:57
   note: MyText
 
 two:
   name: MyString
   user: two
-  confirmed_at: 2020-03-25 14:35:57
   note: MyText

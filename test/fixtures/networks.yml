@@ -3,25 +3,21 @@
 one:
   name: サーバー
   vlan: 101
-  dhcp: false
   auth: false
-  closed: false
-  ipv4_address: '192.168.1.0'
-  ipv4_mask: 1
-  ipv4_gateway: '192.168.1.254'
-  ipv6_address: 'fd00:1::'
-  ipv6_prefix: 64
-  ipv6_gateway: 'fd00:1::FFFF'
+  ipv4_network_data: <%= ipv4_address('192.168.1.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.1.254') %>
+  ipv6_network_data: <%= ipv6_address('fd00:1::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:1::FFFF') %>
 
 two:
   name: クライアント
   vlan: 102
-  dhcp: false
-  auth: false
-  closed: false
-  ipv4_address: '192.168.2.0'
-  ipv4_mask: '255.255.255.0'
-  ipv4_gateway: '192.168.2.254'
-  ipv6_address: 'fd00:2::'
-  ipv6_prefix: 64
-  ipv6_gateway: 'fd00:2::FFFF'
+  auth: true
+  ipv4_network_data: <%= ipv4_address('192.168.2.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.2.254') %>
+  ipv6_network_data: <%= ipv6_address('fd00:2::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:2::FFFF') %>

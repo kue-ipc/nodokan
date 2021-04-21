@@ -3,17 +3,17 @@
 one:
   network: two
   ipv4_config: :dynamic
-  ipv4_first_address: '192.168.2.1'
-  ipv4_last_address: '192.168.2.99'
+  ipv4_first_data: <%= ipv4_address('192.168.2.1') %>
+  ipv4_last_data: <%= ipv4_address('192.168.2.99') %>
 
 two:
   network: two
   ipv4_config: :reserved
-  ipv4_first_address: '192.168.2.100'
-  ipv4_last_address: '192.168.2.199'
+  ipv4_first_data: <%= ipv4_address('192.168.2.100') %>
+  ipv4_last_data: <%= ipv4_address('192.168.2.199') %>
 
 three:
   network: two
   ipv4_config: :static
-  ipv4_first_address: '192.168.2.200'
-  ipv4_last_address: '192.168.2.240'
+  ipv4_first_data: <%= ipv4_address('192.168.2.200') %>
+  ipv4_last_data: <%= ipv4_address('192.168.2.240') %>

@@ -3,17 +3,17 @@
 one:
   network: two
   ipv6_config: :dynamic
-  ipv6_first_address: 'fd00:2::1'
-  ipv6_last_address: 'fd00:2::FF'
+  ipv6_first_data: <%= ipv6_address('fd00:2::1') %>
+  ipv6_last_data: <%= ipv6_address('fd00:2::FF') %>
 
 two:
   network: two
   ipv6_config: :reserved
-  ipv6_first_address: 'fd00:2::100'
-  ipv6_last_address: 'fd00:2::1FF'
+  ipv6_first_data: <%= ipv6_address('fd00:2::100') %>
+  ipv6_last_data: <%= ipv6_address('fd00:2::1FF') %>
 
 three:
   network: two
   ipv6_config: :static
-  ipv6_first_address: 'fd00:2::200'
-  ipv6_last_address: 'fd00:2::2FF'
+  ipv6_first_data: <%= ipv6_address('fd00:2::200') %>
+  ipv6_last_data: <%= ipv6_address('fd00:2::2FF') %>

@@ -1,29 +1,27 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user: admin
   node: one
-  existence: 1
-  content: 1
-  os_update: 1
-  app_update: 1
-  store_update: 1
-  soft_update: 1
+  existence: :existing
+  content: :correct
+  os_update: :auto
+  app_update: :auto
   security_software: one
-  security_update: 1
-  security_scan: 1
-  updated_date: 2020-09-04
+  security_update: :auto
+  security_scan: :auto
+  confirmed_at: 2021-04-01 00:00:00 +0900
+  expiration: 2022-04-01 00:00:00 +0900
+  approved: true
 
 two:
-  user: user01
   node: two
-  existence: 2
-  content: 2
-  os_update: 2
-  app_update: 2
-  store_update: 2
-  soft_update: 2
-  security_software: two
-  security_update: 2
-  security_scan: 2
-  updated_date: 2020-09-05
+  existence: :existing
+  content: incorrect
+  os_update: :not_do
+  app_update: :not_do
+  security_software: :one
+  security_update: :not_do
+  security_scan: :not_do
+  confirmed_at: 2021-04-02 12:00:00 +0900
+  expiration: 2021-05-02 12:00:00 +0900
+  approved: true
