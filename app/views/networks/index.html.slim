@@ -26,8 +26,11 @@ table.table.table-hover.table-sm
 
   tbody
     - @networks.each do |network|
-      tr.clickable-row data-href="#{network_path(network)}"
-        td = network.name
+      tr.clickable-row[
+        data-href="#{network_path(network)}"
+        data-contextmenu="contextmenu-network-#{network.id}"]
+        td
+          = network.name
         td = network.vlan
         td
           - if network.auth
@@ -36,6 +39,23 @@ table.table.table-hover.table-sm
             i.far.fa-square
         td = network.ipv4_network&.to_string
         td = network.ipv6_network&.to_string
+- list_group_item_class = [ \
+  'list-group-item',
+  'list-group-item-action',
+  'flex-fill',
+  'text-nowrap',
+]
+- @networks.each do |network|
+  .context-menu id="contextmenu-network-#{network.id}"
+    .list-group.list-group-horizontal
+      = link_to t('actions.show'), network,
+        class: list_group_item_class + ['bg-dark', 'text-white']
+      = link_to t('actions.edit'), edit_network_path(network),
+        class: list_group_item_class + ['bg-primary', 'text-white']
+      = link_to t('actions.destroy'), network,
+        data: { confirm: t('messages.corfirm_destroy_name', name: network.name) },
+        method: :delete,
+        class: list_group_item_class + ['bg-danger', 'text-white']
 
 = javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
 

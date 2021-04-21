@@ -76,6 +76,7 @@ ja:
     content: 内容
     content_of_action: "%{action}内容"
     corfirm_destroy: "本当に削除してもよろしいですか？"
+    corfirm_destroy_name: "「%{name}」を本当に削除してもよろしいですか？"
     corfirm_reset: "本当にリセットしてもよろしいですか？"
     error_prohibited_action:
       zero: "%{model}を%{action}することができません。"
