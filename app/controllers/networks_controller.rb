@@ -18,10 +18,6 @@ class NetworksController < ApplicationController
     @page = permitted_params[:page]
     @per = permitted_params[:per]
 
-    if ['csv', 'json'].include?(permitted_params[:format])
-      @per = 10000
-    end
-
     @order = permitted_params[:order]
 
     @condition = permitted_params[:condition]
@@ -41,7 +37,9 @@ class NetworksController < ApplicationController
       @networks = @networks.order(order_hash)
     end
 
-    @networks = @networks.page(@page).per(@per)
+    unless ['csv', 'json'].include?(permitted_params[:format])
+      @networks = @networks.page(@page).per(@per)
+    end
  end
 
   # GET /networks/1

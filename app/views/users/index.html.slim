@@ -3,15 +3,21 @@
     = User.model_name.human
     = t('actions.index')
 
+p
+  = link_to 'CSVダウンロード', users_path(format: :csv),
+      class: 'btn btn-primary',
+      download: "users_#{Time.now.strftime('%Y%m%d')}.csv"
+
 table.table.table-sm
   thead
     tr
       th = User.human_attribute_name(:username)
       th = User.human_attribute_name(:email)
       th = User.human_attribute_name(:fullname)
-      th = User.human_attribute_name(:admin?)
-      th = User.human_attribute_name(:auth_network)
+      th = User.human_attribute_name(:role)
       th = User.human_attribute_name(:deleted)
+      th = User.human_attribute_name(:auth_network)
+      th = User.human_attribute_name(:networks)
   tbody
     - @users.each do |user|
       tr
@@ -19,19 +25,10 @@ table.table.table-sm
           = link_to user.username, user
         td = user.email
         td = user.fullname
-        td
-          - if current_user == user
-            .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="自分自身は変更不可"
-              = check_box_tag "admin_#{user.id}", '1', user.admin?, disabled: true, class: 'custom-control-input'
-              = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
-          - else
-            = link_to user_path(user,params: {user: {role: (user.admin? ? :user : :admin)}, redirect_to: :index}),
-              method: :patch
-              .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="クリックして変更"
-                = check_box_tag "admin_#{user.id}", '1', user.admin?, class: 'custom-control-input'
-                = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
-        td = user.auth_network_id.present?
-        td = user.deleted
+        td = t(user.role, scope: 'activerecord.enums.roles')
+        td = i_bool_tag(user.deleted)
+        td = vlan_or_id(user.auth_network)
+        td = user.networks.map { |nw| vlan_or_id(nw) }.join(',')
 
 = paginate @users
 p

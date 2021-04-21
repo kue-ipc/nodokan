@@ -16,7 +16,7 @@ class Network < ApplicationRecord
   has_and_belongs_to_many :users
 
   validates :name, presence: true, uniqueness: true
-  validates :vlan, allow_nil: true,
+  validates :vlan, allow_nil: true, uniqueness: true,
                    numericality: {
                      only_integer: true,
                      greater_than_or_equal_to: 1,
@@ -41,8 +41,6 @@ class Network < ApplicationRecord
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: 128,
   }
-
-  # before_save :ipv4_normalize!, :ipv6_normalize!
 
   # IPv4
 

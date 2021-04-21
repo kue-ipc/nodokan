@@ -17,13 +17,15 @@ class UsersController < ApplicationController
     @order = permitted_params[:order]
     @condition = permitted_params[:condition]
 
-    @users = policy_scope(User)
+    @users = policy_scope(User).includes(:auth_network, :networks)
 
     @users = @users.where(@condition) if @condition
 
     @users = @users.order(@order.to_h) if @order
 
-    @users = @users.page(@page).per(@per)
+    unless ['csv', 'json'].include?(permitted_params[:format])
+      @users = @users.page(@page).per(@per)
+    end
   end
 
   def show

@@ -1,0 +1,32 @@
+<%== "\u{feff}" -%>
+<%- require 'csv' -%>
+<%= %w[
+  action
+  id
+  username
+  email
+  fullname
+  role
+  deleted
+  auth_network
+  networks
+  result
+  message
+].join(',') %>
+<%- @users.each do |user| -%>
+<%==
+[
+  '',
+  user.id,
+  user.username,
+  user.email,
+  user.fullname,
+  user.role,
+  user.deleted,
+  vlan_or_id(user.auth_network),
+  user.networks.map { |nw| vlan_or_id(nw) }.join(' '),
+  'success',
+  '',
+].to_csv
+-%>
+<%- end -%>

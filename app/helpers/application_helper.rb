@@ -61,10 +61,10 @@ module ApplicationHelper
       end
     when Time, Date, DateTime, ActiveSupport::TimeWithZone
       span_text_tag(l(value, format: opts[:format]), **opts)
-    when true
-      content_tag('i', '', class: 'far fa-check-square')
-    when false
-      content_tag('i', '', class: 'far fa-square')
+    when true, false
+      span_text_tag(**opts) do
+        i_bool_tag(value)
+      end
     when Array
       content_tag('ul', class: 'list-inline mb-0') do
         list_html = sanitize('')
@@ -88,13 +88,21 @@ module ApplicationHelper
     end
   end
 
-  def span_text_tag(value, around: nil, **_)
+  def span_text_tag(value = nil, around: nil, **_, &block)
     if around.present?
       content_tag('span', around[0], class: 'text-muted') +
-        content_tag('span', value) +
+        content_tag('span', &block) +
         content_tag('span', around[1], class: 'text-muted')
     else
-      content_tag('span', value)
+      content_tag('span', &block)
+    end
+  end
+
+  def i_bool_tag(value)
+    if value
+      content_tag('i', '', class: 'far fa-check-square')
+    else
+      content_tag('i', '', class: 'far fa-square')
     end
   end
 
