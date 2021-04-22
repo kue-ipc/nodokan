@@ -40,7 +40,7 @@ module ApplicationHelper
         yield recored.__send__(attr)
       end
     else
-      dt_dd_for(recored, attr, opts) do |value|
+      dt_dd_for(recored, attr, **opts) do |value|
         span_value_for(value, **opts)
       end
     end
@@ -83,6 +83,10 @@ module ApplicationHelper
       end
     when ApplicationRecord
       link_to(value.to_s, value)
+    when ActiveRecord::Associations::CollectionProxy
+      value.map do |item|
+        link_to(item.to_s, item) + ' '
+      end.sum
     else
       span_text_tag(value.to_s, **opts)
     end

@@ -184,9 +184,7 @@ ja:
       network:
         name: 名前
         vlan: VLAN番号
-        dhcp: DHCP
         auth: 認証
-        closed: 閉域
         ipv4_network_address: IPv4ネットワークアドレス
         ipv4_netmask: IPv4サブネットマスク
         ipv4_prefix_length: IPv4プレフィックス長
@@ -206,6 +204,8 @@ ja:
         prefix_length: プレフィックス長
         gateway: ゲートウェイ
         gateway_address: ゲートウェイアドレス
+        auth_users: 認証割当ユーザー
+        users: 利用可能ユーザー
       nic:
         node: 端末
         name: 名前
@@ -257,7 +257,7 @@ ja:
         fullname: フルネーム
         role: 役割
         deleted: 削除済み
-        auth_network: 認証ネットワーク
+        auth_network: 認証割当ネットワーク
         networks: 利用可能ネットワーク
         admin?: 管理者権限
       ipv4_pool:

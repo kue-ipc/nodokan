@@ -10,9 +10,9 @@ class NodesController < ApplicationController
       :per,
       :format,
       :query,
-      :search,
       order: [
-        :id, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id,
+        :id, :name, :hostname, :domain, :place_id, :hardware_id,
+        :operating_system_id,
       ],
       condition: [
         :name, :hostname, :domain, :place_id, :hardware_id,
@@ -22,10 +22,6 @@ class NodesController < ApplicationController
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
-
-    if ['csv', 'json'].include?(permitted_params[:format])
-      @per = 10000
-    end
 
     @order = permitted_params[:order]
 
@@ -62,7 +58,7 @@ class NodesController < ApplicationController
 
       @nodes = @nodes
         .where(
-          'name LiKE :query OR ' \
+          'name LIKE :query OR ' \
           'hostname LIKE :query OR ' \
           'domain LIKE :query',
           {query: "%#{@query}%"}
@@ -76,7 +72,9 @@ class NodesController < ApplicationController
 
     @nodes = @nodes.order(@order.to_h) if @order
 
-    @nodes = @nodes.page(@page).per(@per)
+    unless ['csv', 'json'].include?(permitted_params[:format])
+      @nodes = @nodes.page(@page).per(@per)
+    end
   end
 
   # GET /nodes/1

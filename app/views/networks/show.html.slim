@@ -18,17 +18,13 @@ dl
   = dt_dd_for @network, :ipv6_gateway
   = dt_dd_for @network, :note
 
+  = dt_dd_for @network, :auth_users
+  = dt_dd_for @network, :users
+
   = dt_dd_tag '端末数' do
     span.badge.badge-primary
       = @network.nodes.count
 
-  = dt_dd_tag '利用可能ユーザー数' do
-    span.badge.badge-primary
-      = @network.users.count
-
-  = dt_dd_tag '認証ユーザー数' do
-    span.badge.badge-primary
-      = @network.auth_users.count
 
 h3 = Ipv4Pool.model_name.human
 

@@ -1,0 +1,70 @@
+.mb-2
+  = bootstrap_form_tag url: networks_path, method: 'get', layout: :inline do |f|
+    - if current_user.admin?
+      .mr-2
+        = link_to t('actions.new'), new_network_path, class: 'btn btn-secondary'
+    .input-group
+      = f.search_field :query, hide_label: true, value: @query
+      .input-group-append
+        = f.primary name: :search, class: 'btn btn-primary' do
+          i.fas.fa-search
+
+= paginate @networks
+
+table.table.table-hover.table-sm
+  thead
+    tr
+      th scope="col"
+        = Network.human_attribute_name(:name)
+        =< sort_link(:name)
+      th scope="col"
+        = Network.human_attribute_name(:vlan)
+        =< sort_link(:vlan)
+      th scope="col"
+        = Network.human_attribute_name(:auth)
+        =< filter_link(:auth)
+      th scope="col"
+        = Network.human_attribute_name(:ipv4_network)
+        =< sort_link(:ipv4_network)
+      th scope="col"
+        = Network.human_attribute_name(:ipv6_network)
+        =< sort_link(:ipv6_network)
+
+  tbody
+    - @networks.each do |network|
+      tr.clickable-row[
+        data-href="#{network_path(network)}"
+        data-contextmenu="contextmenu-network-#{network.id}"]
+        td
+          = network.name
+        td = network.vlan
+        td
+          - if network.auth
+            i.far.fa-check-square
+          - else
+            i.far.fa-square
+        td = network.ipv4_network&.to_string
+        td = network.ipv6_network&.to_string
+- list_group_item_class = [ \
+  'list-group-item',
+  'list-group-item-action',
+  'flex-fill',
+  'text-nowrap',
+]
+- @networks.each do |network|
+  .context-menu id="contextmenu-network-#{network.id}"
+    .list-group.list-group-horizontal
+      = link_to t('actions.show'), network,
+        class: list_group_item_class + ['bg-dark', 'text-white']
+      = link_to t('actions.edit'), edit_network_path(network),
+        class: list_group_item_class + ['bg-primary', 'text-white']
+      = link_to t('actions.destroy'), network,
+        data: { confirm: t('messages.corfirm_destroy_name', name: network.name) },
+        method: :delete,
+        class: list_group_item_class + ['bg-danger', 'text-white']
+
+= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
+
+= paginate @networks
+p
+  = page_entries_info @networks

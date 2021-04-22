@@ -1,5 +1,7 @@
 - content_for :heading
-  h1 端末一覧
+  h2
+    = Node.model_name.human
+    = t('actions.index')
 
 p
   | 1年に1度、端末の確認を行ってください。

@@ -14,6 +14,7 @@ module NetworksHelper
     params = {
       page: @page,
       per: @per,
+      queray: @query,
       order: {},
       condition: @condition&.to_h || {} 
     }
