@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   resources :operating_systems, only: [:index]
   resources :security_softwares, only: [:index]
 
-  resources :users, only: [:index, :show, :create, :update] do
+  resources :users, only: [:index, :show, :update] do
     collection do
       put 'sync'
     end

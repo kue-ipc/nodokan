@@ -10,8 +10,12 @@ module ApplicationHelper
         model
       end
     model_class.__send__(attr).keys.index_by do |key|
-      t(key, scope: [:activerecord, :enums, attr])
+      t_enum(key, attr)
     end
+  end
+
+  def t_enum(value, attr)
+    t(value, scope: [:activerecord, :enums, attr])
   end
 
   def t_floor(number)

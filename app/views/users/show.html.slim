@@ -7,7 +7,7 @@ dl.row
   dt.col-md-5 = User.human_attribute_name(:username)
   dd.col-md-5
     = @user.username
-    - if current_user.admin? && @user.deleted
+    - if @user.deleted
       | (
       = User.human_attribute_name(:deleted)
       | )
@@ -15,24 +15,17 @@ dl.row
   dd.col-md-5 = @user.email
   dt.col-md-5 = User.human_attribute_name(:fullname)
   dd.col-md-5 = @user.fullname
-  - if current_user.admin?
-    dt.col-md-5 = User.human_attribute_name(:admin?)
-    dd.col-md-5 = @user.admin?
-      - if current_user == user
-        .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="自分自身は変更不可"
-          = check_box_tag "admin_#{user.id}", '1', user.admin?, disabled: true, class: 'custom-control-input'
-          = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
-      - else
-        = link_to user_path(user,params: {user: {role: (user.admin? ? :user : :admin)}, redirect_to: :index}),
-          method: :patch
-          .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="クリックして変更"
-            = check_box_tag "admin_#{user.id}", '1', user.admin?, class: 'custom-control-input'
-            = label_tag "admin_#{user.id}", '', class: 'custom-control-label'
-
-
-
-    dt.col-md-5 = User.human_attribute_name(:deleted)
-    dd.col-md-5 = @user.deleted
+  dt.col-md-5 = User.human_attribute_name(:role)
+  dd.col-md-5
+    - if current_user.admin?
+      = bootstrap_form_for @user, layout: :inline do |f|
+        = f.select :role, t_enums(:roles),
+          {hide_label: true, custom: true},
+          disabled: current_user == @user
+        = f.submit '変更', class: 'btn btn-warning ml-1',
+          disabled: current_user == @user
+    - else
+      = t_enum(@user.role, :roles)
   dt.col-md-5 = User.human_attribute_name(:auth_network)
   dd.col-md-5
     - if current_user.admin?
