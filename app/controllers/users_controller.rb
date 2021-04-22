@@ -8,16 +8,25 @@ class UsersController < ApplicationController
       :page,
       :per,
       :format,
-      order: [:id, :username, :email, :fullname, :role],
+      :query,
+      order: [:username, :email, :fullname, :role],
       condition: [:username, :email, :fullname, :role, :deleted]
     )
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
+    @query = permitted_params[:query]
     @order = permitted_params[:order]
     @condition = permitted_params[:condition]
 
     @users = policy_scope(User).includes(:auth_network, :networks)
+
+    if @query.present?
+      @users = @users.where(
+        'username LIKE :query OR email LIKE :query OR fullname LIKE :query',
+        {query: "%#{@query}%"}
+      )
+    end
 
     @users = @users.where(@condition) if @condition
 

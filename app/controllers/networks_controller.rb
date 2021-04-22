@@ -18,18 +18,14 @@ class NetworksController < ApplicationController
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
-
-    @order = permitted_params[:order]
-
     @query = permitted_params[:query]
-
+    @order = permitted_params[:order]
     @condition = permitted_params[:condition]
 
     @networks = policy_scope(Network).includes(:ipv4_pools, :ipv6_pools)
 
     if @query.present?
-      @networks = @networks
-        .where('name LIKE :query', {query: "%#{@query}%"})
+      @networks = @networks.where('name LIKE :query', {query: "%#{@query}%"})
     end
 
     @networks = @networks.where(@condition) if @condition

@@ -1,0 +1,66 @@
+.mb-2
+  = bootstrap_form_tag url: users_path, method: 'get', layout: :inline do |f|
+    .input-group
+      = f.search_field :query, hide_label: true, value: @query
+      .input-group-append
+        = f.primary name: :search, class: 'btn btn-primary' do
+          i.fas.fa-search
+
+= paginate @users
+
+table.table.table-sm
+  thead
+    tr
+      th
+        = User.human_attribute_name(:username)
+        =< sort_link(:username)
+      th
+        = User.human_attribute_name(:email)
+        =< sort_link(:email)
+      th
+        = User.human_attribute_name(:fullname)
+        =< sort_link(:fullname)
+      th
+        = User.human_attribute_name(:role)
+        =< sort_link(:fullname)
+      th
+        = User.human_attribute_name(:deleted)
+        =< filter_link(:deleted)
+      th = User.human_attribute_name(:auth_network)
+      th = User.human_attribute_name(:networks)
+  tbody
+    - @users.each do |user|
+      tr.clickable-row[
+        data-href="#{user_path(user)}"
+        data-contextmenu="contextmenu-user-#{user.id}"]
+        td = user.username
+        td = user.email
+        td = user.fullname
+        td.text-nowrap = t(user.role, scope: 'activerecord.enums.roles')
+        td = i_bool_tag(user.deleted)
+        td = vlan_or_id(user.auth_network)
+        td = user.networks.map { |nw| vlan_or_id(nw) }.join(', ')
+
+- list_group_item_class = [ \
+  'list-group-item',
+  'list-group-item-action',
+  'flex-fill',
+  'text-nowrap',
+]
+- @users.each do |user|
+  .context-menu id="contextmenu-user-#{user.id}"
+    .list-group.list-group-horizontal
+      = link_to t('actions.show'), user,
+        class: list_group_item_class + ['bg-dark', 'text-white']
+      / = link_to t('actions.edit'), edit_user_path(user),
+      /   class: list_group_item_class + ['bg-primary', 'text-white']
+      = link_to t('actions.destroy'), user,
+        data: { confirm: t('messages.corfirm_destroy_name', name: user.name) },
+        method: :delete,
+        class: list_group_item_class + ['bg-danger', 'text-white']
+
+= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
+
+= paginate @users
+p
+  = page_entries_info @users

@@ -1,8 +1,16 @@
 module ApplicationHelper
   # traslation
-  def t_enums(model_class, attr_name)
-    model_class.__send__(attr_name).keys.index_by do |key|
-      t(key, scope: [:activerecord, :enums, attr_name])
+  def t_enums(attr, model = nil)
+    model_class =
+      if model.nil?
+        controller.controller_name.classify.constantize
+      elsif model.is_a?(ActiveRecord)
+        model.class 
+      else
+        model
+      end
+    model_class.__send__(attr).keys.index_by do |key|
+      t(key, scope: [:activerecord, :enums, attr])
     end
   end
 
@@ -162,5 +170,77 @@ module ApplicationHelper
       badge_classes << 'badge-light' << 'text-muted'
     end
     content_tag('span', name, class: badge_classes, id: id)
+  end
+
+  def sort_link(attr, model = nil)
+    controller_name =
+      if model.nil?
+        controller.controller_name
+      elsif model.is_a?(ActiveRecord)
+        model.class.class_name.tableize
+      else
+        model.class_name.tableize
+      end
+
+    params = {
+      page: @page,
+      per: @per,
+      queray: @query,
+      order: {},
+      condition: @condition&.to_h || {} 
+    }
+    i_class = ['fas']
+
+    case @order&.[](attr)
+    when 'asc'
+      params[:order][attr] = 'desc'
+      i_class << 'fa-sort-down'
+    when 'desc'
+      i_class << 'fa-sort-up'
+    else
+      params[:order][attr] = 'asc'
+      i_class << 'fa-sort'
+    end
+
+    path = __send__("#{controller_name}_path", params)
+    link_to path, class: 'btn btn-sm btn-light' do
+      content_tag(:i, '', class: i_class)
+    end
+  end
+
+  def filter_link(attr, model = nil)
+    controller_name =
+      if model.nil?
+        controller.controller_name
+      elsif model.is_a?(ActiveRecord)
+        model.class.class_name.tableize
+      else
+        model.class_name.tableize
+      end
+
+    params = {
+      page: @page,
+      per: @per,
+      order: @order&.to_h || {},
+      condition: @condition&.to_h || {} 
+    }
+    i_class = []
+
+    case @condition&.[](attr)
+    when 'true'
+      params[:condition][attr] = false
+      i_class << 'far' << 'fa-check-square'
+    when 'false'
+      params[:condition].delete(attr)
+      i_class << 'far' << 'fa-square'
+    else
+      params[:condition][attr] = true
+      i_class << 'fas' << 'fa-filter'
+    end
+
+    path = __send__("#{controller_name}_path", params)
+    link_to path, class: 'btn btn-sm btn-light' do
+      content_tag(:i, '', class: i_class)
+    end
   end
 end

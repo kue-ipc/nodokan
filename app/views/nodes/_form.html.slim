@@ -66,7 +66,7 @@ p 【必須】の項目は入力が必須です。
       | 前の項目を埋めると候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
-        = hardware_f.select :device_type, t_enums(Hardware, :device_types),
+        = hardware_f.select :device_type, t_enums(:device_types, Hardware),
                             {include_blank: '(未選択)',
                              wrapper: {class: 'col-md-3'}},
                             class: 'custom-select'
@@ -127,7 +127,7 @@ p 【必須】の項目は入力が必須です。
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
         = operating_system_f.select :os_category,
-          t_enums(OperatingSystem, :os_categories),
+          t_enums(:os_categories, OperatingSystem),
           {include_blank: '(未選択)', wrapper: {class: 'col-md-4'}},
           class: 'custom-select'
         = operating_system_f.text_field :name,
@@ -166,7 +166,7 @@ p 【必須】の項目は入力が必須です。
         = nic_f.check_box :_destroy, custom: true, label: 'このINCを削除する'
         .form-row.node-nic-form
           = nic_f.select :interface_type,
-                          t_enums(Nic, :interface_types),
+                          t_enums(:interface_types, Nic),
                           {prompt: '(選択してください)',
                            wrapper: {class: 'col-md-4'}},
                           class: 'custom-select', required: true
@@ -190,12 +190,11 @@ p 【必須】の項目は入力が必須です。
             pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
             disabled: true,
             wrapper: {class: 'col-md-4'}
-          = nic_f.select :ipv4_config,
-                          t_enums(Nic, :ipv4_configs),
+          = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
                           {wrapper: {class: 'col-md-4'}},
                           class: 'custom-select', disabled: true
           - if Settings.config.ipv6
-            = nic_f.select :ipv6_config, t_enums(Nic, :ipv6_configs),
+            = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
                             {wrapper: {class: 'col-md-4'}}, class: 'custom-select', disabled: true
             = nic_f.text_field :duid,
               pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',

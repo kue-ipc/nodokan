@@ -27,7 +27,7 @@
         = ipv4_pool_f.hidden_field :id
         .col-md-1.mt-1
           = ipv4_pool_f.check_box :_destroy, custom: true
-        = ipv4_pool_f.select :ipv4_config, t_enums(Ipv4Pool, :ipv4_configs),
+        = ipv4_pool_f.select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool),
                            hide_label: true, custom: true, wrapper: {class: 'col-md-3'}
         = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: 'col-md-4'}
         = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: 'col-md-4'}

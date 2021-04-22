@@ -8,29 +8,4 @@ p
       class: 'btn btn-primary',
       download: "users_#{Time.now.strftime('%Y%m%d')}.csv"
 
-table.table.table-sm
-  thead
-    tr
-      th = User.human_attribute_name(:username)
-      th = User.human_attribute_name(:email)
-      th = User.human_attribute_name(:fullname)
-      th = User.human_attribute_name(:role)
-      th = User.human_attribute_name(:deleted)
-      th = User.human_attribute_name(:auth_network)
-      th = User.human_attribute_name(:networks)
-  tbody
-    - @users.each do |user|
-      tr
-        td
-          = link_to user.username, user
-        td = user.email
-        td = user.fullname
-        td = t(user.role, scope: 'activerecord.enums.roles')
-        td = i_bool_tag(user.deleted)
-        td = vlan_or_id(user.auth_network)
-        td = user.networks.map { |nw| vlan_or_id(nw) }.join(',')
-
-= paginate @users
-p
-  = page_entries_info @users
-
+= render 'list'
