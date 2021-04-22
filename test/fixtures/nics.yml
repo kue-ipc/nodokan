@@ -2,22 +2,24 @@
 
 one:
   node: one
-  network: one
-  name: MyString
-  mac_address_data:
-  duid_data:
-  ipv4_config: 1
-  ipv4_data:
-  ipv6_config: 1
+  network: two
+  name: イーサネット
+  interface_type: :wired
+  mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
+  duid_data: null
+  ipv4_config: :dynamic
+  ipv4_data: null
+  ipv6_config: :disabled
   ipv6_data:
 
 two:
   node: two
   network: two
-  name: MyString
-  mac_address_data:
-  duid_data:
-  ipv4_config: 1
-  ipv4_data:
-  ipv6_config: 1
-  ipv6_data:
+  name: Wi-Fi
+  interface_type: :wireless
+  mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
+  duid_data: null
+  ipv4_config: :reserved
+  ipv4_data: <%= ipv4_address('192.168.2.110') %>
+  ipv6_config: :disabled
+  ipv6_data: null

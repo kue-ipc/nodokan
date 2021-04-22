@@ -21,6 +21,12 @@ module FixtureAddressHelper
     Base64.strict_encode64([address.delete('-:')].pack('H12')) +
     '"'
   end
+
+  def duid(address)
+    '!!binary "' +
+    Base64.strict_encode64([address.delete('-:')].pack('H*')) +
+    '"'
+  end
 end
 
 ActiveRecord::FixtureSet.context_class.include FixtureAddressHelper
