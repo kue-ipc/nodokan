@@ -232,7 +232,7 @@ ja:
         nics: NIC
         note: 備考
         confirmation: 確認
-        user: 管理者
+        user: 所有者
       operating_system:
         os_category: OS種別
         name: OS名

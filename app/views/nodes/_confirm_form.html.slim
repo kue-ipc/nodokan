@@ -1,11 +1,11 @@
 #confirm-form-modal.modal.fade tabindex="-1" role="dialog"
   .modal-dialog.modal-xl role="document"
     .modal-content
-      .modal-header
-        h5.modal-title 確認事項
-        button.close type="button" data-dismiss="modal" aria-label="Close"
-          span aria-hidden="true" &times;
       = bootstrap_form_for @confirmation, url: node_confirmation_path(@node) do |f|
+        .modal-header
+          h5.modal-title 確認事項
+          button.close type="button" data-dismiss="modal" aria-label="Close"
+            span aria-hidden="true" &times;
         .modal-body
           - question_count = 1
           p

@@ -1,5 +1,4 @@
 import {h, text, app} from 'hyperapp'
-# import {request} from '@hyperapp/http'
 
 class DatalistCandidation
   constructor: ({
@@ -74,10 +73,15 @@ class DatalistCandidation
       return [(dispatch, props) => dispatch(@clearList, props), {}]
 
     url = @createUrl(attrs)
-    request
-      url: url
-      expect: 'json'
-      action: @getResult
+
+    # エラー処理は書いていない
+    [
+      (dispatch, props) =>
+        response = await fetch(url)
+        data = await response.json()
+        dispatch(@getResult, data)
+      , {}
+    ]
 
   run: ->
     app({
