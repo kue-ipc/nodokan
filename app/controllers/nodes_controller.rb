@@ -119,7 +119,9 @@ class NodesController < ApplicationController
   # POST /nodes.json
   def create
     @node = Node.new(node_params)
-    @node.user = current_user
+    unless current_user.admin?
+      @node.user = current_user
+    end
     authorize @node
 
     if params['add_nic']
@@ -175,6 +177,9 @@ class NodesController < ApplicationController
   # PATCH/PUT /nodes/1.json
   def update
     @node.assign_attributes(node_params)
+    unless current_user.admin?
+      @node.user = current_user
+    end
 
     if params['add_nic']
       @node.nics << Nic.new(interface_type: :wired)
@@ -272,6 +277,7 @@ class NodesController < ApplicationController
         :hostname,
         :domain,
         :note,
+        :user_id,
         place: [:area, :building, :floor, :room],
         hardware: [:device_type, :maker, :product_name, :model_number],
         operating_system: [:os_category, :name],
@@ -306,9 +312,7 @@ class NodesController < ApplicationController
           place: place,
           hardware: hardware,
           operating_system: operating_system,
-          user_id: current_user.id,
-        }
-      )
+        })
     end
 
     def authorize_node

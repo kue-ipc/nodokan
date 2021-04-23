@@ -207,6 +207,11 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     = f.text_area :note
 
+    - if current_user.admin?
+      = f.collection_select :user_id, User.order(:username).all, :id, :username,
+        {},
+        class: 'custom-select'
+
   = f.submit class: 'btn btn-primary'
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'

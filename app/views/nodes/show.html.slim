@@ -1,24 +1,20 @@
 - content_for :heading
   h1 端末情報
 
-dl.row.line
-  dt.col-md-2 = Node.human_attribute_name(:name)
-  dd.col-md-10 = @node.name
-  dt.col-md-2 = Node.human_attribute_name(:note)
-  dd.col-md-10 = @node.note.presence || raw('&nbsp;')
-  dt.col-md-2 = Node.human_attribute_name(:fqdn)
-  dd.col-md-10 = @node.fqdn.presence || raw('&nbsp;')
-  dt.col-md-2 = Node.human_attribute_name(:place)
-  dd.col-md-10
-    - if @node.place&.name.present?
-      = @node.place.name
+dl
+  - if current_user.admin?
+    = dt_dd_for @node, :user
+  = dt_dd_for @node, :name
+  = dt_dd_for @node, :fqdn
+  = dt_dd_for @node, :place do |place|
+    - if place&.name.present?
+      = place.name
     - else
       .text-warning
-        | (設置場所が未登録です。「編集」を押して設置場所を登録してください。)
-  dt.col-md-2 = Node.human_attribute_name(:hardware)
-  dd.col-md-10
-    - if @node.hardware
-      - case @node.hardware.device_type
+        | 設置場所が未登録です。「編集」を押して設置場所を登録してください。
+  = dt_dd_for @node, :hardware do |hardware|
+    - if hardware
+      - case hardware.device_type
       - when 'desktop'
         i.fas.fa-desktop
       - when 'laptop'
@@ -39,14 +35,13 @@ dl.row.line
         i.fas.fa-blender-phone
       - when 'unknown'
         i.fas.fa-question-circle
-      =< @node.hardware.name
+      =< hardware.name
     - else
       .text-warning
-        | (機器情報が未登録です。「編集」を押して機器情報を登録してください。)
-  dt.col-md-2 = Node.human_attribute_name(:operating_system)
-  dd.col-md-10
-    - if @node.operating_system
-      - case @node.operating_system.os_category
+        | 機器情報が未登録です。「編集」を押して機器情報を登録してください。
+  = dt_dd_for @node, :operating_system do |operating_system|
+    - if operating_system
+      - case operating_system.os_category
       - when 'windows_client'
         i.fab.fa-windows
       - when 'windows_server'
@@ -75,18 +70,16 @@ dl.row.line
         i.fas.fa-ghost
       - when 'unknown'
         i.fas.fa-question-circle
-      =< @node.operating_system.name
+      =< operating_system.name
     - else
       .text-danger
-        | (OSが未登録です。「編集」を押してOSを登録してください。)
-
-  dt.col-md-2 = Node.human_attribute_name(:nics)
-  dd.col-md-10
-    - if @node.nics.count.zero?
+        | OSが未登録です。「編集」を押してOSを登録してください。
+  = dt_dd_for @node, :nics do |nics|
+    - if nics.count.zero?
       .text-danger
-        | (NICが未登録です。「編集」を押してNICを登録してください。)
+        | NICが未登録です。「編集」を押してNICを登録してください。
     - else
-      table.table.table-sm
+      table.table.table-sm.mb-0
         thead
           tr
             th = Nic.human_attribute_name(:name)
@@ -98,7 +91,7 @@ dl.row.line
             th = Nic.human_attribute_name(:ipv6_config)
             th = Nic.human_attribute_name(:ipv6_address)
         tbody
-          - @node.nics.each do |nic|
+          - nics.each do |nic|
             tr
               td = nic.name
               td = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
@@ -108,15 +101,35 @@ dl.row.line
               td = nic.ipv4_address
               td = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
               td = nic.ipv6_address
-  dt.col-md-2 = Node.human_attribute_name(:confirmation)
-  dd.col-md-10
-    - if @node.confirmation&.confirmed_at
-      = l(@node.confirmation.confirmed_at.to_date, format: :long)
+  = dt_dd_for @node, :confirmation do |confirmation|
+    - if confirmation&.confirmed_at.blank?
+      i.fas.fa-times-circle.text-danger
+      =< t(:unconfirmed, scope: :messages)
+      .text-danger
+        | 端末が未確認です。「確認」ボタンから確認を行ってください。
+    - elsif confirmation.expiration <= Time.now
+      i.fas.fa-times-circle.text-danger
+      =< l(confirmation.confirmed_at.to_date, format: :long)
+      =< t(:expired, scope: :messages)
+      p.text-danger
+        | 有効期限が切れました。「確認」ボタンをおして、端末の現状について確認を行ってください。
+    - elsif !confirmation.approved
+      i.fas.fa-exclamation-circle.text-warning
+      =<> l(confirmation.confirmed_at.to_date, format: :long)
+      | (
+      = l(confirmation.expiration.to_date, format: :long)
+      | まで)
+      =< t(:unapproved, scope: :messages)
+      .text-warning
+        | 確認内容に問題または不明な部分があります。問題を解決後に、「確認」ボタンから確認を行ってください。
     - else
-      .text-muted
-        | (
-        = t(:unconfirmed, scope: :messages)
-        | )
+      i.fas.fa-exclamation-check.text-warning
+      =<> l(confirmation.confirmed_at.to_date, format: :long)
+      | (
+      = l(confirmation.expiration.to_date, format: :long)
+      | まで)
+      =< t(:upproved, scope: :messages)
+  = dt_dd_for @node, :note
 
 p
   | 内容に問題がない場合は、「確認」ボタンから確認を行ってください。

@@ -52,8 +52,6 @@ class ConfirmationsController < ApplicationController
     end
 
     def check_and_save
-      @confirmation.approved = true
-
       if !@confirmation.exist?
         @confirmation.content = :unknown
         @confirmation.os_update = :unknown
