@@ -15,9 +15,17 @@ class NodeNic
   ]
 
   @NAMES_IP = {
-    ipv4: ['ipv4_config']
-    ipv6: ['ipv6_config', 'duid']
+    ipv4: ['ipv4_config', 'ipv4_address']
+    ipv6: ['ipv6_config', 'ipv6_address', 'duid']
   }
+
+  @MESSAGES = [
+    'no_network'
+    'auth_network'
+    'require_mac'
+    'require_duid'
+    'network_note'
+  ]
 
   constructor: (@number, {ipv6 = true}) ->
     @prefixList = ['node', 'nics_attributes', @number.toString()]
@@ -48,7 +56,11 @@ class NodeNic
         [name, {node, init, options}]
     )
 
-    @networkMessageNode = @getNode('network_message')
+    @messages = new Map(
+      for name in NodeNic.MESSAGES
+        node = @getNode('message', name)
+        [name, {node}]
+    )
 
     @inputs.get('_destroy').node.addEventListener 'change', (_e) =>
       @changeDestroy()
@@ -82,6 +94,18 @@ class NodeNic
     for name in names when !excludes.includes(name)
       @inputs.get(name)?.node?.disabled = false
 
+  displayMessage: (name, message = null) ->
+    node = @messages.get(name).node
+    node.textContent = message if message?
+    node.classList.remove('d-none')
+
+  hideMessage: (name) ->
+    node.classList.add('d-none')
+
+  hideAllMessages: ->
+    for [key, value] from @messages
+      value.node.classList.add('d-none')
+
   adjustSelect: (name, list) ->
     {node, init, options} = @inputs.get(name)
     selectedIndex = -1
@@ -106,13 +130,19 @@ class NodeNic
         availableIndices[0] ? -1
 
   requireMacAddress: ->
-    @inputs.get('mac_address').node.required =
-      @inputs.get('mac_registration').node.checked ||
-      @inputs.get('ipv4_config').node.value == 'reserved'
+    if @inputs.get('mac_registration').node.checked ||
+        @inputs.get('ipv4_config').node.value == 'reserved'
+      @inputs.get('mac_address').node.required = true
+      @displayMessage('require_mac')
+    else
+      @inputs.get('mac_address').node.required = false
 
   requireDuid: ->
-    @inputs.get('duid').node.required =
-      @inputs.get('ipv6_config').node.value == 'reserved'
+    if @inputs.get('ipv6_config').node.value == 'reserved'
+      @inputs.get('duid').node.required = true
+      @displayMessage('require_duid')
+    else
+      @inputs.get('duid').node.required = false
 
   setInitInput: (name) ->
     {node, init} = @inputs.get(name)
@@ -155,7 +185,7 @@ class NodeNic
     @changeNetwork()
 
   changeNetwork: ->
-    @networkMessageNode.innerText = ''
+    @hideAllMessages()
 
     networkId = @inputs.get('network_id').node.value
     unless networkId
@@ -167,15 +197,11 @@ class NodeNic
       @requireMacAddress()
       @disableInputs(['mac_registration'])
 
-      @networkMessageNode.innerText = '''
-        どのネットワークにも接続していません。
-        接続するネットワークを選択してください。
-      '''
+      @displayMessage('no_network')
       return
 
     network = await Network.fetch(networkId)
 
-    # 設定不可能なネットワーク
     unless network?
       for name in @ip_configs
         @setInitInput(name)
@@ -185,19 +211,12 @@ class NodeNic
       @requireMacAddress()
       @disableInputs(['mac_registration'])
 
-      @networkMessageNode.innerText = '''
-        あなたの権限では設定できないネットワークが設定されています。
-        これは既存の接続を維持するために管理者によって設定されました。
-        設定を変更したい場合は別のネットワークを選択してください。
-        ただし、ネットワークの変更を一度設定した後に元のネットワークに
-        戻すことはできません。
-      '''
+      @displayMessage('unconfigurable')
       return
 
-    messages = []
-
     if network['auth']
-      messages.push("このネットワークは認証ネットワークです。")
+      @displayMessage('auth_network')
+
       if @checkInitInput('network_id')
         @setInitInput('mac_registration')
       else
@@ -209,7 +228,6 @@ class NodeNic
       @requireMacAddress()
       @disableInputs(['mac_registration'])
 
-    # 可能なIP設定
     for name in @ip_configs
       @adjustSelect(name, network["#{name}_list"])
     @enableInputs(@ip_configs)
@@ -217,8 +235,8 @@ class NodeNic
     @requireMacAddress()
     @requireDuid()
 
-    @networkMessageNode.innerText = messages.join("\n")
-
+    if network['note']
+      @displayMessage('network_note', network['note'])
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 new NodeNic(id, ipv6: info.ipv6) for id in info.list

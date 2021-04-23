@@ -171,7 +171,6 @@ p 【必須】の項目は入力が必須です。
                            wrapper: {class: 'col-md-4'}},
                           class: 'custom-select', required: true
           = nic_f.text_field :name,
-            disabled: true,
             wrapper: {class: 'col-md-8'}
           - nic_networks = current_user.selectable_networks.dup
           - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
@@ -180,37 +179,52 @@ p 【必須】の項目は入力が必須です。
             :id, :name,
             {include_blank: '(未接続)',
             wrapper: {class: 'col-md-4'}},
-            disabled: true,
             class: 'custom-select'
-          = nic_f.form_group :mac_registration, label: { text: 'MACアドレス登録' }, class: 'col-md-4' do
+          = nic_f.text_field :mac_address,
+            pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
+            wrapper: {class: 'col-md-4'}
+          = nic_f.form_group :mac_registration, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
             = nic_f.check_box :mac_registration,
               custome: true,
               label: 'MACアドレスを登録する'
-          = nic_f.text_field :mac_address,
-            pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-            disabled: true,
-            wrapper: {class: 'col-md-4'}
           = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
                           {wrapper: {class: 'col-md-4'}},
-                          class: 'custom-select', disabled: true
+                          class: 'custom-select'
+          = nic_f.text_field :ipv4_address,
+            pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
+            wrapper: {class: 'col-md-4'}
+          .col-md-4
           - if Settings.config.ipv6
             = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
-                            {wrapper: {class: 'col-md-4'}}, class: 'custom-select', disabled: true
+                            {wrapper: {class: 'col-md-4'}}, class: 'custom-select'
+            = nic_f.text_field :ipv6_address,
+              pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
+              wrapper: {class: 'col-md-4'}
             = nic_f.text_field :duid,
               pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-              disabled: true,
               wrapper: {class: 'col-md-4'}
-          .col-md-12.form-text id="node_nics_attributes_#{nic_f.index}_network_message"
+          - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
+          - [ \
+            'no_network',
+            'unconfigurable',
+            'auth_network',
+            'require_mac',
+            'require_duid',
+            'network_note',
+          ].each do |name|
+            .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
+              = t(name, scope: 'messages.node_nic')
     script#node-nic-info type="application/json"
       == {list: nic_list, ipv6: Settings.config.ipv6}.to_json
 
   .rounded.border.p-2.mb-2
     = f.text_area :note
-
     - if current_user.admin?
-      = f.collection_select :user_id, User.order(:username).all, :id, :username,
-        {},
-        class: 'custom-select'
+      .form-row
+        = f.collection_select :user_id, User.order(:username).all,
+          :id, :username,
+          {wrapper: {class: 'col-md-4'}},
+          class: 'custom-select'
 
   = f.submit class: 'btn btn-primary'
 
