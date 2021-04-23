@@ -1,11 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  user: one
-  note: MyText
+  name: サーバー
+  user: admin
+  note: サーバーの端末
 
 two:
-  name: MyString
-  user: two
-  note: MyText
+  name: クライアント
+  user: user01
+  note: クライアントの端末
+
+three:
+  name: タブレット
+  user: user01
+  note: タブレットの端末
