@@ -27,11 +27,11 @@ class NodeNic
     'network_note'
   ]
 
-  constructor: (@number, {ipv6 = true}) ->
+  constructor: (@number, {@ipv6 = true, @address_placeholders = {}}) ->
     @prefixList = ['node', 'nics_attributes', @number.toString()]
 
     @ip_versions = ['ipv4']
-    @ip_versions.push('ipv6') if ipv6
+    @ip_versions.push('ipv6') if @ipv6
     @ip_configs = @ip_versions.map((ip_version) -> "#{ip_version}_config")
 
     @names = [NodeNic.NAMES...]
@@ -128,6 +128,38 @@ class NodeNic
         init.selectedIndex
       else
         availableIndices[0] ? -1
+
+  adjustAddress: (name, config, network) ->
+    {node, init, options} = @inputs.get(name)
+    node.placeholder = @address_placeholders[config]
+    node.disabled = not network.managable
+
+    switch config
+      when 'dynamic'
+        node.value = ''
+        node.disabled = true
+
+      when 'reserved'
+        if network.id == @inputs.get('network_id').init.value
+          node.value = init.value
+        else
+          node.value = ''
+
+      when 'static'
+        if network.id == @inputs.get('network_id').init.value
+          node.value = init.value
+        else
+          node.value = ''
+
+      when 'manual'
+        if network.id == @inputs.get('network_id').init.value
+          node.value = init.value
+        else
+          node.value = ''
+
+      when 'disabled'
+        node.value = ''
+        node.disabled = true
 
   requireMacAddress: ->
     if @inputs.get('mac_registration').node.checked ||
@@ -239,4 +271,5 @@ class NodeNic
       @displayMessage('network_note', network['note'])
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
-new NodeNic(id, ipv6: info.ipv6) for id in info.list
+for id in info.list
+  new NodeNic(id, info.options)

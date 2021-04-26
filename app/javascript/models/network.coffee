@@ -68,12 +68,10 @@ export default class Network extends ApplicationRecord
     # 選択不可の場合は選択肢なし
     return [] unless @selectable
 
-    # ネットワークがない場合は disabled と link_local のみ
-    return ['link_local', 'disabled'] unless @[ip_version].network
+    # ネットワークがない場合は disabled
+    return ['disabled'] unless @[ip_version].network
 
     configs = new Set(pool.ip_config() for pool in @[ip_version].pools)
-    unless configs.has('dynamic') || configs.has('reserved')
-      configs.add('link_local')
 
     # 管理可能な場合
     if @managable

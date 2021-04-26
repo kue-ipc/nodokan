@@ -163,7 +163,7 @@ p
         dt.col-md-6 割り当て
         dd.col-md-6
           - case nic.ipv4_config
-          - when 'dypanmic', 'reserved', 'link_local'
+          - when 'dypanmic', 'reserved'
             | 自動
           - when 'static', 'manual'
             | 手動
@@ -181,7 +181,7 @@ p
         dt.col-md-6 割り当て
         dd.col-md-6
           - case nic.ipv6_config
-          - when 'dypanmic', 'reserved', 'link_local'
+          - when 'dynamic', 'reserved'
             | 自動
           - when 'static', 'manual'
             | 手動

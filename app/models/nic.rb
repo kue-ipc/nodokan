@@ -175,7 +175,7 @@ class Nic < ApplicationRecord
     end
 
     case ipv4_config
-    when 'dynamic', 'link_local', 'disabled'
+    when 'dynamic', 'disabled'
       self.ipv4_address = ''
     when 'reserved'
       unless (ipv4 = network.next_ipv4('reserved'))
@@ -213,7 +213,7 @@ class Nic < ApplicationRecord
     end
 
     case ipv6_config
-    when 'dynamic', 'link_local', 'disabled'
+    when 'dynamic', 'disabled'
       self.ipv6_address = ''
     when 'reserved'
       unless (ipv6 = network.next_ipv6('reserved'))

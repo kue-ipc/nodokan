@@ -159,6 +159,13 @@ ja:
         DHCPの予約のためにDUIDが必須です。
       network_note: |
         ネットワークの備考欄です。
+    address_placeholders:
+      dynamic: 接続の度に空いているIPアドレスが付与されます。
+      reserved: 保存時に空いているIPアドレスが予約され、常にそのIPアドレスが付与されます。
+      static: 保存時に空いているIPアドレスが割り当てられます。保存後、閲覧画面で確認し、手動で設定してください。
+      manual: 手動でIPアドレスを割り当てます。任意のIPアドレスを指定できます。
+      disabled: ''
+
   date:
     formats:
       default: "%Y年%m月%d日(%a)"
@@ -343,14 +350,12 @@ ja:
         dynamic: 動的
         reserved: 予約
         static: 固定
-        link_local: リンクローカル
         manual: 手動
         disabled: 無効
       ipv6_configs:
         dynamic: 動的
         reserved: 予約
         static: 固定
-        link_local: リンクローカル
         manual: 手動
         disabled: 無効
       existences:

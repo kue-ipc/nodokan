@@ -215,7 +215,12 @@ p 【必須】の項目は入力が必須です。
             .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
               = t(name, scope: 'messages.node_nic')
     script#node-nic-info type="application/json"
-      == {list: nic_list, ipv6: Settings.config.ipv6}.to_json
+      == { \
+        list: nic_list, \
+        options: { \
+          ipv6: Settings.config.ipv6, \
+          address_placeholders: t('messages.address_placeholders'), \
+        }}.to_json
 
   .rounded.border.p-2.mb-2
     = f.text_area :note
