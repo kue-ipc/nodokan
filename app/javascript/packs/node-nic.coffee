@@ -71,13 +71,20 @@ class NodeNic
 
     @inputs.get('mac_registration').node.addEventListener 'change', (_e) =>
       @requireMacAddress()
-    @inputs.get('ipv4_config').node.addEventListener 'change', (_e) =>
+    @inputs.get('ipv4_config').node.addEventListener 'change', (e) =>
       @requireMacAddress()
-    @inputs.get('ipv6_config').node.addEventListener 'change', (_e) =>
-      @requireDuid()
+      @adjustAddress('ipv4', e.target.value)
+
+    if @ipv6
+      @inputs.get('ipv6_config').node.addEventListener 'change', (e) =>
+        @requireDuid()
+        @adjustAddress('ipv6', e.target.value)
 
     @requireMacAddress()
     @requireDuid()
+
+    @network = null
+    # all check
     @changeDestroy()
 
   getNodeId: (names...) ->
@@ -106,8 +113,9 @@ class NodeNic
     for [key, value] from @messages
       value.node.classList.add('d-none')
 
-  adjustSelect: (name, list) ->
-    {node, init, options} = @inputs.get(name)
+  adjustConfig: (ip, list) ->
+    config_name = ip + '_config'
+    {node, init, options} = @inputs.get(config_name)
     selectedIndex = -1
     disabledIndex = -1
     availableIndices = []
@@ -129,37 +137,25 @@ class NodeNic
       else
         availableIndices[0] ? -1
 
-  adjustAddress: (name, config, network) ->
-    {node, init, options} = @inputs.get(name)
+    @adjustAddress(ip, node.value)
+
+  adjustAddress: (ip, config) ->
+    address_name = ip + '_address'
+    config_name = ip + '_config'
+
+    {node, init, options} = @inputs.get(address_name)
+
     node.placeholder = @address_placeholders[config]
-    node.disabled = not network.managable
+    if @network?.id?.toString() == @inputs.get('network_id').init.value &&
+        config == @inputs.get(config_name).init.value
+      node.value = init.value || ''
+    else
+      node.value = ''
 
-    switch config
-      when 'dynamic'
-        node.value = ''
-        node.disabled = true
-
-      when 'reserved'
-        if network.id == @inputs.get('network_id').init.value
-          node.value = init.value
-        else
-          node.value = ''
-
-      when 'static'
-        if network.id == @inputs.get('network_id').init.value
-          node.value = init.value
-        else
-          node.value = ''
-
-      when 'manual'
-        if network.id == @inputs.get('network_id').init.value
-          node.value = init.value
-        else
-          node.value = ''
-
-      when 'disabled'
-        node.value = ''
-        node.disabled = true
+    if !@network?.managable or ['dynamic', 'disabled'].includes(config)
+      node.disabled = true
+    else
+      node.disabled = false
 
   requireMacAddress: ->
     if @inputs.get('mac_registration').node.checked ||
@@ -221,8 +217,9 @@ class NodeNic
 
     networkId = @inputs.get('network_id').node.value
     unless networkId
-      for name in @ip_configs
-        @adjustSelect(name, ['disabled'])
+      @network = null
+      for ip in @ip_versions
+        @adjustConfig(ip, ['disabled'])
       @disableInputs(@ip_configs)
 
       @inputs.get('mac_registration').node.checked = false
@@ -232,9 +229,9 @@ class NodeNic
       @displayMessage('no_network')
       return
 
-    network = await Network.fetch(networkId)
+    @network = await Network.fetch(networkId)
 
-    unless network?
+    unless @network?
       for name in @ip_configs
         @setInitInput(name)
       @disableInputs(@ip_configs)
@@ -246,7 +243,7 @@ class NodeNic
       @displayMessage('unconfigurable')
       return
 
-    if network['auth']
+    if @network['auth']
       @displayMessage('auth_network')
 
       if @checkInitInput('network_id')
@@ -260,15 +257,15 @@ class NodeNic
       @requireMacAddress()
       @disableInputs(['mac_registration'])
 
-    for name in @ip_configs
-      @adjustSelect(name, network["#{name}_list"])
+    for ip in @ip_versions
+      @adjustConfig(ip, @network["#{ip}_config_list"])
     @enableInputs(@ip_configs)
 
     @requireMacAddress()
     @requireDuid()
 
-    if network['note']
-      @displayMessage('network_note', network['note'])
+    if @network['note']
+      @displayMessage('network_note', @network['note'])
 
 info = JSON.parse(document.getElementById('node-nic-info').textContent)
 for id in info.list

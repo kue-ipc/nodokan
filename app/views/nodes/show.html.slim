@@ -159,40 +159,73 @@ p
   .row
     .col-md-6
       h4 IPv4
+      - case nic.ipv4_config
+      - when 'dypanmic', 'reserved'
+        - ip_data = { \
+          setting: '自動',
+          address: '-',
+          netmask: '-',
+          gateway: '-',
+        }
+      - when 'static', 'manual'
+        - ip_data = { \
+          setting: '手動',
+          address: nic.ipv4_address.presence || raw('&nbsp;'),
+          netmask: nic.network.ipv4_netmask.presence || raw('&nbsp;'),
+          gateway: nic.network.ipv4_gateway.presence || raw('&nbsp;'),
+        }
+      - when 'disabled'
+        - ip_data = { \
+          setting: '無効',
+          address: '-',
+          netmask: '-',
+          gateway: '-',
+        }
+
       dl.row.line
-        dt.col-md-6 割り当て
-        dd.col-md-6
-          - case nic.ipv4_config
-          - when 'dypanmic', 'reserved'
-            | 自動
-          - when 'static', 'manual'
-            | 手動
-          - when 'disabled'
-            | 無効
-        dt.col-md-6 = Nic.human_attribute_name(:ip_address)
-        dd.col-md-6 = nic.ipv4_address.presence || raw('&nbsp;')
-        dt.col-md-6 = Network.human_attribute_name(:netmask)
-        dd.col-md-6 = nic.network.ipv4_netmask.presence || raw('&nbsp;')
-        dt.col-md-6 = Network.human_attribute_name(:gateway)
-        dd.col-md-6 = nic.network.ipv4_gateway.presence || raw('&nbsp;')
+        dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
+        dd.col-sm-6 = ip_data[:setting]
+        dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
+        dd.col-sm-6 = ip_data[:address]
+        dt.col-sm-6 = Network.human_attribute_name(:netmask)
+        dd.col-sm-6 = ip_data[:netmask]
+        dt.col-sm-6 = Network.human_attribute_name(:gateway)
+        dd.col-sm-6 = ip_data[:gateway]
     .col-md-6
       h4 IPv6
+      - case nic.ipv4_config
+      - when 'dypanmic', 'reserved'
+        - ip_data = { \
+          setting: '自動',
+          address: '-',
+          prefix_length: '-',
+          gateway: '-',
+        }
+      - when 'static', 'manual'
+        - ip_data = { \
+          setting: '手動',
+          address: nic.ipv6_address.presence || raw('&nbsp;'),
+          prefix_length: nic.network.ipv6_prefix_length.presence || \
+                         raw('&nbsp;'),
+          gateway: nic.network.ipv6_gateway.presence || raw('&nbsp;'),
+        }
+      - when 'disabled'
+        - ip_data = { \
+          setting: '無効',
+          address: '-',
+          prefix_length: '-',
+          gateway: '-',
+        }
+
       dl.row.line
-        dt.col-md-6 割り当て
-        dd.col-md-6
-          - case nic.ipv6_config
-          - when 'dynamic', 'reserved'
-            | 自動
-          - when 'static', 'manual'
-            | 手動
-          - when 'disabled'
-            | 無効
-        dt.col-md-6 = Nic.human_attribute_name(:ip_address)
-        dd.col-md-6 = nic.ipv6_address.presence || raw('&nbsp;')
-        dt.col-md-6 = Network.human_attribute_name(:prefix_length)
-        dd.col-md-6 = nic.network.ipv6_prefix_length.presence || raw('&nbsp;')
-        dt.col-md-6 = Network.human_attribute_name(:gateway)
-        dd.col-md-6 = nic.network.ipv6_gateway.presence || raw('&nbsp;')
+        dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
+        dd.col-sm-6 = ip_data[:setting]
+        dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
+        dd.col-sm-6 = ip_data[:address]
+        dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
+        dd.col-sm-6 = ip_data[:prefix_length]
+        dt.col-sm-6 = Network.human_attribute_name(:gateway)
+        dd.col-sm-6 = ip_data[:gateway]
 
 hr
 =< link_to t(:back, scope: [:actions]), nodes_path

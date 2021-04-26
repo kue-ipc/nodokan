@@ -152,18 +152,19 @@ ja:
       auth_network: |
         このネットワークは認証ネットワークです。
         ネットワークに接続するにはMACアドレスを登録する必要があります。
-        MACアドレスを入力し、「MACアドレスを登録する」にチェックを入れてください。
+        MACアドレスを入力し、「MACアドレスを登録する」にチェックを
+        入れた状態にしてください。
       require_mac: |
-        認証またはDHCPの予約のためにMACアドレスが必須です。
+        認証またはDHCPの予約のためにMACアドレスの入力が必須です。
       require_duid: |
-        DHCPの予約のためにDUIDが必須です。
+        DHCPの予約のためにDUIDの入力が必須です。
       network_note: |
         ネットワークの備考欄です。
     address_placeholders:
-      dynamic: 接続の度に空いているIPアドレスが付与されます。
-      reserved: 保存時に空いているIPアドレスが予約され、常にそのIPアドレスが付与されます。
-      static: 保存時に空いているIPアドレスが割り当てられます。保存後、閲覧画面で確認し、手動で設定してください。
-      manual: 手動でIPアドレスを割り当てます。任意のIPアドレスを指定できます。
+      dynamic: (常時変動)
+      reserved: (保存時割当)
+      static: (保存時割当)
+      manual: ''
       disabled: ''
 
   date:

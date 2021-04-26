@@ -15,7 +15,9 @@ table.table.table-hover.table-sm
 
   tbody
     - @nodes.each do |node|
-      tr.clickable-row data-href="#{node_path(node)}"
+      tr.clickable-row[
+        data-href="#{node_path(node)}"
+        data-contextmenu="contextmenu-node-#{node.id}"]
         - if current_user.admin?
           td.text-nowrap = node.user.username
         td = node.name
@@ -40,6 +42,24 @@ table.table.table-hover.table-sm
               span.text-warning 期限切れ
           - else
             span.text-danger 未確認
+
+- list_group_item_class = [ \
+  'list-group-item',
+  'list-group-item-action',
+  'flex-fill',
+  'text-nowrap',
+]
+- @nodes.each do |node|
+  .context-menu id="contextmenu-node-#{node.id}"
+    .list-group.list-group-horizontal
+      = link_to t('actions.show'), node,
+        class: list_group_item_class + ['bg-dark', 'text-white']
+      = link_to t('actions.edit'), edit_node_path(node),
+        class: list_group_item_class + ['bg-primary', 'text-white']
+      = link_to t('actions.destroy'), node,
+        data: { confirm: t('messages.corfirm_destroy_name', name: node.name) },
+        method: :delete,
+        class: list_group_item_class + ['bg-danger', 'text-white']
 
 = javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
 
