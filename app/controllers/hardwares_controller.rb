@@ -35,7 +35,9 @@ class HardwaresController < ApplicationController
       end
     end
 
-    @hardwares = @hardwares.page(@page).per(@per)
+    unless permitted_params[:format] == 'csv'
+      @hardwares = @hardwares.page(@page).per(@per)
+    end
   end
 
   def edit

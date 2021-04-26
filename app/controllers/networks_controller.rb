@@ -41,7 +41,7 @@ class NetworksController < ApplicationController
       @networks = @networks.order(order_hash)
     end
 
-    unless ['csv', 'json'].include?(permitted_params[:format])
+    unless permitted_params[:format] == 'csv'
       @networks = @networks.page(@page).per(@per)
     end
  end

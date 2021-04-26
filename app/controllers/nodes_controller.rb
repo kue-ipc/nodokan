@@ -72,7 +72,7 @@ class NodesController < ApplicationController
 
     @nodes = @nodes.order(@order.to_h) if @order
 
-    unless ['csv', 'json'].include?(permitted_params[:format])
+    unless permitted_params[:format] == 'csv'
       @nodes = @nodes.page(@page).per(@per)
     end
   end

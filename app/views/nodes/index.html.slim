@@ -8,13 +8,16 @@ p
 
 .mb-3
   = bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
-    .mr-2
-      = link_to '新規登録', new_node_path, class: 'btn btn-primary'
     .input-group
       = f.search_field :query, hide_label: true, value: @query
       .input-group-append
         = f.primary name: :search, class: 'btn btn-primary' do
           i.fas.fa-search
+    = link_to 'CSVダウンロード', nodes_path(format: :csv),
+        class: 'btn btn-primary ml-2',
+        download: "node_#{Time.now.strftime('%Y%m%d')}.csv"
+    .ml-2
+      = link_to t('actions.new'), new_node_path, class: 'btn btn-secondary'
 
 = render 'list'
 

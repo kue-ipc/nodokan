@@ -33,7 +33,9 @@ class OperatingSystemsController < ApplicationController
       end
     end
 
-    @operating_systems = @operating_systems.page(@page).per(@per)
+    unless permitted_params[:format] == 'csv'
+      @operating_systems = @operating_systems.page(@page).per(@per)
+    end
   end
 
   private

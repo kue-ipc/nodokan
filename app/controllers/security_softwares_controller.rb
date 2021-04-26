@@ -33,7 +33,9 @@ class SecuritySoftwaresController < ApplicationController
       end
     end
 
-    @security_softwares = @security_softwares.page(@page).per(@per)
+    unless permitted_params[:format] == 'csv'
+      @security_softwares = @security_softwares.page(@page).per(@per)
+    end
   end
 
   private
