@@ -1,5 +1,3 @@
-import {h, text, app} from 'hyperapp'
-
 class DatalistCandidation
   constructor: ({
     @parent, @name, @target, @order, @inputList, @url,
@@ -16,33 +14,21 @@ class DatalistCandidation
     @appNode = document.getElementById(@appId)
     @descriptionNode = document.getElementById(@descriptionId)
 
-    @inputAttrList = for name in @inputList
+    @attrList = for name in @inputList
+      node = document.getElementById(@attrId(name))
       {
         name
-        node: document.getElementById(@attrId(name))
+        node
         required: name == @requiredInput
       }
-    @initialState = {
-      attrs: @inputValues()
-      list: []
-    }
+
     @data = []
     @targetDescriptions = new Map
 
-  getResult: (state, data) =>
-    @data = data['data']
-    list = []
-    for entry in @data
-      list.push(entry[@target])
-      if @description
-        @targetDescriptions.set(entry[@target], entry['description'])
-    @updateDescription() if @description
-    {
-      state...
-      list
-    }
+  attrId: (attr) ->
+    [@parent, @name, attr].join('_')
 
-  createUrl: (attrs) ->
+  createUrl: ->
     list = []
     list.push("per=#{@per}")
     unless @description
@@ -50,103 +36,71 @@ class DatalistCandidation
     if @order?
       for k, v of @order
         list.push("order[#{k}]=#{v}")
-    for attr in attrs
+    for attr in @attrList
       list.push("condition[#{attr.name}]=#{encodeURIComponent(attr.value)}")
     @url + '?' + list.join('&')
 
-  view: (state) =>
-    h 'datalist', id: @datalistId,
-      for value in state.list
-        h 'option', {value}
+  checkAttrValues: ->
+    for attr in @attrList
+      attr.value = attr.node.value
 
-  subscriptions: (state) =>
-    [@watchAttr, attr] for attr in @inputAttrList
+  checkAvailable: ->
+    # check all required
+    if @attrList.some ({value, required}) -> required and not value
+      @targetNode.disabled = true
+      false
+    else
+      @targetNode.disabled = false
+      true
 
-  clearList: (state) =>
-    {
-      state...
-      list: []
-    }
+  getData: () ->
+    return [] unless @attrList.every ({value}) -> value
 
-  getData: (attrs) =>
-    if (0 for {value} in attrs when !value? || value == '').length > 0
-      return [(dispatch, props) => dispatch(@clearList, props), {}]
+    url = @createUrl()
+    response = await fetch(url)
+    result = await response.json()
+    result['data']
 
-    url = @createUrl(attrs)
+  updateDatalist: (_) =>
+    @checkAttrValues()
+    return unless @checkAvailable()
 
-    # エラー処理は書いていない
-    [
-      (dispatch, props) =>
-        response = await fetch(url)
-        data = await response.json()
-        dispatch(@getResult, data)
-      , {}
-    ]
+    data = await @getData()
+    list = []
+
+    @targetDescriptions.clear()
+    for entry in data
+      list.push(entry[@target])
+      if @description
+        @targetDescriptions.set(entry[@target], entry['description'])
+
+    listNode = document.createElement('datalist')
+    listNode.id = @datalistId
+    for value in list
+      itemNode = document.createElement('option')
+      itemNode.textContent = value
+      listNode.appendChild(itemNode)
+
+    currentListNode = document.getElementById(@datalistId)
+    if currentListNode
+      @appNode.replaceChild(listNode, document.getElementById(@datalistId))
+    else
+      @appNode.appendChild(listNode)
+
+    @updateDescription() if @description
+
+  updateDescription: (_) =>
+    message = @targetDescriptions.get(@targetNode.value)
+    @descriptionNode.textContent = message ? ''
 
   run: ->
-    app({
-      init: [
-        @initialState
-        @getData(@initialState.attrs)
-      ]
-      view: @view
-      node: @appNode
-      subscriptions: @subscriptions
-    })
+    for {node} in @attrList
+      node.addEventListener 'change', @updateDatalist
 
     if @description
       @targetNode.addEventListener 'change', @updateDescription
 
-  attrId: (attr) ->
-    [@parent, @name, attr].join('_')
-
-  inputValues: ->
-    for {name, node, required} in @inputAttrList
-      value = node.value
-      if required
-        if value? and value.length > 0
-          @targetNode.disabled = false
-        else
-          @targetNode.disabled = true
-      {name, value}
-
-  watchAttr: (dispatch, {name, node, required}) =>
-    watchId = @attrId(name)
-
-    handler = (e) =>
-      dispatch(@watchChange, {name, value: e.target.value, required})
-
-    node.addEventListener('change', handler)
-    -> node.removeEventListener('change', handler)
-
-  watchChange: (state, {name, value, required}) =>
-    newAttrs = for attr in state.attrs
-      if attr.name == name
-        {name, value}
-      else
-        attr
-
-    if required
-      if value? and value.length > 0
-        @targetNode.disabled = false
-      else
-        @targetNode.disabled = true
-        return {
-          state...
-          attrs: newAttrs
-        }
-
-    [
-      {
-        state...
-        attrs: newAttrs
-      }
-      @getData(newAttrs)
-    ]
-
-  updateDescription: =>
-    message = @targetDescriptions.get(@targetNode.value)
-    @descriptionNode.textContent = message ? ''
+    @updateDatalist()
 
 for node in document.getElementsByClassName('datalist-canadidaiton')
   dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
