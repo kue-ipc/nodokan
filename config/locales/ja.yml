@@ -166,7 +166,26 @@ ja:
       static: (保存時割当)
       manual: ''
       disabled: ''
-
+    node_nic_setting: |
+      下記のように端末のネットワークを設定してください。
+    node_unregistered_place: |
+      設置場所が未登録です。「編集」を押して設置場所を登録してください。
+    node_unregistered_hardware: |
+      機器情報が未登録です。「編集」を押して機器情報を登録してください。
+    node_unregistered_operating_system: |
+      OSが未登録です。「編集」を押してOSを登録してください。
+    node_unregistered_nics: |
+      NICが未登録です。「編集」を押してNICを登録してください。
+    node_confirmaiton_unconfirmed: |
+      端末が未確認です。「確認」を押して、端末の現状について確認を行ってください。
+    node_confirmaiton_expired: |
+      有効期限が切れました。「確認」を押して、端末の現状について確認を行ってください。
+    node_confirmaiton_unapproved: |
+      確認内容に問題または不明な部分があります。問題を解決後に、「確認」を押して、端末の現状について確認を行ってください。
+    node_confirmaiton_expiring_soon: |
+      まもなく有効期限が切れます。有効期限までに「確認」を押して、端末の現状について確認を行ってください。
+    node_confirmaiton_expiration_date: |
+      (%{date}まで有効)
   date:
     formats:
       default: "%Y年%m月%d日(%a)"
@@ -246,6 +265,7 @@ ja:
         ipv4_address: IPv4アドレス
         ipv6_config: IPv6設定
         ipv6_address: IPv6アドレス
+        ip_setting: 構成
         ip_config: IP設定
         ip_address: IPアドレス
       node:

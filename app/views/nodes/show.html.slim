@@ -10,8 +10,7 @@ dl
     - if place&.name.present?
       = place.name
     - else
-      .text-warning
-        | 設置場所が未登録です。「編集」を押して設置場所を登録してください。
+      .text-warning = t('messages.node_unregistered_place')
   = dt_dd_for @node, :hardware do |hardware|
     - if hardware
       - case hardware.device_type
@@ -39,8 +38,7 @@ dl
         i.fas.fa-question-circle
       =< hardware.name
     - else
-      .text-warning
-        | 機器情報が未登録です。「編集」を押して機器情報を登録してください。
+      .text-warning = t('messages.node_unregistered_hardware')
   = dt_dd_for @node, :operating_system do |operating_system|
     - if operating_system
       - case operating_system.os_category
@@ -74,12 +72,10 @@ dl
         i.fas.fa-question-circle
       =< operating_system.name
     - else
-      .text-danger
-        | OSが未登録です。「編集」を押してOSを登録してください。
+      .text-danger = t('messages.node_unregistered_operating_system')
   = dt_dd_for @node, :nics do |nics|
     - if nics.count.zero?
-      .text-danger
-        | NICが未登録です。「編集」を押してNICを登録してください。
+      .text-danger = t('messages.node_unregistered_nics')
     - else
       table.table.table-sm.mb-0
         thead
@@ -107,36 +103,33 @@ dl
     - if confirmation&.confirmed_at.blank?
       i.fas.fa-times-circle.text-danger
       =< t(:unconfirmed, scope: :messages)
-      .text-danger
-        | 端末が未確認です。「確認」ボタンから確認を行ってください。
-    - elsif confirmation.expiration <= Time.now
+      .text-danger = t('messages.node_confirmaiton_unconfirmed')
+    - elsif confirmation.expiration <= Time.current
       i.fas.fa-times-circle.text-danger
       =< l(confirmation.confirmed_at.to_date, format: :long)
       =< t(:expired, scope: :messages)
-      p.text-danger
-        | 有効期限が切れました。「確認」ボタンをおして、端末の現状について確認を行ってください。
+      .text-danger = t('messages.node_confirmaiton_exired')
     - elsif !confirmation.approved
       i.fas.fa-exclamation-circle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      | (
-      = l(confirmation.expiration.to_date, format: :long)
-      | まで)
+      = t('messages.node_confirmaiton_expiration_date',
+          date: l(confirmation.expiration.to_date, format: :long))
       =< t(:unapproved, scope: :messages)
-      .text-warning
-        | 確認内容に問題または不明な部分があります。問題を解決後に、「確認」ボタンから確認を行ってください。
+      .text-warning = t('messages.node_confirmaiton_unapproved')
+    - elsif confirmation.expiration <= Time.current.days_since(30)
+      i.fas.fa-exclamation-circle.text-warning
+      =<> l(confirmation.confirmed_at.to_date, format: :long)
+      = t('messages.node_confirmaiton_expiration_date',
+          date: l(confirmation.expiration.to_date, format: :long))
+      =< t(:unapproved, scope: :messages)
+      .text-warning = t('messages.node_confirmaiton_expiring_soon')
     - else
       i.fas.fa-exclamation-check.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      | (
-      = l(confirmation.expiration.to_date, format: :long)
-      | まで)
+      = t('messages.node_confirmaiton_expiration_date',
+          date: l(confirmation.expiration.to_date, format: :long))
       =< t(:upproved, scope: :messages)
   = dt_dd_for @node, :note
-
-p
-  | 内容に問題がない場合は、「確認」ボタンから確認を行ってください。
-  | 内容に間違いや不足がある場合は「編集」ボタンから編集を行ってください。
-
 button.btn.btn-primary type="button" data-toggle="modal" data-target="#confirm-form-modal"
   = t(:confirm, scope: [:actions])
 =<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
@@ -144,90 +137,93 @@ button.btn.btn-primary type="button" data-toggle="modal" data-target="#confirm-f
 =<> link_to t(:destroy, scope: [:actions]), @node,
   data: { confirm: t(:corfirm_destroy, scope: [:messages]) }, method: :delete,
   class: 'btn btn-danger'
-hr
 
-p
-  |
-    端末のネットワーク設定は次のようにしてください。
+- if @node.nics.count.positive?
+  hr
 
-- @node.nics.each do |nic|
-  h3
-    = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
-    | のネットワーク
-  - if nic.name.present?
-    | (
-    = nic.name
-    | )
-  .row
-    .col-md-6
-      h4 IPv4
-      - case nic.ipv4_config
-      - when 'dypanmic', 'reserved'
-        - ip_data = { \
-          setting: '自動',
-          address: '-',
-          netmask: '-',
-          gateway: '-',
-        }
-      - when 'static', 'manual'
-        - ip_data = { \
-          setting: '手動',
-          address: nic.ipv4_address.presence || raw('&nbsp;'),
-          netmask: nic.network.ipv4_netmask.presence || raw('&nbsp;'),
-          gateway: nic.network.ipv4_gateway.presence || raw('&nbsp;'),
-        }
-      - when 'disabled'
-        - ip_data = { \
-          setting: '無効',
-          address: '-',
-          netmask: '-',
-          gateway: '-',
-        }
+  p = t('messages.node_nic_setting')
 
-      dl.row.line
-        dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
-        dd.col-sm-6 = ip_data[:setting]
-        dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
-        dd.col-sm-6 = ip_data[:address]
-        dt.col-sm-6 = Network.human_attribute_name(:netmask)
-        dd.col-sm-6 = ip_data[:netmask]
-        dt.col-sm-6 = Network.human_attribute_name(:gateway)
-        dd.col-sm-6 = ip_data[:gateway]
-    .col-md-6
-      h4 IPv6
-      - case nic.ipv4_config
-      - when 'dypanmic', 'reserved'
-        - ip_data = { \
-          setting: '自動',
-          address: '-',
-          prefix_length: '-',
-          gateway: '-',
-        }
-      - when 'static', 'manual'
-        - ip_data = { \
-          setting: '手動',
-          address: nic.ipv6_address.presence || raw('&nbsp;'),
-          prefix_length: nic.network.ipv6_prefix_length.presence || \
-                         raw('&nbsp;'),
-          gateway: nic.network.ipv6_gateway.presence || raw('&nbsp;'),
-        }
-      - when 'disabled'
-        - ip_data = { \
-          setting: '無効',
-          address: '-',
-          prefix_length: '-',
-          gateway: '-',
-        }
+  - @node.nics.each do |nic|
+    h3
+      = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
+      | のネットワーク
+    - if nic.name.present?
+      | (
+      = nic.name
+      | )
+    .row
+      .col-md-6
+        h4 IPv4
+        - case nic.ipv4_config
+        - when 'dypanmic', 'reserved'
+          - ip_data = { \
+            setting: '自動',
+            address: '-',
+            netmask: '-',
+            gateway: '-',
+          }
+        - when 'static', 'manual'
+          - ip_data = { \
+            setting: '手動',
+            address: nic.ipv4_address.presence || raw('&nbsp;'),
+            netmask: nic.network.ipv4_netmask.presence || raw('&nbsp;'),
+            gateway: nic.network.ipv4_gateway.presence || raw('&nbsp;'),
+          }
+        - when 'disabled'
+          - ip_data = { \
+            setting: '無効',
+            address: '-',
+            netmask: '-',
+            gateway: '-',
+          }
 
-      dl.row.line
-        dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
-        dd.col-sm-6 = ip_data[:setting]
-        dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
-        dd.col-sm-6 = ip_data[:address]
-        dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
-        dd.col-sm-6 = ip_data[:prefix_length]
-        dt.col-sm-6 = Network.human_attribute_name(:gateway)
-        dd.col-sm-6 = ip_data[:gateway]
+        dl.row.line
+          dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
+          dd.col-sm-6 = ip_data[:setting]
+          dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
+          dd.col-sm-6 = ip_data[:address]
+          dt.col-sm-6 = Network.human_attribute_name(:netmask)
+          dd.col-sm-6 = ip_data[:netmask]
+          dt.col-sm-6 = Network.human_attribute_name(:gateway)
+          dd.col-sm-6 = ip_data[:gateway]
+      .col-md-6
+        h4 IPv6
+        - case nic.ipv6_config
+        - when 'dypanmic', 'reserved'
+          - ip_data = { \
+            setting: '自動',
+            address: '-',
+            prefix_length: '-',
+            gateway: '-',
+          }
+        - when 'static', 'manual'
+          - ip_data = { \
+            setting: '手動',
+            address: nic.ipv6_address.presence || raw('&nbsp;'),
+            prefix_length: nic.network.ipv6_prefix_length.presence || \
+                          raw('&nbsp;'),
+            gateway: nic.network.ipv6_gateway.presence || raw('&nbsp;'),
+          }
+        - when 'disabled'
+          - ip_data = { \
+            setting: '無効',
+            address: '-',
+            prefix_length: '-',
+            gateway: '-',
+          }
+
+        dl.row.line
+          dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
+          dd.col-sm-6 = ip_data[:setting]
+          dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
+          dd.col-sm-6 = ip_data[:address]
+          dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
+          dd.col-sm-6 = ip_data[:prefix_length]
+          dt.col-sm-6 = Network.human_attribute_name(:gateway)
+          dd.col-sm-6 = ip_data[:gateway]
+
+  - if Settings.additional_messages.nic_setting
+    p = Settings.additional_messages.nic_setting
 
 hr
 =< link_to t(:back, scope: [:actions]), nodes_path

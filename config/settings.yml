@@ -46,3 +46,5 @@ ldap:
     mail: true
     # telephoneNumber: true
     # serviceAccount: false
+additional_messages:
+  nic_setting: null
