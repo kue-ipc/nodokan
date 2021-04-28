@@ -317,9 +317,10 @@ ja:
         desktop: デスクトップPC
         laptop: ノートPC (2-in-1を含む)
         tablet: タブレット
-        mobile: 携帯端末 (スマートフォン/携帯電話)
+        mobile: 携帯機器 (スマホ、携帯電話等)
+        peripheral: 周辺機器 (プリンター、複合機等)
         server: サーバー
-        appliance: アプライアンス/専用機器 (NAS/ネットワークカメラ等)
+        appliance: アプライアンス (NAS等)
         network: ネットワーク機器 (ルーター/スイッチ等)
         virtual: 仮想マシン
         other: その他
