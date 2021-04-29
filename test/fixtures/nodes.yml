@@ -4,11 +4,17 @@ one:
   name: サーバー
   user: admin
   note: サーバーの端末
+  place: one
+  hardware: one
+  operating_system: one
 
 two:
   name: クライアント
   user: user01
   note: クライアントの端末
+  place: two
+  hardware: two
+  operating_system: two
 
 three:
   name: タブレット
