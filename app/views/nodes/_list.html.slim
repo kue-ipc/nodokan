@@ -4,14 +4,33 @@ table.table.table-hover.table-sm
   thead
     tr
       - if current_user.admin?
-        th scope="col" = Node.human_attribute_name(:user)
-      th scope="col" = Node.human_attribute_name(:name)
+        th scope="col"
+          = Node.human_attribute_name(:user)
+          =< sort_link(:user)
+      th scope="col"
+        = Node.human_attribute_name(:name)
+        =< sort_link(:name)
       th scope="col" = Node.human_attribute_name(:hostname)
-      th scope="col" = Node.human_attribute_name(:place)
-      th scope="col" = Hardware.model_name.human
-      th scope="col" = OperatingSystem.model_name.human
-      th scope="col" = Nic.human_attribute_name(:ipv4_address)
-      th scope="col" = Node.human_attribute_name(:confirmation)
+        = Node.human_attribute_name(:hostname)
+        =< sort_link(:hostname)
+      th scope="col"
+        = Node.human_attribute_name(:place)
+        =< sort_link(:place)
+      th scope="col"
+        = Hardware.model_name.human
+        =< sort_link(:hardware)
+      th scope="col"
+        = OperatingSystem.model_name.human
+        =< sort_link(:operating_system)
+      th scope="col"
+        = Nic.human_attribute_name(:ipv4_address)
+      th scope="col"
+        = Nic.human_attribute_name(:ipv6_address)
+      th scope="col"
+        = Nic.human_attribute_name(:mac_address)
+      th scope="col"
+        = Node.human_attribute_name(:confirmation)
+        =< filter_link(:confirmation)
 
   tbody
     - @nodes.each do |node|
@@ -26,11 +45,15 @@ table.table.table-hover.table-sm
             = node.hostname
           - else
             span.text-muted = t('values.none')
-        td = node.place&.name
+        td = node.place&.room
         td = node.hardware&.product_name
         td = node.operating_system&.name
         td.text-nowrap
           = node.nics.map(&:ipv4_address).compact.join("\n")
+        td.text-nowrap
+          = node.nics.map(&:ipv6_address).compact.join("\n")
+        td.text-nowrap
+          = node.nics.map(&:mac_address).compact.join("\n")
         td.text-nowrap
           - if node.confirmation
             - if node.confirmation.expiration >= Time.current
@@ -52,7 +75,7 @@ table.table.table-hover.table-sm
       = link_to t('actions.show'), node,
         class: list_group_item_class + ['bg-dark', 'text-white']
       = link_to t('actions.edit'), edit_node_path(node),
-        class: list_group_item_class + ['bg-primary', 'text-white']
+        class: list_group_item_class + ['bg-warning', 'text-white']
       = link_to t('actions.destroy'), node,
         data: { confirm: t('messages.corfirm_destroy_name', name: node.name) },
         method: :delete,

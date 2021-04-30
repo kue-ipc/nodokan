@@ -11,11 +11,11 @@ class NodesController < ApplicationController
       :format,
       :query,
       order: [
-        :id, :name, :hostname, :domain, :place_id, :hardware_id,
-        :operating_system_id,
+        :user, :name, :hostname, :domain, :place, :hardware,
+        :operating_system,
       ],
       condition: [
-        :name, :hostname, :domain, :place_id, :hardware_id,
+        :user, :name, :hostname, :domain, :place_id, :hardware_id,
         :operating_system_id,
       ]
     )
@@ -70,7 +70,30 @@ class NodesController < ApplicationController
 
     @nodes = @nodes.where(@condition) if @condition
 
-    @nodes = @nodes.order(@order.to_h) if @order
+    if @order
+      @order.each do |key, value|
+        vaule = 
+          if value.to_s.downcase == 'desc'
+            'desc'
+          else
+            'asc'
+          end
+
+        case key
+        when 'user'
+          @nodes = @nodes.order("users.username #{value}")
+        when 'name', 'hostname', 'domain'
+          @nodes = @nodes.order({key => value})
+        when 'place'
+          p 'placeデソート'
+          @nodes = @nodes.order("places.room #{value}")
+        when 'hardware'
+          @nodes = @nodes.order("hardwares.product_name #{value}")
+        when 'operating_system'
+          @nodes = @nodes.order("operating_systems.name #{value}")
+        end
+      end
+    end
 
     unless permitted_params[:format] == 'csv'
       @nodes = @nodes.page(@page).per(@per)

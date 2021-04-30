@@ -3,23 +3,23 @@
 table.table.table-hover.table-sm
   thead
     tr
-      th
+      th scope="col"
         = User.human_attribute_name(:username)
         =< sort_link(:username)
-      th
+      th scope="col"
         = User.human_attribute_name(:email)
         =< sort_link(:email)
-      th
+      th scope="col"
         = User.human_attribute_name(:fullname)
         =< sort_link(:fullname)
-      th
+      th scope="col"
         = User.human_attribute_name(:role)
         =< sort_link(:fullname)
-      th
+      th scope="col"
         = User.human_attribute_name(:deleted)
         =< filter_link(:deleted)
-      th = User.human_attribute_name(:auth_network)
-      th = User.human_attribute_name(:networks)
+      th scope="col" = User.human_attribute_name(:auth_network)
+      th scope="col" = User.human_attribute_name(:networks)
   tbody
     - @users.each do |user|
       tr.clickable-row[
