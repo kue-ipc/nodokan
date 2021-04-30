@@ -41,3 +41,7 @@ config/environments/*.local.yml
 
 # vendor
 /vendor/*
+
+# data
+/data/*
+!/data/.keep
