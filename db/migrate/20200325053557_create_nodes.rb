@@ -3,9 +3,9 @@ class CreateNodes < ActiveRecord::Migration[6.0]
     create_table :nodes do |t|
       t.references :user, foreign_key: true
 
-      t.string :name, null: false, index: true
-      t.string :hostname, index: true
-      t.string :domain, index: true
+      t.string :name, null: false
+      t.string :hostname
+      t.string :domain
 
       t.references :place, foreign_key: true
       t.references :hardware, foreign_key: true

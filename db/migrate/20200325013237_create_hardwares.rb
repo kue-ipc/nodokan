@@ -1,10 +1,11 @@
 class CreateHardwares < ActiveRecord::Migration[6.0]
   def change
     create_table :hardwares do |t|
-      t.integer :device_type, null: false
-      t.string :maker, null: false, default: '', index: true
-      t.string :product_name, null: false, default: '', index: true
-      t.string :model_number, null: false, default: '', index: true
+      t.integer :device_type,  null: false,              index: true
+      t.string  :maker,        null: false, default: '', index: true
+      t.string  :product_name, null: false, default: '', index: true
+      t.string  :model_number, null: false, default: '', index: true
+
       t.boolean :confirmed, null: false, default: false
 
       t.integer :nodes_count, null: false, default: 0
