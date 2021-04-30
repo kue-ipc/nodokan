@@ -17,7 +17,7 @@ class NodeImportCSV < ImportCSV
     node.place = Place.find_or_initialize_by(
       area: data['place[area]'] || '',
       building: data['place[building]'] || '',
-      floor: data['place[floor]'] || 0,
+      floor: data['place[floor]'].presence || 0,
       room: data['place[room]'] || ''
     )
   
@@ -25,7 +25,7 @@ class NodeImportCSV < ImportCSV
       if data['hardware[device_type]'].present? ||
           data['hardware[product_name]']
         Hardware.find_or_initialize_by(
-          device_type: data['hardware[device_type]'] || 'unknown',
+          device_type: data['hardware[device_type]'].presence || 'unknown',
           maker: data['hardware[maker]'] || '',
           product_name: data['hardware[product_name]'] || '',
           model_number: data['hardware[model_number]'] || ''
@@ -36,7 +36,8 @@ class NodeImportCSV < ImportCSV
       if data['operating_system[os_category]'].present? ||
           data['hardware[product_name]']
         OperatingSystem.find_or_initialize_by(
-          os_category: data['operating_system[os_category]'] || 'unknown',
+          os_category:
+            data['operating_system[os_category]'].presence || 'unknown',
           name: data['operating_system[name]'] || ''
         )
       end
@@ -57,14 +58,15 @@ class NodeImportCSV < ImportCSV
       node.nics <<
         Nic.new(
           network: network,
-          interface_type: data['nic[interface_type]'] || 'unknown',
+          interface_type: data['nic[interface_type]'].presence || 'unknown',
           name: data['nic[name]'],
-          mac_registration: data['nic[mac_registration]'],
+          mac_registration:
+            %w[true 1 on yes].include?(data['nic[mac_registration]']),
           mac_address: data['nic[mac_address]'],
           duid: data['nic[duid]'],
-          ipv4_config: data['nic[ipv4_config]'],
+          ipv4_config: data['nic[ipv4_config]'].presence || 'disabled',
           ipv4_address: data['nic[ipv4_address]'],
-          ipv6_config: data['nic[ipv6_config]'],
+          ipv6_config: data['nic[ipv6_config]'].presence || 'disabled',
           ipv6_address: data['nic[ipv6_address]'],
         )
     end
