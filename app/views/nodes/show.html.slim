@@ -130,7 +130,9 @@ dl
           date: l(confirmation.expiration.to_date, format: :long))
       =< t(:upproved, scope: :messages)
   = dt_dd_for @node, :note
-button.btn.btn-primary type="button" data-toggle="modal" data-target="#confirm-form-modal"
+
+button#confirm-form-modal-toggle.btn.btn-primary[
+  type="button" data-toggle="modal" data-target="#confirm-form-modal"]
   = t(:confirm, scope: [:actions])
 =<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
   class: 'btn btn-warning'

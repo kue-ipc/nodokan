@@ -74,6 +74,8 @@ table.table.table-hover.table-sm
     .list-group.list-group-horizontal
       = link_to t('actions.show'), node,
         class: list_group_item_class + ['bg-dark', 'text-white']
+      = link_to t('actions.confirm'), node_path(node, anchor: 'confirm'),
+        class: list_group_item_class + ['bg-primary', 'text-white']
       = link_to t('actions.edit'), edit_node_path(node),
         class: list_group_item_class + ['bg-warning', 'text-white']
       = link_to t('actions.destroy'), node,

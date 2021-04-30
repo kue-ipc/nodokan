@@ -1,16 +1,41 @@
 # GET nodes/:id
 # confirmation form
 
-radioId = 'confirmation_existence_existing'
-radioEl = document.getElementById(radioId)
+# Id and Element
+
+formModalId = 'confirm-form-modal'
+formModalEl = document.getElementById(formModalId)
+
+formModalToggleId = 'confirm-form-modal-toggle'
+formModalToggleEl = document.getElementById(formModalToggleId)
+
+existingRadioId = 'confirmation_existence_existing'
+existingRadioEl = document.getElementById(existingRadioId)
 
 collapseLinkId = 'node-confirm-collapse-link'
 collapseLinkEl = document.getElementById(collapseLinkId)
 
+# modal show
+
+if location.hash == '#confirm'
+  formModalToggleEl.Modal?.show()
+
+document.addEventListener 'turbolinks:load', ->
+  if location.hash == '#confirm'
+    formModalToggleEl.Modal?.show()
+, false
+
+formModalEl.addEventListener 'shown.bs.modal', (e) ->
+  location.hash = 'confirm'
+
+formModalEl.addEventListener 'hidden.bs.modal', (e) ->
+  location.hash = ''
+
+# confirm collapse
+
 collapesShown = false
 
-formModal = document.getElementById('confirm-form-modal')
-formModal.addEventListener 'shown.bs.modal', (e) ->
+formModalEl.addEventListener 'shown.bs.modal', (e) ->
   if document.getElementById('confirmation_existence_existing').checked
     unless collapesShown
       collapseLinkEl.Collapse.show()
