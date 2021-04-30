@@ -149,5 +149,7 @@ GRANT ALL ON *.* TO 'nodokan'@'localhost' IDENTIFIED BY 'pass+nodokan42' WITH GR
 git clone https://github.com/kue-ipc/nodokan
 cd nodokan
 bundle install --deployment --without development test
-EDITOR=vim rails credentials:edit
+RAILS_ENV=production EDITOR=vim rails credentials:edit
+RAILS_ENV=production rails db:migrate
+RAILS_ENV=production rails db:seed
 ```
