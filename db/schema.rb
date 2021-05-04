@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["device_type", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
+    t.index ["device_type"], name: "index_hardwares_on_device_type"
     t.index ["maker"], name: "index_hardwares_on_maker"
     t.index ["model_number"], name: "index_hardwares_on_model_number"
     t.index ["product_name"], name: "index_hardwares_on_product_name"
@@ -70,15 +71,18 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.integer "vlan"
     t.boolean "auth", default: false, null: false
     t.binary "ipv4_network_data", limit: 4
-    t.integer "ipv4_prefix_length"
+    t.integer "ipv4_prefix_length", limit: 1, default: 0, null: false
     t.binary "ipv4_gateway_data", limit: 4
     t.binary "ipv6_network_data", limit: 16
-    t.integer "ipv6_prefix_length"
+    t.integer "ipv6_prefix_length", limit: 1, default: 0, null: false
     t.binary "ipv6_gateway_data", limit: 16
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["ipv4_network_data"], name: "index_networks_on_ipv4_network_data", unique: true
+    t.index ["ipv6_network_data"], name: "index_networks_on_ipv6_network_data", unique: true
     t.index ["name"], name: "index_networks_on_name", unique: true
+    t.index ["vlan"], name: "index_networks_on_vlan", unique: true
   end
 
   create_table "networks_users", charset: "utf8mb4", force: :cascade do |t|
@@ -102,10 +106,10 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.binary "ipv6_data", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["duid_data"], name: "index_nics_on_duid_data"
-    t.index ["ipv4_data"], name: "index_nics_on_ipv4_data"
-    t.index ["ipv6_data"], name: "index_nics_on_ipv6_data"
-    t.index ["mac_address_data"], name: "index_nics_on_mac_address_data"
+    t.index ["duid_data"], name: "index_nics_on_duid_data", unique: true
+    t.index ["ipv4_data"], name: "index_nics_on_ipv4_data", unique: true
+    t.index ["ipv6_data"], name: "index_nics_on_ipv6_data", unique: true
+    t.index ["mac_address_data"], name: "index_nics_on_mac_address_data", unique: true
     t.index ["network_id"], name: "index_nics_on_network_id"
     t.index ["node_id"], name: "index_nics_on_node_id"
   end
@@ -121,11 +125,8 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.text "note"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["domain"], name: "index_nodes_on_domain"
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["hostname", "domain"], name: "fqdn", unique: true
-    t.index ["hostname"], name: "index_nodes_on_hostname"
-    t.index ["name"], name: "index_nodes_on_name"
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
     t.index ["place_id"], name: "index_nodes_on_place_id"
     t.index ["user_id"], name: "index_nodes_on_user_id"
@@ -148,7 +149,7 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
   create_table "places", charset: "utf8mb4", force: :cascade do |t|
     t.string "area", default: "", null: false
     t.string "building", default: "", null: false
-    t.integer "floor", default: 0, null: false
+    t.integer "floor", limit: 2, default: 0, null: false
     t.string "room", default: "", null: false
     t.boolean "confirmed", default: false, null: false
     t.integer "nodes_count", default: 0, null: false
@@ -157,6 +158,7 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.index ["area", "building", "floor", "room"], name: "index_places_on_area_and_building_and_floor_and_room", unique: true
     t.index ["area"], name: "index_places_on_area"
     t.index ["building"], name: "index_places_on_building"
+    t.index ["floor"], name: "index_places_on_floor"
     t.index ["room"], name: "index_places_on_room"
   end
 
