@@ -4,14 +4,35 @@
 
 インストールパッケージ
 
-- ruby
-- ruby-bundler
-- ruby-railties
+- rbenv
 - build-essential
-- ruby-dev
 - libmariadbclient-dev or default-libmysqlclient-dev
 
-ruby-railtiesはrailsコマンドを使えるようにするためだけに入れています。
+rbenvを使用します。
+
+### rbenv
+
+アプリケーション実行ユーザーでのみ実施。
+
+`rbenv init`の実行結果をシェルに設定。
+
+```shell
+mkdir -p "$(rbenv root)"/plugins
+git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
+```
+
+upgarde
+```
+git -C "$(rbenv root)"/plugins/ruby-build pull
+```
+
+```
+rbenv install 2.7.3
+```
+
+```
+rbenv local 2.7.3
+```
 
 ## Node
 
@@ -129,13 +150,7 @@ sudo systemctl enable freeradius --now
 ```
 ## 開発環境
 
-rbenv以外の場合は
-
-```
-bundle config set path 'vendor/bundle'
-```
 開発環境はopenldapを入れる
-
 
 DBは作成権限も付ける
 
