@@ -46,5 +46,10 @@ ldap:
     mail: true
     # telephoneNumber: true
     # serviceAccount: false
+user_network:
+  - group: cn=staff,ou=groups,dc=example,dc=jp
+    auth_network: v102
+    networks:
+      - auth
 additional_messages:
   nic_setting: null
