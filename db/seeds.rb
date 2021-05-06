@@ -3,12 +3,16 @@
 
 seeds_path = Rails.root / 'db' / 'seeds'
 
-YAML.load_file(seeds_path / 'networks.yml').each do |data|
-  Network.create!(data) unless Network.find_by_name(data['name'])
+if Rails.env == 'development' && Network.count.zero?
+  YAML.load_file(seeds_path / 'networks.yml').each do |data|
+    Network.create!(data) unless Network.find_by_name(data['name'])
+  end
 end
 
-YAML.load_file(seeds_path / 'operating_systems.yml').each do |data|
-  OperatingSystem.create!(data) unless OperatingSystem.find_by_name(data['name'])
+if OperatingSystem.count.zero?
+  YAML.load_file(seeds_path / 'operating_systems.yml').each do |data|
+    OperatingSystem.create!(data) unless OperatingSystem.find_by_name(data['name'])
+  end
 end
 
 if SecuritySoftware.count.zero?
