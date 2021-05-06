@@ -41,12 +41,6 @@ class UsersSyncJob < ApplicationJob
         next
       end
 
-      unless Devise::LDAP::Adapter.authorizable?(username)
-        logger.info("登録不可: #{username}")
-        counter[:skip] += 1
-        next
-      end
-
       # 削除済みユーザーも復活させる。
       user = User.find_or_initialize_by(username: username)
 
