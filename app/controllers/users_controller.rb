@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     @order = permitted_params[:order]
     @condition = permitted_params[:condition]
 
-    @users = policy_scope(User).includes(:auth_network, :networks)
+    @users = policy_scope(User).includes(:networks)
 
     if @query.present?
       @users = @users.where(
@@ -51,18 +51,12 @@ class UsersController < ApplicationController
   end
 
   def update
-    redirect =
-      if params[:redirect_to] == 'index'
-        users_path
-      else
-        @user
-      end
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to redirect, notice: 'ユーザーを更新しました。'}
+        format.html { redirect_to @user, notice: 'ユーザーを更新しました。'}
         format.json { render :show, status: :ok, location: @user }
       else
-        format.html { render redirect }
+        format.html { render @user }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -72,7 +66,7 @@ class UsersController < ApplicationController
   end
 
   def create_network
-    @user.networks << Network.find(params[:network_id])
+    @user.usable_networks << Network.find(params[:network_id])
     respond_to do |format|
       format.html { redirect_to @user, notice: 'ネットワークの紐付けを追加しました。'}
       format.json { render :show, status: :ok, location: @user }
@@ -80,7 +74,7 @@ class UsersController < ApplicationController
   end
 
   def delete_network
-    @user.networks.delete(Network.find(params[:network_id]))
+    @user.usable_networks.delete(Network.find(params[:network_id]))
     respond_to do |format|
       format.html { redirect_to @user, notice: 'ネットワークの紐付けを解除しました。' }
       format.json { head :no_content }
@@ -112,7 +106,7 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(
         :role,
-        :auth_network_id
+        :auth_network_ids
       )
     end
 end

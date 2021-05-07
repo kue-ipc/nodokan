@@ -14,8 +14,18 @@ class User < ApplicationRecord
 
   has_many :nodes, dependent: :nullify
 
-  has_and_belongs_to_many :networks
-  belongs_to :auth_network, optional: true, class_name: 'Network'
+  has_many :allocations
+  has_many :admin_allocations, -> { where(admin: true) },
+    class_name: 'Allocation'
+  has_many :usable_allocations, -> { where(usable: true) },
+    class_name: 'Allocation'
+  has_many :auth_allocations, -> { where(auth: true) },
+    class_name: 'Allocation'
+
+  has_many :networks, through: :allocations
+  has_many :admin_networks, through: :admin_allocations, source: :network
+  has_many :usable_networks, through: :usable_allocations, source: :network
+  has_many :auth_networks, through: :auth_allocations, source: :network
 
   validates :username, presence: true,
                        uniqueness: {case_sensitive: true},
@@ -41,6 +51,9 @@ class User < ApplicationRecord
         logger.error "Invalid network config: #{net_config[:auth_network]}"
         nil
       end
+    if auth_network
+      logger.debug "User #{username} is allocated auth network: #{auth_network}"
+    end
 
     if net_config[:networks]
       net_config[:networks].each do |net|
@@ -63,7 +76,10 @@ class User < ApplicationRecord
   def ldap_before_save
     sync_ldap!
 
-    if Settings.user_networks.present?
+    if User.count.zero?
+      # The first user is the admin, not allocate networks.
+      admin!
+    elsif Settings.user_networks.present?
       Settings.user_networks.each do |net_config|
         if ldap_groups.include?(net_config[:group])
           allocate_network!(net_config)
@@ -71,9 +87,6 @@ class User < ApplicationRecord
         end
       end
     end
-
-    # The first user is the admin.
-    admin! if User.count.zero?
   end
 
   def ldap_entry
@@ -140,7 +153,15 @@ class User < ApplicationRecord
       if admin?
         Network.all
       else
-        networks
+        usable_networks
       end
+  end
+
+  def auth_network
+    auth_networks&.first
+  end
+
+  def auth_network=(network)
+    auth_networks = network
   end
 end

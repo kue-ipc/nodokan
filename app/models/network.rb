@@ -11,9 +11,18 @@ class Network < ApplicationRecord
   has_many :ipv6_pools, dependent: :destroy
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
-  has_many :auth_users, class_name: 'User', foreign_key: 'auth_network_id',
-                        dependent: :nullify
-  has_and_belongs_to_many :users
+  has_many :allocations, dependent: :destroy
+  has_many :admin_allocations, -> { where(admin: true) },
+    class_name: 'Allocation'
+  has_many :usable_allocations, -> { where(usable: true) },
+    class_name: 'Allocation'
+  has_many :auth_allocations, -> { where(auth: true) },
+    class_name: 'Allocation'
+
+  has_many :users, through: :allocations
+  has_many :admin_users, through: :admin_allocations, source: :user
+  has_many :usable_users, through: :usable_allocations, source: :user
+  has_many :auth_users, through: :auth_allocations, source: :user
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,
@@ -223,7 +232,9 @@ class Network < ApplicationRecord
   end
 
   def self.next_free
-    # 後で考える。
-    Nework.where(auth: true).first
+    Network
+      .where(auth: true, nics_count: 0, allocations_count: 0)
+      .order(:vlan)
+      .first
   end
 end

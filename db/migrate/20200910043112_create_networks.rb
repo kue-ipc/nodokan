@@ -15,6 +15,9 @@ class CreateNetworks < ActiveRecord::Migration[6.0]
 
       t.text :note
 
+      t.integer :nics_count, null: false, default: 0
+      t.integer :allocations_count, null: false, default: 0
+
       t.timestamps
     end
   end

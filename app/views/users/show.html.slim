@@ -30,13 +30,12 @@ dl.row
   dd.col-md-5
     - if current_user.admin?
       = bootstrap_form_for @user, layout: :inline do |f|
-        = f.collection_select :auth_network_id, Network.where(auth: true), :id, :name_vlan,
+        = f.collection_select :auth_network_ids, Network.where(auth: true), :id, :name_vlan,
           {include_blank: t('values.none'), hide_label: true},
           {}
         = f.submit '変更', class: 'btn btn-warning ml-1'
     - else
       = @user.auth_network&.name_vlan || t('values.none')
-
 
 h4 = User.human_attribute_name(:networks)
 
@@ -53,7 +52,7 @@ h4 = User.human_attribute_name(:networks)
         th scope="col" = Network.human_attribute_name(:ipv6_network)
         th scope="col"
     tbody
-      - @user.networks.each do |network|
+      - @user.usable_networks.each do |network|
         tr.clickable-row data-href="#{network_path(network)}"
           td = network.name
           td = network.vlan
@@ -72,11 +71,11 @@ h4 = User.human_attribute_name(:networks)
                 method: :delete,
                 class: 'btn btn-danger'
   - if current_user.admin?
-    p 利用済みのネットワークをユーザーの紐付けを解除しても、端末への紐付けは削除されません。
+    p ユーザーの紐付けを解除しても、端末への紐付けは削除されません。
 
 - if current_user.admin?
   .mb-2
-    - unregistered_networks = Network.where.not(id: @user.network_ids)
+    - unregistered_networks = Network.where.not(id: @user.usable_network_ids)
     - if unregistered_networks.count.zero?
       p 登録できるネットワークはありません
     - else

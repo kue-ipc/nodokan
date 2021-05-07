@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_12_021647) do
+ActiveRecord::Schema.define(version: 2021_05_07_021351) do
+
+  create_table "allocations", charset: "utf8mb4", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "network_id", null: false
+    t.boolean "admin"
+    t.boolean "usable"
+    t.boolean "auth"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["network_id"], name: "index_allocations_on_network_id"
+    t.index ["user_id"], name: "index_allocations_on_user_id"
+  end
 
   create_table "confirmations", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "node_id", null: false
@@ -77,19 +89,14 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.integer "ipv6_prefix_length", limit: 1, default: 0, null: false
     t.binary "ipv6_gateway_data", limit: 16
     t.text "note"
+    t.integer "nics_count", default: 0, null: false
+    t.integer "allocations_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ipv4_network_data"], name: "index_networks_on_ipv4_network_data", unique: true
     t.index ["ipv6_network_data"], name: "index_networks_on_ipv6_network_data", unique: true
     t.index ["name"], name: "index_networks_on_name", unique: true
     t.index ["vlan"], name: "index_networks_on_vlan", unique: true
-  end
-
-  create_table "networks_users", charset: "utf8mb4", force: :cascade do |t|
-    t.bigint "network_id", null: false
-    t.bigint "user_id", null: false
-    t.index ["network_id"], name: "index_networks_users_on_network_id"
-    t.index ["user_id"], name: "index_networks_users_on_user_id"
   end
 
   create_table "nics", charset: "utf8mb4", force: :cascade do |t|
@@ -190,8 +197,6 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "auth_network_id"
-    t.index ["auth_network_id"], name: "index_users_on_auth_network_id"
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -218,17 +223,16 @@ ActiveRecord::Schema.define(version: 2021_02_12_021647) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
+  add_foreign_key "allocations", "networks"
+  add_foreign_key "allocations", "users"
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "ipv4_pools", "networks"
   add_foreign_key "ipv6_pools", "networks"
-  add_foreign_key "networks_users", "networks"
-  add_foreign_key "networks_users", "users"
   add_foreign_key "nics", "networks"
   add_foreign_key "nics", "nodes"
   add_foreign_key "nodes", "hardwares"
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "places"
   add_foreign_key "nodes", "users"
-  add_foreign_key "users", "networks", column: "auth_network_id"
 end

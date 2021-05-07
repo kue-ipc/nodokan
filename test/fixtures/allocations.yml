@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  network: one
+  admin: false
+  usable: false
+  auth: false
+
+two:
+  user: two
+  network: two
+  admin: false
+  usable: false
+  auth: false
