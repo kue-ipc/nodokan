@@ -23,8 +23,8 @@
   user.fullname,
   user.role,
   user.deleted,
-  vlan_or_id(user.auth_network),
-  user.networks.map { |nw| vlan_or_id(nw) }.join(' '),
+  user.auth_network&.identifier,
+  user.usable_networks.map(:identifier).join(' '),
   'success',
   '',
 ].to_csv

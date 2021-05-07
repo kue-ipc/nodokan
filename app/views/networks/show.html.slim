@@ -4,8 +4,11 @@
 
 =<> link_to t('actions.index'), networks_path, class: 'btn btn-secondary'
 - if current_user.admin?
-  =<> link_to t('actions.edit'), edit_network_path(@network), class: 'btn btn-primary'
-  =<> link_to t('actions.destroy'), @network, data: { confirm: t('messages.corfirm_destroy') }, method: :delete, class: 'btn btn-danger'
+  =<> link_to t('actions.edit'), edit_network_path(@network),
+    class: 'btn btn-primary'
+  =<> link_to t('actions.destroy'), @network,
+    data: { confirm: t('messages.corfirm_destroy') }, method: :delete,
+      class: 'btn btn-danger'
 hr
 
 dl
@@ -19,7 +22,8 @@ dl
   = dt_dd_for @network, :note
 
   = dt_dd_for @network, :auth_users
-  = dt_dd_for @network, :users
+  = dt_dd_for @network, :usable_users
+  / = dt_dd_for @network, :admin_users
 
   = dt_dd_tag '端末数' do
     span.badge.badge-primary
@@ -41,6 +45,6 @@ h3 = Ipv4Pool.model_name.human
     tbody
       - @network.ipv4_pools.sort_by(&:ipv4_first_data).each do |ipv4_pool|
         tr
-          td = t(ipv4_pool.ipv4_config, scope: [:activerecord, :enums, :ipv4_configs])
+          td = t_enum(ipv4_pool.ipv4_config, :ipv4_configs)
           td = ipv4_pool.ipv4_first_address
           td = ipv4_pool.ipv4_last_address

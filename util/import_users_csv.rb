@@ -5,27 +5,6 @@ require 'fileutils'
 require 'logger'
 require 'json'
 
-def vlan_or_id(network)
-  return nil unless network
-
-  if network.vlan
-    'v' + network.vlan.to_s
-  else
-    '#' + network.id.to_s
-  end
-end
-
-def find_network(nw)
-  case nw
-  when /^v(\d+)$/i
-    Network.find_by_vlan($1.to_i)
-  when /^\#(\d+)$/
-    Network.find($1.to_i)
-  else
-    raise "invalid format vlan or id: #{nw}"
-  end
-end
-
 def find_user(data)
   if data['id'].present?
     User.find(data['id'])
@@ -48,12 +27,12 @@ def create_user(data)
   user.deleted = %w[true 1 on yes].include?(data['deleted'].downcase)
 
   if data['auth_network'].present?
-    user.auth_network = find_network(data['auth_network'].strip)
+    user.auth_network = Network.find_identifier(data['auth_network'])
   end
 
   if data['networks'].present?
     data['networks'].split.each do |nw|
-      user.networks << find_network(nw)
+      user.networks << Network.find_identifier(nw)
     end
   end
 
@@ -79,8 +58,8 @@ def read_user(data)
   data['fullname'] = user.fullname
   data['role'] = user.role
   date['deleted'] = user.deleted
-  date['auth_network'] = vlan_or_id(user.auth_network)
-  date['networks'] = user.networks.map { |nw| vlan_or_id(nw) }.join(' ')
+  date['auth_network'] = user.auth_network&.identifier
+  date['networks'] = user.networks.map(:identifier).join(' ')
 
   data['action'] = ''
   data['result'] = 'success'
@@ -98,7 +77,7 @@ def update_user(data)
   user.deleted = %w[true 1 on yes].include?(data['deleted'].downcase)
 
   if data['auth_network'].present?
-    user.auth_network = find_network(data['auth_network'].strip)
+    user.auth_network = Network.find_identifier(data['auth_network'])
   else
     user.auth_network = nil
   end
@@ -106,7 +85,7 @@ def update_user(data)
   user.networks.clear
   if data['networks'].present?
     data['networks'].split.each do |nw|
-      user.networks << find_network(nw)
+      user.networks << Network.find_identifier(nw)
     end
   end
 

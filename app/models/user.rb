@@ -44,18 +44,10 @@ class User < ApplicationRecord
     logger.debug "User #{username} is allocate: #{@allocate_network_config.to_json}"
 
     self.auth_network =
-      case @allocate_network_config[:auth_network]
-      when nil
-        nil
-      when 'free'
+      if @allocate_network_config[:auth_network] == 'free'
         Network.next_free
-      when /^v(\d{1,4})$/
-        Network.find_by_vlan($1.to_i)
-      when /^\#(\d*)$/
-        Network.find($1.to_i)
       else
-        logger.error "Invalid network config: #{@allocate_network_config[:auth_network]}"
-        nil
+        Network.find_identifier(@allocate_network_config[:auth_network])
       end
 
     if auth_network
@@ -65,16 +57,10 @@ class User < ApplicationRecord
     if @allocate_network_config[:networks]
       @allocate_network_config[:networks].each do |net|
         network =
-          case net
-          when 'auth'
+          if net == 'auth'
             auth_network
-          when /^v(\d{1,4})$/
-            Network.find_by_vlan($1.to_i)
-          when /^\#(\d*)$/
-            Network.find($1.to_i)
           else
-            logger.error "Invalid network config: #{net}"
-            nil
+            Network.find_identifier(net)
           end
         add_usable_network(network) if network
       end

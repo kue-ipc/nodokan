@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     @order = permitted_params[:order]
     @condition = permitted_params[:condition]
 
-    @users = policy_scope(User).includes(:networks)
+    @users = policy_scope(User).includes(:auth_networks, :usable_networks, :admin_networks)
 
     if @query.present?
       @users = @users.where(

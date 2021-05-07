@@ -52,7 +52,7 @@
   node.operating_system&.name,
   node.nics.first&.name,
   node.nics.first&.interface_type,
-  vlan_or_id(node.nics.first&.network),
+  node.nics.first&.network&.identifier,
   node.nics.first&.mac_registration,
   node.nics.first&.mac_address,
   node.nics.first&.duid,

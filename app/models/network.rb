@@ -146,12 +146,24 @@ class Network < ApplicationRecord
     self.ipv6_gateway_data = nil
   end
 
-  # other
+  # string
   def name_vlan
     if vlan.present?
       "#{name} (VLAN #{vlan})"
     else
       name
+    end
+  end
+
+  def identifier
+    if vlan
+      'v' + vlan.to_s
+    elsif ipv4_network
+      'i' + ipv4_network_address
+    elsif ipv6_network
+      'k' + ipv6_network_address
+    else
+      '#' + id.to_s
     end
   end
 
@@ -229,6 +241,24 @@ class Network < ApplicationRecord
       ipv6_pools.map(&:ipv6_config).then do |list|
         (list + ['manual', 'disabled']).uniq
       end
+  end
+
+  # class methods
+
+  def self.find_identifier(str)
+    case str.to_s.strip.downcase
+    when /^v(\d{1,4})$/
+      Network.find_by(vlan: $1.to_i)
+    when /^i([.\d]+)$/
+      Network.find_by(ipv4_network_data: IPAddress::IPv4.new($1).data)
+    when /^k([:\h]+)$/
+      Network.find_by(ipv6_network_data: IPAddress::IPv6.new($1).data)
+    when /^\#(\d+)$/
+      Network.find($1.to_i)
+    else
+      logger.warn "Invalid network identifier: #{str}"
+      nil
+    end
   end
 
   def self.next_free

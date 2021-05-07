@@ -251,8 +251,10 @@ ja:
         prefix_length: プレフィックス長
         gateway: ゲートウェイ
         gateway_address: ゲートウェイアドレス
+        users: ユーザー
+        usable_users: 利用可能ユーザー
+        admin_users: 管理者ユーザー
         auth_users: 認証割当ユーザー
-        users: 利用可能ユーザー
       nic:
         node: 端末
         name: 名前
@@ -306,8 +308,11 @@ ja:
         fullname: フルネーム
         role: 役割
         deleted: 削除済み
-        auth_network: 認証割当ネットワーク
-        networks: 利用可能ネットワーク
+        networks: ネットワーク
+        usable_networks: 利用可能ネットワーク
+        admin_networks: 管理可能ネットワーク
+        auth_networks: 認証ネットワーク
+        auth_network: 認証ネットワーク
         admin?: 管理者権限
       ipv4_pool:
         ipv4_config: IPv4設定
