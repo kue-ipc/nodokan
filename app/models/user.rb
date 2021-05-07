@@ -26,16 +26,62 @@ class User < ApplicationRecord
 
   after_commit :radius_user
 
+  def allocate_network!(net_config)
+    auth_network =
+      case net_config[:auth_network]
+      when nil
+        nil
+      when 'free'
+        Network.next_free
+      when /^v(\d{1-4})$/
+        Network.find_by_vlan($1.to_i)
+      when /^\#(\d*)$/
+        Network.find($1.to_i)
+      else
+        logger.error "Invalid network config: #{net_config[:auth_network]}"
+        nil
+      end
+
+    if net_config[:networks]
+      net_config[:networks].each do |net|
+        networks <<
+          case net
+          when 'auth'
+            auth_network
+          when /^v(\d{1-4})$/
+            Network.find_by_vlan($1.to_i)
+          when /^\#(\d*)$/
+            Network.find($1.to_i)
+          else
+            logger.error "Invalid network config: #{net}"
+            nil
+          end
+      end
+    end
+  end
+
   def ldap_before_save
     sync_ldap!
+
+    if Settings.user_networks.present?
+      Settings.user_networks.each do |net_config|
+        if ldap_groups.include?(net_config[:group])
+          allocate_network!(net_config)
+          break
+        end
+      end
+    end
+
     # The first user is the admin.
     admin! if User.count.zero?
   end
 
   def ldap_entry
-    return if deleted
-
     @ldap_entry ||= Devise::LDAP::Adapter.get_ldap_entry(username)
+  end
+
+  def ldap_groups
+    @ldap_groups ||= Devise::LDAP::Adapter.get_group_list(username)
   end
 
   def ldap_mail

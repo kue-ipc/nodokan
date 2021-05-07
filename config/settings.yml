@@ -46,7 +46,7 @@ ldap:
     mail: true
     # telephoneNumber: true
     # serviceAccount: false
-user_network:
+user_networks:
   - group: cn=staff,ou=groups,dc=example,dc=jp
     auth_network: v102
     networks:

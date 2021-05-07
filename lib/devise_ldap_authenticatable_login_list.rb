@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
-# devise_ldap_authenticatable_login_list.rb v0.2 2021-05-06
+# devise_ldap_authenticatable_login_list.rb v0.3 2021-05-07
 
 require 'devise'
 require 'devise_ldap_authenticatable'
-require 'devise_ldap_authenticatable_authorizable'
 
 module Devise
   module LDAP
     class Connection
-      def login_list(with_groups: false)
+      def login_list
         @login_list ||= begin
           list = []
           DeviseLdapAuthenticatable::Logger.send(
@@ -30,32 +29,23 @@ module Devise
             "LDAP search #{list.size} users"
           )
 
-          if with_groups
-            list = list.map do |login|
-              groups = Adapter.get_group_list(login)
-              if groups
-                [login, groups]
-              else
-                nil
-              end
-            end.compact.to_h
-          else
-            list.keep_if { |login| Adapter.authorizable?(login) }
-          end
-
           list
         end
       end
     end
 
     module Adapter
-      def self.get_login_list(with_groups: false)
-        self.ldap_connect(nil).login_list(with_groups: with_groups)
+      def self.get_login_list
+        self.ldap_connect(nil).login_list
       end
 
       def self.get_group_list(login)
         connect = self.ldap_connect(login)
-        connect.authorizable? && connect.in_groups
+        if connect.in_required_groups?
+          connect.in_groups
+        else
+          []
+        end
       end
     end
   end

@@ -221,4 +221,9 @@ class Network < ApplicationRecord
         (list + ['manual', 'disabled']).uniq
       end
   end
+
+  def self.next_free
+    # 後で考える。
+    Nework.where(auth: true).first
+  end
 end
