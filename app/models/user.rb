@@ -14,7 +14,7 @@ class User < ApplicationRecord
 
   has_many :nodes, dependent: :nullify
 
-  has_many :allocations
+  has_many :allocations, dependent: :destroy
   has_many :admin_allocations, -> { where(admin: true) },
     class_name: 'Allocation'
   has_many :usable_allocations, -> { where(usable: true) },
@@ -34,34 +34,41 @@ class User < ApplicationRecord
                     length: {maximum: 255}
   validates :fullname, allow_blank: true, length: {maximum: 255}
 
+  after_save :allocate_network
+
   after_commit :radius_user
 
-  def allocate_network!(net_config)
-    auth_network =
-      case net_config[:auth_network]
+  def allocate_network
+    return true if @allocate_network_config.blank?
+
+    logger.debug "User #{username} is allocate: #{@allocate_network_config.to_json}"
+
+    self.auth_network =
+      case @allocate_network_config[:auth_network]
       when nil
         nil
       when 'free'
         Network.next_free
-      when /^v(\d{1-4})$/
+      when /^v(\d{1,4})$/
         Network.find_by_vlan($1.to_i)
       when /^\#(\d*)$/
         Network.find($1.to_i)
       else
-        logger.error "Invalid network config: #{net_config[:auth_network]}"
+        logger.error "Invalid network config: #{@allocate_network_config[:auth_network]}"
         nil
       end
+
     if auth_network
       logger.debug "User #{username} is allocated auth network: #{auth_network}"
     end
 
-    if net_config[:networks]
-      net_config[:networks].each do |net|
-        networks <<
+    if @allocate_network_config[:networks]
+      @allocate_network_config[:networks].each do |net|
+        network =
           case net
           when 'auth'
             auth_network
-          when /^v(\d{1-4})$/
+          when /^v(\d{1,4})$/
             Network.find_by_vlan($1.to_i)
           when /^\#(\d*)$/
             Network.find($1.to_i)
@@ -69,6 +76,7 @@ class User < ApplicationRecord
             logger.error "Invalid network config: #{net}"
             nil
           end
+        add_usable_network(network) if network
       end
     end
   end
@@ -82,7 +90,10 @@ class User < ApplicationRecord
     elsif Settings.user_networks.present?
       Settings.user_networks.each do |net_config|
         if ldap_groups.include?(net_config[:group])
-          allocate_network!(net_config)
+          @allocate_network_config = {
+            auth_network: net_config[:auth_network],
+            networks: net_config[:networks],
+          }
           break
         end
       end
@@ -158,10 +169,37 @@ class User < ApplicationRecord
   end
 
   def auth_network
-    auth_networks&.first
+    @auth_network ||= auth_networks&.first
   end
 
   def auth_network=(network)
-    auth_networks = network
+    unless network.auth
+      errors.add(:auth_network, 'は認証ネットワークではありません。')
+      return
+    end
+
+    auth_allocations.each do |allocation|
+      allocation.auth = false
+      allocation.destroy unless allocation.needed?
+    end
+
+    @auth_network = network
+    allocation = allocations.find_or_initialize_by(network: network)
+    allocation.auth = true
+    allocation.save
+  end
+
+  def add_usable_network(network)
+    allocation = allocations.find_or_initialize_by(network: network)
+    allocation.usable = true
+    allocation.save
+  end
+
+  def remove_usable_network(network)
+    allocation = usable_allocations.find_by(network: network)
+    return if allocation.nil?
+
+    allocation.usable = false
+    allocation.destroy unless allocation.needed?
   end
 end
