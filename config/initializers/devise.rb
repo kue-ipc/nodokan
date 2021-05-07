@@ -20,6 +20,7 @@ Devise.setup do |config|
   config.ldap_use_admin_to_bind = true
   # config.ldap_ad_group_check = false
   config.ldap_nis_group_check = true
+  # config.ldap_nis_group_cache_age = 60 * 60
   config.ldap_check_group_policy = :or
 
   # The secret key used by Devise. Devise uses this key to generate
