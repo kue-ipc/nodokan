@@ -18,6 +18,12 @@ table.table.table-hover.table-sm
       th scope="col"
         = Network.human_attribute_name(:ipv6_network)
         =< sort_link(:ipv6_network)
+      th scope="col"
+        = Network.human_attribute_name(:nics_count)
+        =< sort_link(:nics_count)
+      th scope="col"
+        = Network.human_attribute_name(:assignments_count)
+        =< sort_link(:assignments_count)
 
   tbody
     - @networks.each do |network|
@@ -34,6 +40,8 @@ table.table.table-hover.table-sm
             i.far.fa-square
         td = network.ipv4_network&.to_string
         td = network.ipv6_network&.to_string
+        td = network.nics_count
+        td = network.assignments_count
 - list_group_item_class = [ \
   'list-group-item',
   'list-group-item-action',

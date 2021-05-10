@@ -11,9 +11,10 @@ class NetworksController < ApplicationController
       :format,
       :query,
       order: [
-        :id, :name, :vlan, :ipv4_network, :ipv6_network
+        :id, :name, :vlan, :ipv4_network, :ipv6_network,
+        :nics_count, :assignments_count,
       ],
-      condition: [:auth]
+      condition: [:auth, :nics_count, :assignments_count]
     )
 
     @page = permitted_params[:page]

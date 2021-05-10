@@ -17,7 +17,8 @@ module Devise
 
     class Connection
       def authorizable?
-        in_required_groups? &&
+        !search_for_login.nil? &&
+          in_required_groups? &&
           has_required_attribute? &&
           has_required_attribute_presence?
       end
