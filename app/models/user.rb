@@ -14,18 +14,18 @@ class User < ApplicationRecord
 
   has_many :nodes, dependent: :nullify
 
-  has_many :allocations, dependent: :destroy
-  has_many :auth_allocations,
-    -> { where(auth: true) }, class_name: 'Allocation'
-  has_many :use_allocations,
-    -> { where(use: true) }, class_name: 'Allocation'
-  has_many :manage_allocations,
-    -> { where(manage: true) }, class_name: 'Allocation'
+  has_many :assignments, dependent: :destroy
+  has_many :auth_assignments,
+    -> { where(auth: true) }, class_name: 'Assignment'
+  has_many :use_assignments,
+    -> { where(use: true) }, class_name: 'Assignment'
+  has_many :manage_assignments,
+    -> { where(manage: true) }, class_name: 'Assignment'
 
-  has_many :networks, through: :allocations
-  has_many :auth_networks, through: :auth_allocations, source: :network
-  has_many :use_networks, through: :use_allocations, source: :network
-  has_many :manage_networks, through: :manage_allocations, source: :network
+  has_many :networks, through: :assignments
+  has_many :auth_networks, through: :auth_assignments, source: :network
+  has_many :use_networks, through: :use_assignments, source: :network
+  has_many :manage_networks, through: :manage_assignments, source: :network
 
   validates :username, presence: true,
                        uniqueness: {case_sensitive: true},
@@ -164,28 +164,28 @@ class User < ApplicationRecord
       return
     end
 
-    auth_allocations.each do |allocation|
-      allocation.auth = false
-      allocation.destroy unless allocation.needed?
+    auth_assignments.each do |assignment|
+      assignment.auth = false
+      assignment.destroy unless assignment.needed?
     end
 
     @auth_network = network
-    allocation = allocations.find_or_initialize_by(network: network)
-    allocation.auth = true
-    allocation.save
+    assignment = assignments.find_or_initialize_by(network: network)
+    assignment.auth = true
+    assignment.save
   end
 
   def add_use_network(network)
-    allocation = allocations.find_or_initialize_by(network: network)
-    allocation.usable = true
-    allocation.save
+    assignment = assignments.find_or_initialize_by(network: network)
+    assignment.usable = true
+    assignment.save
   end
 
   def remove_use_network(network)
-    allocation = use_allocations.find_by(network: network)
-    return if allocation.nil?
+    assignment = use_assignments.find_by(network: network)
+    return if assignment.nil?
 
-    allocation.usable = false
-    allocation.destroy unless allocation.needed?
+    assignment.usable = false
+    assignment.destroy unless assignment.needed?
   end
 end

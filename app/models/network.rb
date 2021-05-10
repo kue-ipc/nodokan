@@ -11,18 +11,18 @@ class Network < ApplicationRecord
   has_many :ipv6_pools, dependent: :destroy
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
-  has_many :allocations, dependent: :destroy
-  has_many :auth_allocations,
-    -> { where(auth: true) }, class_name: 'Allocation'
-  has_many :use_allocations,
-    -> { where(use: true) }, class_name: 'Allocation'
-  has_many :manage_allocations,
-    -> { where(manage: true) }, class_name: 'Allocation'
+  has_many :assignments, dependent: :destroy
+  has_many :auth_assignments,
+    -> { where(auth: true) }, class_name: 'Assignment'
+  has_many :use_assignments,
+    -> { where(use: true) }, class_name: 'Assignment'
+  has_many :manage_assignments,
+    -> { where(manage: true) }, class_name: 'Assignment'
 
-  has_many :users, through: :allocations
-  has_many :auth_users, through: :auth_allocations, source: :user
-  has_many :use_users, through: :use_allocations, source: :user
-  has_many :manage_users, through: :manage_allocations, source: :user
+  has_many :users, through: :assignments
+  has_many :auth_users, through: :auth_assignments, source: :user
+  has_many :use_users, through: :use_assignments, source: :user
+  has_many :manage_users, through: :manage_assignments, source: :user
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,
@@ -263,7 +263,7 @@ class Network < ApplicationRecord
 
   def self.next_free
     Network
-      .where(auth: true, nics_count: 0, allocations_count: 0)
+      .where(auth: true, nics_count: 0, assignments_count: 0)
       .order(:vlan)
       .first
   end

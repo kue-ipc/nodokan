@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2021_05_07_021351) do
 
-  create_table "allocations", charset: "utf8mb4", force: :cascade do |t|
+  create_table "assignments", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
     t.boolean "auth", null: false
@@ -20,8 +20,9 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.boolean "manage", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["network_id"], name: "index_allocations_on_network_id"
-    t.index ["user_id"], name: "index_allocations_on_user_id"
+    t.index ["network_id"], name: "index_assignments_on_network_id"
+    t.index ["user_id", "network_id"], name: "index_assignments_on_user_id_and_network_id", unique: true
+    t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
   create_table "confirmations", charset: "utf8mb4", force: :cascade do |t|
@@ -90,7 +91,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.binary "ipv6_gateway_data", limit: 16
     t.text "note"
     t.integer "nics_count", default: 0, null: false
-    t.integer "allocations_count", default: 0, null: false
+    t.integer "assignments_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ipv4_network_data"], name: "index_networks_on_ipv4_network_data", unique: true
@@ -223,8 +224,8 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
-  add_foreign_key "allocations", "networks"
-  add_foreign_key "allocations", "users"
+  add_foreign_key "assignments", "networks"
+  add_foreign_key "assignments", "users"
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "ipv4_pools", "networks"

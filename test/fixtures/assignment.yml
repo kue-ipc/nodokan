@@ -3,13 +3,13 @@
 one:
   user: one
   network: one
-  admin: false
-  usable: false
-  auth: false
+  auth: true
+  use: false
+  manage: false
 
 two:
   user: two
   network: two
-  admin: false
-  usable: false
   auth: false
+  use: true
+  manage: false

@@ -1,6 +1,6 @@
-class CreateAllocations < ActiveRecord::Migration[6.1]
+class CreateAssignments < ActiveRecord::Migration[6.1]
   def change
-    create_table :allocations do |t|
+    create_table :assignments do |t|
       t.references :user, null: false, foreign_key: true
       t.references :network, null: false, foreign_key: true
       t.boolean :auth, null: false, deafult: false
@@ -9,5 +9,6 @@ class CreateAllocations < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+    add_index :assignments, [:user_id, :network_id], unique: true
   end
 end
