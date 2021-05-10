@@ -15,17 +15,17 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :nullify
 
   has_many :allocations, dependent: :destroy
-  has_many :admin_allocations, -> { where(admin: true) },
-    class_name: 'Allocation'
-  has_many :usable_allocations, -> { where(usable: true) },
-    class_name: 'Allocation'
-  has_many :auth_allocations, -> { where(auth: true) },
-    class_name: 'Allocation'
+  has_many :auth_allocations,
+    -> { where(auth: true) }, class_name: 'Allocation'
+  has_many :use_allocations,
+    -> { where(use: true) }, class_name: 'Allocation'
+  has_many :manage_allocations,
+    -> { where(manage: true) }, class_name: 'Allocation'
 
   has_many :networks, through: :allocations
-  has_many :admin_networks, through: :admin_allocations, source: :network
-  has_many :usable_networks, through: :usable_allocations, source: :network
   has_many :auth_networks, through: :auth_allocations, source: :network
+  has_many :use_networks, through: :use_allocations, source: :network
+  has_many :manage_networks, through: :manage_allocations, source: :network
 
   validates :username, presence: true,
                        uniqueness: {case_sensitive: true},
@@ -62,7 +62,7 @@ class User < ApplicationRecord
           else
             Network.find_identifier(net)
           end
-        add_usable_network(network) if network
+        add_use_network(network) if network
       end
     end
   end
@@ -150,7 +150,7 @@ class User < ApplicationRecord
       if admin?
         Network.all
       else
-        usable_networks
+        use_networks
       end
   end
 
@@ -175,14 +175,14 @@ class User < ApplicationRecord
     allocation.save
   end
 
-  def add_usable_network(network)
+  def add_use_network(network)
     allocation = allocations.find_or_initialize_by(network: network)
     allocation.usable = true
     allocation.save
   end
 
-  def remove_usable_network(network)
-    allocation = usable_allocations.find_by(network: network)
+  def remove_use_network(network)
+    allocation = use_allocations.find_by(network: network)
     return if allocation.nil?
 
     allocation.usable = false

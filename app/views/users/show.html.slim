@@ -52,7 +52,7 @@ h4 = User.human_attribute_name(:networks)
         th scope="col" = Network.human_attribute_name(:ipv6_network)
         th scope="col"
     tbody
-      - @user.usable_networks.each do |network|
+      - @user.use_networks.each do |network|
         tr.clickable-row data-href="#{network_path(network)}"
           td = network.name
           td = network.vlan
@@ -75,7 +75,7 @@ h4 = User.human_attribute_name(:networks)
 
 - if current_user.admin?
   .mb-2
-    - unregistered_networks = Network.where.not(id: @user.usable_network_ids)
+    - unregistered_networks = Network.where.not(id: @user.use_network_ids)
     - if unregistered_networks.count.zero?
       p 登録できるネットワークはありません
     - else

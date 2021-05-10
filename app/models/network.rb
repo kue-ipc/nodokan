@@ -12,17 +12,17 @@ class Network < ApplicationRecord
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
   has_many :allocations, dependent: :destroy
-  has_many :admin_allocations, -> { where(admin: true) },
-    class_name: 'Allocation'
-  has_many :usable_allocations, -> { where(usable: true) },
-    class_name: 'Allocation'
-  has_many :auth_allocations, -> { where(auth: true) },
-    class_name: 'Allocation'
+  has_many :auth_allocations,
+    -> { where(auth: true) }, class_name: 'Allocation'
+  has_many :use_allocations,
+    -> { where(use: true) }, class_name: 'Allocation'
+  has_many :manage_allocations,
+    -> { where(manage: true) }, class_name: 'Allocation'
 
   has_many :users, through: :allocations
-  has_many :admin_users, through: :admin_allocations, source: :user
-  has_many :usable_users, through: :usable_allocations, source: :user
   has_many :auth_users, through: :auth_allocations, source: :user
+  has_many :use_users, through: :use_allocations, source: :user
+  has_many :manage_users, through: :manage_allocations, source: :user
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,

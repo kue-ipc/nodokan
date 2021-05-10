@@ -14,14 +14,14 @@
 h3 利用者メニュー
 
 .menu.row.mb-1
-  .col-sm-6.col-lg-4.col-xl-3.my-1
+  .col-md-6.col-lg-4.my-1
     = link_to new_node_path, class: 'card border-primary' do
       .card-header.text-center
         | 端末の新規登録
       .card-body
         | 端末の新規登録を行います。
         | 端末を新しく購入した場合は、こちらで登録を行ってください。
-  .col-sm-6.col-lg-4.col-xl-3.my-1
+  .col-md-6.col-lg-4.my-1
     = link_to nodes_path, class: 'card border-secondary' do
       .card-header.text-center
         | 端末一覧
@@ -33,13 +33,13 @@ h3 利用者メニュー
   h3 管理者メニュー
 
   .menu.row.mb-1
-    .col-sm-6.col-lg-4.col-xl-3.my-1
+    .col-md-6.col-lg-4.my-1
       = link_to networks_path, class: 'card border-warning' do
         .card-header.text-center
           | ネットワーク一覧
         .card-body
           | ネットワークの操作を行います。
-    .col-sm-6.col-lg-4.col-xl-3.my-1
+    .col-md-6.col-lg-4.my-1
       = link_to users_path, class: 'card border-warning' do
         .card-header.text-center
           | ユーザー一覧

@@ -24,7 +24,7 @@
   user.role,
   user.deleted,
   user.auth_network&.identifier,
-  user.usable_networks.map(:identifier).join(' '),
+  user.use_networks.map(&:identifier).join(' '),
   'success',
   '',
 ].to_csv

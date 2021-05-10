@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     @order = permitted_params[:order]
     @condition = permitted_params[:condition]
 
-    @users = policy_scope(User).includes(:auth_networks, :usable_networks, :admin_networks)
+    @users = policy_scope(User).includes(:auth_networks, :use_networks, :manage_networks)
 
     if @query.present?
       @users = @users.where(
@@ -66,7 +66,7 @@ class UsersController < ApplicationController
   end
 
   def create_network
-    @user.usable_networks << Network.find(params[:network_id])
+    @user.use_networks << Network.find(params[:network_id])
     respond_to do |format|
       format.html { redirect_to @user, notice: 'ネットワークの紐付けを追加しました。'}
       format.json { render :show, status: :ok, location: @user }
@@ -74,7 +74,7 @@ class UsersController < ApplicationController
   end
 
   def delete_network
-    @user.usable_networks.delete(Network.find(params[:network_id]))
+    @user.use_networks.delete(Network.find(params[:network_id]))
     respond_to do |format|
       format.html { redirect_to @user, notice: 'ネットワークの紐付けを解除しました。' }
       format.json { head :no_content }

@@ -19,7 +19,7 @@ table.table.table-hover.table-sm
         = User.human_attribute_name(:deleted)
         =< filter_link(:deleted)
       th scope="col" = User.human_attribute_name(:auth_network)
-      th scope="col" = User.human_attribute_name(:usable_networks)
+      th scope="col" = User.human_attribute_name(:use_networks)
   tbody
     - @users.each do |user|
       tr.clickable-row[
@@ -31,7 +31,7 @@ table.table.table-hover.table-sm
         td.text-nowrap = t(user.role, scope: 'activerecord.enums.roles')
         td = i_bool_tag(user.deleted)
         td = user.auth_network&.identifier
-        td = user.usable_networks.map(:identifier).join(', ')
+        td = user.use_networks.map(&:identifier).join(', ')
 
 - list_group_item_class = [ \
   'list-group-item',
