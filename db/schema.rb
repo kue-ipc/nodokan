@@ -83,6 +83,9 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.string "name", null: false
     t.integer "vlan"
     t.boolean "auth", default: false, null: false
+    t.boolean "dhcp", default: false, null: false
+    t.boolean "locked", default: false, null: false
+    t.boolean "special", default: false, null: false
     t.binary "ipv4_network_data", limit: 4
     t.integer "ipv4_prefix_length", limit: 1, default: 0, null: false
     t.binary "ipv4_gateway_data", limit: 4
@@ -105,7 +108,8 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.bigint "network_id"
     t.string "name"
     t.integer "interface_type", null: false
-    t.boolean "mac_registration", default: false, null: false
+    t.boolean "auth", default: false, null: false
+    t.boolean "locked", default: false, null: false
     t.binary "mac_address_data", limit: 6
     t.binary "duid_data", limit: 130
     t.integer "ipv4_config", default: -1, null: false
@@ -127,6 +131,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.string "name", null: false
     t.string "hostname"
     t.string "domain"
+    t.boolean "special", default: false, null: false
     t.bigint "place_id"
     t.bigint "hardware_id"
     t.bigint "operating_system_id"
