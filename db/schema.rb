@@ -15,9 +15,9 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
   create_table "assignments", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
-    t.boolean "auth", null: false
-    t.boolean "use", null: false
-    t.boolean "manage", null: false
+    t.boolean "auth", default: false, null: false
+    t.boolean "use", default: false, null: false
+    t.boolean "manage", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_assignments_on_network_id"

@@ -18,7 +18,7 @@ class UserImportCSV < ImportCSV
 
     if data['networks'].present?
       data['networks'].split.each do |nw|
-        user.networks << Network.find_identifier(nw)
+        user.add_use_network(Network.find_identifier(nw))
       end
     end
 
@@ -60,10 +60,10 @@ class UserImportCSV < ImportCSV
       user.auth_network = nil
     end
 
-    user.networks.clear
+    user.clear_use_networks
     if data['networks'].present?
       data['networks'].split.each do |nw|
-        user.networks << Network.find_identifier(nw)
+        user.add_use_network(Network.find_identifier(nw))
       end
     end
 

@@ -159,14 +159,22 @@ class User < ApplicationRecord
   end
 
   def auth_network=(network)
-    unless network.auth
+    if network.nil?
+      auth_assignments.each do |assignment|
+        assignment.auth = false
+        assignment.destroy unless assignment.assigned?
+      end
+      return
+    end
+
+    unless network&.auth
       errors.add(:auth_network, 'は認証ネットワークではありません。')
       return
     end
 
     auth_assignments.each do |assignment|
       assignment.auth = false
-      assignment.destroy unless assignment.needed?
+      assignment.destroy unless assignment.assigned?
     end
 
     @auth_network = network
@@ -177,7 +185,7 @@ class User < ApplicationRecord
 
   def add_use_network(network)
     assignment = assignments.find_or_initialize_by(network: network)
-    assignment.usable = true
+    assignment.use = true
     assignment.save
   end
 
@@ -185,7 +193,14 @@ class User < ApplicationRecord
     assignment = use_assignments.find_by(network: network)
     return if assignment.nil?
 
-    assignment.usable = false
-    assignment.destroy unless assignment.needed?
+    assignment.use = false
+    assignment.destroy unless assignment.assigned?
+  end
+
+  def clear_use_networks
+    use_assignments.each do |assignment|
+      assignment.use = false
+      assignment.destroy unless assignment.assigned?
+    end
   end
 end

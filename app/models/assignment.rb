@@ -4,10 +4,10 @@ class Assignment < ApplicationRecord
 
   validates :network, uniqueness: { scope: :user }
 
-  scope :unassigned -> { where(auth: false, use: false, manage: false) }
+  scope :unassigned, -> { where(auth: false, use: false, manage: false) }
 
 
-  def needed?
+  def assigned?
     auth || use || manage
   end
 end
