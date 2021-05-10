@@ -5,6 +5,9 @@ class CreateNetworks < ActiveRecord::Migration[6.0]
       t.integer :vlan,              index: {unique: true}
 
       t.boolean :auth, null: false, default: false
+      t.boolean :dhcp, null: false, default: false
+      t.boolean :locked, null: false, default: false
+      t.boolean :special, null: false, default: false
 
       t.binary  :ipv4_network_data,  limit: 4,  index: {unique: true}
       t.integer :ipv4_prefix_length, limit: 1,  null: false, default: 0

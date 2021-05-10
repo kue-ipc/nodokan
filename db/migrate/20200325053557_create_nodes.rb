@@ -7,6 +7,8 @@ class CreateNodes < ActiveRecord::Migration[6.0]
       t.string :hostname
       t.string :domain
 
+      t.boolean :special, null: false, default: false
+
       t.references :place, foreign_key: true
       t.references :hardware, foreign_key: true
       t.references :operating_system, foreign_key: true

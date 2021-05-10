@@ -7,7 +7,9 @@ class CreateNics < ActiveRecord::Migration[6.0]
       t.string  :name
       t.integer :interface_type, null: false
 
-      t.boolean :mac_registration, null: false, default: false
+      t.boolean :auth, null: false, default: false
+      t.boolean :locked, null: false, default: false
+
       t.binary  :mac_address_data, limit: 6,   index: {unique: true}
       t.binary  :duid_data,        limit: 130, index: {unique: true}
 
