@@ -17,6 +17,13 @@ class ImportCSV
   end
 
   def import(csv_file)
+    results = {
+      'success' => 0,
+      'failure' => 0,
+      'error' => 0,
+      'skip' => 0,
+    }
+
     backup_file = "#{csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
     tmp_file = "#{csv_file}.tmp"
   
@@ -39,11 +46,16 @@ class ImportCSV
       ensure
         @logger.info(
           "#{count}: [#{data['result']}] #{data['id']}: #{data['message']}")
+        results[data['result']] += 1
         io.puts data.to_csv
       end
     end
+    @logger.info("RESULTS: #{results.to_json}")
+
     FileUtils.move(csv_file, backup_file)
     FileUtils.move(tmp_file, csv_file)
+
+    results
   end
 
   def do_action(data)
