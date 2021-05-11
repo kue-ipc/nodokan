@@ -12,9 +12,13 @@
 hr
 
 dl
-  = dt_dd_for @network, :name
+  = dt_dd_for @network, :name do |value|
+    = value
   = dt_dd_for @network, :vlan
   = dt_dd_for @network, :auth
+  = dt_dd_for @network, :dhcp
+  = dt_dd_for @network, :locked
+  = dt_dd_for @network, :specific
   = dt_dd_for @network, :ipv4_network
   = dt_dd_for @network, :ipv4_gateway
   = dt_dd_for @network, :ipv6_network

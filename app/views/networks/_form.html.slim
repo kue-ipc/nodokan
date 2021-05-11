@@ -12,8 +12,14 @@
       = f.text_field :name, required: true, wrapper: {class: 'col-md-4'}
       = f.number_field :vlan, min: 1, max: 4094, wrapper: {class: 'col-md-4'}
     .form-row
-      .col-md-12
+      .col-md-2
         = f.check_box :auth, custom: true
+      .col-md-2
+        = f.check_box :dhcp, custom: true
+      .col-md-2
+        = f.check_box :locked, custom: true
+      .col-md-2
+        = f.check_box :specific, custom: true
   .rounded.border.p-2.mb-2
     h4 IPv4ネットワーク情報
     small.form-text.text-muted

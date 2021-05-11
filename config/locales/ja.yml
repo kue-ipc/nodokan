@@ -232,6 +232,9 @@ ja:
         name: 名前
         vlan: VLAN番号
         auth: 認証
+        dhcp: DHCP
+        locked: ロック
+        specific: 特定
         ipv4_network_address: IPv4ネットワークアドレス
         ipv4_netmask: IPv4サブネットマスク
         ipv4_prefix_length: IPv4プレフィックス長
