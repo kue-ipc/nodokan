@@ -10,7 +10,7 @@ class NodeNic
     'interface_type'
     'name'
     'network_id'
-    'mac_registration'
+    'auth'
     'mac_address'
   ]
 
@@ -69,7 +69,7 @@ class NodeNic
     @inputs.get('network_id').node.addEventListener 'change', (_e) =>
       @changeNetwork()
 
-    @inputs.get('mac_registration').node.addEventListener 'change', (_e) =>
+    @inputs.get('auth').node.addEventListener 'change', (_e) =>
       @requireMacAddress()
     @inputs.get('ipv4_config').node.addEventListener 'change', (e) =>
       @requireMacAddress()
@@ -158,7 +158,7 @@ class NodeNic
       node.disabled = false
 
   requireMacAddress: ->
-    if @inputs.get('mac_registration').node.checked ||
+    if @inputs.get('auth').node.checked ||
         @inputs.get('ipv4_config').node.value == 'reserved'
       @inputs.get('mac_address').node.required = true
       @displayMessage('require_mac')
@@ -222,9 +222,9 @@ class NodeNic
         @adjustConfig(ip, ['disabled'])
       @disableInputs(@ip_configs)
 
-      @inputs.get('mac_registration').node.checked = false
+      @inputs.get('auth').node.checked = false
       @requireMacAddress()
-      @disableInputs(['mac_registration'])
+      @disableInputs(['auth'])
 
       @displayMessage('no_network')
       return
@@ -236,9 +236,9 @@ class NodeNic
         @setInitInput(name)
       @disableInputs(@ip_configs)
 
-      @setInitInput('mac_registration')
+      @setInitInput('auth')
       @requireMacAddress()
-      @disableInputs(['mac_registration'])
+      @disableInputs(['auth'])
 
       @displayMessage('unconfigurable')
       return
@@ -247,15 +247,15 @@ class NodeNic
       @displayMessage('auth_network')
 
       if @checkInitInput('network_id')
-        @setInitInput('mac_registration')
+        @setInitInput('auth')
       else
-        @inputs.get('mac_registration').node.checked = true
+        @inputs.get('auth').node.checked = true
       @requireMacAddress()
-      @enableInputs(['mac_registration'])
+      @enableInputs(['auth'])
     else
-      @inputs.get('mac_registration').node.checked = false
+      @inputs.get('auth').node.checked = false
       @requireMacAddress()
-      @disableInputs(['mac_registration'])
+      @disableInputs(['auth'])
 
     for ip in @ip_versions
       @adjustConfig(ip, @network["#{ip}_config_list"])

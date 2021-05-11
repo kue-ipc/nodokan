@@ -309,7 +309,7 @@ class NodesController < ApplicationController
           :_destroy,
           :name,
           :interface_type,
-          :mac_registration,
+          :auth,
           :mac_address,
           :duid,
           :network_id,

@@ -183,8 +183,8 @@ p 【必須】の項目は入力が必須です。
           = nic_f.text_field :mac_address,
             pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
             wrapper: {class: 'col-md-4'}
-          = nic_f.form_group :mac_registration, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
-            = nic_f.check_box :mac_registration,
+          = nic_f.form_group :auth, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
+            = nic_f.check_box :auth,
               custome: true,
               label: 'MACアドレスを登録する'
           = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),

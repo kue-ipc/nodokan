@@ -20,7 +20,7 @@
   nic[name]
   nic[interface_type]
   nic[network]
-  nic[mac_registration]
+  nic[auth]
   nic[mac_address]
   nic[duid]
   nic[ipv4_config]
@@ -53,7 +53,7 @@
   node.nics.first&.name,
   node.nics.first&.interface_type,
   node.nics.first&.network&.identifier,
-  node.nics.first&.mac_registration,
+  node.nics.first&.auth,
   node.nics.first&.mac_address,
   node.nics.first&.duid,
   node.nics.first&.ipv4_config,

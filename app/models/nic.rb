@@ -240,7 +240,7 @@ class Nic < ApplicationRecord
   end
 
   def radius_mac
-    if mac_registration
+    if auth
       RadiusRegisterMacJob.perform_later(mac_address_raw, network.vlan)
     else
       RadiusUnregisterMacJob.perform_later(mac_address_raw)
