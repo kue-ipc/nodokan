@@ -157,7 +157,7 @@ button#confirm-form-modal-toggle.btn.btn-primary[
       .col-md-6
         h4 IPv4
         - case nic.ipv4_config
-        - when 'dypanmic', 'reserved'
+        - when 'dynamic', 'reserved'
           - ip_data = { \
             setting: '自動',
             address: '-',
@@ -191,7 +191,7 @@ button#confirm-form-modal-toggle.btn.btn-primary[
       .col-md-6
         h4 IPv6
         - case nic.ipv6_config
-        - when 'dypanmic', 'reserved'
+        - when 'dynamic', 'reserved'
           - ip_data = { \
             setting: '自動',
             address: '-',
