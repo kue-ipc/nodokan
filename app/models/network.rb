@@ -263,7 +263,7 @@ class Network < ApplicationRecord
 
   def self.next_free
     Network
-      .where(auth: true, nics_count: 0, assignments_count: 0)
+      .where(auth: true, locked: false, nics_count: 0, assignments_count: 0)
       .order(:vlan)
       .first
   end

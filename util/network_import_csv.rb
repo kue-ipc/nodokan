@@ -10,8 +10,25 @@ class NetworkImportCSV < ImportCSV
     network = Network.new
 
     network.name = data['name']
+
+    if data['flag'].present?
+      data['flag'].downcase.each_char do |char|
+        case char
+        when 'a'
+          network.auth = true
+        when 'd'
+          network.dhcp = true
+        when 'l'
+          network.locked = true
+        when 's'
+          network.specific = true
+        else
+          raise "Invalid flag: #{data['flag']}"
+        end
+      end
+    end
+
     network.vlan = data['vlan'].presence&.to_i
-    network.auth = %w[true 1 on yes].include?(data['auth'].downcase)
 
     if data['ipv4_network'].present?
       address, mask = data['ipv4_network'].split('/')
@@ -22,12 +39,8 @@ class NetworkImportCSV < ImportCSV
     network.ipv4_gateway_address = data['ipv4_gateway'].presence
 
     if data['ipv4_pools'].present?
-      JSON.parse(data['ipv4_pools']).each do |pl|
-        network.ipv4_pools << Ipv4Pool.new(
-          ipv4_config: pl[0],
-          ipv4_first_address: pl[1],
-          ipv4_last_address: pl[2]
-        )
+      data['ipv4_pools'].split.each do |pl|
+        network.ipv4_pools << Ipv4Pool.new_identifier(pl)
       end
     end
 
@@ -40,12 +53,8 @@ class NetworkImportCSV < ImportCSV
     network.ipv6_gateway_address = data['ipv6_gateway'].presence
 
     if data['ipv6_pools'].present?
-      JSON.parse(data['ipv6_pools']).each do |pl|
-        network.ipv6_pools << Ipv6Pool.new(
-          ipv6_config: pl[0],
-          ipv6_first_address: pl[1],
-          ipv6_last_address: pl[2]
-        )
+      data['ipv6_pools'].split.each do |pl|
+        network.ipv6_pools << Ipv6Pool.new_identifier(pl)
       end
     end
 
@@ -58,8 +67,14 @@ class NetworkImportCSV < ImportCSV
 
     data['id'] = network.id
     data['name'] = network.name
+    data['flag'] =   [
+      if network.auth then 'a' else '' end,
+      if network.dhcp then 'd' else '' end,
+      if network.locked then 'l' else '' end,
+      if network.specific then 's' else '' end,
+    ].join(''),
+  
     data['vlan'] = network.vlan
-    data['auth'] = network.auth
     data['ipv4_network'] = network.ipv4_network&.to_string
     data['ipv4_gateway'] = network.ipv4_gateway
     data['ipv4_pools'] =
@@ -83,8 +98,24 @@ class NetworkImportCSV < ImportCSV
     network = find_network(data)
 
     network.name = data['name']
+    if data['flag'].present?
+      data['flag'].downcase.each_char do |char|
+        case char
+        when 'a'
+          network.auth = true
+        when 'd'
+          network.dhcp = true
+        when 'l'
+          network.locked = true
+        when 's'
+          network.specific = true
+        else
+          raise "Invalid flag: #{data['flag']}"
+        end
+      end
+    end
+
     network.vlan = data['vlan'].presence&.to_i
-    network.auth = %w[true 1 on yes].include?(data['auth'].downcase)
 
     if data['ipv4_network'].present?
       address, mask = data['ipv4_network'].split('/')
@@ -92,19 +123,15 @@ class NetworkImportCSV < ImportCSV
       network.ipv4_prefix_length = mask
     else
       network.ipv4_network_address = nil
-      network.ipv4_prefix_length = nil
+      network.ipv4_prefix_length = 0
     end
 
     network.ipv4_gateway_address = data['ipv4_gateway'].presence
 
     network.ipv4_pools.clear
     if data['ipv4_pools'].present?
-      JSON.parse(data['ipv4_pools']).each do |pl|
-        network.ipv4_pools << Ipv4Pool.new(
-          ipv4_config: pl[0],
-          ipv4_first_address: pl[1],
-          ipv4_last_address: pl[2]
-        )
+      data['ipv4_pools'].split.each do |pl|
+        network.ipv4_pools << Ipv4Pool.new_identifier(pl)
       end
     end
 
@@ -114,19 +141,15 @@ class NetworkImportCSV < ImportCSV
       network.ipv6_prefix_length = mask
     else
       network.ipv6_network_address = nil
-      network.ipv6_prefix_length = nil
+      network.ipv6_prefix_length = 0
     end
 
     network.ipv6_gateway_address = data['ipv6_gateway'].presence
 
     network.ipv6_pools.clear
     if data['ipv6_pools'].present?
-      JSON.parse(data['ipv6_pools']).each do |pl|
-        network.ipv6_pools << Ipv6Pool.new(
-          ipv6_config: pl[0],
-          ipv6_first_address: pl[1],
-          ipv6_last_address: pl[2]
-        )
+      data['ipv6_pools'].split.each do |pl|
+        network.ipv6_pools << Ipv6Pool.new_identifier(pl)
       end
     end
 

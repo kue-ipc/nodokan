@@ -49,4 +49,55 @@ class Ipv6Pool < ApplicationRecord
     addr = IPAddress::IPv6.new(addr.to_s) unless addr.is_a?(IPAddress::IPv6)
     ipv6_range.cover?(addr)
   end
+
+  def identifier
+    prefix =
+      case ipv6_config
+      when 'dynamic'
+        'd'
+      when 'reserved'
+        'r'
+      when 'static'
+        's'
+      when 'manual'
+        'm'
+      when 'disabled'
+        '!'
+      else
+        logger.error("Unknown ipv6_config: #{ipv6_config}")
+        '?'
+      end
+    prefix + '-' + ipv6_first_address + '-' + ipv6_last_address
+  end
+
+  def to_s
+    identifier
+  end
+
+  def self.new_identifier(str)
+    prefix, first, last = str.strip.downcase.split('-')
+
+    config =
+      case prefix
+      when 'd'
+        'dynamic'
+      when 'r'
+        'reserved'
+      when 's'
+        'static'
+      when 'm'
+        'manual'
+      when '!'
+        'disabled'
+      else
+        logger.error("Invalid Ipv4Pool idetifier: #{str}")
+        raise ArgumentError, "Invalid Ipv4Pool idetifier: #{str}"
+      end
+
+    Ipv4Pool.new(
+      ipv6_config: config,
+      ipv6_first_address: first,
+      ipv6_last_address: last
+    )
+  end
 end

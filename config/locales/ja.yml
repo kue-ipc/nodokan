@@ -210,17 +210,19 @@ ja:
       operating_system: OS
       place: 設置場所
       security_software: セキュリティソフト
+      assignment: 割当
     long_models:
       confirmation: 端末の確認
       hardware: 機器
-      ipv6_pool: IPv6アドレス プール
       ipv4_pool: IPv4アドレス プール
+      ipv6_pool: IPv6アドレス プール
       network: ネットワーク
       nic: ネットワークインタフェースコントローラー
       node: 端末
       operating_system: オペレーティングシステム
       place: 設置場所
       security_software: セキュリティソフトウェア
+      assignment: ユーザーネットワーク割り当て
     attributes:
       hardware:
         device_type: 機器形態
@@ -258,6 +260,8 @@ ja:
         use_users: 利用者
         manage_users: 管理者
         auth_users: 認証割当
+        nics_count: 利用数
+        assignments_count: 割当数
       nic:
         node: 端末
         name: 名前
@@ -322,6 +326,17 @@ ja:
         ipv4_first_address: 最初のアドレス
         ipv4_last_address: 最後のアドレス
         _destroy: 削除
+      ipv6_pool:
+        ipv6_config: IPv6設定
+        ipv6_first_address: 最初のアドレス
+        ipv6_last_address: 最後のアドレス
+        _destroy: 削除
+      assignment:
+        user: ユーザー
+        network: ネットワーク
+        auth: 認証
+        use: 利用
+        manage: 管理
     full_name_attributes:
       node:
         name: 端末名
