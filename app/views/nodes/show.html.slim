@@ -124,11 +124,11 @@ dl
       =< t(:unapproved, scope: :messages)
       .text-warning = t('messages.node_confirmaiton_expiring_soon')
     - else
-      i.fas.fa-exclamation-check.text-warning
+      i.fas.fa-check.text-success
       =<> l(confirmation.confirmed_at.to_date, format: :long)
       = t('messages.node_confirmaiton_expiration_date',
           date: l(confirmation.expiration.to_date, format: :long))
-      =< t(:upproved, scope: :messages)
+      =< t(:approved, scope: :messages)
   = dt_dd_for @node, :note
 
 button#confirm-form-modal-toggle.btn.btn-primary[
