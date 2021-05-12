@@ -43,8 +43,18 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
   end
 
+  create_table "device_types", charset: "utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "icon"
+    t.integer "order", default: 0, null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_device_types_on_name", unique: true
+  end
+
   create_table "hardwares", charset: "utf8mb4", force: :cascade do |t|
-    t.integer "device_type", null: false
+    t.bigint "device_type_id"
     t.string "maker", default: "", null: false
     t.string "product_name", default: "", null: false
     t.string "model_number", default: "", null: false
@@ -52,8 +62,8 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["device_type", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
-    t.index ["device_type"], name: "index_hardwares_on_device_type"
+    t.index ["device_type_id", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
+    t.index ["device_type_id"], name: "index_hardwares_on_device_type_id"
     t.index ["maker"], name: "index_hardwares_on_maker"
     t.index ["model_number"], name: "index_hardwares_on_model_number"
     t.index ["product_name"], name: "index_hardwares_on_product_name"
@@ -146,7 +156,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
   end
 
   create_table "operating_systems", charset: "utf8mb4", force: :cascade do |t|
-    t.integer "os_category", null: false
+    t.bigint "os_category_id", null: false
     t.string "name", null: false
     t.date "eol"
     t.boolean "approved", default: false, null: false
@@ -156,7 +166,17 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_operating_systems_on_name", unique: true
-    t.index ["os_category"], name: "index_operating_systems_on_os_category"
+    t.index ["os_category_id"], name: "index_operating_systems_on_os_category_id"
+  end
+
+  create_table "os_categories", charset: "utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "icon"
+    t.integer "order", default: 0, null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_os_categories_on_name", unique: true
   end
 
   create_table "places", charset: "utf8mb4", force: :cascade do |t|
@@ -176,8 +196,8 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
   end
 
   create_table "security_softwares", charset: "utf8mb4", force: :cascade do |t|
+    t.bigint "os_category_id", null: false
     t.integer "installation_method", null: false
-    t.integer "os_category", null: false
     t.string "name", null: false
     t.boolean "approved", default: false, null: false
     t.boolean "confirmed", default: false, null: false
@@ -185,10 +205,10 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.integer "confirmations_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["installation_method", "os_category", "name"], name: "security_softoware_name", unique: true
     t.index ["installation_method"], name: "index_security_softwares_on_installation_method"
     t.index ["name"], name: "index_security_softwares_on_name"
-    t.index ["os_category"], name: "index_security_softwares_on_os_category"
+    t.index ["os_category_id", "installation_method", "name"], name: "security_softoware_name", unique: true
+    t.index ["os_category_id"], name: "index_security_softwares_on_os_category_id"
   end
 
   create_table "users", charset: "utf8mb4", force: :cascade do |t|
@@ -233,6 +253,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
   add_foreign_key "assignments", "users"
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
+  add_foreign_key "hardwares", "device_types"
   add_foreign_key "ipv4_pools", "networks"
   add_foreign_key "ipv6_pools", "networks"
   add_foreign_key "nics", "networks"
@@ -241,4 +262,6 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "places"
   add_foreign_key "nodes", "users"
+  add_foreign_key "operating_systems", "os_categories"
+  add_foreign_key "security_softwares", "os_categories"
 end

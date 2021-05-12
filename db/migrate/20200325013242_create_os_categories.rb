@@ -8,6 +8,5 @@ class CreateOsCategories < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
-    add_index :os_categories, :name
   end
 end

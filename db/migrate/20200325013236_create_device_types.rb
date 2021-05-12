@@ -8,6 +8,5 @@ class CreateDeviceTypes < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
-    add_index :device_types, :name
   end
 end

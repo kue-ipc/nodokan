@@ -1,22 +1,27 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
+def create_models(model_class)
+  return unless model_class.count.zero?
 
-seeds_path = Rails.root / 'db' / 'seeds'
-
-if Rails.env == 'development' && Network.count.zero?
-  YAML.load_file(seeds_path / 'networks.yml').each do |data|
-    Network.create!(data) unless Network.find_by_name(data['name'])
+  seeds_path = Rails.root / 'db' / 'seeds'
+  file_name = "#{model_class.name.underscore.pluralize}.yml"
+  yaml_file = seeds_path / file_name
+  yaml_erb_file = seeds_path / "#{file_name}.erb"
+  yaml_data =
+    if yaml_file.exist?
+      yaml_file.read
+    else
+      ERB.new(yaml_erb_file.read).result
+    end
+  YAML.safe_load(yaml_data, [Symbol, Time, Date], [], true,
+    symbolize_names: false).each do |data|
+    model_class.create!(data)
   end
 end
 
-if OperatingSystem.count.zero?
-  YAML.load_file(seeds_path / 'operating_systems.yml').each do |data|
-    OperatingSystem.create!(data) unless OperatingSystem.find_by_name(data['name'])
-  end
-end
+create_models(DeviceType)
+create_models(OsCategory)
+create_models(OperatingSystem)
+create_models(SecuritySoftware)
 
-if SecuritySoftware.count.zero?
-  YAML.load(ERB.new((seeds_path / 'security_softwares.yml.erb').read).result).each do |data|
-    SecuritySoftware.create!(data)
-  end
+if Rails.env.development?
+  create_models(Network)
 end
