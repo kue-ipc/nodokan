@@ -1,5 +1,6 @@
 class SecuritySoftware < ApplicationRecord
-  include OsCategory
+  belongs_to :os_category
+
   has_many :confirmations
 
   enum installation_method: {

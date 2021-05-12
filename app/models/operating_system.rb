@@ -1,5 +1,5 @@
 class OperatingSystem < ApplicationRecord
-  include OsCategory
+  belongs_to :os_category
 
   has_many :nodes, dependent: :restrict_with_error
 
