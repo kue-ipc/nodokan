@@ -146,6 +146,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.bigint "hardware_id"
     t.bigint "operating_system_id"
     t.text "note"
+    t.integer "nics_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
@@ -221,6 +222,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.string "unlock_token"
     t.datetime "locked_at"
     t.integer "nodes_count", default: 0, null: false
+    t.integer "assignments_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true

@@ -15,6 +15,8 @@ class CreateNodes < ActiveRecord::Migration[6.0]
 
       t.text :note
 
+      t.integer :nics_count, null: false, default: 0
+
       t.timestamps
     end
     add_index :nodes, [:hostname, :domain], name: :fqdn, unique: true

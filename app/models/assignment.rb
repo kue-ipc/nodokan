@@ -1,5 +1,5 @@
 class Assignment < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, counter_cache: true
   belongs_to :network, counter_cache: true
 
   validates :network, uniqueness: { scope: :user }
