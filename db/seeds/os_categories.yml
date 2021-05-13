@@ -1,0 +1,66 @@
+- name: Windowsクライアント
+  icon: <i class="fab fa-windows"></i>
+  description: |
+    Windowsのクライアント向けOSです。
+
+- name: Mac
+  icon: <i class="fab fa-apple"></i>
+  description: |
+    Mac用のOSです。
+
+- name: Apple系
+  icon: <i class="fab fa-apple"></i>
+  description: |
+    iOSやiPadOS等のMac以外のApples製品用OSです。
+
+- name: Android
+  icon: <i class="fab fa-android"></i>
+  description: |
+    スマートフォン等に搭載されたAndroidです。
+
+- name: Windowsサーバー
+  icon: <i class="fab fa-microsoft"></i>
+  description: |
+    Windowsのサーバー向けOSです。
+
+- name: Linux
+  icon: <i class="fab fa-linux"></i>
+  description: |
+    Linuxカーネルを搭載したOSです。
+    ただし、AndroidはAndroidを選択してください。
+
+- name: BSD
+  icon: <i class="fab fa-freebsd"></i>
+  description: |
+    カルフォルニア大学バークレー校で開発されたBSD由来のOSです。
+    ただし、macOS等はMacを選択してください。
+
+- name: UNIX
+  icon: <i class="fab fa-freebsd"></i>
+  description: |
+    System V等のUNIXです。
+    BSDおよびMacはそれぞれ選択してください。
+
+- name: 専用OS
+  icon: <i class="fas fa-compact-disc"></i>
+  description: |
+    アプライアンス等に搭載された機器専用のOSです。
+
+- name: ファームウェア
+  icon: <i class="fas fa-microchip"></i>
+  description: |
+    機器に組み込まれたOSです。
+    ネットワーク機器にこちらを選んでください。
+
+- name: その他
+  icon: <i class="fas fa-blender-phone"></i>
+  description: |
+    いずれにも該当しない場合に選択してください。
+
+- name: OS無し
+  icon: <i class="fas fa-ghost"></i>
+  description: |
+    OSがない製品です。
+    すべてのロジックが電子回路として書き換えが不可能な機器です。
+
+

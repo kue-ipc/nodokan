@@ -1,6 +1,8 @@
 def create_models(model_class)
   return unless model_class.count.zero?
 
+  puts "model: #{model_class.name}"
+
   seeds_path = Rails.root / 'db' / 'seeds'
   file_name = "#{model_class.name.underscore.pluralize}.yml"
   yaml_file = seeds_path / file_name
@@ -23,10 +25,10 @@ def create_models(model_class)
 end
 
 create_models(DeviceType)
-# create_models(OsCategory)
-# create_models(OperatingSystem)
-# create_models(SecuritySoftware)
+create_models(OsCategory)
+create_models(OperatingSystem)
+create_models(SecuritySoftware)
 
-# if Rails.env.development?
-#   create_models(Network)
-# end
+if Rails.env.development?
+  create_models(Network)
+end

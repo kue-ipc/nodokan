@@ -1,5 +1,6 @@
 <%
-os_categories = %w[
+os_categories = OsCategory.all.map(&:name)
+%w[
   windows_client
   windows_server
   mac
@@ -14,7 +15,9 @@ os_categories = %w[
   less
   unknown
 ]
-normal_os_categories = os_categories - %w[less unknown]
+normal_os_categories = os_categories - %w[
+  OS無し
+]
 
 installation_methods = %[
   unnecessary
@@ -29,7 +32,7 @@ installation_methods = %[
 %>
 
 - installation_method: :unnecessary
-  os_category: :mac
+  os_category_name: Mac
   name: ''
   approved: true
   confirmed: true
@@ -39,7 +42,7 @@ installation_methods = %[
     セキュリティソフトウェアは不要です。
 
 - installation_method: :unnecessary
-  os_category: :apple
+  os_category_name: Apple系
   name: ''
   approved: true
   confirmed: true
@@ -51,7 +54,7 @@ installation_methods = %[
     脱獄等の改造をしていないことが前提となります。
 
 - installation_method: :unnecessary
-  os_category: :android
+  os_category_name: Android
   name: ''
   approved: true
   confirmed: true
@@ -64,9 +67,9 @@ installation_methods = %[
     root化を実施していないこと、
     その他の改造をしていないことが前提となります。
 
-<% %w[linux bsd unix].each do |os_category| %>
+<% %w[Linux BSD UNIX].each do |os_category_name| %>
 - installation_method: :unnecessary
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: ''
   approved: true
   confirmed: true
@@ -76,9 +79,9 @@ installation_methods = %[
 
 <% end %>
 
-<% %w[dedicated embedded other].each do |os_category| %>
+<% %w[専用OS ファームウェア その他].each do |os_category_name| %>
 - installation_method: :unnecessary
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: ''
   approved: true
   confirmed: true
@@ -88,7 +91,7 @@ installation_methods = %[
 <% end %>
 
 - installation_method: :unnecessary
-  os_category: :less
+  os_category_name: OS無し
   name: ''
   approved: true
   confirmed: true
@@ -97,7 +100,7 @@ installation_methods = %[
 
 # built-in
 - installation_method: :built_in
-  os_category: :windows_client
+  os_category_name: Windowsクライアント
   name: Windows Defender
   approved: true
   confirmed: true
@@ -106,7 +109,7 @@ installation_methods = %[
     有効になっているかを確認してください。
 
 - installation_method: :built_in
-  os_category: :windows_server
+  os_category_name: Windowsサーバー
   name: Windows Defender
   approved: true
   confirmed: true
@@ -115,7 +118,7 @@ installation_methods = %[
     有効になっているかを確認してください。
 
 - installation_method: :built_in
-  os_category: :linux
+  os_category_name: Linux
   name: ClamAV
   approved: true
   confirmed: true
@@ -123,7 +126,7 @@ installation_methods = %[
     ディストリビューションのパッケージとして提供さているClamAVです。
 
 - installation_method: :built_in
-  os_category: :bsd
+  os_category_name: BSD
   name: ClamAV
   approved: true
   confirmed: true
@@ -131,9 +134,14 @@ installation_methods = %[
     ports等のパッケージとして提供さているClamAVです。'
 
 # distributed
-<% %w[windows_client windows_server mac linux].each do |os_category| %>
+<% %w[
+  Windowsクライアント
+  Windowsサーバー
+  Mac
+  Linux
+].each do |os_category_name| %>
 - installation_method: :distributed
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: 管理者配布ソフトウェア(仮名)
   approved: true
   confirmed: true
@@ -142,9 +150,9 @@ installation_methods = %[
 <% end %>
 
 # purchased
-<% normal_os_categories.each do |os_category| %>
+<% normal_os_categories.each do |os_category_name| %>
 - installation_method: :purchased
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: ''
   approved: false
   confirmed: true
@@ -156,9 +164,9 @@ installation_methods = %[
 
 <% end %>
 
-<% normal_os_categories.each do |os_category| %>
+<% normal_os_categories.each do |os_category_name| %>
 - installation_method: :free
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: ''
   approved: false
   confirmed: true
@@ -171,7 +179,7 @@ installation_methods = %[
 <% end %>
 
 - installation_method: :pre_installed
-  os_category: :windows_client
+  os_category_name: Windowsクライアント
   name: ''
   approved: fales
   confirmed: true
@@ -182,10 +190,18 @@ installation_methods = %[
     ご注意ください。
     ソフトウェアの名前を入れてください。
 
-<% %w[windows_client windows_server mac apple android linux bsd unix]
-  .each do |os_category| %>
+<% %w[
+  Windowsクライアント
+  Windowsサーバー
+  Mac
+  Apple系
+  Android
+  Linux
+  BSD
+  UNIX
+].each do |os_category_name| %>
 - installation_method: :not_installed
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: ''
   approved: false
   confirmed: true
@@ -197,9 +213,9 @@ installation_methods = %[
 <% end %>
 
 
-<% normal_os_categories.each do |os_category| %>
+<% normal_os_categories.each do |os_category_name| %>
 - installation_method: :unknown
-  os_category: :<%= os_category %>
+  os_category_name: <%= os_category_name %>
   name: ''
   approved: false
   confirmed: true
@@ -207,11 +223,3 @@ installation_methods = %[
     セキュリティソフトについてがわからない状態です。
 
 <% end %>
-
-- installation_method: :unknown
-  os_category: :unknown
-  name: ''
-  approved: false
-  confirmed: true
-  description: >
-    OSの種類がわからないため、セキュリティソフトが確認できません。

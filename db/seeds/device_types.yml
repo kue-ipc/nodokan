@@ -1,95 +1,144 @@
-- name: 'デスクトップパソコン'
+- name: デスクトップパソコン
   icon: <i class="fas fa-desktop"></i>
+  description: |
+    机上で固定して使用するパソコンです。
+    本体とディスプレイが分離されています。
 
-- name: 'ノートパソコン'
+- name: 一体型パソコン
+  icon: <span class="material-icons-outlined">desktop_mac</span>
+  description: 本体とディスプレイが一体になったデスクトップパソコンです。
+
+- name: スティック型パソコン
+  description: |
+    本体が超小型のスティック状になっているパソコンです。
+    ディスプレイの背面等に接続して使用します。
+
+- name: ノートパソコン
   icon: <i class="fas fa-laptop"></i>
+  description: |
+    クラムシェル、2in1、ネットブック等の可搬が容易なパソコンです。
+    キーボード部分を除いた本体・画面部分単体で発売されている機種は
+    タブレットを選択してください。
 
-- name: '一体型パソコン'
-  icon: <i class="fas fa-laptop"></i>
-  description: 一体型です。
+- name: タブレット
+  icon: <i class="fas fa-tablet-alt"></i>
+  description: |
+    iPad、Surface、Androidタブレット等です。
+    ドッキング可能な専用キーボードが必ず付属する機種は
+    ノートパソコンを選択してください。
 
-- name: 'ノートパソコン'
-  icon: <i class="fas fa-laptop"></i>
+- name: スマートフォン
+  icon: <i class="fas fa-mobile-alt"></i>
+  description: |
+    iPhoneやAndroidスマホ等です。
 
+- name: フィーチャーフォン
+  icon: <i class="fas fa-mobile-alt"></i>
+  description: |
+    いわゆるガラケーの携帯電話です。ガラホも含みます。
 
-#     pc: 0,
-#     desktop: 1,
-#     laptop: 2,
-#     tablet: 3,
+- name: 携帯情報端末
+  icon: <i class="fas fa-tablet-alt"></i>
+  description: |
+    PDAとも呼ばれます。
 
-#     mobile: 8,
-#     smartphone: 9,
-#     feature_phone: 10,
-#     pda: 11,
-#     watch: 12,
+- name: スマートウォッチ
+  icon: <span class="material-icons-outlined">watch</span>
+  description: |
+    Apple Watch等のネットワーク接続機能が付いた腕時計です。
 
-#     server: 16,
-#     rackmount:
-#     tower: 
-#     blade:
-#     workstation:
-#     mainframe:
+- name: ワークステーション
+  icon: <i class="fas fa-desktop"></i>
+  description: |
+    机上で固定して使用するパソコンです。
+    本体とディスプレイが分離されています。
 
-#     appliance: 24,
-#     nas:
+- name: ラックマウント型サーバー
+  icon: <i class="fas fa-server"></i>
+  description: |
+    ラックにマウント可能な形状のサーバーです。
 
-#     peripheral_equipment: 32,
-#     printer: 33,
-#     scanner
-#     fax
-#     camera
-#     recorder
-#     tv
-    
+- name: タワー型サーバー
+  description: |
+    ペデスタル型とも呼ばれます。
+    床等に据え置きで使用します。
 
+- name: ブレード型サーバー
 
+- name: マルチノード型サーバー
 
-#     network: 64,
+- name: ネットワークアタッチトストレージ
+  description: |
+    NASとも呼ばれます。
+    SMB/CIFS、NFS、AFP等のファイル共有を専用に扱うサーバーです。
 
-#     virtual: 128,
+- name: プリンター
+- name: スキャナー
+- name: FAX
+- name: 複合機
+  description: |
+    プリンター、スキャナー、コピー、FAX等の機能を統合した機器です。
+    プリンター部分とスキャナー部分が分離している場合は、別々に記載してください。
+- name: ネットワークカメラ
+- name: レコーダー
+- name: IP電話機
+  icon: <i class="fas fa-phone"></i>
+  description: LAN回線経由で通話を行う専用機器です。
+- name: スマートテレビ
+- name: スマートスピーカー
+- name: スマートディスプレイ
+- name: デジタルメディアプレーヤー
 
-#     other: 255,
-#     unknown: -1,
+- name: ルーター
+  icon: <i class="fas fa-network-wired"></i>
+- name: スイッチングハブ
+- name: 無線LANアクセスポイント
+  icon: <span class="material-icons-outlined">router</span>
+- name: ブロードバンドルーター
+- name: ファイアウォール
+- name: VPN装置
+- name: ロードバランサー
+- name: 統合脅威管理
+  description: |
+    UTMとも呼ばれます。
 
+- name: 無低電源装置
+  icon: <i class="fas fa-car-battery"></i>
+- name: 電源ユニット
+  icon: <i class="fas fa-plug"></i>
+- name: シャーシ
+- name: ストレージ
+  description: FC、SCSI、iSCSI等でSANまたは直接ケーブルでサーバーに接続するストーレジです。ファイル共有を提供する
 
-# rails g model device_type name:string:index icon:string order:integer description:text
-# rails g model os_category name:string:index icon:string order:integer description:text
+- name: メインフレーム
+  description: 汎用機とも呼ばれます。
 
-#     pc: 0,
-#     desktop: 1,
-#     laptop: 2,
-#     tablet: 3,
+- name: スーパーコンピューター
 
-#     mobile: 8,
-#     smartphone: 9,
-#     feature_phone: 10,
-#     pda: 11,
-#     watch: 12,
-
-#     server: 16,
-#     rackmount:
-#     tower: 
-#     blade:
-#     workstation:
-#     mainframe:
-
-#     appliance: 24,
-#     nas:
-
-#     peripheral_equipment: 32,
-#     printer: 33,
-#     scanner
-#     fax
-#     camera
-#     recorder
-#     tv
-    
-
-
-
-#     network: 64,
-
-#     virtual: 128,
-
-#     other: 255,
-#     unknown: -1,
+- name: パソコン(その他)
+  description: |
+    リストのいずれにも該当しないパソコンの場合は、
+    こちらを選択してください。
+- name: 携帯端末(その他)
+  description: |
+    リストのいずれにも該当しない携帯可能な端末の場合は、
+    こちらを選択してください。
+- name: サーバー(その他)
+  description: |
+    リストのいずれにも該当しないサーバーの場合は、
+    こちらを選択してください。
+- name: アプライアンス(その他)
+  description: |
+    リストのいずれにも該当しないアプライアンス(専用機器)の場合は、
+    こちらを選択してください。
+- name: 周辺機器(その他)
+  description: |
+    リストのいずれにも該当しない周辺機器の場合は、
+    こちらを選択してください。
+- name: ネットワーク機器(その他)
+  description: |
+    リストのいずれにも該当しないネットワーク機器の場合は、
+    こちらを選択してください。
+- name: (その他)
+  description: |
+    いずれにも該当しない場合は、こちらを選択してください。
