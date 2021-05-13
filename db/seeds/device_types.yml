@@ -1,9 +1,55 @@
 - name: 'デスクトップパソコン'
-  icon: |
-    <i class="fas fa-desktop"></i>
-  order: 0
-  description:
+  icon: <i class="fas fa-desktop"></i>
 
+- name: 'ノートパソコン'
+  icon: <i class="fas fa-laptop"></i>
+
+- name: '一体型パソコン'
+  icon: <i class="fas fa-laptop"></i>
+  description: 一体型です。
+
+- name: 'ノートパソコン'
+  icon: <i class="fas fa-laptop"></i>
+
+
+#     pc: 0,
+#     desktop: 1,
+#     laptop: 2,
+#     tablet: 3,
+
+#     mobile: 8,
+#     smartphone: 9,
+#     feature_phone: 10,
+#     pda: 11,
+#     watch: 12,
+
+#     server: 16,
+#     rackmount:
+#     tower: 
+#     blade:
+#     workstation:
+#     mainframe:
+
+#     appliance: 24,
+#     nas:
+
+#     peripheral_equipment: 32,
+#     printer: 33,
+#     scanner
+#     fax
+#     camera
+#     recorder
+#     tv
+    
+
+
+
+#     network: 64,
+
+#     virtual: 128,
+
+#     other: 255,
+#     unknown: -1,
 
 
 # rails g model device_type name:string:index icon:string order:integer description:text

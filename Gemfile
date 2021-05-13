@@ -66,6 +66,9 @@ gem 'rails_admin-i18n'
 gem 'bootstrap', '~> 4.6'
 gem 'bootstrap_form', '~> 4.0'
 
+# Sanitize
+gem 'sanitize'
+
 group :production do
   gem 'dalli'
 end

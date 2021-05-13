@@ -197,6 +197,8 @@ GEM
     nokogiri (1.11.3)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
+    nokogumbo (2.0.5)
+      nokogiri (~> 1.8, >= 1.8.4)
     orm_adapter (0.5.0)
     paper_trail (11.1.0)
       activerecord (>= 5.2)
@@ -306,6 +308,10 @@ GEM
       rubocop (>= 0.82.0)
     ruby-progressbar (1.11.0)
     rubyzip (2.3.0)
+    sanitize (5.2.3)
+      crass (~> 1.0.2)
+      nokogiri (>= 1.8.0)
+      nokogumbo (~> 2.0)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
@@ -402,6 +408,7 @@ DEPENDENCIES
   rails_admin-i18n
   rubocop
   rubocop-rails
+  sanitize
   sass-rails (>= 6)
   selenium-webdriver
   slim-rails
