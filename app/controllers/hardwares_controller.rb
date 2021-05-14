@@ -21,15 +21,15 @@ class HardwaresController < ApplicationController
     @target = permitted_params[:target]&.intern
     @condition = permitted_params[:condition]
 
-    @hardwares = policy_scope(Hardware)
+    @hardwares = policy_scope(Hardware).includes(:device_type)
 
     @hardwares = @hardwares.where(@condition) if @condition
 
     @hardwares = @hardwares.order(@order.to_h) if @order
 
     if @target
-      if [:device_type, :maker, :product_name, :model_number].include?(@target)
-        @hardwares = @hardwares.select(@target).distinct
+      if [:maker, :product_name, :model_number].include?(@target)
+        @hardwares = @hardwares.select(:device_type_id, @target).distinct
       else
         raise ActionController::BadRequest,
           "invalid target: #{@target}"

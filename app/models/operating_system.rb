@@ -19,4 +19,8 @@ class OperatingSystem < ApplicationRecord
       @device_type_name = nil
     end
   end
+
+  def locked
+    os_category&.locked
+  end
 end

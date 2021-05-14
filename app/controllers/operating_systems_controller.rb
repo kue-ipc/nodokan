@@ -18,7 +18,7 @@ class OperatingSystemsController < ApplicationController
     @target = permitted_params[:target]&.intern
     @condition = permitted_params[:condition]
 
-    @operating_systems = policy_scope(OperatingSystem)
+    @operating_systems = policy_scope(OperatingSystem).includes(:os_category)
 
     @operating_systems = @operating_systems.where(@condition) if @condition
 
@@ -26,7 +26,8 @@ class OperatingSystemsController < ApplicationController
 
     if @target
       if [:name].include?(@target)
-        @operating_systems = @operating_systems.select(@target).distinct
+        @operating_systems = @operating_systems.select(:os_category_id, @target)
+          .distinct
       else
         raise ActionController::BadRequest,
           "[operating_systems#index] invalid target: #{@target}"

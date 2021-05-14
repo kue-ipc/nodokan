@@ -7,7 +7,7 @@ json.page do
 end
 json.data do
   if @target
-    json.array! @hardwares, @target
+    json.array! @hardwares, @target, :locked
   else
     json.array! @hardwares, partial: 'hardwares/hardware', as: :hardware
   end

@@ -7,7 +7,7 @@ json.page do
 end
 json.data do
   if @target
-    json.array! @operating_systems, @target
+    json.array! @operating_systems, [@target, :locked]
   else
     json.array! @operating_systems,
       partial: 'operating_systems/operating_system',

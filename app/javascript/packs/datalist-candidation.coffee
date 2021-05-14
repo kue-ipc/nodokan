@@ -2,7 +2,7 @@ class DatalistCandidation
   constructor: ({
     @parent, @name, @target, @order, @inputList, @url,
     @requiredInput = null,
-    @per = 100,
+    @per = 1000,
     @description = false
   }) ->
     @targetId = @attrId(@target)

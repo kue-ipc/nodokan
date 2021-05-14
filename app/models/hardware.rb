@@ -38,4 +38,8 @@ class Hardware < ApplicationRecord
   def icon
     device_type&.icon
   end
+
+  def locked
+    device_type&.locked
+  end
 end
