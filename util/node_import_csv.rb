@@ -25,7 +25,7 @@ class NodeImportCSV < ImportCSV
       if data['hardware[device_type]'].present? ||
           data['hardware[product_name]']
         Hardware.find_or_initialize_by(
-          device_type: data['hardware[device_type]'].presence || 'unknown',
+          device_type: DeviceType.find_by(name: data['hardware[device_type]']),
           maker: data['hardware[maker]'] || '',
           product_name: data['hardware[product_name]'] || '',
           model_number: data['hardware[model_number]'] || ''
@@ -33,11 +33,9 @@ class NodeImportCSV < ImportCSV
       end
   
     node.operating_system =
-      if data['operating_system[os_category]'].present? ||
-          data['hardware[product_name]']
+      if data['operating_system[os_category]'].present?
         OperatingSystem.find_or_initialize_by(
-          os_category:
-            data['operating_system[os_category]'].presence || 'unknown',
+          os_category: Opreting_system.find_by(name: data['operating_system[os_category]']),
           name: data['operating_system[name]'] || ''
         )
       end
