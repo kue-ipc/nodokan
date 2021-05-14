@@ -8,9 +8,10 @@ class HardwaresController < ApplicationController
       :target,
       :format,
       order: [
-        :id, :device_type, :maker, :product_name, :model_number, :nodes_count,
+        :id, :device_type_id, :maker, :product_name, :model_number,
+        :nodes_count,
       ],
-      condition: [:device_type, :maker, :product_name, :model_number]
+      condition: [:device_type_id, :maker, :product_name, :model_number]
     )
 
     @page = permitted_params[:page]

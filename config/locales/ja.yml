@@ -226,6 +226,7 @@ ja:
     attributes:
       hardware:
         device_type: 機器形態
+        device_type_id: 機器形態
         maker: 製造業者
         product_name: 製品名
         model_number: 型番
@@ -293,6 +294,7 @@ ja:
         user_id: 所有者
       operating_system:
         os_category: OS種別
+        os_category_id: OS種別
         name: OS名
         eol: サポート終了日
         description: 詳細
@@ -303,6 +305,7 @@ ja:
         room: 部屋
         nodes_count: 端末数
       security_software:
+        os_category_id: OS種別
         installation_method: インストール方法
         name: ソフトウェア名
         description: 詳細
@@ -356,32 +359,6 @@ ja:
         admin: 管理者
         user: 利用者
         guest: ゲスト
-      device_types:
-        desktop: デスクトップPC
-        laptop: ノートPC (2-in-1を含む)
-        tablet: タブレット
-        mobile: 携帯機器 (スマホ、携帯電話等)
-        peripheral: 周辺機器 (プリンター、複合機等)
-        server: サーバー
-        appliance: アプライアンス (NAS等)
-        network: ネットワーク機器 (ルーター/スイッチ等)
-        virtual: 仮想マシン
-        other: その他
-        unknown: 不明
-      os_categories:
-        windows_client: Windows クライアント
-        windows_server: Windows サーバー
-        mac: Mac (macOS/Mac OS X等)
-        linux: Linux (Ubuntu/CentOS等)
-        bsd: BSD系UNIX (FreeBSD/OpenBSD等)
-        unix: System V系UNIX (OpenIndiana/Solaris/AIX等)
-        apple: Apple携帯端末OS (iOS/iPadOS/watchOS/tvOS等)
-        android: Android
-        dedicated: 専用OS
-        embedded: 組込みOS
-        other: その他
-        less: OS無し
-        unknown: 不明
       interface_types:
         wired: 有線
         wireless: 無線

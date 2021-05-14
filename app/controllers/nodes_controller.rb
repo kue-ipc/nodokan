@@ -302,8 +302,8 @@ class NodesController < ApplicationController
         :note,
         :user_id,
         place: [:area, :building, :floor, :room],
-        hardware: [:device_type, :maker, :product_name, :model_number],
-        operating_system: [:os_category, :name],
+        hardware: [:device_type_id, :maker, :product_name, :model_number],
+        operating_system: [:os_category_id, :name],
         nics_attributes: [
           :id,
           :_destroy,
@@ -320,13 +320,10 @@ class NodesController < ApplicationController
 
       place = Place.find_or_initialize_by(permitted_params[:place])
 
-      hardware =
-        if permitted_params[:hardware][:device_type].present?
-          Hardware.find_or_initialize_by(permitted_params[:hardware])
-        end
+      hardware = Hardware.find_or_initialize_by(permitted_params[:hardware])
 
       operating_system =
-        if permitted_params[:operating_system][:os_category].present?
+        if permitted_params[:operating_system][:os_category_id].present?
           OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
         end
 

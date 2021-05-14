@@ -17,8 +17,6 @@ class Hardware < ApplicationRecord
     unknown: -1,
   }
 
-  validates :device_type, presence: true
-
   def name
     [maker, product_name].select(&:present?).join(' ')
   end
@@ -29,7 +27,7 @@ class Hardware < ApplicationRecord
 
   def device_type_name=(str)
     if str.present?
-      self.device_type = DeviceType.find_or_initialize_by(name: str)
+      self.device_type = DeviceType.find(name: str)
       @device_type_name = device_type&.name
     else
       self.device_type = nil

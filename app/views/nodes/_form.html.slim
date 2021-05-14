@@ -9,9 +9,9 @@ p 【必須】の項目は入力が必須です。
     .form-row
       = f.text_field :name, required: true,
         wrapper: {class: 'col-md-4'}
-      = f.text_field :hostname, pattern: "[0-9A-Za-z-]*",
+      = f.text_field :hostname, pattern: '[0-9A-Za-z-]*',
         wrapper: {class: 'col-md-3'}
-      = f.text_field :domain, pattern: "[.0-9A-Za-z-]*",
+      = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
         wrapper: {class: 'col-md-5'}
 
   .rounded.border.p-2.mb-2
@@ -20,20 +20,22 @@ p 【必須】の項目は入力が必須です。
     .form-row
       = f.fields_for :place, @node.place || Place.new do |place_f|
         = place_f.text_field :area,
-                             list: 'node_place_area-list',
-                             wrapper: {class: 'col-md-3'}
-        - node_place_area_params = {parent: 'node',
-                                    name: 'place',
-                                    target: 'area',
-                                    order: {area: 'asc'},
-                                    inputList: [],
-                                    url: '/places.json'}
+          list: 'node_place_area-list',
+          wrapper: {class: 'col-md-3'}
+        - node_place_area_params = { \
+          parent: 'node',
+          name: 'place',
+          target: 'area',
+          order: {area: 'asc'},
+          inputList: [],
+          url: '/places.json',
+        }
         #node_place_area-app.datalist-canadidaiton(
           data-params=node_place_area_params.to_json
         )
         = place_f.text_field :building,
-                             list: 'node_place_building-list',
-                             wrapper: {class: 'col-md-3'}
+          list: 'node_place_building-list',
+          wrapper: {class: 'col-md-3'}
         - node_place_building_params = {parent: 'node',
                                         name: 'place',
                                         target: 'building',
@@ -66,52 +68,49 @@ p 【必須】の項目は入力が必須です。
       | 前の項目を埋めると候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
-        = hardware_f.select :device_type, t_enums(:device_types, Hardware),
-                            {include_blank: '(未選択)',
-                             wrapper: {class: 'col-md-3'}},
-                            class: 'custom-select'
+        = hardware_f.collection_select :device_type_id, 
+          DeviceType.order(:order), :id, :name,
+          {include_blank: '(未選択)', wrapper: {class: 'col-md-3'}},
+          class: 'custom-select'
         = hardware_f.text_field :maker,
-                                list: 'node_hardware_maker-list',
-                                disabled: true,
-                                wrapper: {class: 'col-md-2'}
-        - node_hardware_maker_params = {parent: 'node',
-                                        name: 'hardware',
-                                        target: 'maker',
-                                        order: {maker: 'asc'},
-                                        inputList: ['device_type'],
-                                        requiredInput: 'device_type',
-                                        url: '/hardwares.json'}
+          list: 'node_hardware_maker-list',
+          wrapper: {class: 'col-md-2'}
+        - node_hardware_maker_params = { \
+          parent: 'node',
+          name: 'hardware',
+          target: 'maker',
+          order: {maker: 'asc'},
+          inputList: ['device_type_id'],
+          url: '/hardwares.json',
+        }
         #node_hardware_maker-app.datalist-canadidaiton(
           data-params=node_hardware_maker_params.to_json
         )
         = hardware_f.text_field :product_name,
-                                list: 'node_hardware_product_name-list',
-                                disabled: true,
-                                wrapper: {class: 'col-md-4'}
-        - node_hardware_product_name_params = {parent: 'node',
-                                               name: 'hardware',
-                                               target: 'product_name',
-                                               order: {product_name: 'asc'},
-                                               inputList: ['device_type',
-                                                           'maker'],
-                                               requiredInput: 'device_type',
-                                               url: '/hardwares.json'}
+          list: 'node_hardware_product_name-list',
+          wrapper: {class: 'col-md-4'}
+        - node_hardware_product_name_params = { \
+          parent: 'node',
+          name: 'hardware',
+          target: 'product_name',
+          order: {product_name: 'asc'},
+          inputList: ['device_type_id', 'maker'],
+          url: '/hardwares.json',
+        }
         #node_hardware_product_name-app.datalist-canadidaiton(
           data-params=node_hardware_product_name_params.to_json
         )
         = hardware_f.text_field :model_number,
-                                list: 'node_hardware_model_number-list',
-                                disabled: true,
-                                wrapper: {class: 'col-md-3'}
-        - node_hardware_model_number_params = {parent: 'node',
-                                               name: 'hardware',
-                                               target: 'model_number',
-                                               order: {model_number: 'asc'},
-                                               inputList: ['device_type',
-                                                           'maker',
-                                                          'product_name'],
-                                               requiredInput: 'device_type',
-                                               url: '/hardwares.json'}
+          list: 'node_hardware_model_number-list',
+          wrapper: {class: 'col-md-3'}
+        - node_hardware_model_number_params = { \
+          parent: 'node',
+          name: 'hardware',
+          target: 'model_number',
+          order: {model_number: 'asc'},
+          inputList: ['device_type_id', 'maker', 'product_name'],
+          url: '/hardwares.json',
+        }
         #node_hardware_model_number-app.datalist-canadidaiton(
           data-params=node_hardware_model_number_params.to_json
         )
@@ -126,8 +125,8 @@ p 【必須】の項目は入力が必須です。
     .form-row
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
-        = operating_system_f.select :os_category,
-          t_enums(:os_categories, OperatingSystem),
+        = operating_system_f.collection_select :os_category_id,
+          OsCategory.order(:order), :id, :name,
           {include_blank: '(未選択)', wrapper: {class: 'col-md-4'}},
           class: 'custom-select'
         = operating_system_f.text_field :name,
@@ -139,9 +138,9 @@ p 【必須】の項目は入力が必須です。
             name: 'operating_system',
             target: 'name',
             order: {nodes_count: 'desc'},
-            inputList: ['os_category'],
+            inputList: ['os_category_id'],
             url: '/operating_systems.json',
-            requiredInput: 'os_category',
+            requiredInput: 'os_category_id',
             description: true,
           }
         #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json

@@ -57,7 +57,7 @@ class SecuritySoftware < ApplicationRecord
 
   def os_category_name=(str)
     if str.present?
-      self.os_category = OsCategory.find_or_initialize_by(name: str)
+      self.os_category = OsCategory.find(name: str)
       @os_category_name = os_category&.name
     else
       self.device_type = nil
