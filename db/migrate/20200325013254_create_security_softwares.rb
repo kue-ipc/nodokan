@@ -17,7 +17,6 @@ class CreateSecuritySoftwares < ActiveRecord::Migration[6.0]
     end
     add_index :security_softwares,
       [:os_category_id, :installation_method, :name],
-      name: :security_softoware_name,
-      unique: true
+      name: :security_softoware_name, unique: true
   end
 end

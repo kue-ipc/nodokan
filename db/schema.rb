@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.string "name", null: false
     t.string "icon"
     t.integer "order", default: 0, null: false
+    t.boolean "locked", default: false, null: false
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -166,7 +167,8 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_operating_systems_on_name", unique: true
+    t.index ["name"], name: "index_operating_systems_on_name"
+    t.index ["os_category_id", "name"], name: "operating_system_name", unique: true
     t.index ["os_category_id"], name: "index_operating_systems_on_os_category_id"
   end
 
@@ -174,6 +176,7 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.string "name", null: false
     t.string "icon"
     t.integer "order", default: 0, null: false
+    t.boolean "locked", default: false, null: false
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

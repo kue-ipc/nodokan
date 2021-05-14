@@ -50,7 +50,7 @@
   icon: <i class="fas fa-microchip"></i>
   description: |
     機器に組み込まれたOSです。
-    ネットワーク機器にこちらを選んでください。
+    ネットワーク機器はこちらを選んでください。
 
 - name: その他
   icon: <i class="fas fa-blender-phone"></i>
@@ -59,8 +59,10 @@
 
 - name: OS無し
   icon: <i class="fas fa-ghost"></i>
+  locked: true
   description: |
     OSがない製品です。
-    すべてのロジックが電子回路として書き換えが不可能な機器です。
+    すべてのロジックが電子回路として構成されているため、
+    書き換えが不可能な機器です。
 
 

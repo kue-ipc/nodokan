@@ -4,6 +4,7 @@ class CreateDeviceTypes < ActiveRecord::Migration[6.1]
       t.string :name, null: false, index: {unique: true}
       t.string :icon
       t.integer :order, null: false, default: 0
+      t.boolean :locked, null: false, default: false
       t.text :description
 
       t.timestamps
