@@ -19,7 +19,7 @@
             help: t(attr_name, scope: [:messages, :node_confirm_helps], default: nil) do
             - t_enums(attr_name.to_s.pluralize.intern,
                       Confirmation).each do |message, value|
-              = f.radio_button attr_name, value, label: message
+              = f.radio_button attr_name, value, label: message, required: true
           - question_count += 1
           .d-none
             a[id="node-confirm-collapse-link" class="btn btn-primary"

@@ -104,22 +104,38 @@ class NodesController < ApplicationController
   # GET /nodes/1.json
   def show
     @confirmation = @node.confirmation || @node.build_confirmation
+
+    # check os
     if @node.operating_system
       @installation_methods = policy_scope(SecuritySoftware)
         .where(os_category: @node.operating_system.os_category)
         .select(:installation_method)
         .distinct
         .map(&:installation_method)
+      
       if @confirmation.security_software&.os_category != \
-        @node.operating_system.os_category
+          @node.operating_system.os_category
         @confirmation.security_software = SecuritySoftware.new(
           os_category: @node.operating_system.os_category
         )
+        @confirmation.security_update = nil
+        @confirmation.security_scan = nil
       end
     else
       @installtaion_methods = []
       @confirmation.security_software = nil
+      @confirmation.security_update = nil
+      @confirmation.security_scan = nil
     end
+
+    # unknown -> nil
+    @confirmation.content = nil if @confirmation.content_unknown?
+    @confirmation.os_update = nil if @confirmation.os_update_unknown?
+    @confirmation.app_update = nil if @confirmation.app_update_unknown?
+    if @confirmation.security_update_unknown?
+      @confirmation.security_update = nil
+    end
+    @confirmation.security_scan = nil if @confirmation.security_scan_unknown?
   end
 
   # GET /nodes/new

@@ -50,6 +50,13 @@ class Confirmation < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
+  validates :existence, presence: true
+  validates :content, presence: true
+  validates :os_update, presence: true
+  validates :app_update, presence: true
+  validates :security_update, presence: true
+  validates :security_scan, presence: true
+
   def existence_ok?
     existence_existing?
   end
