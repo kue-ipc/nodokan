@@ -1,25 +1,57 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  node: one
-  network: two
+desktop:
+  node: desktop
+  network: client
   name: イーサネット
   interface_type: :wired
+  auth: true
+  locked: false
   mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
-  duid_data: null
+  duid_data:
   ipv4_config: :dynamic
-  ipv4_data: null
+  ipv4_data:
+  ipv6_config: :dynamic
+  ipv6_data:
+
+note:
+  node: note
+  network: client
+  name: Wi-Fi
+  interface_type: :wireless
+  auth: true
+  locked: false
+  mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
+  duid_data:
+  ipv4_config: :reserved
+  ipv4_data: <%= ipv4_address('192.168.2.110') %>
+  ipv6_config: :dynamic
+  ipv6_data:
+
+server:
+  node: server
+  network: server
+  name: 物理ネットワーク
+  interface_type: :wired
+  auth: false
+  locked: false
+  mac_address_data:
+  duid_data:
+  ipv4_config: :static
+  ipv4_data: <%= ipv4_address('192.168.1.1') %>
   ipv6_config: :disabled
   ipv6_data:
 
-two:
-  node: two
-  network: two
-  name: Wi-Fi
-  interface_type: :wireless
-  mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
-  duid_data: null
-  ipv4_config: :reserved
-  ipv4_data: <%= ipv4_address('192.168.2.110') %>
+server_ext:
+  node: server
+  network: ext
+  name: 外部ネットワーク
+  interface_type: :wired
+  auth: false
+  locked: false
+  mac_address_data:
+  duid_data:
+  ipv4_config: :static
+  ipv4_data: <%= ipv4_address('192.0.2.1') %>
   ipv6_config: :disabled
-  ipv6_data: null
+  ipv6_data:

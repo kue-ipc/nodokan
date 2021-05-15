@@ -1,22 +1,25 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: サーバー
-  user: admin
-  note: サーバーの端末
+desktop:
+  name: デスクトップパソコン
+  user: user
+  note: デスクトップパソコン
   place: one
-  hardware: one
-  operating_system: one
+  hardware: desktop
+  operating_system: win7
 
-two:
+note:
   name: クライアント
-  user: user01
+  user: user
   note: クライアントの端末
   place: two
-  hardware: two
-  operating_system: two
+  hardware: note
+  operating_system: winme
 
-three:
-  name: タブレット
-  user: user01
-  note: タブレットの端末
+server:
+  name: サーバー
+  user: user
+  note: サーバー
+  place: three
+  hardware: server
+  operating_system: less

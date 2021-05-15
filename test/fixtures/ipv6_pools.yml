@@ -1,19 +1,67 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  network: two
-  ipv6_config: :dynamic
-  ipv6_first_data: <%= ipv6_address('fd00:2::1') %>
-  ipv6_last_data: <%= ipv6_address('fd00:2::FF') %>
-
-two:
-  network: two
-  ipv6_config: :reserved
-  ipv6_first_data: <%= ipv6_address('fd00:2::100') %>
-  ipv6_last_data: <%= ipv6_address('fd00:2::1FF') %>
-
-three:
-  network: two
+server1:
+  network: server
   ipv6_config: :static
-  ipv6_first_data: <%= ipv6_address('fd00:2::200') %>
-  ipv6_last_data: <%= ipv6_address('fd00:2::2FF') %>
+  ipv6_first_data: <%= ipv6_address('fd00:1::1000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:1::1fff') %>
+
+client1:
+  network: client
+  ipv6_config: :dynamic
+  ipv6_first_data: <%= ipv6_address('fd00:2::1000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:2::1fff') %>
+
+client2:
+  network: client
+  ipv6_config: :reserved
+  ipv6_first_data: <%= ipv6_address('fd00:2::2000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:2::2fff') %>
+
+client3:
+  network: client
+  ipv6_config: :static
+  ipv6_first_data: <%= ipv6_address('fd00:2::3000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:2::3fff') %>
+
+free1:
+  network: free
+  ipv6_config: :dynamic
+  ipv6_first_data: <%= ipv6_address('fd00:3::1000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:3::1fff') %>
+
+free2:
+  network: free
+  ipv6_config: :reserved
+  ipv6_first_data: <%= ipv6_address('fd00:3::2000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:3::2fff') %>
+
+free3:
+  network: free
+  ipv6_config: :static
+  ipv6_first_data: <%= ipv6_address('fd00:3::3000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:3::3fff') %>
+
+ipv6only1:
+  network: ipv6only
+  ipv6_config: :static
+  ipv6_first_data: <%= ipv6_address('fd00:10::1000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:10::1fff') %>
+
+last1:
+  network: last
+  ipv6_config: :dynamic
+  ipv6_first_data: <%= ipv6_address('fd00:100::1000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:100::1fff') %>
+
+last2:
+  network: last
+  ipv6_config: :reserved
+  ipv6_first_data: <%= ipv6_address('fd00:100::2000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:100::2fff') %>
+
+last3:
+  network: last
+  ipv6_config: :static
+  ipv6_first_data: <%= ipv6_address('fd00:100::3000') %>
+  ipv6_last_data: <%= ipv6_address('fd00:100::3fff') %>

@@ -1,23 +1,117 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: サーバー
+extra:
+  name: 外部ネットワーク
+  vlan: 99
+  auth: false
+  dhcp: false
+  locked: true
+  specific: true
+  ipv4_network_data: <%= ipv4_address('192.0.2.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.0.2.254') %>
+  ipv6_network_data: <%= ipv6_address('2001:db8:1::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('2001:db8:1::1') %>
+  note: 外部接続可能なネットワーク
+
+server:
+  name: サーバーネットワーク
   vlan: 101
   auth: false
+  dhcp: false
+  locked: false
+  specific: false
   ipv4_network_data: <%= ipv4_address('192.168.1.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.1.254') %>
   ipv6_network_data: <%= ipv6_address('fd00:1::') %>
   ipv6_prefix_length: 64
-  ipv6_gateway_data: <%= ipv6_address('fd00:1::FFFF') %>
+  ipv6_gateway_data: <%= ipv6_address('fd00:1::1') %>
+  note: サーバー用のネットワーク
 
-two:
-  name: クライアント
+client:
+  name: クライアントネットワーク
   vlan: 102
   auth: true
+  dhcp: true
+  locked: false
+  specific: false
   ipv4_network_data: <%= ipv4_address('192.168.2.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.2.254') %>
   ipv6_network_data: <%= ipv6_address('fd00:2::') %>
   ipv6_prefix_length: 64
-  ipv6_gateway_data: <%= ipv6_address('fd00:2::FFFF') %>
+  ipv6_gateway_data: <%= ipv6_address('fd00:2::1') %>
+  note: クライアント用のネットワーク
+
+free:
+  name: 空いているネットワーク
+  vlan: 103
+  auth: true
+  dhcp: true
+  locked: false
+  specific: false
+  ipv4_network_data: <%= ipv4_address('192.168.3.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.3.254') %>
+  ipv6_network_data: <%= ipv6_address('fd00:3::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:3::1') %>
+  note: 空いているネットワーク
+
+ipv4only:
+  name: IPv4のみのネットワーク
+  vlan: 110
+  auth: false
+  dhcp: false
+  locked: false
+  specific: false
+  ipv4_network_data: <%= ipv4_address('192.168.10.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.10.254') %>
+  ipv6_network_data:
+  ipv6_prefix_length: 64
+  ipv6_gateway_data:
+
+ipv6only:
+  name: IPv6のみのネットワーク
+  vlan: 120
+  auth: false
+  dhcp: false
+  locked: false
+  specific: false
+  ipv4_network_data:
+  ipv4_prefix_length: 24
+  ipv4_gateway_data:
+  ipv6_network_data: <%= ipv6_address('fd00:20::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:20::1') %>
+
+noip:
+  name: IP無しネットワーク
+  vlan: 130
+  auth: false
+  dhcp: false
+  locked: false
+  specific: false
+  ipv4_network_data:
+  ipv4_prefix_length: 24
+  ipv4_gateway_data:
+  ipv6_network_data:
+  ipv6_prefix_length: 64
+  ipv6_gateway_data:
+
+last:
+  name: 最後のネットワーク
+  vlan: 200
+  auth: true
+  dhcp: true
+  locked: false
+  specific: false
+  ipv4_network_data: <%= ipv4_address('192.168.100.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.100.254') %>
+  ipv6_network_data: <%= ipv6_address('fd00:100::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:100::1') %>

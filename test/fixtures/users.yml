@@ -7,11 +7,17 @@
 admin:
   username: admin
   email: admin@example.jp
-  fullname: '管理　一郎'
+  fullname: 管理　一郎
   role: :admin
 
-user01:
-  username: user01
-  email: user01@example.jp
+user:
+  username: user
+  email: user@example.jp
   fullname: 湯座　太郎
+  role: :user
+
+guest:
+  username: guest
+  email: guest@example.jp
+  fullname: ゲスト　花子
   role: :user

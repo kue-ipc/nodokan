@@ -1,15 +1,45 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  user: one
-  network: one
-  auth: true
-  use: false
-  manage: false
+# adminには何も関連付けない
 
-two:
-  user: two
-  network: two
+user_server:
+  user: user
+  network: server
   auth: false
   use: true
+  manage: false
+
+user_client:
+  user: user
+  network: client
+  auth: true
+  use: true
+  manage: false
+
+user_ipv4only:
+  user: user
+  network: v4only
+  auth: false
+  use: true
+  manage: false
+
+user_ipv6only:
+  user: user
+  network: v6only
+  auth: false
+  use: true
+  manage: false
+
+user_noip:
+  user: user
+  network: no_ip
+  auth: false
+  use: true
+  manage: false
+
+guest_client:
+  user: guest
+  network: client
+  auth: true
+  use: false
   manage: false

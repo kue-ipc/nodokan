@@ -1,19 +1,67 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  network: two
+server1:
+  network: server
+  ipv4_config: :static
+  ipv4_first_data: <%= ipv4_address('192.168.1.1') %>
+  ipv4_last_data: <%= ipv4_address('192.168.1.99') %>
+
+client1:
+  network: client
   ipv4_config: :dynamic
   ipv4_first_data: <%= ipv4_address('192.168.2.1') %>
   ipv4_last_data: <%= ipv4_address('192.168.2.99') %>
 
-two:
-  network: two
+client2:
+  network: client
   ipv4_config: :reserved
   ipv4_first_data: <%= ipv4_address('192.168.2.100') %>
   ipv4_last_data: <%= ipv4_address('192.168.2.199') %>
 
-three:
-  network: two
+client3:
+  network: client
   ipv4_config: :static
   ipv4_first_data: <%= ipv4_address('192.168.2.200') %>
   ipv4_last_data: <%= ipv4_address('192.168.2.240') %>
+
+free1:
+  network: free
+  ipv4_config: :dynamic
+  ipv4_first_data: <%= ipv4_address('192.168.3.1') %>
+  ipv4_last_data: <%= ipv4_address('192.168.3.99') %>
+
+free2:
+  network: free
+  ipv4_config: :reserved
+  ipv4_first_data: <%= ipv4_address('192.168.3.100') %>
+  ipv4_last_data: <%= ipv4_address('192.168.3.199') %>
+
+free3:
+  network: free
+  ipv4_config: :static
+  ipv4_first_data: <%= ipv4_address('192.168.3.200') %>
+  ipv4_last_data: <%= ipv4_address('192.168.3.240') %>
+
+ipv4only1:
+  network: ipv4only
+  ipv4_config: :static
+  ipv4_first_data: <%= ipv4_address('192.168.10.200') %>
+  ipv4_last_data: <%= ipv4_address('192.168.10.240') %>
+
+last1:
+  network: last
+  ipv4_config: :dynamic
+  ipv4_first_data: <%= ipv4_address('192.168.100.1') %>
+  ipv4_last_data: <%= ipv4_address('192.168.100.99') %>
+
+last2:
+  network: last
+  ipv4_config: :reserved
+  ipv4_first_data: <%= ipv4_address('192.168.100.100') %>
+  ipv4_last_data: <%= ipv4_address('192.168.100.199') %>
+
+last3:
+  network: last
+  ipv4_config: :static
+  ipv4_first_data: <%= ipv4_address('192.168.100.200') %>
+  ipv4_last_data: <%= ipv4_address('192.168.100.240') %>

@@ -1,19 +1,24 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  os_category: :windows_client
+win10:
+  os_category: win
+  name: Windows 10
+  description: Windows 10
+
+winme:
+  os_category: win
   name: Windows Me
   eol: 2006-07-11
+  approved: true
+  confirmed: true
   description: Microsoftの黒歴史
 
-two:
-  os_category: :other
-  name: TRON
-  eol: null
-  description: 夢の国産OS
+macos:
+  os_category: mac
+  name: macOS
+  description: Mac
 
-three:
-  os_category: :linux
-  name: Tizen
-  eol: null
-  description: Googleからは逃れられないことを証明した
+less:
+  os_category: less
+  name: OS無し
+  description: OS無し

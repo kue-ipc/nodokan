@@ -1,13 +1,22 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  icon: MyString
+win:
+  name: Windows
+  icon: <i class="win"></i>
   order: 1
-  description: MyText
+  locked: false
+  description: Windows
 
-two:
-  name: MyString
-  icon: MyString
-  order: 1
-  description: MyText
+mac:
+  name: Mac
+  icon: <i class="mac"></i>
+  order: 2
+  locked: false
+  description: Mac
+
+less:
+  name: OS無し
+  icon: <i class="less"></i>
+  order: 3
+  locked: true
+  description: OS無し

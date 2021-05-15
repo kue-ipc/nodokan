@@ -1,13 +1,22 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  icon: MyString
+pc:
+  name: パソコン
+  icon: <i class="pc"></i>
   order: 1
-  description: MyText
+  locked: false
+  description: パソコンの説明
 
-two:
-  name: MyString
-  icon: MyString
-  order: 1
-  description: MyText
+server:
+  name: サーバー
+  icon: <i class="sv"></i>
+  order: 2
+  locked: false
+  description: サーバーの説明
+
+virtual:
+  name: 仮想
+  icon: <i class="vm"></i>
+  order: 3
+  locked: true
+  description: 仮想の説明

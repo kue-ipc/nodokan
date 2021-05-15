@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  device_type: 1
-  maker: アナハイム・エレクトロニクス社
-  product_name: ガンダム
-  model_number: RX-78-2
+desktop:
+  device_type: pc
+  maker: A社
+  product_name: デスクトップパソコン
+  model_number: DPC-01
 
-two:
-  device_type: 2
-  maker: ジオニック社
-  product_name: ザクⅡ
-  model_number: MS-06F
+note:
+  device_type: pc
+  maker: B社
+  product_name: ノートパソコン
+  model_number: NPC-01
+
+server:
+  device_type: server
+  maker: A社
+  product_name: サーバー
+  model_number: SV-01
