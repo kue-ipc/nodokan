@@ -23,3 +23,19 @@ server:
   place: three
   hardware: server
   operating_system: less
+
+other_desktop:
+  name: 別のデスクトップパソコン
+  user: user
+  note: 別のデスクトップパソコン
+  place: one
+  hardware: desktop
+  operating_system: win7
+
+admin_desktop:
+  name: 管理者のデスクトップパソコン
+  user: admin
+  note: 管理者のデスクトップパソコン
+  place: one
+  hardware: desktop
+  operating_system: win7

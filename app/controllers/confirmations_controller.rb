@@ -31,24 +31,22 @@ class ConfirmationsController < ApplicationController
         :security_update,
         :security_scan,
         security_software: [
-          :os_category,
+          :os_category_id,
           :installation_method,
           :name,
         ]
       )
 
       security_software =
-        if permitted_params.dig(:security_software, :installation_method).present?
+        if permitted_params.dig(:security_software, :installation_method)
+          .present?
           SecuritySoftware.find_or_initialize_by(
             permitted_params[:security_software]
           )
         end
 
-      permitted_params.except(:security_software).merge(
-        {
-          security_software: security_software,
-        }
-      )
+      permitted_params.except(:security_software)
+        .merge(security_software: security_software)
     end
 
     def check_and_save

@@ -14,27 +14,13 @@ AllCops:
 Rails:
   Enabled: true
 
-# Bundler
-# https://docs.rubocop.org/rubocop/cops_bundler.html
-
-Bundler/OrderedGems:
-  Enabled: false
-
+# Layout
 Layout/ExtraSpacing:
   Exclude:
     - 'db/migrate/*.rb'
 
-Style/AsciiComments:
-  Enabled: false
-
-Style/Documentation:
-  Enabled: false
-
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/SymbolArray:
-  MinSize: 2
+Layout/LineLength:
+  Max: 80
 
 Layout/EndOfLine:
   EnforcedStyle: lf
@@ -42,17 +28,20 @@ Layout/EndOfLine:
 Layout/IndentationConsistency:
   EnforcedStyle: indented_internal_methods
 
-Layout/LineLength:
-  Max: 80
-
-Style/NumericLiterals:
-  Enabled: false
-
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: consistent_comma
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
 
 # Loose Metrics
 Metrics/AbcSize:
@@ -85,6 +74,19 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 11
 
+# Style
+Style/AsciiComments:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
 Style/HashEachMethods:
   Enabled: true
 
@@ -100,23 +102,26 @@ Style/EmptyMethod:
 Style/WordArray:
   MinSize: 3
 
-Layout/EmptyLinesAroundAttributeAccessor:
-  Enabled: true
+Style/NumericLiterals:
+  Enabled: false
 
-Layout/FirstArrayElementIndentation:
-  EnforcedStyle: consistent
-
-Layout/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
-
-Layout/ArgumentAlignment:
-  EnforcedStyle: with_fixed_indentation
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
 
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
 Style/SpecialGlobalVars:
   EnforcedStyle: use_perl_names
+
+Style/AccessModifierDeclarations:
+  EnforcedStyle: inline
+
+# Bundler
+# https://docs.rubocop.org/rubocop/cops_bundler.html
+
+Bundler/OrderedGems:
+  Enabled: false
 
 # Rails
 # https://docs.rubocop.org/rubocop-rails/cops_rails.html

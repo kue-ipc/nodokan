@@ -4,7 +4,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    @confirmation = confirmations(:two)
+    @confirmation = confirmations(:desktop)
   end
 
   class SignInAdmin < ConfirmationsControllerTest
@@ -13,7 +13,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     test 'should create confirmation' do
-      other_node = nodes(:three)
+      other_node = nodes(:other_desktop)
       assert_difference('Confirmation.count') do
         post node_confirmation_url(other_node),
           params: {
@@ -25,7 +25,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
               security_update: @confirmation.security_update,
               security_scan: @confirmation.security_scan,
               security_software: {
-                os_category: @confirmation.security_software.os_category,
+                os_category_id: @confirmation.security_software.os_category_id,
                 installation_method:
                   @confirmation.security_software.installation_method,
                 name: @confirmation.security_software.name,
@@ -60,11 +60,11 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
 
   class SignInUser < ConfirmationsControllerTest
     setup do
-      sign_in users(:user01)
+      sign_in users(:user)
     end
 
     test 'should create confirmation' do
-      other_node = nodes(:three)
+      other_node = nodes(:other_desktop)
       assert_difference('Confirmation.count') do
         post node_confirmation_url(other_node),
           params: {
@@ -108,8 +108,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to node_url(@confirmation.node)
     end
 
-    test 'should NOT create confirmation' do
-      other_node = nodes(:one)
+    test 'should NOT create confirmation for other owner' do
+      other_node = nodes(:admin_desktop)
       assert_no_difference('Confirmation.count') do
         assert_raises(Pundit::NotAuthorizedError) do
           post node_confirmation_url(other_node),
@@ -134,37 +134,51 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'should not update confirmation' do
-    other_node = nodes(:one)
-    patch node_confirmation_url(other_node),
-      params: {
-        confirmation: {
-          existence: @confirmation.existence,
-          content: @confirmation.content,
-          os_update: @confirmation.os_update,
-          app_update: @confirmation.app_update,
-          security_update: @confirmation.security_update,
-          security_scan: @confirmation.security_scan,
-          security_software: {
-            os_category: @confirmation.security_software.os_category,
-            installation_method:
-              @confirmation.security_software.installation_method,
-            name: @confirmation.security_software.name,
+  class Anonymous < ConfirmationsControllerTest
+    test 'redirect to login INSTEAD OF create confirmation' do
+      other_node = nodes(:other_desktop)
+      assert_no_difference('Confirmation.count') do
+        post node_confirmation_url(other_node),
+          params: {
+            confirmation: {
+              existence: @confirmation.existence,
+              content: @confirmation.content,
+              os_update: @confirmation.os_update,
+              app_update: @confirmation.app_update,
+              security_update: @confirmation.security_update,
+              security_scan: @confirmation.security_scan,
+              security_software: {
+                os_category: @confirmation.security_software.os_category,
+                installation_method:
+                  @confirmation.security_software.installation_method,
+                name: @confirmation.security_software.name,
+              },
+            },
+          }
+      end
+      assert_redirected_to new_user_session_path
+    end
+
+    test 'redirect to login INSTEAD OF update confirmation' do
+      patch node_confirmation_url(@confirmation.node),
+        params: {
+          confirmation: {
+            existence: @confirmation.existence,
+            content: @confirmation.content,
+            os_update: @confirmation.os_update,
+            app_update: @confirmation.app_update,
+            security_update: @confirmation.security_update,
+            security_scan: @confirmation.security_scan,
+            security_software: {
+              os_category: @confirmation.security_software.os_category,
+              installation_method:
+                @confirmation.security_software.installation_method,
+              name: @confirmation.security_software.name,
+            },
           },
-        },
-      }
-    assert_redirected_to node_url(@confirmation.node)
+        }
+      assert_redirected_to new_user_session_path
+
+    end
   end
-
-# class Anonymous < ConfirmationsControllerTest
-  #   test 'redirect to login INSTEAD OF get index' do
-  #     get mail_groups_url
-  #     assert_redirected_to new_user_session_path
-  #   end
-
-  #   test 'redirect to login INSTEAD OF show mail_group' do
-  #     get mail_group_url(@mail_group)
-  #     assert_redirected_to new_user_session_path
-  #   end
-  # end
 end

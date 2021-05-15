@@ -16,6 +16,12 @@ user:
   fullname: 湯座　太郎
   role: :user
 
+less:
+  username: less
+  email: less@example.jp
+  fullname: 何もない　ユーザー
+  role: :user
+
 guest:
   username: guest
   email: guest@example.jp
