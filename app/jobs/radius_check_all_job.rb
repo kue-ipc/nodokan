@@ -17,8 +17,10 @@ class RadiusCheckAllJob < ApplicationJob
       .where(auth_network: {auth: true})
       .map(&:username)
 
-    Radius::Radcheck.where.not(username: username_list).destroy_all
-    Radius::Radreply.where.not(username: username_list).destroy_all
-    Radius::Radusergroup.where.not(username: username_list).destroy_all
+    all_list = mac_address_list + username_list
+
+    Radius::Radcheck.where.not(username: all_list).destroy_all
+    Radius::Radreply.where.not(username: all_list).destroy_all
+    Radius::Radusergroup.where.not(username: all_list).destroy_all
   end
 end
