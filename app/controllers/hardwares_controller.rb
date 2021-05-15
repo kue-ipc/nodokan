@@ -49,9 +49,14 @@ class HardwaresController < ApplicationController
   end
 
   def update
-    permited_params = hardware_params
     @hardware.assign_attributes(permited_params)
-    other_hardware = Hardware.find_by(permited_params)
+    other_hardware = Hardware.find_by(
+      device_type_id: @hardware.device_type_id,
+      maker: @hardware.maker,
+      product_name: @hardware.product_name,
+      model_number: @hardware.model_name
+    )
+
     if other_hardware
       respond_to do |format|
         if Node.update(@hardware.nodes_ids, hardware: other_hardware) &&
