@@ -15,30 +15,25 @@ class RadiusRegisterMacJob < ApplicationJob
     password = Settings.config.radius_mac_password || mac_address
 
     # パスワードを設定
-    Radius::Radcheck.find_or_initialize_by(username: mac_address)
-      .tap do |radcheck|
-      radcheck.attr = 'Cleartext-Password'
-      radcheck.op = ':='
-      radcheck.value = password
-      radcheck.save!
-    end
+    radcheck = Radius::Radcheck.find_or_initialize_by(username: mac_address)
+    radcheck.attr = 'Cleartext-Password'
+    radcheck.op = ':='
+    radcheck.value = password
+    radcheck.save!
 
     # VLANを設定
-    Radius::Radreply.find_or_initialize_by(username: mac_address)
-      .tap do |radreply|
-      radreply.attr = 'Tunnel-Private-Group-Id'
-      radreply.op = ':='
-      radreply.value = vlan.to_s
-      radreply.save!
-    end
+    radreply = Radius::Radreply.find_or_initialize_by(username: mac_address)
+    radreply.attr = 'Tunnel-Private-Group-Id'
+    radreply.op = ':='
+    radreply.value = vlan.to_s
+    radreply.save!
 
     # グループを設定
-    Radius::Radusergroup.find_or_initialize_by(username: mac_address)
-      .tap do |radusergroup|
-      radusergroup.groupname = 'mac'
-      radusergroup.priority = 1
-      radusergroup.save!
-    end
+    radusergroup =
+      Radius::Radusergroup.find_or_initialize_by(username: mac_address)
+    radusergroup.groupname = 'mac'
+    radusergroup.priority = 1
+    radusergroup.save!
 
     logger.info("MACアドレスを登録しました。: #{mac_address} - #{vlan}")
   end
