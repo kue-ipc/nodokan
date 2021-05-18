@@ -88,7 +88,41 @@ dl
       = t('messages.node_confirmaiton_expiration_date',
           date: l(confirmation.expiration.to_date, format: :long))
       =< t(:unapproved, scope: :messages)
-      .text-warning = t('messages.node_confirmaiton_unapproved')
+      - case confirmation.existence
+      - when 'existing'
+        .text-warning = t('messages.node_confirmaiton_unapproved')
+        - if confirmation.content_problem?
+          .text-danger = t('messages.node_content_problem')
+        - if confirmation.os_update_problem?
+          - if confirmation.os_update_eol?
+            .text-danger = t('messages.node_os_eol')
+          - else
+            .text-danger = t('messages.node_os_update_problem')
+        - if confirmation.app_update_problem?
+          - if confirmation.app_update_eol?
+            .text-danger = t('messages.node_app_eol')
+          - else
+            .text-danger = t('messages.node_app_update_problem')
+        - if @node.operating_system.present?
+          - if confirmation.security_update_problem?
+            - if confirmation.security_update_eol?
+              .text-danger = t('messages.node_security_eol')
+            - else
+              .text-danger = t('messages.node_security_update_problem')
+          - if confirmation.security_scan_problem?
+            .text-danger = t('messages.node_security_scan_problem')
+          - if confirmation.security_software_problem?
+            .text-danger = t('messages.node_security_software_problem')
+        - else
+          .text-danger = t('messages.node_no_operating_system')
+      - when 'abandoned'
+        .text-danger = t('messages.node_abandoned')
+      - when 'missing'
+        .text-danger = t('messages.node_missing')
+      - when 'not_my_own'
+        .text-danger = t('messages.node_not_my_own')
+      - when 'unknown'
+        .text-danger = t('messages.node_unknown')
     - elsif confirmation.expiration <= Time.current.days_since(30)
       i.fas.fa-exclamation-circle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)

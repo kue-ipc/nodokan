@@ -71,9 +71,9 @@ class ConfirmationsController < ApplicationController
 
       if @confirmation.save
         if @confirmation.approved
-          flash[:notice] = '確認が完了しました。確認の有効期間は396日です。約一年後に再度確認を実施してください。'
+          flash[:notice] = t('messages.confirmaiton_approved')
         else
-          flash[:alert] = '確認は完了しましたが、確認内容、または、登録内容に不備があるため、確認の有効期間は30日です。指摘事項を修正し、一ヶ月以内に再度確認を実施してください。'
+          flash[:alert] = t('messages.confirmaiton_unapproved')
         end
       else
         flash[:alert] = '確認の処理に失敗しました。再度実行し直してください。'

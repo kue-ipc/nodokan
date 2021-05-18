@@ -23,4 +23,8 @@ class OperatingSystem < ApplicationRecord
   def locked
     os_category&.locked
   end
+
+  def maintained?
+    eol.nil? || eol >= Time.now
+  end
 end

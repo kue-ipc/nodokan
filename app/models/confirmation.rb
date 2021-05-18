@@ -92,32 +92,31 @@ class Confirmation < ApplicationRecord
   end
 
   def existence_problem?
-    existence_abandoned? ||
-      existence_missing? ||
-      existence_not_my_own?
+    !existence_ok?
   end
 
   def content_problem?
-    content_incorrect?
+    !content_ok?
   end
 
   def os_update_problem?
-    os_update_not_do? ||
-      os_eol?
+    !os_update_ok?
   end
 
   def app_update_problem?
-    app_update_not_do? ||
-      app_update_eol?
+    !app_update_ok?
   end
 
   def security_update_problem?
-    security_update_not_do? ||
-      security_update_eol?
+    !security_update_ok?
   end
 
   def security_scan_problem?
-    security_scan_not_do?
+    !security_scan_ok?
+  end
+
+  def security_software_problem?
+    !security_software_ok?
   end
 
   def security_software_unknown?
