@@ -161,7 +161,6 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.bigint "os_category_id", null: false
     t.string "name", null: false
     t.date "eol"
-    t.boolean "approved", default: false, null: false
     t.boolean "confirmed", default: false, null: false
     t.text "description"
     t.integer "nodes_count", default: 0, null: false

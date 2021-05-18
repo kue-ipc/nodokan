@@ -6,7 +6,6 @@ class CreateOperatingSystems < ActiveRecord::Migration[6.0]
       t.string :name, null: false, index: true
 
       t.date :eol
-      t.boolean :approved, null: false, default: false
       t.boolean :confirmed, null: false, default: false
       t.text :description
 
