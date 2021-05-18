@@ -13,10 +13,20 @@ p 【必須】の項目は入力が必須です。
         wrapper: {class: 'col-md-3'}
       = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
         wrapper: {class: 'col-md-5'}
-
+    - if current_user.admin?
+      = f.check_box :specific, custom: true
+    - elsif @node.specific
+      span.badge.badge-danger.ml-1
+        = Node.human_attribute_name(:specific)
+      small.text-muted<
+        |
+          この端末は管理者から特定端末として指定されています。
   .rounded.border.p-2.mb-2
     h4 設置場所
-    small.text-muted 候補に現れない場合は、そのまま名称を入力してください。管理者によって名称が統合される場合があります。
+    small.text-muted
+      |
+        候補に現れない場合は、そのまま名称を入力してください。
+        管理者によって名称が統合される場合があります。
     .form-row
       = f.fields_for :place, @node.place || Place.new do |place_f|
         = place_f.text_field :area,
@@ -155,64 +165,88 @@ p 【必須】の項目は入力が必須です。
     - count = 0
     - nic_list = []
     = f.fields_for :nics do |nic_f|
-      .rounded.border.p-2.mb-2.node-nic-root id="node_nics_attributes_#{nic_f.index}"
+      .rounded.border.p-2.mb-2.node-nic-root(
+        id="node_nics_attributes_#{nic_f.index}")
         - count += 1
         - nic_list << nic_f.index
         = nic_f.hidden_field :id
         h6
           => count
           | 番目のNIC
-        = nic_f.check_box :_destroy, custom: true, label: 'このINCを削除する'
-        .form-row.node-nic-form
-          = nic_f.select :interface_type,
-                          t_enums(:interface_types, Nic),
-                          {prompt: '(選択してください)',
-                           wrapper: {class: 'col-md-4'}},
-                          class: 'custom-select', required: true
-          = nic_f.text_field :name,
-            wrapper: {class: 'col-md-8'}
-          - nic_networks = current_user.selectable_networks.dup
-          - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
-            - nic_networks << nic_f.object.network
-          = nic_f.collection_select :network_id, nic_networks,
-            :id, :name,
-            {include_blank: '(未接続)',
-            wrapper: {class: 'col-md-4'}},
-            class: 'custom-select'
-          = nic_f.text_field :mac_address,
-            pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-            wrapper: {class: 'col-md-4'}
-          = nic_f.form_group :auth, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
-            = nic_f.check_box :auth,
-              custome: true,
-              label: 'MACアドレスを登録する'
-          = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
-                          {wrapper: {class: 'col-md-4'}},
-                          class: 'custom-select'
-          = nic_f.text_field :ipv4_address,
-            pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
-            wrapper: {class: 'col-md-4'}
-          .col-md-4
-          - if Settings.config.ipv6
-            = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
-                            {wrapper: {class: 'col-md-4'}}, class: 'custom-select'
-            = nic_f.text_field :ipv6_address,
-              pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
+        - nic_ro = false
+        - if current_user.admin?
+          = nic_f.check_box :locked, custom: true
+        - else
+          - if nic_f.object.locked
+            - nic_ro = true
+            span.badge.badge-dark.ml-1
+              = Nic.human_attribute_name(:locked)
+            small.text-muted<
+              |
+                このNICは管理者によってロックされているため、
+                編集や削除はできません。
+        - if nic_ro
+          dl
+            = dt_dd_for nic_f.object, :interface_type
+            = dt_dd_for nic_f.object, :name
+            = dt_dd_for nic_f.object, :mac_address
+            = dt_dd_for nic_f.object, :network, &:name
+            = dt_dd_for nic_f.object, :ipv4_config
+            = dt_dd_for nic_f.object, :ipv4_address
+            = dt_dd_for nic_f.object, :ipv6_config
+            = dt_dd_for nic_f.object, :ipv6_address
+        - else
+          = nic_f.check_box :_destroy, custom: true,
+              label: 'このINCを削除する'
+          .form-row.node-nic-form
+            = nic_f.select :interface_type,
+                            t_enums(:interface_types, Nic),
+                            {prompt: '(選択してください)',
+                            wrapper: {class: 'col-md-4'}},
+                            class: 'custom-select', required: true
+            = nic_f.text_field :name, wrapper: {class: 'col-md-8'}
+            - nic_networks = current_user.selectable_networks.dup
+            - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
+              - nic_networks << nic_f.object.network
+            = nic_f.collection_select :network_id, nic_networks,
+              :id, :name,
+              {include_blank: '(未接続)',
+              wrapper: {class: 'col-md-4'}},
+              class: 'custom-select'
+            = nic_f.text_field :mac_address,
+              pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
               wrapper: {class: 'col-md-4'}
-            = nic_f.text_field :duid,
-              pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+            = nic_f.form_group :auth, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
+              = nic_f.check_box :auth,
+                custome: true,
+                label: 'MACアドレスを登録する'
+            = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
+                            {wrapper: {class: 'col-md-4'}},
+                            class: 'custom-select'
+            = nic_f.text_field :ipv4_address,
+              pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
               wrapper: {class: 'col-md-4'}
-          - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
-          - [ \
-            'no_network',
-            'unconfigurable',
-            'auth_network',
-            'require_mac',
-            'require_duid',
-            'network_note',
-          ].each do |name|
-            .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
-              = t(name, scope: 'messages.node_nic')
+            .col-md-4
+            - if Settings.config.ipv6
+              = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
+                              {wrapper: {class: 'col-md-4'}}, class: 'custom-select'
+              = nic_f.text_field :ipv6_address,
+                pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
+                wrapper: {class: 'col-md-4'}
+              = nic_f.text_field :duid,
+                pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
+                wrapper: {class: 'col-md-4'}
+            - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
+            - [ \
+              'no_network',
+              'unconfigurable',
+              'auth_network',
+              'require_mac',
+              'require_duid',
+              'network_note',
+            ].each do |name|
+              .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
+                = t(name, scope: 'messages.node_nic')
     script#node-nic-info type="application/json"
       == { \
         list: nic_list, \

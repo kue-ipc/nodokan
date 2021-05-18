@@ -266,6 +266,9 @@ ja:
       nic:
         node: 端末
         name: 名前
+        flags: フラグ
+        locked: ロック
+        auth: 認証
         interface_type: 接続形態
         mac_address: MACアドレス
         duid: DUID(DHCP固有識別子)
@@ -292,6 +295,7 @@ ja:
         confirmation: 確認
         user: 所有者
         user_id: 所有者
+        specific: 特定
       operating_system:
         os_category: OS種別
         os_category_id: OS種別
@@ -362,10 +366,12 @@ ja:
       interface_types:
         wired: 有線
         wireless: 無線
-        virtual: 仮想
         bluetooth: Bluetooth
-        dialup: 電話回線
+        dialup: ダイヤルアップ
         vpn: VPN
+        virtual: 仮想
+        nat: NAT
+        share: 共有
         other: その他
         unknown: 不明
       ipv4_configs:

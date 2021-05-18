@@ -5,10 +5,11 @@
     本体とディスプレイが分離されています。
 
 - name: 一体型パソコン
-  icon: <span class="material-icons-outlined">desktop_mac</span>
+  icon: <i class="fas fa-desktop"></i>
   description: 本体とディスプレイが一体になったデスクトップパソコンです。
 
 - name: スティック型パソコン
+  icon: <i class="fas fa-desktop"></i>
   description: |
     本体が超小型のスティック状になっているパソコンです。
     ディスプレイの背面等に接続して使用します。
@@ -43,7 +44,7 @@
     PDAとも呼ばれます。
 
 - name: スマートウォッチ
-  icon: <span class="material-icons-outlined">watch</span>
+  icon: <i class="fas fa-clock"></i>
   description: |
     Apple Watch等のネットワーク接続機能が付いた腕時計です。
 
@@ -59,20 +60,25 @@
     ラックにマウント可能な形状のサーバーです。
 
 - name: タワー型サーバー
+  icon: <i class="fas fa-server"></i>
   description: |
     ペデスタル型とも呼ばれます。
     床等に据え置きで使用します。
 
 - name: ブレード型サーバー
+  icon: <i class="fas fa-server"></i>
 
 - name: マルチノード型サーバー
+  icon: <i class="fas fa-server"></i>
 
 - name: ネットワークアタッチトストレージ
+  icon: <i class="fas fa-hdd"></i>
   description: |
     NASとも呼ばれます。
     SMB/CIFS、NFS、AFP等のファイル共有を専用に扱うサーバーです。
 
 - name: プリンター
+  icon: <i class="fas fa-print"></i>
 - name: スキャナー
 - name: FAX
 - name: 複合機
@@ -116,6 +122,7 @@
 - name: スーパーコンピューター
 
 - name: 仮想サーバー
+  icon: <i class="fas fa-cloud"></i>
   description: |
     仮想化基盤上の仮想マシンで構成されたサーバーです。
 - name: 仮想デスクトップ

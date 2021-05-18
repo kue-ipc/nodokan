@@ -2,9 +2,11 @@
   h1 端末情報
 
 dl
-  - if current_user.admin?
-    = dt_dd_for @node, :user
-  = dt_dd_for @node, :name
+  = dt_dd_for @node, :name do |name|
+    = name
+    - if @node.specific
+      span.badge.badge-danger.ml-1
+        = Node.human_attribute_name(:specific)
   = dt_dd_for @node, :fqdn
   = dt_dd_for @node, :place do |place|
     - if place&.name.present?
@@ -13,62 +15,20 @@ dl
       .text-warning = t('messages.node_unregistered_place')
   = dt_dd_for @node, :hardware do |hardware|
     - if hardware
-      - case hardware.device_type
-      - when 'desktop'
-        i.fas.fa-desktop
-      - when 'laptop'
-        i.fas.fa-laptop
-      - when 'tablet'
-        i.fas.fa-tablet-alt
-      - when 'mobile'
-        i.fas.fa-mobile-alt
-      - when 'peripheral'
-        i.fas.fa-print
-      - when 'server'
-        i.fas.fa-server
-      - when 'appliance'
-        i.fas.fa-hdd
-      - when 'network'
-        i.fas.fa-network-wired
-      - when 'virtual'
-        i.fas.fa-cloud
-      - when 'other'
-        i.fas.fa-blender-phone
-      - when 'unknown'
+      - if hardware.device_type
+        - if hardware.device_type.icon.present?
+          == hardware.device_type.icon
+      - else
         i.fas.fa-question-circle
       =< hardware.name
     - else
       .text-warning = t('messages.node_unregistered_hardware')
   = dt_dd_for @node, :operating_system do |operating_system|
     - if operating_system
-      - case operating_system.os_category
-      - when 'windows_client'
-        i.fab.fa-windows
-      - when 'windows_server'
-        i.fab.fa-microsoft
-      - when 'mac'
-        i.fab.fa-apple
-      - when 'apple'
-        span.fa-stack style="font-size: 0.5em;"
-          i.fas.fa-tablet.fa-stack-2x
-          i.fab.fa-apple.fa-stack-1x.fa-inverse
-      - when 'android'
-        i.fab.fa-android
-      - when 'linux'
-        i.fab.fa-linux
-      - when 'bsd'
-        i.fab.fa-freebsd
-      - when 'unix'
-        i.fas.fa-university
-      - when 'dedicated'
-        i.fas.fa-compact-disc
-      - when 'embedded'
-        i.fas.fa-microchip
-      - when 'other'
-        i.fas.fa-blender-phone
-      - when 'less'
-        i.fas.fa-ghost
-      - when 'unknown'
+      - if operating_system.os_category
+        - if operating_system.os_category.icon.present?
+          == operating_system.os_category.icon
+      - else
         i.fas.fa-question-circle
       =< operating_system.name
     - else
@@ -80,8 +40,11 @@ dl
       table.table.table-sm.mb-0
         thead
           tr
-            th = Nic.human_attribute_name(:name)
             th = Nic.human_attribute_name(:interface_type)
+            th
+              = Nic.human_attribute_name(:name)
+              | /
+              = Nic.human_attribute_name(:flags)
             th = Nic.human_attribute_name(:mac_address)
             th = Nic.human_attribute_name(:network)
             th = Nic.human_attribute_name(:ipv4_config)
@@ -91,8 +54,18 @@ dl
         tbody
           - nics.each do |nic|
             tr
-              td = nic.name
-              td = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
+              td
+                = t(nic.interface_type,
+                  scope: 'activerecord.enums.interface_types')
+              td
+                = nic.name
+                - if nic.locked
+                  span.badge.badge-dark.ml-1
+                    = Nic.human_attribute_name(:locked)
+                - if nic.auth
+                  span.badge.badge-primary.ml-1
+                    = Nic.human_attribute_name(:auth)
+
               td = nic.mac_address
               td = nic.network&.name
               td = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
@@ -130,6 +103,8 @@ dl
           date: l(confirmation.expiration.to_date, format: :long))
       =< t(:approved, scope: :messages)
   = dt_dd_for @node, :note
+  - if current_user.admin?
+    = dt_dd_for @node, :user
 
 button#confirm-form-modal-toggle.btn.btn-primary[
   type="button" data-toggle="modal" data-target="#confirm-form-modal"]
