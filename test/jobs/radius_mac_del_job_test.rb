@@ -1,6 +1,6 @@
 require "test_helper"
 
-class RadiusUnregisterUserJobTest < ActiveJob::TestCase
+class RadiusMacDelJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class NicReserveIpv6JobTest < ActiveJob::TestCase
+class KeaSubnet4DelJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -236,7 +236,17 @@ ja:
     node_no_operating_system: |
       OSの登録を行わないと確認が承認されません。
       「編集」ボタンを押して、編集画面でOSを登録してください。
-
+    job:
+      radius_mac_add: |
+        RADIUSデータベースにMACアドレスを登録しました。
+      radius_mac_del: |
+        RADIUSデータベースからMACアドレスを削除しました。
+      radius_user_add: |
+        RADIUSデータベースにユーザーを登録しました。
+      radius_user_del: |
+        RADIUSデータベースからユーザーを削除しました。
+      invalid_username: MACアドレスと同じ形式のユーザー名です。
+      invalid_mac_address: 不正なMACアドレスです。
   date:
     formats:
       default: "%Y年%m月%d日(%a)"

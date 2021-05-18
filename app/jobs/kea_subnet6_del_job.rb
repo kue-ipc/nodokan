@@ -1,4 +1,4 @@
-class NicReserveIpv4Job < ApplicationJob
+class KeaSubnet6DelJob < ApplicationJob
   queue_as :default
 
   def perform(*args)

@@ -1,14 +1,9 @@
-# mac address style: hhhhhhhhhhhh
-#   - lowercase
-#   - no separator
-#   - 12 chars 0-9a-f
-
-class RadiusRegisterMacJob < ApplicationJob
+class RadiusMacAddJob < ApplicationJob
   queue_as :default
 
   def perform(mac_address, vlan)
     unless mac_address =~ /\A[0-9a-f]{12}\z/
-      logger.error("不正なMACアドレスです: #{mac_address}")
+      logger.error(t('invalid_mac_adderss') + ": #{mac_address}")
       return
     end
 
@@ -35,6 +30,6 @@ class RadiusRegisterMacJob < ApplicationJob
     radusergroup.priority = 1
     radusergroup.save!
 
-    logger.info("MACアドレスを登録しました。: #{mac_address} - #{vlan}")
+    logger.info(t('messages.job.radius_mac_add') + ": #{mac_address} - #{vlan}")
   end
 end

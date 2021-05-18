@@ -1,9 +1,9 @@
-class RadiusRegisterUserJob < ApplicationJob
+class RadiusUserAddJob < ApplicationJob
   queue_as :default
 
   def perform(username, vlan)
     if username =~ /\A[0-9a-f]{12}\z/
-      logger.error("MACアドレスと同じ形式のユーザー名は処理で来ません: #{username}")
+      logger.error(t('messages.job.invalid_username') + ": #{username}")
       return
     end
 
@@ -33,6 +33,6 @@ class RadiusRegisterUserJob < ApplicationJob
       radusergroup.save!
     end
 
-    logger.info("ユーザーを登録しました。: #{username} - #{vlan}")
+    logger.info(t('messages.job.radius_user_del') + ": #{username} - #{vlan}")
   end
 end
