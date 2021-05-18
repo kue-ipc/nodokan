@@ -51,6 +51,8 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
+  after_commit :kea_subnet4, :kea_subnet6
+
   # IPv4
 
   # readonly
@@ -58,6 +60,10 @@ class Network < ApplicationRecord
     @ipv4_network ||=
       ipv4_network_data.presence &&
       IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefix_length)
+  end
+
+  def ipv4_network_prefix
+    ipv4_network&.to_string
   end
 
   def ipv4_network_address
@@ -113,6 +119,10 @@ class Network < ApplicationRecord
       IPAddress::IPv6.parse_data(ipv6_network_data).tap do |ipv6|
         ipv6.prefix = ipv6_prefix_length
       end
+  end
+
+  def ipv6_network_prefix
+    ipv6_network&.to_string
   end
 
   def ipv6_network_address
@@ -241,6 +251,18 @@ class Network < ApplicationRecord
       ipv6_pools.map(&:ipv6_config).then do |list|
         (list + ['manual', 'disabled']).uniq
       end
+  end
+
+  def kea_subnet4
+    if dhcp && ipv4_network
+      KeaSubnet4AddJob.perform_later(self)
+    else
+      KeaSubnet4DelJob.perform_later(self)
+    end
+  end
+
+  def kea_subnet6
+    # TODO
   end
 
   # class methods

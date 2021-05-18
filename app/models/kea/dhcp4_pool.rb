@@ -17,6 +17,6 @@ module Kea
   class Dhcp4Pool < KeaRecord
     self.table_name = 'dhcp4_pool'
 
-    belongs_to :subnet, class_name: 'Dhcp4Subnet', primary_key: 'subnet_id'
+    belongs_to :dhcp4_subnet, foreign_key: 'subnet_id', primary_key: 'subnet_id'
   end
 end
