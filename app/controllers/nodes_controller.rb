@@ -49,12 +49,12 @@ class NodesController < ApplicationController
         {query: "%#{@query}%"}
       )
 
-      query_nics = Nic.where(
-        'name LIKE :query OR ' \
-        'ipv4_address LIKE :query OR ' \
-        'ipv6_address LIKE :query',
-        {query: "%#{@query}%"}
-      )
+      # query_nics = Nic.where(
+      #   'name LIKE :query OR ' \
+      #   'ipv4_address LIKE :query OR ' \
+      #   'ipv6_address LIKE :query',
+      #   {query: "%#{@query}%"}
+      # )
 
       @nodes = @nodes
         .where(
@@ -65,7 +65,7 @@ class NodesController < ApplicationController
         )
         .or(@nodes.where(place_id: query_places.map(&:id)))
         .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
-        .or(@nodes.where(nics: query_nics.map(&:id)))
+        # .or(@nodes.where(nics: query_nics.map(&:id)))
     end
 
     @nodes = @nodes.where(@condition) if @condition

@@ -59,7 +59,7 @@ class NodeImportCSV < ImportCSV
           interface_type: data['nic[interface_type]'].presence || 'unknown',
           name: data['nic[name]'],
           auth:
-            %w[true 1 on yes].include?(data['nic[auth]'].downcase),
+            %w[true 1 on yes].include?(data['nic[auth]']&.downcase),
           mac_address: data['nic[mac_address]'],
           duid: data['nic[duid]'],
           ipv4_config: data['nic[ipv4_config]'].presence || 'disabled',
