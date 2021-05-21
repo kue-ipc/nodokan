@@ -69,6 +69,9 @@ gem 'bootstrap_form', '~> 4.0'
 # Sanitize
 gem 'sanitize'
 
+# Composite primary keys
+gem 'composite_primary_keys', '~> 13.0'
+
 group :production do
   gem 'dalli'
 end
