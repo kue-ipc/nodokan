@@ -72,7 +72,7 @@ class NodesController < ApplicationController
 
     if @order
       @order.each do |key, value|
-        vaule = 
+        value =
           if value.to_s.downcase == 'desc'
             'desc'
           else
@@ -85,7 +85,6 @@ class NodesController < ApplicationController
         when 'name', 'hostname', 'domain'
           @nodes = @nodes.order({key => value})
         when 'place'
-          p 'placeデソート'
           @nodes = @nodes.order("places.room #{value}")
         when 'hardware'
           @nodes = @nodes.order("hardwares.product_name #{value}")

@@ -24,6 +24,14 @@ class KeaSubnet4AddJob < ApplicationJob
       end
     end
 
+    subnet4.dhcp4_options = [
+      subnet4.dhcp4_options.build(
+        code: 3,
+        formatted_value: network.ipv4_gateway_address,
+        space: 'dhcp4'
+      )
+    ]
+
     subnet4.dhcp4_pools = network.ipv4_pools.map do |pool|
       subnet4.dhcp4_pools.build(
         start_address: pool.ipv4_first.to_i,
