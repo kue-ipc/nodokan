@@ -1,6 +1,3 @@
-# see
-# https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/configuration-in-db-design
-
 class KeaSubnet4AddJob < ApplicationJob
   queue_as :default
 
