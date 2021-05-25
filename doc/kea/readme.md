@@ -2,6 +2,8 @@
 
 https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/configuration-in-db-design
 
+https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/host-reservation
+
 
 isc-kea-ctrl-agent.service
 isc-kea-dhcp4-server.service

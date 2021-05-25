@@ -31,7 +31,7 @@ module Kea
       duid: 1,
       circuit_id: 2,
       client_id: 3,
-      felxible: 4,
+      flex_id: 4,
     }
 
     belongs_to :dhcp4_subnet, optional: true
