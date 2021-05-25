@@ -3,7 +3,7 @@ class RadiusMacAddJob < ApplicationJob
 
   def perform(mac_address, vlan)
     unless mac_address =~ /\A[0-9a-f]{12}\z/
-      logger.error(t('invalid_mac_adderss') + ": #{mac_address}")
+      logger.error(I18n.t('invalid_mac_adderss') + ": #{mac_address}")
       return
     end
 
@@ -30,6 +30,8 @@ class RadiusMacAddJob < ApplicationJob
     radusergroup.priority = 1
     radusergroup.save!
 
-    logger.info(t('messages.job.radius_mac_add') + ": #{mac_address} - #{vlan}")
+    logger.info(
+      I18n.t('messages.job.radius_mac_add') + ": #{mac_address} - #{vlan}"
+    )
   end
 end

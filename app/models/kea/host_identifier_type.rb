@@ -10,5 +10,13 @@ module Kea
     def readonly?
       true
     end
+
+    def self.hw_address
+      self.find_by(name: 'hw-address')
+    end
+
+    def self.duid
+      self.find_by(name: 'duid')
+    end
   end
 end

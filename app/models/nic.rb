@@ -38,7 +38,7 @@ class Nic < ApplicationRecord
   normalize_attribute :ipv4_address
   normalize_attribute :ipv6_address
 
-  after_commit :radius_mac
+  after_commit :radius_mac, :kea_reservation
 
   def mac_address_gl
     @mac_address_gl ||= !((mac_address_list.first || 0) & 0x02).zero?
@@ -249,19 +249,28 @@ class Nic < ApplicationRecord
     end
   end
 
-  private
-
-    def hex_str(list, char_case: :lower, sep: nil)
-      hex =
-        case char_case.intern
-        when :upper
-          '%02X'
-        when :lower
-          '%02x'
-        else
-          raise ArgumentError, "invalid char_case: #{char_case}"
-        end
-      format_str = [[hex] * list.size].join(sep || '')
-      format_str % list
+  def kea_reservation
+    if ipv4_reserved? &&
+       mac_address_data.present? &&
+       ipv4_data.present? &&
+       network&.dhcp
+      KeaReservationAddJob.perform_later(self)
+    else
+      KeaReservationDelJob.perform_later(self)
     end
+  end
+
+  private def hex_str(list, char_case: :lower, sep: nil)
+    hex =
+      case char_case.intern
+      when :upper
+        '%02X'
+      when :lower
+        '%02x'
+      else
+        raise ArgumentError, "invalid char_case: #{char_case}"
+      end
+    format_str = [[hex] * list.size].join(sep || '')
+    format_str % list
+  end
 end
