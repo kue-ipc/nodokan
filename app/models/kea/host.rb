@@ -26,15 +26,16 @@ module Kea
   class Host < KeaRecord
     self.primary_key = 'host_id'
 
-    enum dhcp_identifier_type: {
-      hw_address: 0,
-      duid: 1,
-      circuit_id: 2,
-      client_id: 3,
-      flex_id: 4,
-    }
+    belongs_to :dhcp4_subnet,
+      primary_key: 'subnet_id',
+      optional: true
+    belongs_to :dhcp6_subnet,
+      primary_key: 'subnet_id',
+      optional: true
+    belongs_to :host_identifier_type,
+      foreign_key: 'dhcp_identifier_type', primary_key: 'identifier_type',
+      inverse_of: :hosts
 
-    belongs_to :dhcp4_subnet, optional: true
-    belongs_to :dhcp6_subnet, optional: true
+    has_one :ipv6_reservation, primary_key: 'host_id', dependent: :destroy
   end
 end
