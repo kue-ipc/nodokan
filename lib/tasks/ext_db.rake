@@ -82,5 +82,4 @@ namespace :ext_db do
 
   desc "setup"
   task setup: [:migrate, :seed]
-
 end
