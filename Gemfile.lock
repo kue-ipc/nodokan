@@ -100,6 +100,7 @@ GEM
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
     crass (1.0.6)
+    daemons (1.4.0)
     dalli (2.7.11)
     deep_merge (1.2.1)
     delayed_job (4.1.9)
@@ -411,6 +412,7 @@ DEPENDENCIES
   capybara (>= 3.26)
   composite_primary_keys (~> 13.0)
   config
+  daemons
   dalli
   delayed_job_active_record
   delayed_job_web
