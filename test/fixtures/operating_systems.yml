@@ -9,7 +9,6 @@ winme:
   os_category: win
   name: Windows Me
   eol: 2006-07-11
-  approved: true
   confirmed: true
   description: Microsoftの黒歴史
 
