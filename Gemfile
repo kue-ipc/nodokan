@@ -72,7 +72,12 @@ gem 'sanitize'
 # Composite primary keys
 gem 'composite_primary_keys', '~> 13.0'
 
+# Delayed::Job
+gem 'delayed_job_active_record'
+gem 'delayed_job_web'
+
 group :production do
+  # Dalli memchaced
   gem 'dalli'
 end
 

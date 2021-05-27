@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_07_021351) do
+ActiveRecord::Schema.define(version: 2021_05_27_072221) do
 
   create_table "assignments", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -41,6 +41,21 @@ ActiveRecord::Schema.define(version: 2021_05_07_021351) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["node_id"], name: "index_confirmations_on_node_id", unique: true
     t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
+  end
+
+  create_table "delayed_jobs", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "device_types", charset: "utf8mb4", force: :cascade do |t|

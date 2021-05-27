@@ -102,6 +102,16 @@ GEM
     crass (1.0.6)
     dalli (2.7.11)
     deep_merge (1.2.1)
+    delayed_job (4.1.9)
+      activesupport (>= 3.0, < 6.2)
+    delayed_job_active_record (4.1.6)
+      activerecord (>= 3.0, < 6.2)
+      delayed_job (>= 3.0, < 5)
+    delayed_job_web (1.4.4)
+      activerecord (> 3.0.0)
+      delayed_job (> 2.0.3)
+      rack-protection (>= 1.5.5)
+      sinatra (>= 1.4.4)
     devise (4.8.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -192,6 +202,8 @@ GEM
     mini_portile2 (2.5.1)
     minitest (5.14.4)
     msgpack (1.4.2)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
     mysql2 (0.5.3)
     nested_form (0.3.2)
     net-ldap (0.17.0)
@@ -234,6 +246,8 @@ GEM
     rack-pjax (1.1.0)
       nokogiri (~> 1.5)
       rack (>= 1.1)
+    rack-protection (2.1.0)
+      rack
     rack-proxy (0.6.5)
       rack
     rack-test (1.1.0)
@@ -309,6 +323,7 @@ GEM
       rack (>= 1.1)
       rubocop (>= 1.7.0, < 2.0)
     ruby-progressbar (1.11.0)
+    ruby2_keywords (0.0.4)
     rubyzip (2.3.0)
     sanitize (5.2.3)
       crass (~> 1.0.2)
@@ -328,6 +343,11 @@ GEM
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
     slim (4.1.0)
       temple (>= 0.7.6, < 0.9)
       tilt (>= 2.0.6, < 2.1)
@@ -392,6 +412,8 @@ DEPENDENCIES
   composite_primary_keys (~> 13.0)
   config
   dalli
+  delayed_job_active_record
+  delayed_job_web
   devise
   devise-i18n
   devise_ldap_authenticatable
