@@ -1,10 +1,14 @@
 site:
   title: null
 database:
+  # credentials
   username: nodokan
+  # credentials
   password: pass+nodokan42
   host: localhost
+  # database: <same database in development and production>
 config:
+  # credentials
   radius_mac_password: null
   ipv6: true
   mac_address_style:
@@ -22,7 +26,9 @@ ldap:
   port: 389
   attribute: uid
   base: ou=people,dc=example,dc=jp
+  # credentials
   admin_user: cn=admin,dc=example,dc=jp
+  # credentials
   admin_password: admin_password
   ssl: false
   allow_unauthenticated_bind: false

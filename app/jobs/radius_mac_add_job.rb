@@ -7,7 +7,10 @@ class RadiusMacAddJob < ApplicationJob
       return
     end
 
-    password = Settings.config.radius_mac_password || mac_address
+    password =
+      Rails.application.credentials.dig(:config, :radius_mac_password) ||
+      Settings.config.radius_mac_password ||
+      mac_address
 
     # パスワードを設定
     radcheck = Radius::Radcheck.find_or_initialize_by(username: mac_address)
