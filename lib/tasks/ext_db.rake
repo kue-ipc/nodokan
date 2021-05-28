@@ -1,7 +1,10 @@
+# extra database
+
 namespace :ext_db do
-  desc "migrate"
-  task migrate: :environment do
-    Kea::KeaRecord.connection.execute <<~'SQL'.squish
+  desc 'Migrate a kea database'
+  task migrate_kea: :environment do
+    puts 'create or replace view ipv6_reservations_alt on kea'
+    Kea::KeaRecord.connection.execute <<-'SQL'.squish
       CREATE OR REPLACE VIEW ipv6_reservations_alt AS SELECT
         reservation_id,
         address,
@@ -11,13 +14,18 @@ namespace :ext_db do
         host_id FROM ipv6_reservations;
     SQL
 
-    Kea::KeaRecord.connection.execute <<~'SQL'.squish
+    puts 'create or replace view host_identifier_type_alt on kea'
+    Kea::KeaRecord.connection.execute <<-'SQL'.squish
       CREATE OR REPLACE VIEW host_identifier_type_alt AS SELECT
         type AS identifier_type,
         name FROM host_identifier_type;
     SQL
+  end
 
-    Radius::RadiusRecord.connection.execute <<~'SQL'.squish
+  desc 'Migrate a radisu database'
+  task migrate_radius: :environment do
+    puts 'create or replace view radcheck_alt on radius'
+    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
       CREATE OR REPLACE VIEW radcheck_alt AS SELECT
         id,
         username,
@@ -26,7 +34,8 @@ namespace :ext_db do
         value FROM radcheck;
     SQL
 
-    Radius::RadiusRecord.connection.execute <<~'SQL'.squish
+    puts 'create or replace view radreply_alt on radius'
+    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
       CREATE OR REPLACE VIEW radreply_alt AS SELECT
         id,
         username,
@@ -35,7 +44,8 @@ namespace :ext_db do
         value FROM radreply;
     SQL
 
-    Radius::RadiusRecord.connection.execute <<~'SQL'.squish
+    puts 'create or replace view radgroupcheck_alt on radius'
+    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
       CREATE OR REPLACE VIEW radgroupcheck_alt AS SELECT
         id,
         groupname,
@@ -44,7 +54,8 @@ namespace :ext_db do
         value FROM radgroupcheck;
     SQL
 
-    Radius::RadiusRecord.connection.execute <<~'SQL'.squish
+    puts 'create or replace view radgroupreply_alt on radius'
+    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
       CREATE OR REPLACE VIEW radgroupreply_alt AS SELECT
         id,
         groupname,
@@ -54,32 +65,27 @@ namespace :ext_db do
     SQL
   end
 
-  desc "Loads the seed data"
-  task seed: :environment do
-    ['mac', 'user'].each do |name|
-      Radius::Radgroupreply.find_or_initialize_by(
-        groupname: name,
-        attr: 'Tunnel-Type',
-      ).tap do |radgroupreply|
-        radgroupreply.op = ':='
-        radgroupreply.value = '13'
-        radgroupreply.save!
-        Rails.logger.info("create or update: Tunnel-Type for #{name} group")
-      end
+  desc 'Migrate extra databases'
+  task migrate: [:migrate_kea, :migrate_radius]
 
-      Radius::Radgroupreply.find_or_initialize_by(
-        groupname: name,
-        attr: 'Tunnel-Medium-Type',
-      ).tap do |radgroupreply|
-        radgroupreply.op = ':='
-        radgroupreply.value = '6'
-        radgroupreply.save!
-        Rails.logger.info(
-          "create or update: Tunnel-Medium-Type for #{name} group")
+  desc 'Loads the seed data'
+  task seed: :environment do
+    groups = ['mac', 'user']
+    attrs = {
+      'Tunnel-Type' => '13',
+      'Tunnel-Medium-Type' => '6',
+    }
+    groups.each do |group_name|
+      attrs.each do |attr_name, value|
+        puts "create or update: #{attr_name} for #{group_name} group"
+        reply = Radius::Radgroupreply.find_or_initialize_by(groupname: group_name, attr: attr_name)
+        reply.op = ':='
+        reply.value = value
+        reply.save!
       end
     end
   end
 
-  desc "setup"
+  desc 'setup'
   task setup: [:migrate, :seed]
 end
