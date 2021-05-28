@@ -20,7 +20,7 @@ Layout/ExtraSpacing:
     - 'db/migrate/*.rb'
 
 Layout/LineLength:
-  Max: 80
+  Max: 120
 
 Layout/EndOfLine:
   EnforcedStyle: lf
