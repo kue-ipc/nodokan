@@ -1,6 +1,6 @@
 require 'json'
 
-require 'user_csv'
+require 'import_export/user_csv'
 
 namespace :user do
   desc 'Sync users'
@@ -18,15 +18,15 @@ namespace :user do
   task export: :environment do
     csv_file = Rails.root / 'data' / 'users.csv'
     puts 'export csv ...'
-    results = UserCSV.new(csv_file, logger: Rails.logger).export
+    results = ImportExport::UserCSV.new(csv_file, logger: Rails.logger).export
     puts results.to_json
   end
 
   desc 'Import CSV of users'
   task import: :environment do
-    puts 'import csv ...'
     csv_file = Rails.root / 'data' / 'users.csv'
-    results = UserCSV.new(csv_file, logger: Rails.logger).import
+    puts 'import csv ...'
+    results = ImportExport::UserCSV.new(csv_file, logger: Rails.logger).import
     puts results.to_json
   end
 end

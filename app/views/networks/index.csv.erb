@@ -19,15 +19,10 @@
 <%- @networks.each do |network| -%>
 <%==
 [
-  '',
+  nil,
   network.id,
   network.name,
-  [
-    if network.auth then 'a' else '' end,
-    if network.dhcp then 'd' else '' end,
-    if network.locked then 'l' else '' end,
-    if network.specific then 's' else '' end,
-  ].join(''),
+  network.flag,
   network.vlan,
   network.ipv4_network&.to_string,
   network.ipv4_gateway,
@@ -36,8 +31,8 @@
   network.ipv6_gateway,
   network.ipv6_pools.map.map(&:identifier).join(' '),
   network.note,
-  'success',
-  '',
+  :success,
+  nil,
 ].to_csv
 -%>
 <%- end -%>

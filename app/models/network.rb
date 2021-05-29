@@ -3,6 +3,13 @@ class Network < ApplicationRecord
     IPAddress::Prefix32.new(i).to_ip
   end
 
+  FLAGS = {
+    auth: 'a',
+    dhcp: 'd',
+    locked: 'l',
+    specific: 's',
+  }.freeze
+
   has_many :nics, dependent: :nullify
   has_many :nodes, through: :nics
 
@@ -263,6 +270,19 @@ class Network < ApplicationRecord
 
   def kea_subnet6
     # TODO
+  end
+
+  def flag
+    FLAGS.map { |attr, c| self[attr] ? c : nil }.compact.join.presence
+  end
+
+  def flag=(str)
+    if str.present?
+      FLAGS.each { |attr, _c| self[attr] = false }
+      return
+    end
+
+    FLAGS.each { |attr, c| self[attr] = str.include?(c) }
   end
 
   # class methods
