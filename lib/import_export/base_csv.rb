@@ -124,7 +124,7 @@ module ImportExport
       raise NotImplementedError
     end
 
-    def row_to_record(row)
+    def row_to_record(row, record)
       raise NotImplementedError
     end
 
@@ -132,6 +132,7 @@ module ImportExport
       row_list = []
       model_class.order(:id).all.each do |record|
         row = CSV::Row.new(header.headers, [])
+        row['id'] = record.id
         record_to_row(record, row)
         row_list << row
       end
@@ -139,19 +140,39 @@ module ImportExport
     end
 
     def create(row)
-      raise NotImplementedError
+      record = model_class.new
+      row_to_record(row, record)
+      if record.save
+        row['id'] = record.id
+        [true, nil]
+      else
+        [false, record.errors.to_json]
+      end
     end
 
     def read(row)
       record = find(row)
       return [false, 'Not found.'] unless record
 
+      row['id'] = record.id
       record_to_row(record, row)
       [true, nil]
     end
 
     def update(row)
-      raise NotImplementedError
+      record = find(row)
+
+      return [false, 'Not found.'] unless record
+
+      row['id'] = record.id
+
+      row_to_record(row, record)
+
+      if user.save
+        [true, nil]
+      else
+        [false, record.errors.to_json]
+      end
     end
 
     def delete(row)
