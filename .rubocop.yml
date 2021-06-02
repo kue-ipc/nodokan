@@ -28,9 +28,6 @@ Layout/EndOfLine:
 Layout/IndentationConsistency:
   EnforcedStyle: indented_internal_methods
 
-Layout/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: no_space
-
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 

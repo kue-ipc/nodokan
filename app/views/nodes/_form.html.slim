@@ -1,11 +1,12 @@
-p 【必須】の項目は入力が必須です。
+p = t('forms.common.required_input')
 
 = bootstrap_form_for @node do |f|
   .d-none
     / ダミーでおいておかないと、NIC追加のサブミットが走る
     = f.submit class: 'btn btn-primary'
   .rounded.border.p-2.mb-2
-    h4 端末基本情報
+    h4 = t('forms.node.base.title')
+    small.text-muted = t('forms.node.base.help')
     .form-row
       = f.text_field :name, required: true,
         wrapper: {class: 'col-md-4'}
@@ -22,11 +23,8 @@ p 【必須】の項目は入力が必須です。
         |
           この端末は管理者から特定端末として指定されています。
   .rounded.border.p-2.mb-2
-    h4 設置場所
-    small.text-muted
-      |
-        候補に現れない場合は、そのまま名称を入力してください。
-        管理者によって名称が統合される場合があります。
+    h4 = t('forms.node.place.title')
+    small.text-muted = t('forms.node.place.help')
     .form-row
       = f.fields_for :place, @node.place || Place.new do |place_f|
         = place_f.text_field :area,
@@ -73,9 +71,8 @@ p 【必須】の項目は入力が必須です。
         )
 
   .rounded.border.p-2.mb-2
-    h4 機器情報
-    small.form-text.text-muted
-      | 前の項目を埋めると候補が表示されます。候補に現れない場合は、そのまま名前を入れてください。管理者によって名前が統合される場合があります。
+    h4 = t('forms.node.hardware.title')
+    small.text-muted = t('forms.node.hardware.help')
     .form-row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         = hardware_f.collection_select :device_type_id, 
@@ -126,12 +123,8 @@ p 【必須】の項目は入力が必須です。
         )
 
   .rounded.border.p-2.mb-2
-    h4 OS(オペレーティングシステム)情報
-    small.form-text.text-muted
-      |
-        種別を選択するとOS名入力時に候補が表示されます。
-        候補に現れない場合は、そのまま名前を入れてください。
-        管理者によって名前が統合される場合があります。
+    h4 = t('forms.node.operating_system.title')
+    small.text-muted = t('forms.node.operating_system.help')
     .form-row
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
@@ -159,9 +152,8 @@ p 【必須】の項目は入力が必須です。
   .rounded.border.p-2.mb-2
     .float-right
       = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic', formnovalidate: true
-    h4 NIC(ネットワークインターフェースコントローラー)情報
-    small.form-text.text-muted
-      | 端末に備わっているネットワーク接続のインターフェースです。複数のネットワークに接続する場合はNICを追加してください。不要なNICは削除してください。
+    h4 = t('forms.node.nic.title')
+    small.text-muted = t('forms.node.nic.help')
     - count = 0
     - nic_list = []
     = f.fields_for :nics do |nic_f|

@@ -1,2 +1,4 @@
 # .rufo
+align_case_when true
 quote_style :single
+excludes [bin/**/*,node_modules/**/*,db/schema.rb]

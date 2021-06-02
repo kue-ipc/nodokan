@@ -5,7 +5,7 @@ class Node < ApplicationRecord
   belongs_to :hardware, optional: true, counter_cache: true
   belongs_to :operating_system, optional: true, counter_cache: true
 
-  has_many :nics, dependent: :destroy
+  has_many :nics, -> { order(:number) }, dependent: :destroy
   accepts_nested_attributes_for :nics, allow_destroy: true
 
   has_one :confirmation, dependent: :destroy

@@ -18,17 +18,22 @@ class Nic < ApplicationRecord
     unknown: -1,
   }
 
-  validates :name, length: {maximum: 255}
-  validates :mac_address, allow_blank: true, format: {
-    with: /\A\h{2}(?:[-:.]?\h{2}){5}\z/,
-    message: 'MACアドレスの形式ではありません。' \
-      '通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。',
-  }
-  validates :duid, allow_blank: true, format: {
-    with: /\A\h{2}(?:[-:]h{2})*\z/,
-    message: 'DUIDの形式ではありません。' \
-      '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
-  }
+  validates :number,
+    numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 64 },
+    uniqueness: { scope: :node }
+  validates :name, length: { maximum: 255 }
+  validates :mac_address, allow_blank: true,
+                          format: {
+                            with: /\A\h{2}(?:[-:.]?\h{2}){5}\z/,
+                            message: 'MACアドレスの形式ではありません。' \
+                            '通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。',
+                          }
+  validates :duid, allow_blank: true,
+                   format: {
+                     with: /\A\h{2}(?:[-:]h{2})*\z/,
+                     message: 'DUIDの形式ではありません。' \
+                     '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
+                   }
   validates :ipv4_address, allow_blank: true, ipv4: true
   validates :ipv6_address, allow_blank: true, ipv6: true
 
@@ -271,8 +276,7 @@ class Nic < ApplicationRecord
   end
 
   private def hex_str(list, char_case: :lower, sep: nil)
-    hex =
-      case char_case.intern
+    hex = case char_case.intern
       when :upper
         '%02X'
       when :lower

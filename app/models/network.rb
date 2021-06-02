@@ -277,12 +277,7 @@ class Network < ApplicationRecord
   end
 
   def flag=(str)
-    if str.present?
-      FLAGS.each { |attr, _c| self[attr] = false }
-      return
-    end
-
-    FLAGS.each { |attr, c| self[attr] = str.include?(c) }
+    FLAGS.each { |attr, c| self[attr] = str.present? && str.include?(c) }
   end
 
   # class methods

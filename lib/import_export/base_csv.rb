@@ -30,6 +30,7 @@ module ImportExport
         rescue StandardError => e
           row['result'] = :error
           row['message'] = e.message
+          @logger.error(e.full_message)
         ensure
           @logger.info("#{count}: [#{row['result']}] #{row['id']}: #{row['message']}")
           results[row['result']] += 1

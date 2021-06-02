@@ -10,14 +10,8 @@ class NodesController < ApplicationController
       :per,
       :format,
       :query,
-      order: [
-        :user, :name, :hostname, :domain, :place, :hardware,
-        :operating_system,
-      ],
-      condition: [
-        :user, :name, :hostname, :domain, :place_id, :hardware_id,
-        :operating_system_id,
-      ]
+      order: [:user, :name, :hostname, :domain, :place, :hardware, :operating_system],
+      condition: [:user, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id],
     )
 
     @page = permitted_params[:page]
@@ -30,23 +24,21 @@ class NodesController < ApplicationController
     @condition = permitted_params[:condition]
 
     @nodes = policy_scope(Node)
-      .includes(:user, :place, :hardware, :operating_system,
-        :confirmation,
-        nics: :network)
+      .includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
 
     if @query.present?
       query_places = Place.where(
         'area LIKE :query OR ' \
         'building LIKE :query OR ' \
         'room LIKE :query',
-        {query: "%#{@query}%"}
+        { query: "%#{@query}%" },
       )
 
       query_hardwares = Hardware.where(
         'maker LIKE :query OR ' \
         'product_name LIKE :query OR ' \
         'model_number LIKE :query',
-        {query: "%#{@query}%"}
+        { query: "%#{@query}%" },
       )
 
       # query_nics = Nic.where(
@@ -61,19 +53,18 @@ class NodesController < ApplicationController
           'name LIKE :query OR ' \
           'hostname LIKE :query OR ' \
           'domain LIKE :query',
-          {query: "%#{@query}%"}
+          { query: "%#{@query}%" },
         )
         .or(@nodes.where(place_id: query_places.map(&:id)))
         .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
-        # .or(@nodes.where(nics: query_nics.map(&:id)))
+      # .or(@nodes.where(nics: query_nics.map(&:id)))
     end
 
     @nodes = @nodes.where(@condition) if @condition
 
     if @order
       @order.each do |key, value|
-        value =
-          if value.to_s.downcase == 'desc'
+        value = if value.to_s.downcase == 'desc'
             'desc'
           else
             'asc'
@@ -83,7 +74,7 @@ class NodesController < ApplicationController
         when 'user'
           @nodes = @nodes.order("users.username #{value}")
         when 'name', 'hostname', 'domain'
-          @nodes = @nodes.order({key => value})
+          @nodes = @nodes.order({ key => value })
         when 'place'
           @nodes = @nodes.order("places.room #{value}")
         when 'hardware'
@@ -111,11 +102,10 @@ class NodesController < ApplicationController
         .select(:installation_method)
         .distinct
         .map(&:installation_method)
-      
-      if @confirmation.security_software&.os_category != \
-          @node.operating_system.os_category
+
+      if @confirmation.security_software&.os_category != @node.operating_system.os_category
         @confirmation.security_software = SecuritySoftware.new(
-          os_category: @node.operating_system.os_category
+          os_category: @node.operating_system.os_category,
         )
         @confirmation.security_update = nil
         @confirmation.security_scan = nil
@@ -144,7 +134,7 @@ class NodesController < ApplicationController
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
       nics: [Nic.new],
-      user: current_user
+      user: current_user,
     )
     authorize @node
   end
@@ -168,6 +158,7 @@ class NodesController < ApplicationController
       return
     end
 
+    number_count = 1
     @node.nics.each do |nic|
       unless current_user.admin?
         if nic.ipv4_config == 'manual'
@@ -178,8 +169,11 @@ class NodesController < ApplicationController
         end
       end
 
+      nic.number = number_count
       nic.set_ipv4!
       nic.set_ipv6!
+
+      number_count += 1
     end
 
     success = false
@@ -220,11 +214,12 @@ class NodesController < ApplicationController
     end
 
     if params['add_nic']
-      @node.nics << Nic.new(interface_type: :wired)
+      @node.nics << Nic.new
       render :edit
       return
     end
 
+    number_count = 1
     @node.nics.each do |nic|
       unless current_user.admin?
         if nic.ipv4_config == 'manual' &&
@@ -237,8 +232,11 @@ class NodesController < ApplicationController
         end
       end
 
+      nic.number = number_count
       nic.set_ipv4!
       nic.set_ipv6!
+
+      number_count += 1
     end
 
     success = false
@@ -294,65 +292,65 @@ class NodesController < ApplicationController
           ipv4_config: nic.ipv4_config,
           ipv6_config: nic.ipv6_config,
         )
-      end
+      end,
     )
   end
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_node
-      @node = policy_scope(Node)
-        .includes(:user, :place, :hardware, :operating_system, nics: :network)
-        .find(params[:id])
-      authorize @node
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_node
+    @node = policy_scope(Node)
+      .includes(:user, :place, :hardware, :operating_system, nics: :network)
+      .find(params[:id])
+    authorize @node
+  end
 
-    # Only allow a list of trusted parameters through.
-    def node_params
-      permitted_params = params.require(:node).permit(
+  # Only allow a list of trusted parameters through.
+  def node_params
+    permitted_params = params.require(:node).permit(
+      :name,
+      :hostname,
+      :domain,
+      :specific,
+      :note,
+      :user_id,
+      place: [:area, :building, :floor, :room],
+      hardware: [:device_type_id, :maker, :product_name, :model_number],
+      operating_system: [:os_category_id, :name],
+      nics_attributes: [
+        :id,
+        :_destroy,
         :name,
-        :hostname,
-        :domain,
-        :specific,
-        :note,
-        :user_id,
-        place: [:area, :building, :floor, :room],
-        hardware: [:device_type_id, :maker, :product_name, :model_number],
-        operating_system: [:os_category_id, :name],
-        nics_attributes: [
-          :id,
-          :_destroy,
-          :name,
-          :locked,
-          :interface_type,
-          :auth,
-          :mac_address,
-          :duid,
-          :network_id,
-          :ipv4_config,
-          :ipv6_config,
-        ]
-      )
+        :locked,
+        :interface_type,
+        :auth,
+        :mac_address,
+        :duid,
+        :network_id,
+        :ipv4_config,
+        :ipv6_config,
+      ],
+    )
 
-      place = Place.find_or_initialize_by(permitted_params[:place])
+    place = Place.find_or_initialize_by(permitted_params[:place])
 
-      hardware = Hardware.find_or_initialize_by(permitted_params[:hardware])
+    hardware = Hardware.find_or_initialize_by(permitted_params[:hardware])
 
-      operating_system =
-        if permitted_params[:operating_system][:os_category_id].present?
-          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
-        end
+    operating_system = if permitted_params[:operating_system][:os_category_id].present?
+        OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
+      end
 
-      permitted_params.except(:place, :hardware, :operating_system).merge(
-        {
-          place: place,
-          hardware: hardware,
-          operating_system: operating_system,
-        })
-    end
+    permitted_params.except(:place, :hardware, :operating_system).merge(
+      {
+        place: place,
+        hardware: hardware,
+        operating_system: operating_system,
+      }
+    )
+  end
 
-    def authorize_node
-      authorize Node
-    end
+  def authorize_node
+    authorize Node
+  end
 end
