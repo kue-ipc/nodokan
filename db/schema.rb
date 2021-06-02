@@ -28,12 +28,12 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
   create_table "confirmations", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "node_id", null: false
     t.bigint "security_software_id"
-    t.integer "existence", null: false
-    t.integer "content", null: false
-    t.integer "os_update", null: false
-    t.integer "app_update", null: false
-    t.integer "security_update", null: false
-    t.integer "security_scan", null: false
+    t.integer "existence", limit: 1, null: false
+    t.integer "content", limit: 1, null: false
+    t.integer "os_update", limit: 1, null: false
+    t.integer "app_update", limit: 1, null: false
+    t.integer "security_update", limit: 1, null: false
+    t.integer "security_scan", limit: 1, null: false
     t.timestamp "confirmed_at", default: -> { "current_timestamp()" }, null: false
     t.timestamp "expiration", null: false
     t.boolean "approved", default: false, null: false
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
 
   create_table "ipv4_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
-    t.integer "ipv4_config", null: false
+    t.integer "ipv4_config", limit: 1, null: false
     t.binary "ipv4_first_data", limit: 4, null: false
     t.binary "ipv4_last_data", limit: 4, null: false
     t.datetime "created_at", precision: 6, null: false
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
 
   create_table "ipv6_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
-    t.integer "ipv6_config", null: false
+    t.integer "ipv6_config", limit: 1, null: false
     t.binary "ipv6_first_data", limit: 16, null: false
     t.binary "ipv6_last_data", limit: 16, null: false
     t.datetime "created_at", precision: 6, null: false
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
 
   create_table "networks", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
-    t.integer "vlan"
+    t.integer "vlan", limit: 2
     t.boolean "auth", default: false, null: false
     t.boolean "dhcp", default: false, null: false
     t.boolean "locked", default: false, null: false
@@ -132,15 +132,16 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
   create_table "nics", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "node_id", null: false
     t.bigint "network_id"
+    t.integer "number", limit: 1, null: false
     t.string "name"
-    t.integer "interface_type", null: false
+    t.integer "interface_type", limit: 1, null: false
     t.boolean "auth", default: false, null: false
     t.boolean "locked", default: false, null: false
     t.binary "mac_address_data", limit: 6
     t.binary "duid_data", limit: 130
-    t.integer "ipv4_config", default: -1, null: false
+    t.integer "ipv4_config", limit: 1, default: -1, null: false
     t.binary "ipv4_data", limit: 4
-    t.integer "ipv6_config", default: -1, null: false
+    t.integer "ipv6_config", limit: 1, default: -1, null: false
     t.binary "ipv6_data", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -149,6 +150,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
     t.index ["ipv6_data"], name: "index_nics_on_ipv6_data", unique: true
     t.index ["mac_address_data"], name: "index_nics_on_mac_address_data", unique: true
     t.index ["network_id"], name: "index_nics_on_network_id"
+    t.index ["node_id", "number"], name: "node_number", unique: true
     t.index ["node_id"], name: "index_nics_on_node_id"
   end
 
@@ -215,7 +217,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
 
   create_table "security_softwares", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "os_category_id", null: false
-    t.integer "installation_method", null: false
+    t.integer "installation_method", limit: 1, null: false
     t.string "name", null: false
     t.boolean "approved", default: false, null: false
     t.boolean "confirmed", default: false, null: false
@@ -233,7 +235,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
     t.string "username", null: false
     t.string "email", null: false
     t.string "fullname"
-    t.integer "role", default: 0, null: false
+    t.integer "role", limit: 1, default: 0, null: false
     t.boolean "deleted", default: false, null: false
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"

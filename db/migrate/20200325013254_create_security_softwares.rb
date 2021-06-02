@@ -3,7 +3,7 @@ class CreateSecuritySoftwares < ActiveRecord::Migration[6.0]
     create_table :security_softwares do |t|
       t.references :os_category, null: false, foreign_key: true
 
-      t.integer :installation_method, null: false, index: true
+      t.integer :installation_method, null: false, index: true, limit: 1
 
       t.string  :name, null: false, index: true
 

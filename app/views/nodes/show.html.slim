@@ -14,7 +14,7 @@ dl
     - else
       .text-warning = t('messages.node_unregistered_place')
   = dt_dd_for @node, :hardware do |hardware|
-    - if hardware
+    - if hardware&.name.present?
       - if hardware.device_type
         - if hardware.device_type.icon.present?
           == hardware.device_type.icon
@@ -25,11 +25,8 @@ dl
       .text-warning = t('messages.node_unregistered_hardware')
   = dt_dd_for @node, :operating_system do |operating_system|
     - if operating_system
-      - if operating_system.os_category
-        - if operating_system.os_category.icon.present?
-          == operating_system.os_category.icon
-      - else
-        i.fas.fa-question-circle
+      - if operating_system.os_category.icon.present?
+        == operating_system.os_category.icon
       =< operating_system.name
     - else
       .text-danger = t('messages.node_unregistered_operating_system')

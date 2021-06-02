@@ -56,6 +56,8 @@ module ImportExport
       row['hardware[model_number]'] = node.hardware&.model_number
       row['operating_system[os_category]'] = node.operating_system&.os_category
       row['operating_system[name]'] = node.operating_system&.name
+
+      nics = node.nics.order
       case node.nics.count
       when 0
         row['nic[name]'] = nil
@@ -80,47 +82,69 @@ module ImportExport
         row['nic[ipv6_config]'] = node.nics.first&.ipv6_config
         row['nic[ipv6_address]'] = node.nics.first&.ipv6_address
       else
-        row['nic[name]'] = node.nics.first&.name
-        row['nic[interface_type]'] = node.nics.first&.interface_type
-        row['nic[network]'] = node.nics.first&.network&.identifier
-        row['nic[auth]'] = node.nics.first&.auth
-        row['nic[mac_address]'] = node.nics.first&.mac_address
-        row['nic[duid]'] = node.nics.first&.duid
-        row['nic[ipv4_config]'] = node.nics.first&.ipv4_config
-        row['nic[ipv4_address]'] = node.nics.first&.ipv4_address
-        row['nic[ipv6_config]'] = node.nics.first&.ipv6_config
-        row['nic[ipv6_address]'] = node.nics.first&.ipv6_address
+        row['nic[name]'] = node.nics.map(&:name).join('|')
+        row['nic[interface_type]'] = node.nics.map(&:interface_type).join('|')
+        row['nic[network]'] =
+          node.nics.map { |nic| nic.network&.identifier }.join('|')
+        row['nic[auth]'] = node.nics.map(&:auth).join('|')
+        row['nic[mac_address]'] = node.nics.map(&:mac_address).join('|')
+        row['nic[duid]'] = node.nics.map(&:duid).join('|')
+        row['nic[ipv4_config]'] = node.nics.map(&:ipv4_config).join('|')
+        row['nic[ipv4_address]'] = node.nics.map(&:ipv4_address).join('|')
+        row['nic[ipv6_config]'] = node.nics.map(&:ipv6_config).join('|')
+        row['nic[ipv6_address]'] = node.nics.map(&:ipv6_address).join('|')
       end
       row
     end
 
     def row_to_record(row, node)
       node.assign_attributes(
-        user: User.find_by(usnername: data['user']),
-        name: data['name'],
-        hostname: data['hostname'],
-        domain: data['domain'],
-        note: data['note'],
+        user: User.find_by(usnername: row['user']),
+        name: row['name'],
+        hostname: row['hostname'],
+        domain: row['domain'],
+        note: row['note'],
         place: Place.find_or_initialize_by(
-          area: data['place[area]'] || '',
-          building: data['place[building]'] || '',
-          floor: data['place[floor]'].presence || 0,
-          room: data['place[room]'] || '',
+          area: row['place[area]'] || '',
+          building: row['place[building]'] || '',
+          floor: row['place[floor]'].presence || 0,
+          room: row['place[room]'] || '',
         ),
-        hardware: data['hardware[device_type]'].presence ||
-                  data['hardware[product_name]'].presence ||
-                  Hardware.find_or_initialize_by(
-                    device_type: DeviceType.find_by(name: data['hardware[device_type]']),
-                    maker: data['hardware[maker]'] || '',
-                    product_name: data['hardware[product_name]'] || '',
-                    model_number: data['hardware[model_number]'] || '',
-                  ),
-        operating_system: data['operating_system[os_category]'].presence ||
+        hardware: Hardware.find_or_initialize_by(
+          device_type: DeviceType.find_by(name: row['hardware[device_type]']),
+          maker: row['hardware[maker]'] || '',
+          product_name: row['hardware[product_name]'] || '',
+          model_number: row['hardware[model_number]'] || '',
+        ),
+        operating_system: row['operating_system[os_category]'].presence ||
                           OperatingSystem.find_or_initialize_by(
-                            os_category: Opreting_system.find_by(name: data['operating_system[os_category]']),
-                            name: data['operating_system[name]'] || '',
+                            os_category: Opreting_system.find_by(name: row['operating_system[os_category]']),
+                            name: row['operating_system[name]'] || '',
                           ),
       )
+
+
+      if row['nic[interface_type]'].present?
+        nic_num = row['nic[interface_type]'].split('|', -1).size
+        node.nics
+
+
+        Nic.new(
+          network: network,
+          interface_type: data['nic[interface_type]'].presence || 'unknown',
+          name: data['nic[name]'],
+          auth: %w[true 1 on yes].include?(data['nic[auth]']&.downcase),
+          mac_address: data['nic[mac_address]'],
+          duid: data['nic[duid]'],
+          ipv4_config: data['nic[ipv4_config]'].presence || 'disabled',
+          ipv4_address: data['nic[ipv4_address]'],
+          ipv6_config: data['nic[ipv6_config]'].presence || 'disabled',
+          ipv6_address: data['nic[ipv6_address]'],
+        )
+
+      else
+        node.nics.clear
+      end
 
       if data['nic[network]'].present?
         if data['nic[network]'] =~ /^\#(\d+)$/i

@@ -2,7 +2,7 @@ class CreateNetworks < ActiveRecord::Migration[6.0]
   def change
     create_table :networks do |t|
       t.string  :name, null: false, index: {unique: true}
-      t.integer :vlan,              index: {unique: true}
+      t.integer :vlan, limit: 2,    index: {unique: true}
 
       t.boolean :auth, null: false, default: false
       t.boolean :dhcp, null: false, default: false

@@ -14,7 +14,7 @@ class Nic < ApplicationRecord
     virtual: 8,
     nat: 16,
     share: 17,
-    other: 255,
+    other: 127,
     unknown: -1,
   }
 
@@ -171,6 +171,11 @@ class Nic < ApplicationRecord
       return true
     end
 
+    if network.nil?
+      self.ipv4_address = nil
+      return true
+    end
+
     unless network.ipv4_configs.include?(ipv4_config)
       errors[:ipv4_config] << 'このネットワークに設定することはできません。'
       return false
@@ -178,7 +183,7 @@ class Nic < ApplicationRecord
 
     case ipv4_config
     when 'dynamic', 'disabled'
-      self.ipv4_address = ''
+      self.ipv4_address = nil
     when 'reserved'
       unless (ipv4 = network.next_ipv4('reserved'))
         errors[:ipv4_config] << '予約用アドレスの空きがありません。'
@@ -209,6 +214,11 @@ class Nic < ApplicationRecord
       return true
     end
 
+    if network.nil?
+      self.ipv6_address = nil
+      return true
+    end
+
     unless network.ipv6_configs.include?(ipv6_config)
       errors[:ipv6_config] << 'このネットワークに設定することはできません。'
       return false
@@ -216,7 +226,7 @@ class Nic < ApplicationRecord
 
     case ipv6_config
     when 'dynamic', 'disabled'
-      self.ipv6_address = ''
+      self.ipv6_address = nil
     when 'reserved'
       unless (ipv6 = network.next_ipv6('reserved'))
         errors[:ipv6_config] << '予約用アドレスの空きがありません。'
