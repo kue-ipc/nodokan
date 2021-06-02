@@ -1,4 +1,4 @@
-import bsn from 'bootstrap.native'
+import bsn from 'bootstrap.native/src/index-v4'
 
 bsnComponentSelectors = [
   {component: bsn.Alert,     selector: '[data-dismiss="alert"]'}
