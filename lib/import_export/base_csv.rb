@@ -121,11 +121,11 @@ module ImportExport
         &.then { |attr| model_class.find_by({attr => row[attr.to_s]}) }
     end
 
-    def record_to_row(record, row)
+    def record_to_row(record, row = CSV::Row.new(header.headers, []))
       raise NotImplementedError
     end
 
-    def row_to_record(row, record)
+    def row_to_record(row, record = model_class.new)
       raise NotImplementedError
     end
 
@@ -169,7 +169,7 @@ module ImportExport
 
       row_to_record(row, record)
 
-      if user.save
+      if record.save
         [true, nil]
       else
         [false, record.errors.to_json]
