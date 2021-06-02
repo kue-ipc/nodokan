@@ -150,6 +150,19 @@ button#confirm-form-modal-toggle.btn.btn-primary[
   data: { confirm: t(:corfirm_destroy, scope: [:messages]) }, method: :delete,
   class: 'btn btn-danger'
 
+- if @node.confirmation.existence_not_my_own?
+  hr
+  h3 所有の譲渡
+  p
+    |
+      端末の所有者(管理者)ではない場合は、本来の所有者に譲渡してください。
+      譲渡先ユーザーのアカウント名のみを入力してください。
+
+  = bootstrap_form_with url: transfer_node_path(@node), class: 'form-inline' do |f|
+    = f.text_field :username, label: 'ユーザー名', label_class: 'mr-1'
+    = f.submit '譲渡する', class: 'btn btn-primary ml-1'
+
+
 - if @node.nics.count.positive?
   hr
 

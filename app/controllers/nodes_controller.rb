@@ -1,5 +1,5 @@
 class NodesController < ApplicationController
-  before_action :set_node, only: [:show, :edit, :update, :destroy]
+  before_action :set_node, only: [:show, :edit, :update, :destroy, :transfer]
   before_action :authorize_node, only: [:index]
 
   # GET /nodes
@@ -296,10 +296,31 @@ class NodesController < ApplicationController
     )
   end
 
-  private
+  # POST /nodes/1/tranfer
+  def transfer
+    user = User.find_by(username: params[:username])
+    if user
+      @node.user = user
+      @node.confirmation = nil
+      respond_to do |format|
+        if @node.save
+          format.html { redirect_to nodes_path, notice: '端末を譲渡しました。' }
+          format.json { render :show, status: :ok, location: @node }
+        else
+          format.html { redirect_to @node, alert: '移譲に失敗しました。' }
+          format.json { render json: @node.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to @node, alert: '該当するユーザーがいません。' }
+        format.json { render json: {username: '該当のユーザーがいません。'}, status: :unprocessable_entity }
+      end
+    end
+  end
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_node
+  private def set_node
     @node = policy_scope(Node)
       .includes(:user, :place, :hardware, :operating_system, nics: :network)
       .find(params[:id])
@@ -307,7 +328,7 @@ class NodesController < ApplicationController
   end
 
   # Only allow a list of trusted parameters through.
-  def node_params
+  private def node_params
     permitted_params = params.require(:node).permit(
       :name,
       :hostname,
@@ -350,7 +371,7 @@ class NodesController < ApplicationController
     )
   end
 
-  def authorize_node
+  private def authorize_node
     authorize Node
   end
 end

@@ -32,4 +32,8 @@ class NodePolicy < ApplicationPolicy
   def copy?
     show? && new?
   end
+
+  def transfer?
+    update?
+  end
 end
