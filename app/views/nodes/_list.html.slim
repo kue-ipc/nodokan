@@ -65,10 +65,10 @@ table.table.table-hover.table-sm
             i.fas.fa-times-circle.text-danger
             .text-danger = t(:expired, scope: :messages)
           - when :unapproved
-            i.fas.fa-exclamation-circle.text-warning
+            i.fas.fa-exclamation-triangle.text-warning
             .text-warning = t(:unapproved, scope: :messages)
           - when :expire_soon
-            i.fas.fa-exclamation-circle.text-warning
+            i.fas.fa-exclamation-triangle.text-warning
             .text-warning = t(:expire_soon, scope: :messages)
           - when :approved
             i.fas.fa-check.text-success

@@ -205,7 +205,7 @@ class Confirmation < ApplicationRecord
   end
 
   def check_and_approve!
-    if exist?
+    unless exist?
       self.content = :unknown
       self.os_update = :unknown
       self.app_update = :unknown
