@@ -145,6 +145,11 @@ p = t('forms.common.required_input')
             url: '/operating_systems.json',
             requiredInput: 'os_category_id',
             description: true,
+            clear: true,
+            locked: { \
+              name: 'os_category_id',
+              list: OsCategory.where(locked: true).map(&:id).map(&:to_s),
+            },
           }
         #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
     small#node_operating_system_name-description.form-text

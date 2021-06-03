@@ -3,8 +3,7 @@ class OperatingSystem < ApplicationRecord
 
   has_many :nodes, dependent: :restrict_with_error
 
-  validates :name, presence: true,
-    length: {maximum: 255}, uniqueness: {case_sensitive: false}
+  validates :name, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }
 
   def os_category_name
     @os_category_name ||= os_category&.name
@@ -18,10 +17,6 @@ class OperatingSystem < ApplicationRecord
       self.device_type = nil
       @device_type_name = nil
     end
-  end
-
-  def locked
-    os_category&.locked
   end
 
   def maintained?

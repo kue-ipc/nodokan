@@ -29,6 +29,8 @@ class DatalistCandidation
 
     @targetNode = document.getElementById(@targetId)
     @targetNodeLabel = document.querySelector("label[for='#{@targetId}']")
+    @initialValue = @targetNode.value
+
     @appNode = document.getElementById(@appId)
     @descriptionNode = document.getElementById(@descriptionId)
 
@@ -86,7 +88,11 @@ class DatalistCandidation
     data = await @getData()
 
     if @clear
-      @targetNode.value = ''
+      @targetNode.value =
+        if data.some (entry) => @initialValue == entry[@target]
+          @initialValue
+        else
+          ''
 
     if @locked
       if (attr for attr in @attrList when attr.name is @locked.name and @locked.list.includes(attr.value))[0]?
@@ -105,15 +111,13 @@ class DatalistCandidation
         @targetNode.required = false
         @targetNodeLabel.classList.remove('required')
 
-
     # update datalist
     listNode = document.createElement('datalist')
     listNode.id = @datalistId
     for entry in data
-      value = entry[@target]
       itemNode = document.createElement('option')
-      itemNode.setAttribute('value', value)
-      itemNode.textContent = value
+      itemNode.setAttribute('value', entry[@target])
+      itemNode.textContent = entry[@target]
       listNode.appendChild(itemNode)
     currentListNode = document.getElementById(@datalistId)
     if currentListNode
