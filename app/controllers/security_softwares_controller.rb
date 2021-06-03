@@ -8,7 +8,7 @@ class SecuritySoftwaresController < ApplicationController
       :target,
       :format,
       order: [:id, :os_category_id, :installation_method, :name],
-      condition: [:os_category_id, :installation_method, :name]
+      condition: [:os_category_id, :installation_method, :name],
     )
 
     @page = permitted_params[:page]
@@ -40,11 +40,11 @@ class SecuritySoftwaresController < ApplicationController
 
   private
 
-    def query_params
-      params.permit
-    end
+  def query_params
+    params.permit
+  end
 
-    def authorize_security_software
-      authorize SecuritySoftware
-    end
+  def authorize_security_software
+    authorize SecuritySoftware
+  end
 end

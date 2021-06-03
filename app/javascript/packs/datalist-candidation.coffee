@@ -1,9 +1,26 @@
+# DatalisntCandidation#constructor
+# parent: 親のモデルの名前
+# name: モデルの名前
+# target: 対象となる属性
+# order: リストの順番
+# inputList: 条件の参照となるinputのリスト
+# url: indexのJSONのパス
+# requiredInput: 検索するときに入力が必須であるinput
+# per: 検索するアイテム数上限
+# description: 説明があるかどうか
+# conf:
+#   locked: ...
+#   required: ...
+
 class DatalistCandidation
   constructor: ({
     @parent, @name, @target, @order, @inputList, @url,
     @requiredInput = null,
     @per = 1000,
-    @description = false
+    @description = false,
+    @clear = false,
+    @locked = null,
+    @required = null,
   }) ->
     @targetId = @attrId(@target)
     @appId = [@targetId, 'app'].join('-')
@@ -11,6 +28,7 @@ class DatalistCandidation
     @descriptionId = [@targetId, 'description'].join('-')
 
     @targetNode = document.getElementById(@targetId)
+    @targetNodeLabel = document.querySelector("label[for='#{@targetId}']")
     @appNode = document.getElementById(@appId)
     @descriptionNode = document.getElementById(@descriptionId)
 
@@ -66,29 +84,49 @@ class DatalistCandidation
     return unless @checkAvailable()
 
     data = await @getData()
-    list = []
 
-    @targetDescriptions.clear()
-    for entry in data
-      list.push(entry[@target])
-      if @description
-        @targetDescriptions.set(entry[@target], entry['description'])
+    if @clear
+      @targetNode.value = ''
 
+    if @locked
+      if (attr for attr in @attrList when attr.name is @locked.name and @locked.list.includes(attr.value))[0]?
+        @targetNode.readOnly = true
+        @targetNodeLabel.classList.add('readonly')
+        @targetNode.value = data[0][@target]
+      else
+        @targetNodeLabel.classList.remove('readonly')
+        @targetNode.readOnly = false
+    
+    if @required
+      if (attr for attr in @attrList when attr.name is @required.name and @required.list.includes(attr.value))[0]?
+        @targetNode.required = true
+        @targetNodeLabel.classList.add('required')
+      else
+        @targetNode.required = false
+        @targetNodeLabel.classList.remove('required')
+
+
+    # update datalist
     listNode = document.createElement('datalist')
     listNode.id = @datalistId
-    for value in list
+    for entry in data
+      value = entry[@target]
       itemNode = document.createElement('option')
       itemNode.setAttribute('value', value)
       itemNode.textContent = value
       listNode.appendChild(itemNode)
-
     currentListNode = document.getElementById(@datalistId)
     if currentListNode
       @appNode.replaceChild(listNode, document.getElementById(@datalistId))
     else
       @appNode.appendChild(listNode)
 
-    @updateDescription() if @description
+    # update description list
+    if @description
+      @targetDescriptions.clear()
+      for entry in data
+        @targetDescriptions.set(entry[@target], entry['description'])
+      @updateDescription()
 
   updateDescription: (_) =>
     message = @targetDescriptions.get(@targetNode.value)

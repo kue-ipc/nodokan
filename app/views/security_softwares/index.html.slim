@@ -3,7 +3,6 @@
     = SecuritySoftware.model_name.human
     = t('actions.index')
 
-
 table.table.table-sm
   thead
     tr
@@ -21,14 +20,12 @@ table.table.table-sm
         - if @target
           td = security_software[@target]
         - else
-          td
+          td.text-nowrap
             = t(security_software.installation_method,
               scope: [:activerecord, :enums, :installation_methods])
-          td
-            = t(security_software.os_category,
-              scope: [:activerecord, :enums, :os_categories])
-          td = security_software.name
-        td
+          td.text-nowrap = security_software.os_category.name
+          td.text-nowrap = security_software.name
+        td.text-nowrap
           =<> badge(SecuritySoftware.human_attribute_name(:approved),
             level: :success,
             enabled: security_software.approved)

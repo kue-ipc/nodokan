@@ -22,9 +22,8 @@ installation_methods = %[
   approved: true
   confirmed: true
   description: >
-    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、
-    最新の状態であれば、macOSは高度なセキュリティを内蔵しているため、
-    セキュリティソフトウェアは不要です。
+    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、最新の状態であれば、
+    macOSは高度なセキュリティを内蔵しているため、セキュリティソフトウェアは不要です。
 
 - installation_method: :unnecessary
   os_category_name: Apple系
@@ -32,11 +31,9 @@ installation_methods = %[
   approved: true
   confirmed: true
   description: >
-    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、
-    最新の状態であれば、iOS等は高度なセキュリティを内蔵しているため、
-    セキュリティソフトウェアは不要です。
-    ただし、App Storeのアプリのみ使用していること、
-    脱獄等の改造をしていないことが前提となります。
+    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、最新の状態であれば、
+    iOS等は高度なセキュリティを内蔵しているため、セキュリティソフトウェアは不要です。
+    ただし、App Storeのアプリのみ使用していること、脱獄等の改造をしていないことが前提となります。
 
 - installation_method: :unnecessary
   os_category_name: Android
@@ -44,13 +41,10 @@ installation_methods = %[
   approved: true
   confirmed: true
   description: >
-    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、
-    最新の状態であれば、Androidは高度なセキュリティを内蔵しているため、
-    セキュリティソフトウェアは不要です。
+    サポートされたバージョンのソフトウェアとハードウェアを使用し、かつ、最新の状態であれば、
+    Androidは高度なセキュリティを内蔵しているため、セキュリティソフトウェアは不要です。
     ただし、Google Playまたは端末ベンダー提供のアプリのみ使用していること、
-    開発者モードを無効にしていること、
-    root化を実施していないこと、
-    その他の改造をしていないことが前提となります。
+    開発者モードを無効にしていること、root化を実施していないこと、その他の改造をしていないことが前提となります。
 
 <% %w[Linux BSD UNIX].each do |os_category_name| %>
 - installation_method: :unnecessary
@@ -59,8 +53,9 @@ installation_methods = %[
   approved: true
   confirmed: true
   description: >
-    GUIが無いサーバー用途で、管理者以外が通常の書き込みを行わない場合、
-    セキュリティソフトウェアは不要です。
+    サポートされたバージョンのソフトウェアを使用し、かつ、最新の状態で、
+    サーバーとして使用しているのであれば、十分なセキュリティを実現でいるため、セキュリティソフトウェアは不要です。
+    ただし、GUIがインストールされておらず、一般利用者が直接ファイルの書き込みを行わないことが前提となります。
 
 <% end %>
 
@@ -92,6 +87,7 @@ installation_methods = %[
   description: |
     Windows標準のセキュリティ対策ソフトウェアです。
     有効になっているかを確認してください。
+    Windows 8以上で使用できます。
 
 - installation_method: :built_in
   os_category_name: Windowsサーバー
@@ -101,6 +97,7 @@ installation_methods = %[
   description: |
     Windows Server標準のセキュリティ対策ソフトウェアです。
     有効になっているかを確認してください。
+    Windows Server 2016以上で使用できます。
 
 - installation_method: :built_in
   os_category_name: Linux
@@ -109,6 +106,7 @@ installation_methods = %[
   confirmed: true
   description: |
     ディストリビューションのパッケージとして提供さているClamAVです。
+    インストールしているかを確認してください。
 
 - installation_method: :built_in
   os_category_name: BSD
@@ -117,6 +115,7 @@ installation_methods = %[
   confirmed: true
   description: |
     ports等のパッケージとして提供さているClamAVです。'
+    インストールしているかを確認してください。
 
 # distributed
 <% %w[
@@ -143,8 +142,7 @@ installation_methods = %[
   confirmed: true
   description: >
     有償のセキュリティソフトウェアを購入している場合です。
-    使用期限が切れたセキュリティソフトウェアは使用できませんので、
-    ご注意ください。
+    使用期限が切れたセキュリティソフトウェアは使用できませんので、ご注意ください。
     ソフトウェアの名前を入れてください。
 
 <% end %>
@@ -157,8 +155,7 @@ installation_methods = %[
   confirmed: true
   description: >
     無償のセキュリティソフトウェアを使用している場合です。
-    個人利用のみ等の制限があるソフトウェアは使用できませんので、
-    ご注意ください。
+    個人利用のみ等の制限があるソフトウェアは使用できませんので、ご注意ください。
     ソフトウェアの名前を入れてください。
 
 <% end %>
@@ -171,8 +168,7 @@ installation_methods = %[
   description: >
     パソコン購入時にインストールされていたセキュリティソフトウェアを使用している場合です。
     購入直後は試用版となっており、使用期限が数ヶ月と短い場合があります。
-    使用期限が切れたセキュリティソフトウェアは使用できませんので、
-    ご注意ください。
+    使用期限が切れたセキュリティソフトウェアは使用できませんので、ご注意ください。
     ソフトウェアの名前を入れてください。
 
 <% %w[
@@ -192,8 +188,7 @@ installation_methods = %[
   confirmed: true
   description: >
     セキュリティソフトウェアをインストールしていない状態です。
-    セキュリティソフトウェアが必須であるため、
-    対応が必要になります。
+    インストールなどの対応が必要になります
 
 <% end %>
 

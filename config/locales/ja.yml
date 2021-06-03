@@ -382,6 +382,7 @@ ja:
         room: 部屋
         nodes_count: 端末数
       security_software:
+        os_category: OS種別
         os_category_id: OS種別
         installation_method: インストール方法
         name: ソフトウェア名

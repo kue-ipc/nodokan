@@ -15,42 +15,6 @@ class SecuritySoftware < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
-  def self.conf_installation_methods
-    @@conf_installation_methods ||= {
-      unnecessary: {},
-      built_in: {
-        name_required: true,
-        updatable: true,
-        scanable: true,
-      },
-      distributed: {
-        name_required: true,
-        updatable: true,
-        scanable: true,
-      },
-      purchased: {
-        addable: true,
-        name_required: true,
-        updatable: true,
-        scanable: true,
-      },
-      free: {
-        updatable: true,
-        scanable: true,
-        name_required: true,
-        addable: true,
-      },
-      pre_installed: {
-        updatable: true,
-        scanable: true,
-        name_required: true,
-        addable: true,
-      },
-      not_installed: {},
-      unknown: {},
-    }
-  end
-
   def os_category_name
     @os_category_name ||= os_category&.name
   end
@@ -63,5 +27,53 @@ class SecuritySoftware < ApplicationRecord
       self.device_type = nil
       @device_type_name = nil
     end
+  end
+
+  # class method
+  def self.conf_installation_methods
+    @@conf_installation_methods ||= {
+      unnecessary: {
+        locked: true,
+      },
+      built_in: {
+        locked: true,
+        required: true,
+        updatable: true,
+        scanable: true,
+      },
+      distributed: {
+        locked: true,
+        required: true,
+        updatable: true,
+        scanable: true,
+      },
+      purchased: {
+        required: true,
+        updatable: true,
+        scanable: true,
+        auto_approve: true,
+      },
+      free: {
+        required: true,
+        updatable: true,
+        scanable: true,
+        auto_approve: true,
+      },
+      pre_installed: {
+        required: true,
+        updatable: true,
+        scanable: true,
+        auto_approve: true,
+      },
+      not_installed: {
+        locked: true,
+      },
+      other: {
+        required: true,
+      },
+      unknown: {
+        locked: true,
+      },
+    }
   end
 end

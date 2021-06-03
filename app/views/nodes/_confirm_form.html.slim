@@ -50,7 +50,7 @@
                 help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
                 .form-row
                   = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
-                    = security_software_f.hidden_field :os_category
+                    = security_software_f.hidden_field :os_category_id
                     = security_software_f.select :installation_method,
                       t_enums(:installation_methods, SecuritySoftware).select \
                         {|k, v| @installation_methods.include?(v)},
@@ -65,12 +65,22 @@
                         name: 'security_software',
                         target: 'name',
                         order: {confirmations_count: 'desc'},
-                        inputList: ['os_category', 'installation_method'],
+                        inputList: ['os_category_id', 'installation_method'],
                         url: '/security_softwares.json',
                         requiredInput: 'installation_method',
                         description: true,
+                        clear: true,
+                        locked: { \
+                          name: 'installation_method',
+                          list: SecuritySoftware.conf_installation_methods.select {|k, v| v[:locked]}.keys,
+                        },
+                        required: { \
+                          name: 'installation_method',
+                          list: SecuritySoftware.conf_installation_methods.select {|k, v| v[:required]}.keys,
+                        },
                       }
-                    #confirmation_security_software_name-app.datalist-canadidaiton data-params=confirmation_security_software_name_params.to_json
+                    #confirmation_security_software_name-app.datalist-canadidaiton[
+                      data-params=confirmation_security_software_name_params.to_json]
                 small#confirmation_security_software_name-description.form-text.text-muted
               - question_count += 1
               - %i[security_update security_scan].each do |attr_name|
