@@ -8,9 +8,9 @@
 # requiredInput: 検索するときに入力が必須であるinput
 # per: 検索するアイテム数上限
 # description: 説明があるかどうか
-# conf:
-#   locked: ...
-#   required: ...
+# clear: 変更時にクリアまたは初期値に戻すかどうか
+# locked: 変更不可になるもの
+# required: 入力必須になるもの
 
 class DatalistCandidation
   constructor: ({
@@ -102,7 +102,7 @@ class DatalistCandidation
       else
         @targetNodeLabel.classList.remove('readonly')
         @targetNode.readOnly = false
-    
+
     if @required
       if (attr for attr in @attrList when attr.name is @required.name and @required.list.includes(attr.value))[0]?
         @targetNode.required = true
