@@ -107,6 +107,8 @@ group :development do
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'pry-doc'
+  # Formatter / Lint
+  gem 'rufo'
 end
 
 group :test do

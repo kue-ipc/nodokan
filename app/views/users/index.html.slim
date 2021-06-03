@@ -12,6 +12,6 @@
           i.fas.fa-search
     = link_to 'CSVダウンロード', users_path(format: :csv),
         class: 'btn btn-primary ml-2',
-        download: "users_#{Time.now.strftime('%Y%m%d')}.csv"
+        download: "users_#{Time.current.strftime('%Y%m%d')}.csv"
 
 = render 'list'
