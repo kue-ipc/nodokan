@@ -8,7 +8,7 @@ class OperatingSystemsController < ApplicationController
       :target,
       :format,
       order: [:id, :os_category_id, :name, :nodes_count],
-      condition: [:os_category_id, :name]
+      condition: [:os_category_id, :name],
     )
 
     @page = permitted_params[:page]
@@ -41,11 +41,11 @@ class OperatingSystemsController < ApplicationController
 
   private
 
-    def query_params
-      params.permit
-    end
+  def query_params
+    params.permit
+  end
 
-    def authorize_operating_system
-      authorize OperatingSystem
-    end
+  def authorize_operating_system
+    authorize OperatingSystem
+  end
 end

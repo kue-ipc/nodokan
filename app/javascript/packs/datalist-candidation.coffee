@@ -78,6 +78,7 @@ class DatalistCandidation
     listNode.id = @datalistId
     for value in list
       itemNode = document.createElement('option')
+      itemNode.setAttribute('value', value)
       itemNode.textContent = value
       listNode.appendChild(itemNode)
 

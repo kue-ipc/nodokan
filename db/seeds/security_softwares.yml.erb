@@ -1,20 +1,5 @@
 <%
 os_categories = OsCategory.all.map(&:name)
-%w[
-  windows_client
-  windows_server
-  mac
-  apple
-  android
-  linux
-  bsd
-  unix
-  dedicated
-  embedded
-  other
-  less
-  unknown
-]
 normal_os_categories = os_categories - %w[
   OS無し
 ]

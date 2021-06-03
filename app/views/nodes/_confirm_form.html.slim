@@ -91,8 +91,8 @@
                 | OS情報を登録後に再度確認作業を実施してください。
         .modal-footer
           = f.submit '確認終了', class: 'btn btn-primary'
-          button.btn.btn-secondary data-dismiss="modal"
-            | 確認せずに
+          button.btn.btn-dark data-dismiss="modal"
+            | キャンセルして
             = t(:close, scope: [:do_actions])
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'

@@ -37,23 +37,21 @@ dl
       table.table.table-sm.mb-0
         thead
           tr
-            th = Nic.human_attribute_name(:number)
-            th = Nic.human_attribute_name(:interface_type)
-            th
+            th scope="col" = Nic.human_attribute_name(:number)
+            th scope="col" = Nic.human_attribute_name(:interface_type)
+            th scope="col"
               = Nic.human_attribute_name(:name)
               | /
               = Nic.human_attribute_name(:flags)
-            th = Nic.human_attribute_name(:mac_address)
-            th = Nic.human_attribute_name(:network)
-            th = Nic.human_attribute_name(:ipv4_config)
-            th = Nic.human_attribute_name(:ipv4_address)
+            th scope="col" = Nic.human_attribute_name(:mac_address)
+            th scope="col" = Nic.human_attribute_name(:network)
+            th scope="col" = Nic.human_attribute_name(:ipv4)
             - if Settings.config.ipv6
-              th = Nic.human_attribute_name(:ipv6_config)
-              th = Nic.human_attribute_name(:ipv6_address)
+              th scope="col" = Nic.human_attribute_name(:ipv6)
         tbody
           - nics.each do |nic|
             tr
-              td = nic.number
+              td scope="row" = nic.number
               td
                 = t(nic.interface_type,
                   scope: 'activerecord.enums.interface_types')
@@ -67,23 +65,28 @@ dl
                     = Nic.human_attribute_name(:auth)
 
               td = nic.mac_address
-              td = nic.network&.name
-              td = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
-              td = nic.ipv4_address
+              td
+                - if nic.network
+                  = link_to nic.network.name, nic.network
+              td
+                = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
+                =< nic.ipv4_address
               - if Settings.config.ipv6
-                td = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
-                td = nic.ipv6_address
+                td
+                  = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
+                  =< nic.ipv6_address
   = dt_dd_for @node, :confirmation do |confirmation|
-    - if confirmation&.confirmed_at.blank?
+    - case confirmation.status
+    - when :unconfirmed
       i.fas.fa-times-circle.text-danger
       =< t(:unconfirmed, scope: :messages)
       .text-danger = t('messages.node_confirmaiton_unconfirmed')
-    - elsif confirmation.expiration <= Time.current
+    - when :expired
       i.fas.fa-times-circle.text-danger
       =< l(confirmation.confirmed_at.to_date, format: :long)
       =< t(:expired, scope: :messages)
       .text-danger = t('messages.node_confirmaiton_exired')
-    - elsif !confirmation.approved
+    - when :unapproved
       i.fas.fa-exclamation-circle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
       = t('messages.node_confirmaiton_expiration_date',
@@ -94,28 +97,35 @@ dl
         .text-warning = t('messages.node_confirmaiton_unapproved')
         - if confirmation.content_problem?
           .text-danger = t('messages.node_content_problem')
+        - if @node.operating_system.nil?
+          .text-danger = t('messages.node_no_operating_system')
+        - if confirmation.unknown?
+          .text-danger = t('messages.node_confirmaiton_unknown')        
         - if confirmation.os_update_problem?
           - if confirmation.os_update_eol?
             .text-danger = t('messages.node_os_eol')
           - else
             .text-danger = t('messages.node_os_update_problem')
+
         - if confirmation.app_update_problem?
           - if confirmation.app_update_eol?
             .text-danger = t('messages.node_app_eol')
           - else
             .text-danger = t('messages.node_app_update_problem')
-        - if @node.operating_system.present?
-          - if confirmation.security_update_problem?
-            - if confirmation.security_update_eol?
-              .text-danger = t('messages.node_security_eol')
-            - else
-              .text-danger = t('messages.node_security_update_problem')
-          - if confirmation.security_scan_problem?
-            .text-danger = t('messages.node_security_scan_problem')
-          - if confirmation.security_software_problem?
-            .text-danger = t('messages.node_security_software_problem')
-        - else
-          .text-danger = t('messages.node_no_operating_system')
+
+        - if @node.operating_system
+          - if confirmation.security_software_unknown?
+            .text-danger = t('messages.node_security_software_unknown')
+          - else
+            - if confirmation.security_software_problem?
+              .text-danger = t('messages.node_security_software_problem')
+            - if confirmation.security_update_problem?
+              - if confirmation.security_update_eol?
+                .text-danger = t('messages.node_security_eol')
+              - else
+                .text-danger = t('messages.node_security_update_problem')
+            - if confirmation.security_scan_problem?
+              .text-danger = t('messages.node_security_scan_problem')
       - when 'abandoned'
         .text-danger = t('messages.node_abandoned')
       - when 'missing'
@@ -124,14 +134,14 @@ dl
         .text-danger = t('messages.node_not_my_own')
       - when 'unknown'
         .text-danger = t('messages.node_unknown')
-    - elsif confirmation.expiration <= Time.current.days_since(30)
+    - when :expire_soon
       i.fas.fa-exclamation-circle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
       = t('messages.node_confirmaiton_expiration_date',
           date: l(confirmation.expiration.to_date, format: :long))
-      =< t(:unapproved, scope: :messages)
+      =< t(:expire_soon, scope: :messages)
       .text-warning = t('messages.node_confirmaiton_expiring_soon')
-    - else
+    - when :approved
       i.fas.fa-check.text-success
       =<> l(confirmation.confirmed_at.to_date, format: :long)
       = t('messages.node_confirmaiton_expiration_date',
@@ -146,11 +156,20 @@ button#confirm-form-modal-toggle.btn.btn-primary[
   = t(:confirm, scope: [:actions])
 =<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
   class: 'btn btn-warning'
-=<> link_to t(:destroy, scope: [:actions]), @node,
-  data: { confirm: t(:corfirm_destroy, scope: [:messages]) }, method: :delete,
-  class: 'btn btn-danger'
 
-- if @node.confirmation.existence_not_my_own?
+- if @node.confirmation.destroyable?
+  hr
+  h3 端末の削除
+  p
+    | 
+      端末が存在しない、または、不明の場合は削除してください。
+      削除した端末はネットワークに接続できません。
+  =<> link_to t(:destroy, scope: [:actions]), @node,
+    data: { confirm: t('messages.corfirm_destroy_name', name: @node.name) },
+    method: :delete,
+    class: 'btn btn-danger'
+
+- if @node.confirmation.transferable?
   hr
   h3 所有の譲渡
   p
@@ -160,7 +179,7 @@ button#confirm-form-modal-toggle.btn.btn-primary[
 
   = bootstrap_form_with url: transfer_node_path(@node), class: 'form-inline' do |f|
     = f.text_field :username, label: 'ユーザー名', label_class: 'mr-1'
-    = f.submit '譲渡する', class: 'btn btn-primary ml-1'
+    = f.submit '譲渡', class: 'btn btn-primary ml-1'
 
 
 - if @node.nics.count.positive?

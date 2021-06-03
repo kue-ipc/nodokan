@@ -11,7 +11,7 @@ class SecuritySoftware < ApplicationRecord
     free: 3,
     pre_installed: 4,
     not_installed: 16,
-    other: 255,
+    other: 127,
     unknown: -1,
   }, _prefix: true
 

@@ -50,25 +50,7 @@ class ConfirmationsController < ApplicationController
     end
 
     def check_and_save
-      if !@confirmation.exist?
-        @confirmation.content = :unknown
-        @confirmation.os_update = :unknown
-        @confirmation.app_update = :unknown
-        @confirmation.security_update = :unknown
-        @confirmation.security_scan = :unknown
-        @confirmation.security_software = nil
-      end
-
-      @confirmation.approved = @confirmation.approvable?
-
-      @confirmation.confirmed_at = Time.current
-      @confirmation.expiration = Time.current +
-                                 if @confirmation.approved
-                                   396.days
-                                 else
-                                   30.days
-                                 end
-
+      @confirmation.check_and_approve!
       if @confirmation.save
         if @confirmation.approved
           flash[:notice] = t('messages.confirmaiton_approved')

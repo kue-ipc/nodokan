@@ -57,14 +57,22 @@ table.table.table-hover.table-sm
         td.text-nowrap
           = node.nics.map(&:mac_address).compact.join("\n")
         td.text-nowrap
-          - if node.confirmation
-            - if node.confirmation.expiration >= Time.current
-              span.text-success 確認済み
-            - else
-              span.text-warning 期限切れ
-          - else
-            span.text-danger 未確認
-
+          - case node.confirmation&.status
+          - when nil, :unconfirmed
+            i.fas.fa-times-circle.text-danger
+            .text-danger = t(:unconfirmed, scope: :messages)
+          - when :expired
+            i.fas.fa-times-circle.text-danger
+            .text-danger = t(:expired, scope: :messages)
+          - when :unapproved
+            i.fas.fa-exclamation-circle.text-warning
+            .text-warning = t(:unapproved, scope: :messages)
+          - when :expire_soon
+            i.fas.fa-exclamation-circle.text-warning
+            .text-warning = t(:expire_soon, scope: :messages)
+          - when :approved
+            i.fas.fa-check.text-success
+            .text-success = t(:approved, scope: :messages)
 - list_group_item_class = [ \
   'list-group-item',
   'list-group-item-action',
@@ -80,10 +88,11 @@ table.table.table-hover.table-sm
         class: list_group_item_class + ['bg-primary', 'text-white']
       = link_to t('actions.edit'), edit_node_path(node),
         class: list_group_item_class + ['bg-warning', 'text-white']
-      = link_to t('actions.destroy'), node,
-        data: { confirm: t('messages.corfirm_destroy_name', name: node.name) },
-        method: :delete,
-        class: list_group_item_class + ['bg-danger', 'text-white']
+      - if node.confirmation&.destroyable?
+        = link_to t('actions.destroy'), node,
+          data: { confirm: t('messages.corfirm_destroy_name', name: node.name) },
+          method: :delete,
+          class: list_group_item_class + ['bg-danger', 'text-white']
 
 = javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
 
