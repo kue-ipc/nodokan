@@ -32,7 +32,6 @@ table.table.table-hover.table-sm
         = Nic.human_attribute_name(:mac_address)
       th scope="col"
         = Node.human_attribute_name(:confirmation)
-        =< filter_link(:confirmation)
 
   tbody
     - @nodes.each do |node|

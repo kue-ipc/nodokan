@@ -15,6 +15,8 @@ class SecuritySoftware < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
+  before_save :auto_approve
+
   def os_category_name
     @os_category_name ||= os_category&.name
   end
@@ -26,6 +28,16 @@ class SecuritySoftware < ApplicationRecord
     else
       self.device_type = nil
       @device_type_name = nil
+    end
+  end
+
+  def conf
+    SecuritySoftware.conf_installation_methods[installation_method]
+  end
+
+  def auto_approve
+    if !confirmed && conf[:auto_approve]
+      self.approved = true
     end
   end
 
@@ -74,6 +86,6 @@ class SecuritySoftware < ApplicationRecord
       unknown: {
         locked: true,
       },
-    }
+    }.with_indifferent_access
   end
 end

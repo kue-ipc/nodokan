@@ -121,7 +121,10 @@ class Confirmation < ApplicationRecord
   end
 
   def security_software_problem?
-    !security_software.nil? && security_software.approved
+    !security_software.nil? &&
+      !security_software.installation_method.nil? &&
+      !security_software.installation_method_unknown? &&
+      !security_software.approved
   end
 
   def security_software_unknown?
