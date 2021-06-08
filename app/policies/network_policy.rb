@@ -6,6 +6,8 @@ class NetworkPolicy < ApplicationPolicy
   end
 
   def show?
-    true
+    user.admin? ||
+      record.users.exists?(user.id) ||
+      record.nodes.exists?(user_id: user.id)
   end
 end
