@@ -86,7 +86,7 @@ module ImportExport
       row['hardware[maker]'] = node.hardware&.maker
       row['hardware[product_name]'] = node.hardware&.product_name
       row['hardware[model_number]'] = node.hardware&.model_number
-      row['operating_system[os_category]'] = node.operating_system&.os_category
+      row['operating_system[os_category]'] = node.operating_system&.os_category&.name
       row['operating_system[name]'] = node.operating_system&.name
 
       first_nic = node.nics.first
