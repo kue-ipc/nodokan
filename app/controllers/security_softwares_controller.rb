@@ -33,18 +33,16 @@ class SecuritySoftwaresController < ApplicationController
       end
     end
 
-    unless permitted_params[:format] == 'csv'
-      @security_softwares = @security_softwares.page(@page).per(@per)
-    end
+    @security_softwares = @security_softwares.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
   private
 
-  def query_params
-    params.permit
-  end
+    def query_params
+      params.permit
+    end
 
-  def authorize_security_software
-    authorize SecuritySoftware
-  end
+    def authorize_security_software
+      authorize SecuritySoftware
+    end
 end

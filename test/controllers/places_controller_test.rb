@@ -8,21 +8,21 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test "should get index" do
+    test 'should get index' do
       get places_url
       assert_response :success
     end
-  
+
     # test "should get edit" do
     #   get places_edit_url
     #   assert_response :success
     # end
-  
+
     # test "should get update" do
     #   get places_update_url
     #   assert_response :success
     # end
-  
+
     # test "should get merge" do
     #   get places_merge_url
     #   assert_response :success
@@ -33,21 +33,21 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     setup do
       sign_in users(:user01)
     end
-    test "should get index" do
+    test 'should get index' do
       get places_url
       assert_response :success
     end
-  
+
     # test "should get edit" do
     #   get places_edit_url
     #   assert_response :success
     # end
-  
+
     # test "should get update" do
     #   get places_update_url
     #   assert_response :success
     # end
-  
+
     # test "should get merge" do
     #   get places_merge_url
     #   assert_response :success

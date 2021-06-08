@@ -14,13 +14,13 @@ def create_models(model_class)
       ERB.new(yaml_erb_file.read).result
     end
   YAML.safe_load(yaml_data, [Symbol, Time, Date], [], true,
-    symbolize_names: false).each do |data|
-      model = model_class.new(data)
-      if model.save
-        puts "succeeded to create: #{model.name}"
-      else
-        puts "faild to create: #{model.name}: #{model.errors.to_json}"
-      end
+    symbolize_names: false,).each do |data|
+    model = model_class.new(data)
+    if model.save
+      puts "succeeded to create: #{model.name}"
+    else
+      puts "faild to create: #{model.name}: #{model.errors.to_json}"
+    end
   end
 end
 
@@ -31,6 +31,4 @@ create_models(OsCategory)
 create_models(OperatingSystem)
 create_models(SecuritySoftware)
 
-if Rails.env.development?
-  create_models(Network)
-end
+create_models(Network) if Rails.env.development?

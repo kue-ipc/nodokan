@@ -67,26 +67,30 @@ class NetworkImportCSV < ImportCSV
 
     data['id'] = network.id
     data['name'] = network.name
-    data['flag'] =   [
-      if network.auth then 'a' else '' end,
-      if network.dhcp then 'd' else '' end,
-      if network.locked then 'l' else '' end,
-      if network.specific then 's' else '' end,
+    data['flag'] = [
+      network.auth ? 'a' : '',
+      network.dhcp ? 'd' : '',
+      network.locked ? 'l' : '',
+      network.specific ? 's' : '',
     ].join(''),
-  
-    data['vlan'] = network.vlan
+
+                   data['vlan'] = network.vlan
     data['ipv4_network'] = network.ipv4_network&.to_string
     data['ipv4_gateway'] = network.ipv4_gateway
     data['ipv4_pools'] =
-      network.ipv4_pools.map { |pl| [pl.ipv4_config,
-                                    pl.ipv4_first_address,
-                                    pl.ipv4_last_address] }.to_json
+      network.ipv4_pools.map do |pl|
+        [pl.ipv4_config,
+         pl.ipv4_first_address,
+         pl.ipv4_last_address,]
+      end.to_json
     data['ipv6_network'] = network.ipv6_network&.to_string
     data['ipv6_gateway'] = network.ipv6_gateway
-    data['ipv6_pools'] = 
-      network.ipv6_pools.map { |pl| [pl.ipv6_config,
-                                    pl.ipv6_first_address,
-                                    pl.ipv6_last_address] }.to_json
+    data['ipv6_pools'] =
+      network.ipv6_pools.map do |pl|
+        [pl.ipv6_config,
+         pl.ipv6_first_address,
+         pl.ipv6_last_address,]
+      end.to_json
     data['note'] = network.note
     data['action'] = ''
     data['result'] = 'success'

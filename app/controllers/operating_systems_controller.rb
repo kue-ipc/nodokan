@@ -34,18 +34,16 @@ class OperatingSystemsController < ApplicationController
       end
     end
 
-    unless permitted_params[:format] == 'csv'
-      @operating_systems = @operating_systems.page(@page).per(@per)
-    end
+    @operating_systems = @operating_systems.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
   private
 
-  def query_params
-    params.permit
-  end
+    def query_params
+      params.permit
+    end
 
-  def authorize_operating_system
-    authorize OperatingSystem
-  end
+    def authorize_operating_system
+      authorize OperatingSystem
+    end
 end

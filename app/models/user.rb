@@ -31,11 +31,11 @@ class User < ApplicationRecord
   has_many :manage_networks, through: :manage_assignments, source: :network
 
   validates :username, presence: true,
-                       uniqueness: {case_sensitive: true},
-                       length: {maximum: 255}
+                       uniqueness: { case_sensitive: true },
+                       length: { maximum: 255 }
   validates :email, presence: true,
-                    length: {maximum: 255}
-  validates :fullname, allow_blank: true, length: {maximum: 255}
+                    length: { maximum: 255 }
+  validates :fullname, allow_blank: true, length: { maximum: 255 }
 
   after_save :allocate_network
 
@@ -53,9 +53,7 @@ class User < ApplicationRecord
         Network.find_identifier(@allocate_network_config[:auth_network])
       end
 
-    if auth_network
-      logger.debug "User #{username} is allocated auth network: #{auth_network}"
-    end
+    logger.debug "User #{username} is allocated auth network: #{auth_network}" if auth_network
 
     if @allocate_network_config[:networks]
       @allocate_network_config[:networks].each do |net|
@@ -78,13 +76,13 @@ class User < ApplicationRecord
       admin!
     elsif Settings.user_networks.present?
       Settings.user_networks.each do |net_config|
-        if ldap_groups.include?(net_config[:group])
-          @allocate_network_config = {
-            auth_network: net_config[:auth_network],
-            networks: net_config[:networks],
-          }
-          break
-        end
+        next unless ldap_groups.include?(net_config[:group])
+
+        @allocate_network_config = {
+          auth_network: net_config[:auth_network],
+          networks: net_config[:networks],
+        }
+        break
       end
     end
   end

@@ -12,9 +12,7 @@ class UserImportCSV < ImportCSV
     user.role = data['role']
     user.deleted = %w[true 1 on yes].include?(data['deleted'].downcase)
 
-    if data['auth_network'].present?
-      user.auth_network = Network.find_identifier(data['auth_network'])
-    end
+    user.auth_network = Network.find_identifier(data['auth_network']) if data['auth_network'].present?
 
     if data['networks'].present?
       data['networks'].split.each do |nw|
@@ -25,7 +23,6 @@ class UserImportCSV < ImportCSV
     success = user.save
     [success, user]
   end
-
 
   def read(data)
     user = find_user(data)
@@ -54,11 +51,7 @@ class UserImportCSV < ImportCSV
     user.role = data['role']
     user.deleted = %w[true 1 on yes].include?(data['deleted'].downcase)
 
-    if data['auth_network'].present?
-      user.auth_network = Network.find_identifier(data['auth_network'])
-    else
-      user.auth_network = nil
-    end
+    user.auth_network = (Network.find_identifier(data['auth_network']) if data['auth_network'].present?)
 
     user.clear_use_networks
     if data['networks'].present?

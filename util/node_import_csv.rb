@@ -7,51 +7,49 @@ require_relative 'import_csv'
 class NodeImportCSV < ImportCSV
   def create(data)
     node = Node.new
-  
+
     node.user = User.find_by_username(data['user'])
     node.name = data['name']
     node.hostname = data['hostname']
     node.domain = data['domain']
     node.note = data['note']
-  
+
     node.place = Place.find_or_initialize_by(
       area: data['place[area]'] || '',
       building: data['place[building]'] || '',
       floor: data['place[floor]'].presence || 0,
-      room: data['place[room]'] || ''
+      room: data['place[room]'] || '',
     )
-  
-    node.hardware = 
+
+    node.hardware =
       if data['hardware[device_type]'].present? ||
-          data['hardware[product_name]']
+         data['hardware[product_name]']
         Hardware.find_or_initialize_by(
           device_type: DeviceType.find_by(name: data['hardware[device_type]']),
           maker: data['hardware[maker]'] || '',
           product_name: data['hardware[product_name]'] || '',
-          model_number: data['hardware[model_number]'] || ''
+          model_number: data['hardware[model_number]'] || '',
         )
       end
-  
+
     node.operating_system =
       if data['operating_system[os_category]'].present?
         OperatingSystem.find_or_initialize_by(
           os_category: Opreting_system.find_by(name: data['operating_system[os_category]']),
-          name: data['operating_system[name]'] || ''
+          name: data['operating_system[name]'] || '',
         )
       end
 
     if data['nic[network]'].present?
       if data['nic[network]'] =~ /^\#(\d+)$/i
-        network = Network.find($1)
+        network = Network.find(Regexp.last_match(1))
       elsif data['nic[network]'] =~ /^v(\d+)$/i
-        network = Network.find_by_vlan($1)
+        network = Network.find_by_vlan(Regexp.last_match(1))
       else
         raise "invalid network: #{nic[]}"
       end
 
-      if network.nil?
-        raise "no network: #{data['nic[network]']}"
-      end
+      raise "no network: #{data['nic[network]']}" if network.nil?
 
       node.nics <<
         Nic.new(

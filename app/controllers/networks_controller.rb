@@ -14,7 +14,7 @@ class NetworksController < ApplicationController
         :id, :name, :vlan, :ipv4_network, :ipv6_network,
         :nics_count, :assignments_count,
       ],
-      condition: [:auth, :nics_count, :assignments_count]
+      condition: [:auth, :nics_count, :assignments_count],
     )
 
     @page = permitted_params[:page]
@@ -25,16 +25,14 @@ class NetworksController < ApplicationController
 
     @networks = policy_scope(Network).includes(:ipv4_pools, :ipv6_pools)
 
-    if @query.present?
-      @networks = @networks.where('name LIKE :query', {query: "%#{@query}%"})
-    end
+    @networks = @networks.where('name LIKE :query', { query: "%#{@query}%" }) if @query.present?
 
     @networks = @networks.where(@condition) if @condition
 
     if @order
       order_hash = @order.to_h.transform_keys do |key|
         if ['ipv4_network', 'ipv6_network'].include?(key)
-          key + '_data'
+          "#{key}_data"
         else
           key
         end
@@ -42,10 +40,8 @@ class NetworksController < ApplicationController
       @networks = @networks.order(order_hash)
     end
 
-    unless permitted_params[:format] == 'csv'
-      @networks = @networks.page(@page).per(@per)
-    end
- end
+    @networks = @networks.page(@page).per(@per) unless permitted_params[:format] == 'csv'
+  end
 
   # GET /networks/1
   # GET /networks/1.json
@@ -82,7 +78,7 @@ class NetworksController < ApplicationController
         @network.ipv4_pools << Ipv4Pool.new(
           ipv4_config: :static,
           ipv4_first_address: next_ipv4&.address,
-          ipv4_last_address: next_ipv4&.address
+          ipv4_last_address: next_ipv4&.address,
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -91,7 +87,7 @@ class NetworksController < ApplicationController
         @network.ipv6_pools << Ipv6Pool.new(
           ipv6_config: :static,
           ipv6_first_address: next_ipv6&.address,
-          ipv6_last_address: next_ipv6&.address
+          ipv6_last_address: next_ipv6&.address,
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -120,7 +116,7 @@ class NetworksController < ApplicationController
         @network.ipv4_pools << Ipv4Pool.new(
           ipv4_config: :static,
           ipv4_first_address: next_ipv4&.address,
-          ipv4_last_address: next_ipv4&.address
+          ipv4_last_address: next_ipv4&.address,
         )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -130,7 +126,7 @@ class NetworksController < ApplicationController
         @network.ipv6_pools << Ipv6Pool.new(
           ipv6_config: :static,
           ipv6_first_address: next_ipv6&.address,
-          ipv6_last_address: next_ipv6&.address
+          ipv6_last_address: next_ipv6&.address,
         )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -189,7 +185,7 @@ class NetworksController < ApplicationController
           :ipv6_config,
           :ipv6_first_address,
           :ipv6_last_address,
-        ]
+        ],
       )
     end
 

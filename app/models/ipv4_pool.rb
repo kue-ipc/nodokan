@@ -7,9 +7,7 @@ class Ipv4Pool < ApplicationRecord
   validates :ipv4_first_address, allow_blank: false, ipv4: true
   validates :ipv4_last_address, allow_blank: false, ipv4: true
 
-  def ipv4_prefix_length
-    network.ipv4_prefix_length
-  end
+  delegate :ipv4_prefix_length, to: :network
 
   def ipv4_first
     @ipv4_first ||=
@@ -23,7 +21,7 @@ class Ipv4Pool < ApplicationRecord
   def ipv4_first_address=(value)
     @ipv4_first_address = value
     self.ipv4_first_data = @ipv4_first_address.presence &&
-                         IPAddress::IPv4.new(@ipv4_first_address).data
+                           IPAddress::IPv4.new(@ipv4_first_address).data
   rescue ArgumentError
     self.ipv4_first_data = nil
   end
@@ -40,7 +38,7 @@ class Ipv4Pool < ApplicationRecord
   def ipv4_last_address=(value)
     @ipv4_last_address = value
     self.ipv4_last_data = @ipv4_last_address.presence &&
-                        IPAddress::IPv4.new(@ipv4_last_address).data
+                          IPAddress::IPv4.new(@ipv4_last_address).data
   rescue ArgumentError
     self.ipv4_last_data = nil
   end
@@ -49,9 +47,7 @@ class Ipv4Pool < ApplicationRecord
     @ipv4_range ||= Range.new(ipv4_first, ipv4_last)
   end
 
-  def cover?(addr)
-    ipv4_range.cover?(addr)
-  end
+  delegate :cover?, to: :ipv4_range
 
   def each(&block)
     if block_given?
@@ -108,7 +104,7 @@ class Ipv4Pool < ApplicationRecord
     Ipv4Pool.new(
       ipv4_config: config,
       ipv4_first_address: first,
-      ipv4_last_address: last
+      ipv4_last_address: last,
     )
   end
 end

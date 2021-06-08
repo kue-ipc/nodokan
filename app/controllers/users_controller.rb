@@ -10,7 +10,7 @@ class UsersController < ApplicationController
       :format,
       :query,
       order: [:username, :email, :fullname, :role],
-      condition: [:username, :email, :fullname, :role, :deleted]
+      condition: [:username, :email, :fullname, :role, :deleted],
     )
 
     @page = permitted_params[:page]
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     if @query.present?
       @users = @users.where(
         'username LIKE :query OR email LIKE :query OR fullname LIKE :query',
-        {query: "%#{@query}%"}
+        { query: "%#{@query}%" },
       )
     end
 
@@ -32,9 +32,7 @@ class UsersController < ApplicationController
 
     @users = @users.order(@order.to_h) if @order
 
-    unless permitted_params[:format] == 'csv'
-      @users = @users.page(@page).per(@per)
-    end
+    @users = @users.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
   def show
@@ -53,7 +51,7 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'ユーザーを更新しました。'}
+        format.html { redirect_to @user, notice: 'ユーザーを更新しました。' }
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render @user }
@@ -68,7 +66,7 @@ class UsersController < ApplicationController
   def create_network
     @user.use_networks << Network.find(params[:network_id])
     respond_to do |format|
-      format.html { redirect_to @user, notice: 'ネットワークの紐付けを追加しました。'}
+      format.html { redirect_to @user, notice: 'ネットワークの紐付けを追加しました。' }
       format.json { render :show, status: :ok, location: @user }
     end
   end
@@ -106,7 +104,7 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(
         :role,
-        :auth_network_ids
+        :auth_network_ids,
       )
     end
 end

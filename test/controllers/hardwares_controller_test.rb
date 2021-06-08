@@ -8,30 +8,30 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test "should get edit" do
+    test 'should get edit' do
       get hardwares_edit_url
       assert_response :success
     end
-  
-    test "should get update" do
+
+    test 'should get update' do
       get hardwares_update_url
       assert_response :success
     end
-    end
+  end
 
   class SignInUser < HardwaresControllerTest
     setup do
       sign_in users(:user)
     end
 
-    test "should get index" do
+    test 'should get index' do
       get hardwares_index_url
       assert_response :success
     end
   end
 
   class Anonymous < HardwaresControllerTest
-    test "redirect to login INSTEAD OF get index" do
+    test 'redirect to login INSTEAD OF get index' do
       get hardwares_index_url
       assert_redirected_to new_user_session_path
     end

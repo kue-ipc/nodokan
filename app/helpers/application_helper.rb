@@ -5,7 +5,7 @@ module ApplicationHelper
       if model.nil?
         controller.controller_name.classify.constantize
       elsif model.is_a?(ActiveRecord)
-        model.class 
+        model.class
       else
         model
       end
@@ -40,9 +40,9 @@ module ApplicationHelper
   end
 
   def dt_dd_tag(term, &block)
-    content_tag('div', class: 'row border-bottom mb-2 pb-2') do
-      content_tag('dt', term, class: dt_col) +
-        content_tag('dd', class: dd_col + ['mb-0'], &block)
+    tag.div(class: 'row border-bottom mb-2 pb-2') do
+      tag.dt(term, class: dt_col) +
+        tag.dd(class: dd_col + ['mb-0'], &block)
     end
   end
 
@@ -61,9 +61,9 @@ module ApplicationHelper
   def span_value_for(value, **opts)
     case value
     when nil
-      content_tag('span', opts[:blank_alt] || t(:none, scope: :values), class: 'font-italic text-muted')
+      tag.span(opts[:blank_alt] || t(:none, scope: :values), class: 'font-italic text-muted')
     when '', [], {}
-      content_tag('span', opts[:blank_alt] || t(:empty, scope: :values), class: 'font-italic text-muted')
+      tag.span(opts[:blank_alt] || t(:empty, scope: :values), class: 'font-italic text-muted')
     when String
       case opts[:format]
       when :translate
@@ -78,10 +78,10 @@ module ApplicationHelper
         i_bool_tag(value)
       end
     when Array
-      content_tag('ul', class: 'list-inline mb-0') do
+      tag.ul(class: 'list-inline mb-0') do
         list_html = sanitize('')
         value.each do |v|
-          list_html += content_tag('li', class: 'list-inline-item border border-primary rounded px-1 mb-1') do
+          list_html += tag.li(class: 'list-inline-item border border-primary rounded px-1 mb-1') do
             span_value_for(v, **opts)
           end
         end
@@ -106,19 +106,19 @@ module ApplicationHelper
 
   def span_text_tag(value = nil, around: nil, **_, &block)
     if around.present?
-      content_tag('span', around[0], class: 'text-muted') +
-        content_tag('span', value, &block) +
-        content_tag('span', around[1], class: 'text-muted')
+      tag.span(around[0], class: 'text-muted') +
+        tag.span(value, &block) +
+        tag.span(around[1], class: 'text-muted')
     else
-      content_tag('span', value, &block)
+      tag.span(value, &block)
     end
   end
 
   def i_bool_tag(value)
     if value
-      content_tag('i', '', class: 'far fa-check-square')
+      tag.i('', class: 'far fa-check-square')
     else
-      content_tag('i', '', class: 'far fa-square')
+      tag.i('', class: 'far fa-square')
     end
   end
 
@@ -159,7 +159,7 @@ module ApplicationHelper
     else
       badge_classes << 'badge-light' << 'text-muted'
     end
-    content_tag('span', name, class: badge_classes, id: id)
+    tag.span(name, class: badge_classes, id: id)
   end
 
   def badge_boolean(model, attr, id: nil, level: :primary, disabled_show: false)
@@ -173,7 +173,7 @@ module ApplicationHelper
     else
       badge_classes << 'badge-light' << 'text-muted'
     end
-    content_tag('span', name, class: badge_classes, id: id)
+    tag.span(name, class: badge_classes, id: id)
   end
 
   def sort_link(attr, model = nil)
@@ -191,7 +191,7 @@ module ApplicationHelper
       per: @per,
       queray: @query,
       order: {},
-      condition: @condition&.to_h || {} 
+      condition: @condition&.to_h || {},
     }
     i_class = ['fas']
 
@@ -208,7 +208,7 @@ module ApplicationHelper
 
     path = __send__("#{controller_name}_path", params)
     link_to path, class: 'btn btn-sm btn-light' do
-      content_tag(:i, '', class: i_class)
+      tag.i('', class: i_class)
     end
   end
 
@@ -226,7 +226,7 @@ module ApplicationHelper
       page: @page,
       per: @per,
       order: @order&.to_h || {},
-      condition: @condition&.to_h || {} 
+      condition: @condition&.to_h || {},
     }
     i_class = []
 
@@ -244,7 +244,7 @@ module ApplicationHelper
 
     path = __send__("#{controller_name}_path", params)
     link_to path, class: 'btn btn-sm btn-light' do
-      content_tag(:i, '', class: i_class)
+      tag.i('', class: i_class)
     end
   end
 end

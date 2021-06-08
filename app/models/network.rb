@@ -44,7 +44,7 @@ class Network < ApplicationRecord
   validates :ipv6_network_address, allow_blank: true, ipv6: true
   validates :ipv6_gateway_address, allow_blank: true, ipv6: true
 
-  validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
+  validates :ipv4_netmask, allow_blank: true, inclusion: { in: IP_MASKS }
 
   validates :ipv4_prefix_length, allow_blank: true, numericality: {
     only_integer: true,
@@ -285,13 +285,13 @@ class Network < ApplicationRecord
   def self.find_identifier(str)
     case str.to_s.strip.downcase
     when /^v(\d{1,4})$/
-      Network.find_by(vlan: $1.to_i)
+      Network.find_by(vlan: Regexp.last_match(1).to_i)
     when /^i([.\d]+)$/
-      Network.find_by(ipv4_network_data: IPAddress::IPv4.new($1).data)
+      Network.find_by(ipv4_network_data: IPAddress::IPv4.new(Regexp.last_match(1)).data)
     when /^k([:\h]+)$/
-      Network.find_by(ipv6_network_data: IPAddress::IPv6.new($1).data)
+      Network.find_by(ipv6_network_data: IPAddress::IPv6.new(Regexp.last_match(1)).data)
     when /^\#(\d+)$/
-      Network.find($1.to_i)
+      Network.find(Regexp.last_match(1).to_i)
     else
       logger.warn "Invalid network identifier: #{str}"
       nil

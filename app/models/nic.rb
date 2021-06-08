@@ -302,13 +302,13 @@ class Nic < ApplicationRecord
 
   private def hex_str(list, char_case: :lower, sep: nil)
     hex = case char_case.intern
-      when :upper
-        '%02X'
-      when :lower
-        '%02x'
-      else
-        raise ArgumentError, "invalid char_case: #{char_case}"
-      end
+          when :upper
+            '%02X'
+          when :lower
+            '%02x'
+          else
+            raise ArgumentError, "invalid char_case: #{char_case}"
+          end
     format_str = [[hex] * list.size].join(sep || '')
     format_str % list
   end

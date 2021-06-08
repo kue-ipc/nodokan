@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# devise_ldap_authenticatable_authorizable.rb v0.1.1 2021-05-06
+# devise_ldap_authenticatable_authorizable.rb v0.1.2 2021-06-08
 
 # `authorizable?` is `authorized?` without `authenticated?`
 
@@ -11,7 +11,7 @@ module Devise
   module LDAP
     module Adapter
       def self.authorizable?(login)
-        self.ldap_connect(login).authorizable?
+        ldap_connect(login).authorizable?
       end
     end
 

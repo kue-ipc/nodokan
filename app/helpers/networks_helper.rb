@@ -6,7 +6,7 @@ module NetworksHelper
     when Ipv6Pool
       "#{pool.ipv6_first_address}-#{pool.ipv6_last_address}"
     else
-      pool.range.then { |r| "#{r.first}-#{r.last}"}
+      pool.range.then { |r| "#{r.first}-#{r.last}" }
     end
   end
 end

@@ -17,7 +17,9 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test 'should create node' do
     assert_difference('Node.count') do
-      post nodes_url, params: {node: {confirmed_at: @node.confirmed_at, name: @node.name, note: @node.note, owner_id: @node.owner_id}}
+      post nodes_url,
+        params: { node: { confirmed_at: @node.confirmed_at, name: @node.name, note: @node.note,
+owner_id: @node.owner_id, } }
     end
 
     assert_redirected_to node_url(Node.last)
@@ -34,7 +36,9 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update node' do
-    patch node_url(@node), params: {node: {confirmed_at: @node.confirmed_at, name: @node.name, note: @node.note, owner_id: @node.owner_id}}
+    patch node_url(@node),
+      params: { node: { confirmed_at: @node.confirmed_at, name: @node.name, note: @node.note,
+owner_id: @node.owner_id, } }
     assert_redirected_to node_url(@node)
   end
 

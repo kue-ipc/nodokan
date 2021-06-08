@@ -26,9 +26,9 @@ class ImportCSV
 
     backup_file = "#{csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
     tmp_file = "#{csv_file}.tmp"
-  
+
     csv_datas = CSV.read(csv_file, encoding: 'BOM|UTF-8', headers: :first_row)
-  
+
     File.open(tmp_file, 'wb:UTF-8') do |io|
       io.write "\u{feff}"
       io.puts csv_datas.headers.to_csv
@@ -41,11 +41,12 @@ class ImportCSV
 
         do_action(data)
       rescue StandardError => e
-        data['result'] = "error"
+        data['result'] = 'error'
         data['message'] = e.message
       ensure
         @logger.info(
-          "#{count}: [#{data['result']}] #{data['id']}: #{data['message']}")
+          "#{count}: [#{data['result']}] #{data['id']}: #{data['message']}",
+        )
         results[data['result']] += 1
         io.puts data.to_csv
       end
@@ -89,7 +90,7 @@ class ImportCSV
   def create(data)
     raise NotImplementedError
   end
-  
+
   def reade(data)
     raise NotImplementedError
   end

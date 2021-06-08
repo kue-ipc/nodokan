@@ -12,7 +12,7 @@ class PagesController < ApplicationController
       policy_scope(Node).includes(:confirmation)
         .where.not(confirmations: Confirmation.all)
         .or(policy_scope(Node).includes(:confirmation)
-          .where(confirmations: {expiration: Time.current..}))
+          .where(confirmations: { expiration: Time.current.. }))
         .count
     @networks = policy_scope(Network).all
 

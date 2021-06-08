@@ -10,6 +10,6 @@ AttributeNormalizer.configure do |config|
 
   config.normalizers[:sanitize] = lambda do |value, options|
     config = options[:config] || Sanitize::Config::RELAXED
-    value.is_a?(String) ?  Sanitize.fragment(value, config) : value
+    value.is_a?(String) ? Sanitize.fragment(value, config) : value
   end
 end

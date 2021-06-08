@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# devise_ldap_authenticatable_check_group_policy.rb v0.2 2021-05-06
+# devise_ldap_authenticatable_check_group_policy.rb v0.2.1 2021-06-08
 
 # check group membersip policy
 # setting
@@ -16,8 +16,10 @@ require 'devise'
 require 'devise_ldap_authenticatable'
 
 module Devise
+  # rubocop:disable Style/ClassVars
   mattr_accessor :ldap_check_group_policy
   @@ldap_check_group_policy = :and
+  # rubocop:enable Style/ClassVars
 
   module LDAP
     class Connection
@@ -36,8 +38,8 @@ module Devise
         @required_groups.each do |group|
           if group.is_a?(Array)
             @in_groups << group[1] if in_group?(group[1], group[0])
-          else
-            @in_groups << group if in_group?(group)
+          elsif in_group?(group)
+            @in_groups << group
           end
         end
         !@in_groups.empty?
@@ -67,7 +69,7 @@ module Devise
           in_required_groups_or?
         else
           DeviseLdapAuthenticatable::Logger.send(
-            "Invalid check policy: #{Devise.ldap_check_group_policy}"
+            "Invalid check policy: #{Devise.ldap_check_group_policy}",
           )
           false
         end

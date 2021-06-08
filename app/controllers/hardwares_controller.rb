@@ -12,7 +12,7 @@ class HardwaresController < ApplicationController
         :id, :device_type_id, :maker, :product_name, :model_number,
         :nodes_count,
       ],
-      condition: [:device_type_id, :maker, :product_name, :model_number]
+      condition: [:device_type_id, :maker, :product_name, :model_number],
     )
 
     @page = permitted_params[:page]
@@ -54,20 +54,24 @@ class HardwaresController < ApplicationController
       device_type_id: @hardware.device_type_id,
       maker: @hardware.maker,
       product_name: @hardware.product_name,
-      model_number: @hardware.model_name
+      model_number: @hardware.model_name,
     )
 
     if other_hardware
       respond_to do |format|
         if Node.update(@hardware.nodes_ids, hardware: other_hardware) &&
            @hardware.destroy
-          format.html { redirect_to other_hardware,
-            notice: '機器情報を統合しました。' }
+          format.html do
+            redirect_to other_hardware,
+              notice: '機器情報を統合しました。'
+          end
           format.json { render :show, status: :ok, location: other_hardware }
         else
           format.html { render :edit }
-          format.json { render json: @hardware.errors,
-            status: :unprocessable_entity }
+          format.json do
+            render json: @hardware.errors,
+              status: :unprocessable_entity
+          end
         end
       end
       return
@@ -75,13 +79,17 @@ class HardwaresController < ApplicationController
 
     respond_to do |format|
       if @hardware.save
-        format.html { redirect_to @hardware,
-          notice: '機器情報を更新しました。' }
+        format.html do
+          redirect_to @hardware,
+            notice: '機器情報を更新しました。'
+        end
         format.json { render :show, status: :ok, location: other_hardware }
       else
         format.html { render :edit }
-        format.json { render json: @hardware.errors,
-          status: :unprocessable_entity }
+        format.json do
+          render json: @hardware.errors,
+            status: :unprocessable_entity
+        end
       end
     end
   end
@@ -116,7 +124,7 @@ class HardwaresController < ApplicationController
       :maker,
       :product_name,
       :model_number,
-      :confirmed
+      :confirmed,
     )
   end
 end

@@ -6,9 +6,7 @@ class NodesController < ApplicationController
   # GET /nodes.json
   def index
     permitted_params = params.permit(
-      :page,
-      :per,
-      :format,
+      :page, :per, :format,
       :query,
       order: [:user, :name, :hostname, :domain, :place, :hardware, :operating_system],
       condition: [:user, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id],
@@ -23,8 +21,7 @@ class NodesController < ApplicationController
 
     @condition = permitted_params[:condition]
 
-    @nodes = policy_scope(Node)
-      .includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
+    @nodes = policy_scope(Node).includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
 
     if @query.present?
       query_places = Place.where(
@@ -62,32 +59,28 @@ class NodesController < ApplicationController
 
     @nodes = @nodes.where(@condition) if @condition
 
-    if @order
-      @order.each do |key, value|
-        value = if value.to_s.downcase == 'desc'
-            'desc'
-          else
-            'asc'
-          end
+    @order&.each do |key, value|
+      value = if value.to_s.downcase == 'desc'
+                'desc'
+              else
+                'asc'
+              end
 
-        case key
-        when 'user'
-          @nodes = @nodes.order("users.username #{value}")
-        when 'name', 'hostname', 'domain'
-          @nodes = @nodes.order({ key => value })
-        when 'place'
-          @nodes = @nodes.order("places.room #{value}")
-        when 'hardware'
-          @nodes = @nodes.order("hardwares.product_name #{value}")
-        when 'operating_system'
-          @nodes = @nodes.order("operating_systems.name #{value}")
-        end
+      case key
+      when 'user'
+        @nodes = @nodes.order("users.username #{value}")
+      when 'name', 'hostname', 'domain'
+        @nodes = @nodes.order({ key => value })
+      when 'place'
+        @nodes = @nodes.order("places.room #{value}")
+      when 'hardware'
+        @nodes = @nodes.order("hardwares.product_name #{value}")
+      when 'operating_system'
+        @nodes = @nodes.order("operating_systems.name #{value}")
       end
     end
 
-    unless permitted_params[:format] == 'csv'
-      @nodes = @nodes.page(@page).per(@per)
-    end
+    @nodes = @nodes.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
   # GET /nodes/1
@@ -121,9 +114,7 @@ class NodesController < ApplicationController
     @confirmation.content = nil if @confirmation.content_unknown?
     @confirmation.os_update = nil if @confirmation.os_update_unknown?
     @confirmation.app_update = nil if @confirmation.app_update_unknown?
-    if @confirmation.security_update_unknown?
-      @confirmation.security_update = nil
-    end
+    @confirmation.security_update = nil if @confirmation.security_update_unknown?
     @confirmation.security_scan = nil if @confirmation.security_scan_unknown?
   end
 
@@ -147,9 +138,7 @@ class NodesController < ApplicationController
   # POST /nodes.json
   def create
     @node = Node.new(node_params)
-    unless current_user.admin?
-      @node.user = current_user
-    end
+    @node.user = current_user unless current_user.admin?
     authorize @node
 
     if params['add_nic']
@@ -161,12 +150,8 @@ class NodesController < ApplicationController
     number_count = 1
     @node.nics.each do |nic|
       unless current_user.admin?
-        if nic.ipv4_config == 'manual'
-          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
-        end
-        if nic.ipv6_config == 'manual'
-          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
-        end
+        nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。' if nic.ipv4_config == 'manual'
+        nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。' if nic.ipv6_config == 'manual'
       end
 
       nic.number = number_count
@@ -196,10 +181,10 @@ class NodesController < ApplicationController
         format.html { redirect_to @node, notice: '端末を登録しました。' }
         format.json { render :show, status: :created, location: @node }
       else
-        format.html {
+        format.html do
           flash.now[:alert] = '端末登録に失敗しました。'
           render :new
-        }
+        end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -209,9 +194,7 @@ class NodesController < ApplicationController
   # PATCH/PUT /nodes/1.json
   def update
     @node.assign_attributes(node_params)
-    unless current_user.admin?
-      @node.user = current_user
-    end
+    @node.user = current_user unless current_user.admin?
 
     if params['add_nic']
       @node.nics << Nic.new
@@ -314,7 +297,7 @@ class NodesController < ApplicationController
     else
       respond_to do |format|
         format.html { redirect_to @node, alert: '該当するユーザーがいません。' }
-        format.json { render json: {username: '該当のユーザーがいません。'}, status: :unprocessable_entity }
+        format.json { render json: { username: '該当のユーザーがいません。' }, status: :unprocessable_entity }
       end
     end
   end
@@ -359,15 +342,13 @@ class NodesController < ApplicationController
     hardware = Hardware.find_or_initialize_by(permitted_params[:hardware])
 
     operating_system = if permitted_params[:operating_system][:os_category_id].present?
-        OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
-      end
+                         OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
+                       end
 
     permitted_params.except(:place, :hardware, :operating_system).merge(
-      {
-        place: place,
-        hardware: hardware,
-        operating_system: operating_system,
-      }
+      place: place,
+      hardware: hardware,
+      operating_system: operating_system,
     )
   end
 

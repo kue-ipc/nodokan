@@ -149,7 +149,7 @@ class Confirmation < ApplicationRecord
     ].all? { |name| __send__("#{name}_ok?") }
   end
 
-  alias :approvable? :ok?
+  alias approvable? ok?
 
   def problem?
     %w[

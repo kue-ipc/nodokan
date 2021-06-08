@@ -36,9 +36,7 @@ class SecuritySoftware < ApplicationRecord
   end
 
   def auto_approve
-    if !confirmed && conf[:auto_approve]
-      self.approved = true
-    end
+    self.approved = true if !confirmed && conf[:auto_approve]
   end
 
   # class method

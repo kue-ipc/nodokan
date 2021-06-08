@@ -10,9 +10,7 @@ module RailsAdmin
           if @version.respond_to?(:changeset) && @version.changeset.present?
             @message + ' [' + @version.changeset.to_a.collect do |c|
               value = c[1][1].to_s
-              if value.encoding == Encoding::ASCII_8BIT
-                value = value.unpack('H*').first
-              end
+              value = value.unpack1('H*') if value.encoding == Encoding::ASCII_8BIT
               c[0] + ' = ' + value
             end.join(', ') + ']'
           else

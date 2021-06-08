@@ -6,7 +6,6 @@ class Assignment < ApplicationRecord
 
   scope :unassigned, -> { where(auth: false, use: false, manage: false) }
 
-
   def assigned?
     auth || use || manage
   end

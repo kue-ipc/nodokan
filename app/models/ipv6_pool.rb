@@ -5,9 +5,7 @@ class Ipv6Pool < ApplicationRecord
   validates :ipv6_first_address, allow_blank: false, ipv6: true
   validates :ipv6_last_address, allow_blank: false, ipv6: true
 
-  def ipv6_prefix_length
-    network.ipv6_prefix_length
-  end
+  delegate :ipv6_prefix_length, to: :network
 
   def ipv6_first
     @ipv6_first ||= IPAddress::IPv6.parse_data(ipv6_first_data, ipv6_prefix_length)
@@ -20,7 +18,7 @@ class Ipv6Pool < ApplicationRecord
   def ipv6_first_address=(value)
     @ipv6_first_address = value
     self.ipv6_first_data = @ipv6_first_address.presence &&
-                         IPAddress::IPv6.new(@ipv6_first_address).data
+                           IPAddress::IPv6.new(@ipv6_first_address).data
   rescue ArgumentError
     self.ipv6_first_data = nil
   end
@@ -36,7 +34,7 @@ class Ipv6Pool < ApplicationRecord
   def ipv6_last_address=(value)
     @ipv6_last_address = value
     self.ipv6_last_data = @ipv6_last_address.presence &&
-                        IPAddress::IPv6.new(@ipv6_last_address).data
+                          IPAddress::IPv6.new(@ipv6_last_address).data
   rescue ArgumentError
     self.ipv6_last_data = nil
   end
@@ -97,7 +95,7 @@ class Ipv6Pool < ApplicationRecord
     Ipv4Pool.new(
       ipv6_config: config,
       ipv6_first_address: first,
-      ipv6_last_address: last
+      ipv6_last_address: last,
     )
   end
 end

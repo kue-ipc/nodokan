@@ -8,7 +8,7 @@ class PlacesController < ApplicationController
       :target,
       :format,
       order: [:id, :area, :building, :floor, :room, :nodes_count],
-      condition: [:area, :building, :floor, :room]
+      condition: [:area, :building, :floor, :room],
     )
 
     @page = permitted_params[:page]
@@ -33,9 +33,7 @@ class PlacesController < ApplicationController
       end
     end
 
-    unless permitted_params[:format] == 'csv'
-      @places = @places.page(@page).per(@per)
-    end
+    @places = @places.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
   def edit
@@ -49,7 +47,7 @@ class PlacesController < ApplicationController
 
   private
 
-  def authorize_place
-    authorize Place
-  end
+    def authorize_place
+      authorize Place
+    end
 end

@@ -23,11 +23,11 @@ module Kea
     end
 
     def self.global
-      self.find_by(name: 'global')
+      find_by(name: 'global')
     end
 
     def self.subnet
-      self.find_by(name: 'subnet')
+      find_by(name: 'subnet')
     end
   end
 end

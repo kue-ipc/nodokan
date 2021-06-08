@@ -8,7 +8,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test "should get index" do
+    test 'should get index' do
       get users_url
       assert_response :success
     end
