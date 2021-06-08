@@ -141,7 +141,7 @@ class User < ApplicationRecord
   end
 
   def radius_user
-    if !deleted? && auth_network&.auth
+    if !deleted? && auth_network
       RadiusUserAddJob.perform_later(username, auth_network.vlan)
     else
       RadiusUserDelJob.perform_later(username)

@@ -8,8 +8,8 @@ class RadiusUserAddJob < ApplicationJob
     end
 
     # Auth-Typeを設定
-    Radius::Radcheck.find_or_initialize_by(username: username)
-      .tap do |radcheck|
+    Radius::Radcheck.transaction do
+      radcheck = Radius::Radcheck.find_or_initialize_by(username: username)
       radcheck.attr = 'Auth-Type'
       radcheck.op = ':='
       radcheck.value = 'LDAP'
@@ -17,8 +17,8 @@ class RadiusUserAddJob < ApplicationJob
     end
 
     # VLANを設定
-    Radius::Radreply.find_or_initialize_by(username: username)
-      .tap do |radreply|
+    Radius::Radreply.transaction do
+      radreply = Radius::Radreply.find_or_initialize_by(username: username)
       radreply.attr = 'Tunnel-Private-Group-Id'
       radreply.op = ':='
       radreply.value = vlan.to_s
@@ -26,8 +26,8 @@ class RadiusUserAddJob < ApplicationJob
     end
 
     # グループを設定
-    Radius::Radusergroup.find_or_initialize_by(username: username)
-      .tap do |radusergroup|
+    Radius::Radusergroup.transaction do
+      radusergroup = Radius::Radusergroup.find_or_initialize_by(username: username)
       radusergroup.groupname = 'user'
       radusergroup.priority = 1
       radusergroup.save!
