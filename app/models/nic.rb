@@ -159,7 +159,11 @@ class Nic < ApplicationRecord
   end
 
   def old_nic
-    @old_nic ||= id && Nic.find(id)
+    if persisted?
+      @old_nic ||= id && Nic.find(id)
+    else
+      @old_nic
+    end
   end
 
   def same_old_nic?(*list)
@@ -257,21 +261,42 @@ class Nic < ApplicationRecord
   end
 
   def radius_mac
-    if auth
-      RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
-    else
-      RadiusMacDelJob.perform_later(mac_address_raw)
+    if mac_address_data.present?
+      if auth
+        RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
+      else
+        RadiusMacDelJob.perform_later(mac_address_raw)
+      end
+    end
+
+    if old_nic&.mac_address_data.present? && old_nic.mac_address_data != mac_address_data
+      RadiusMacDelJob.perform_later(old_nic.mac_address_raw)
     end
   end
 
   def kea_reservation
-    if ipv4_reserved? &&
-       mac_address_data.present? &&
-       ipv4_data.present? &&
-       network&.dhcp
-      KeaReservationAddJob.perform_later(self)
-    else
-      KeaReservationDelJob.perform_later(self)
+    if mac_address_data.present?
+      if ipv4_reserved? && ipv4_data.present? && network&.dhcp
+        KeaReservation4AddJob.perform_later(mac_address_data, ipv4.to_i, network.id)
+      else
+        KeaReservation4DelJob.perform_later(mac_address_data)
+      end
+    end
+
+    if old_nic&.mac_address_data.present? && old_nic.mac_address_data != mac_address_data
+      KeaReservation4DelJob.perform_later(old_nic.mac_address_data)
+    end
+
+    if duid_data.present?
+      if ipv6_reserved? && ipv6_data.present? && network&.dhcp
+        KeaReservation6AddJob.perform_later(duid_data, ipv6_address, network.id)
+      else
+        KeaReservation6DelJob.perform_later(duid_data)
+      end
+    end
+
+    if old_nic&.duid_data.present? && old_nic.duid_data != duid_data
+      KeaReservation6DelJob.perform_later(old_nic.duid_data)
     end
   end
 

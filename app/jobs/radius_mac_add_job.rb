@@ -7,6 +7,7 @@ class RadiusMacAddJob < ApplicationJob
       return
     end
 
+    # 設定されていなければ、mac_addressと同じにする。
     password =
       Rails.application.credentials.dig(:config, :radius_mac_password) ||
       Settings.config.radius_mac_password ||
