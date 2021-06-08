@@ -33,12 +33,7 @@ table.table.table-hover.table-sm
         td = user.auth_network&.identifier
         td = user.use_networks.map(&:identifier).join(', ')
 
-- list_group_item_class = [ \
-  'list-group-item',
-  'list-group-item-action',
-  'flex-fill',
-  'text-nowrap',
-]
+- list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
 - @users.each do |user|
   .context-menu id="contextmenu-user-#{user.id}"
     .list-group.list-group-horizontal

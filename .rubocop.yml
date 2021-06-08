@@ -40,6 +40,9 @@ Layout/MultilineMethodCallIndentation:
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
 # Loose Metrics
 Metrics/AbcSize:
   Max: 23

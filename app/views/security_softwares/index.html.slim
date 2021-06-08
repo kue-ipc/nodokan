@@ -21,17 +21,20 @@ table.table.table-sm
           td = security_software[@target]
         - else
           td.text-nowrap
-            = t(security_software.installation_method,
-              scope: [:activerecord, :enums, :installation_methods])
+            = t(security_software.installation_method scope: [:activerecord, :enums, :installation_methods])
           td.text-nowrap = security_software.os_category.name
           td.text-nowrap = security_software.name
         td.text-nowrap
-          =<> badge(SecuritySoftware.human_attribute_name(:approved),
+          =<> badge( \
+            SecuritySoftware.human_attribute_name(:approved),
             level: :success,
-            enabled: security_software.approved)
-          =<> badge(SecuritySoftware.human_attribute_name(:confirmed),
+            enabled: security_software.approved,
+          )
+          =<> badge( \
+            SecuritySoftware.human_attribute_name(:confirmed),
             level: :primary,
-            enabled: security_software.confirmed)
+            enabled: security_software.confirmed,
+          )
         td = security_software.description
 
 = paginate @security_softwares

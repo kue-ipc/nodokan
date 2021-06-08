@@ -53,8 +53,7 @@ dl
             tr
               td scope="row" = nic.number
               td
-                = t(nic.interface_type,
-                  scope: 'activerecord.enums.interface_types')
+                = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
               td
                 = nic.name
                 - if nic.locked
@@ -89,8 +88,7 @@ dl
     - when :unapproved
       i.fas.fa-exclamation-triangle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      = t('messages.node_confirmaiton_expiration_date',
-          date: l(confirmation.expiration.to_date, format: :long))
+      = t('messages.node_confirmaiton_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:unapproved, scope: :messages)
       - case confirmation.existence
       - when 'existing'
@@ -100,7 +98,7 @@ dl
         - if @node.operating_system.nil?
           .text-danger = t('messages.node_no_operating_system')
         - if confirmation.unknown?
-          .text-danger = t('messages.node_confirmaiton_unknown')        
+          .text-danger = t('messages.node_confirmaiton_unknown')
         - if confirmation.os_update_problem?
           - if confirmation.os_update_eol?
             .text-danger = t('messages.node_os_eol')
@@ -137,15 +135,13 @@ dl
     - when :expire_soon
       i.fas.fa-exclamation-triangle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      = t('messages.node_confirmaiton_expiration_date',
-          date: l(confirmation.expiration.to_date, format: :long))
+      = t('messages.node_confirmaiton_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:expire_soon, scope: :messages)
       .text-warning = t('messages.node_confirmaiton_expiring_soon')
     - when :approved
       i.fas.fa-check.text-success
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      = t('messages.node_confirmaiton_expiration_date',
-          date: l(confirmation.expiration.to_date, format: :long))
+      = t('messages.node_confirmaiton_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:approved, scope: :messages)
   = dt_dd_for @node, :note
   - if current_user.admin?
@@ -161,7 +157,7 @@ button#confirm-form-modal-toggle.btn.btn-primary[
   hr
   h3 端末の削除
   p
-    | 
+    |
       端末が存在しない、または、不明の場合は削除してください。
       削除した端末はネットワークに接続できません。
   =<> link_to t(:destroy, scope: [:actions]), @node,
@@ -180,7 +176,6 @@ button#confirm-form-modal-toggle.btn.btn-primary[
   = bootstrap_form_with url: transfer_node_path(@node), class: 'form-inline' do |f|
     = f.text_field :username, label: 'ユーザー名', label_class: 'mr-1'
     = f.submit '譲渡', class: 'btn btn-primary ml-1'
-
 
 - if @node.nics.count.positive?
   hr
@@ -211,7 +206,7 @@ button#confirm-form-modal-toggle.btn.btn-primary[
         - when 'static', 'manual'
           - ip_data = { \
             setting: '手動',
-            address: nic.ipv4_address.presence || raw('&nbsp;'),
+            address: nic.ipv4_address.presence || t(empty),
             netmask: nic.network.ipv4_netmask.presence || raw('&nbsp;'),
             gateway: nic.network.ipv4_gateway.presence || raw('&nbsp;'),
           }
@@ -276,4 +271,3 @@ hr
 =< link_to t(:back, scope: [:actions]), nodes_path
 
 = render 'confirm_form'
-
