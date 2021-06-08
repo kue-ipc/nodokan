@@ -174,13 +174,13 @@ class Network < ApplicationRecord
 
   def identifier
     if vlan
-      'v' + vlan.to_s
+      "v#{vlan}"
     elsif ipv4_network
-      'i' + ipv4_network_address
+      "i#{ipv4_network_address}"
     elsif ipv6_network
-      'k' + ipv6_network_address
+      "k#{ipv6_network_address}"
     else
-      '#' + id.to_s
+      "\##{id}"
     end
   end
 

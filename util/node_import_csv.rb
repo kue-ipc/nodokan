@@ -8,7 +8,7 @@ class NodeImportCSV < ImportCSV
   def create(data)
     node = Node.new
 
-    node.user = User.find_by_username(data['user'])
+    node.user = User.find_by(username: data['user'])
     node.name = data['name']
     node.hostname = data['hostname']
     node.domain = data['domain']
@@ -41,10 +41,11 @@ class NodeImportCSV < ImportCSV
       end
 
     if data['nic[network]'].present?
-      if data['nic[network]'] =~ /^\#(\d+)$/i
+      case data['nic[network]']
+      when /^\#(\d+)$/i
         network = Network.find(Regexp.last_match(1))
-      elsif data['nic[network]'] =~ /^v(\d+)$/i
-        network = Network.find_by_vlan(Regexp.last_match(1))
+      when /^v(\d+)$/i
+        network = Network.find_by(vlan: Regexp.last_match(1))
       else
         raise "invalid network: #{nic[]}"
       end

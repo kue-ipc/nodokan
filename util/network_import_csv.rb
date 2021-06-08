@@ -72,7 +72,7 @@ class NetworkImportCSV < ImportCSV
       network.dhcp ? 'd' : '',
       network.locked ? 'l' : '',
       network.specific ? 's' : '',
-    ].join(''),
+    ].join,
 
                    data['vlan'] = network.vlan
     data['ipv4_network'] = network.ipv4_network&.to_string
@@ -172,9 +172,9 @@ class NetworkImportCSV < ImportCSV
     if data['id'].present?
       Network.find(data['id'])
     elsif data['name'].present?
-      Network.find_by_name(data['name'])
+      Network.find_by(name: data['name'])
     elsif data['vlan'].present?
-      Network.find_by_name(data['vlan'])
+      Network.find_by(name: data['vlan'])
     else
       raise 'no key'
     end

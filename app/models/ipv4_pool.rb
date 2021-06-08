@@ -74,7 +74,7 @@ class Ipv4Pool < ApplicationRecord
         logger.error("Unknown ipv4_config: #{ipv4_config}")
         '?'
       end
-    prefix + '-' + ipv4_first_address + '-' + ipv4_last_address
+    "#{prefix}-#{ipv4_first_address}-#{ipv4_last_address}"
   end
 
   def to_s

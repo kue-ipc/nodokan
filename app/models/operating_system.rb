@@ -20,6 +20,6 @@ class OperatingSystem < ApplicationRecord
   end
 
   def maintained?
-    eol.nil? || eol >= Time.now
+    eol.nil? || eol >= Time.current
   end
 end

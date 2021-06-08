@@ -75,9 +75,9 @@ class UserImportCSV < ImportCSV
     if data['id'].present?
       User.find(data['id'])
     elsif data['username'].present?
-      User.find_by_username(data['username'])
+      User.find_by(username: data['username'])
     elsif data['email'].present?
-      User.find_by_email(data['email'])
+      User.find_by(email: data['email'])
     else
       raise 'no key'
     end

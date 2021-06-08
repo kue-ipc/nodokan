@@ -96,9 +96,7 @@ module ApplicationHelper
     when ApplicationRecord
       link_to(value.to_s, value)
     when ActiveRecord::Associations::CollectionProxy
-      value.map do |item|
-        link_to(item.to_s, item) + ' '
-      end.sum
+      span_value_for(value.to_a, **opts)
     else
       span_text_tag(value.to_s, **opts)
     end

@@ -55,16 +55,14 @@ class User < ApplicationRecord
 
     logger.debug "User #{username} is allocated auth network: #{auth_network}" if auth_network
 
-    if @allocate_network_config[:networks]
-      @allocate_network_config[:networks].each do |net|
-        network =
-          if net == 'auth'
-            auth_network
-          else
-            Network.find_identifier(net)
-          end
-        add_use_network(network) if network
-      end
+    @allocate_network_config[:networks]&.each do |net|
+      network =
+        if net == 'auth'
+          auth_network
+        else
+          Network.find_identifier(net)
+        end
+      add_use_network(network) if network
     end
   end
 

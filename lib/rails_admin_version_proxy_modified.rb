@@ -4,14 +4,14 @@ module RailsAdmin
   module Extensions
     module PaperTrail
       class VersionProxy
-        alias message_org message
+        alias _message message
         def message
           @message = @version.event
           if @version.respond_to?(:changeset) && @version.changeset.present?
             @message + ' [' + @version.changeset.to_a.collect do |c|
               value = c[1][1].to_s
               value = value.unpack1('H*') if value.encoding == Encoding::ASCII_8BIT
-              c[0] + ' = ' + value
+              "#{c[0]} = #{value}"
             end.join(', ') + ']'
           else
             @message

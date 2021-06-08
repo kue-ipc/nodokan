@@ -65,7 +65,7 @@ class Ipv6Pool < ApplicationRecord
         logger.error("Unknown ipv6_config: #{ipv6_config}")
         '?'
       end
-    prefix + '-' + ipv6_first_address + '-' + ipv6_last_address
+    "#{prefix}-#{ipv6_first_address}-#{ipv6_last_address}"
   end
 
   def to_s
