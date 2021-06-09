@@ -59,3 +59,48 @@ user_networks:
       - auth
 additional_messages:
   nic_setting: null
+specific_node_application:
+  rules:
+    - name: 内部公開のみ (DNS登録のみ)
+      dns: true
+      external: none
+      list: []
+    - name: Web外部公開 (外部からのHTTP/HTTPS、DNS登録)
+      dns: true
+      external: nat
+      list:
+        - in 80/tcp
+        - in 443/tcp 
+    - name: 外部Web直接アクセス (外部へのHTTP/HTTPS)
+      dns: false
+      external: napt
+      list:
+        - out 80/tcp
+        - out 443/tcp
+    - name: 外部SSH直接アクセス (外部へのSSH)
+      dns: false
+      external: nat
+      list:
+        - out 22/tcp
+    - name: >-
+        外部メールサービス直接アクセス
+        (外部へのSMTP Submission/SMTPS/POP3/POP3S/IMAP/IMAPS、ただしSMTP 25は除く)
+      dns: false
+      external: nat
+      list:
+        - out 587/tcp
+        - out 465/tcp
+        - out 110/tcp
+        - out 995/tcp
+        - out 143/tcp
+        - out 993/tcp
+    - name: テレビ会議システム用双方向フリーアクセス
+      external: through
+      list:
+        - in */tcp
+        - in */udp
+        - out */tcp
+        - out */udp
+    - name: VPN装置用直接アクセス
+      external: direct
+      list: []

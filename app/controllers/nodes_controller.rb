@@ -1,5 +1,5 @@
 class NodesController < ApplicationController
-  before_action :set_node, only: [:show, :edit, :update, :destroy, :transfer]
+  before_action :set_node, only: [:show, :edit, :update, :destroy, :transfer, :apply_specific]
   before_action :authorize_node, only: [:index]
 
   # GET /nodes

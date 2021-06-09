@@ -1,9 +1,9 @@
 class ConfirmationsController < ApplicationController
+  before_action :set_node, only: [:create, :update]
+
   # POST /nodes/1/confirmation
   # POST /nodes/1/confirmation.json
   def create
-    @node = Node.find(params[:node_id])
-    authorize @node, :update?
     @confirmation = @node.build_confirmation(confirmation_params)
 
     check_and_save
@@ -12,12 +12,15 @@ class ConfirmationsController < ApplicationController
   # PATCH/PUT /nodes/1/confirmation
   # PATCH/PUT /nodes/1/confirmation.json
   def update
-    @node = Node.find(params[:node_id])
-    authorize @node, :update?
     @confirmation = @node.confirmation
     @confirmation.assign_attributes(confirmation_params)
 
     check_and_save
+  end
+
+  private def set_node
+    @node = Node.find(params[:node_id])
+    authorize @node, :update?
   end
 
   # Only allow a list of trusted parameters through.

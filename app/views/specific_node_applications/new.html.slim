@@ -1,0 +1,75 @@
+h1 特定端末申請
+
+p
+  | 申請対象:
+  = link_to @node do
+    =< @node.name
+    =< @node.hostname
+    - if @node.specific
+      span.badge.badge-danger.ml-1
+        = Node.human_attribute_name(:specific)
+- if @node.specific
+  p
+    |
+      申請対象はすでに特定端末です。
+      申請内容によって設定は上書きされます。
+      ルールの追加を希望の場合は備考欄に詳細を記載してください。
+
+= bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
+  - if @node.specific
+    = f.hidden_field :action, value: :update
+  - else
+    = f.hidden_field :action, value: :create
+
+  = f.text_field :reason, label: '申請理由 (端末の用途や目的など)'
+
+  = f.form_group :rule_set, label: { text: 'アクセスルールセット' } do
+    - Settings.specific_node_application.rules.each_with_index do |rule, idx|
+      = f.radio_button :rule_set, idx, label: rule.name,
+        data: { dns: rule.dns, external: rule.external, list: rule.list.to_json}
+    = f.radio_button :rule_set, -1, label: 'カスタムルール (下記に詳細を記載)'
+
+  = f.select :external, [ \
+    ['無し', 'none'],
+    ['NAT', 'nat'],
+    ['NAPT (IPマスカレード)', 'napt'],
+    ['変換なし', 'through'],
+    ['直接接続', 'direct'],
+  ], { include_blank: '(未選択)', label: '外部接続' }
+
+  = f.text_area :rule_list, label: 'ルールリスト', readonly: true, rows: 5
+
+  = f.check_box :register_dns, label: 'DNS登録'
+
+  = f.text_field :fqdn, value: @node.fqdn, label: { text: 'FQDN' } 
+
+  = f.text_area :note, label: '備考'
+
+  = f.submit '申請', class: 'btn btn-primary'
+
+= javascript_pack_tag 'specific-node-application', 'data-turbolinks-track': 'reload'
+
+/ , data: { list: rules.list }
+
+
+
+/ - specific_node_application_list(:rule)&.each do |message, value|
+/   = f.radio_button :rule, value, label: message
+
+/ = f.select :action, t_enums(:action, @specific_node_application),
+/            { wrapper: { class: 'col-md-4' } }, class: 'custom-select'
+/     = f.select :rule, t_enums(:rule, @specific_node_application),
+/                { wrapper: { class: 'col-md-4' } }, class: 'custom-select'
+
+h3 注意事項
+
+p
+  |
+    双方向と明記されていない場合は、外部とのアクセスは片方向のみになります。
+    学内
+
+h4 カスタムルールの書き方
+
+p
+  | カスタムルールの書き方
+  | 内 - 外　
