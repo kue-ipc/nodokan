@@ -2,8 +2,6 @@ class KeaSubnet4AddJob < ApplicationJob
   queue_as :default
 
   def perform(network)
-    return if !network.dhcp || network.ipv4_network.nil?
-
     Kea::Dhcp4Subnet.transaction do
       Kea::Dhcp4Subnet.dhcp4_audit
 

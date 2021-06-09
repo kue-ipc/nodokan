@@ -136,14 +136,6 @@ class User < ApplicationRecord
     Devise::LDAP::Adapter.authorizable?(username)
   end
 
-  def radius_user
-    if !deleted? && auth_network
-      RadiusUserAddJob.perform_later(username, auth_network.vlan)
-    else
-      RadiusUserDelJob.perform_later(username)
-    end
-  end
-
   def selectable_networks
     @selectable_networks ||=
       if admin?
@@ -200,6 +192,14 @@ class User < ApplicationRecord
     use_assignments.each do |assignment|
       assignment.use = false
       assignment.destroy unless assignment.assigned?
+    end
+  end
+
+  def radius_user
+    if !destroyed? && !deleted? && auth_network
+      RadiusUserAddJob.perform_later(username, auth_network.vlan)
+    else
+      RadiusUserDelJob.perform_later(username)
     end
   end
 end

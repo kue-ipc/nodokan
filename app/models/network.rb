@@ -261,7 +261,7 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet4
-    if dhcp && ipv4_network
+    if !destroyed? && dhcp && ipv4_network
       KeaSubnet4AddJob.perform_later(self)
     else
       KeaSubnet4DelJob.perform_later(self)

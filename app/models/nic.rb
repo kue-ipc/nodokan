@@ -43,6 +43,7 @@ class Nic < ApplicationRecord
   normalize_attribute :ipv4_address
   normalize_attribute :ipv6_address
 
+  before_update :old_nic
   after_commit :radius_mac, :kea_reservation
 
   def mac_address_gl
@@ -160,7 +161,7 @@ class Nic < ApplicationRecord
 
   def old_nic
     if persisted?
-      @old_nic ||= id && Nic.find(id)
+      @old_nic ||= Nic.find(id)
     else
       @old_nic
     end
@@ -262,21 +263,23 @@ class Nic < ApplicationRecord
 
   def radius_mac
     if mac_address_data.present?
-      if auth
+      if !destroyed? && auth
         RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
       else
         RadiusMacDelJob.perform_later(mac_address_raw)
       end
     end
 
+    # rubocop:disable Style/GuardClause
     if old_nic&.mac_address_data.present? && old_nic.mac_address_data != mac_address_data
       RadiusMacDelJob.perform_later(old_nic.mac_address_raw)
     end
+    # rubocop:enable Style/GuardClause
   end
 
   def kea_reservation
     if mac_address_data.present?
-      if ipv4_reserved? && ipv4_data.present? && network&.dhcp
+      if !destroyed? && ipv4_reserved? && ipv4_data.present? && network&.dhcp
         KeaReservation4AddJob.perform_later(mac_address_data, ipv4.to_i, network.id)
       else
         KeaReservation4DelJob.perform_later(mac_address_data)
@@ -288,7 +291,7 @@ class Nic < ApplicationRecord
     end
 
     if duid_data.present?
-      if ipv6_reserved? && ipv6_data.present? && network&.dhcp
+      if !destroyed? && ipv6_reserved? && ipv6_data.present? && network&.dhcp
         KeaReservation6AddJob.perform_later(duid_data, ipv6_address, network.id)
       else
         KeaReservation6DelJob.perform_later(duid_data)
