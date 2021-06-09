@@ -21,5 +21,12 @@ module Kea
 
     has_many :dhcp4_servers,
       through: :dhcp4_subnet_servers
+
+
+    def name
+      subnet_prefix
+    end
+
+    alias to_s name
   end
 end

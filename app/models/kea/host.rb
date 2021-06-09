@@ -13,5 +13,13 @@ module Kea
       inverse_of: :hosts
 
     has_one :ipv6_reservation, primary_key: 'host_id', dependent: :destroy
+
+    def name
+      dhcp_identifier.unpack('C*').map { |n| '%02X' % n }.join('-')
+    end
+
+    def ipv4_address_str
+      IPAddress::IPv4.parse_u32(ipv4_address).to_s
+    end
   end
 end

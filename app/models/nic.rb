@@ -110,7 +110,7 @@ class Nic < ApplicationRecord
   end
 
   def duid_list
-    @duid_list ||= duid_data.presence&.unpack('C2' * duid_data.size) || []
+    @duid_list ||= duid_data.presence&.unpack('C*') || []
   end
 
   def duid(char_case: Settings.config.duid_style.char_case,
