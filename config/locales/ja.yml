@@ -177,15 +177,15 @@ ja:
       【未登録】「編集」を押してOSを登録してください。
     node_unregistered_nics: |
       【未登録】「編集」を押してNICを登録してください。
-    node_confirmaiton_unconfirmed: |
+    node_confirmation_unconfirmed: |
       端末が未確認です。「確認」を押して、端末の現状について確認を行ってください。
-    node_confirmaiton_expired: |
+    node_confirmation_expired: |
       有効期限が切れました。「確認」を押して、端末の現状について確認を行ってください。
-    node_confirmaiton_unapproved: |
+    node_confirmation_unapproved: |
       問題または不明な部分があります。問題を解決後に、「確認」を押して、端末の現状について確認を行ってください。
-    node_confirmaiton_expiring_soon: |
+    node_confirmation_expiring_soon: |
       まもなく有効期限が切れます。有効期限までに「確認」を押して、端末の現状について確認を行ってください。
-    node_confirmaiton_expiration_date: |
+    node_confirmation_expiration_date: |
       (%{date}まで有効)
     node_abandoned: |
       【廃棄済み】廃棄した端末は「削除」ボタンから削除してください。
@@ -198,17 +198,17 @@ ja:
     node_unknown: |
       【状態不明】わからない状態を放置せずに、端末の状態を確認してください。
       どうしてもわからない場合は、存在しないとして、端末を削除してください。
-    confirmaiton_approved: |
+    confirmation_approved: |
       確認が完了し、端末に問題がないと承認されました。
       確認の有効期間は396日間です。
       約一年後に再度確認を実施してください。
-    confirmaiton_unapproved: |
+    confirmation_unapproved: |
       確認は完了しましたが、
       確認内容または登録内容に問題または不明な部分があるため、
       承認されませんでした。
       確認の有効期間は30日間です。
       指摘事項を修正し、一ヶ月以内に再度確認を実施してください。
-    node_confirmaiton_unknown: |
+    node_confirmation_unknown: |
       【一部状態不明】不明な項目があります。
       わからない状態を放置せずに、端末の状態を確認してください。
       どうしてもわからない場合は、管理者までお問い合わせください。

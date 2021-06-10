@@ -51,9 +51,9 @@ class ConfirmationsController < ApplicationController
     @confirmation.check_and_approve!
     if @confirmation.save
       if @confirmation.approved
-        flash[:notice] = t('messages.confirmaiton_approved')
+        flash[:notice] = t('messages.confirmation_approved')
       else
-        flash[:alert] = t('messages.confirmaiton_unapproved')
+        flash[:alert] = t('messages.confirmation_unapproved')
       end
     else
       flash[:alert] = '確認の処理に失敗しました。再度実行し直してください。'

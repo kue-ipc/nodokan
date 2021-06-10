@@ -79,26 +79,26 @@ dl
     - when :unconfirmed
       i.fas.fa-times-circle.text-danger
       =< t(:unconfirmed, scope: :messages)
-      .text-danger = t('messages.node_confirmaiton_unconfirmed')
+      .text-danger = t('messages.node_confirmation_unconfirmed')
     - when :expired
       i.fas.fa-times-circle.text-danger
       =< l(confirmation.confirmed_at.to_date, format: :long)
       =< t(:expired, scope: :messages)
-      .text-danger = t('messages.node_confirmaiton_exired')
+      .text-danger = t('messages.node_confirmation_expired')
     - when :unapproved
       i.fas.fa-exclamation-triangle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      = t('messages.node_confirmaiton_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
+      = t('messages.node_confirmation_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:unapproved, scope: :messages)
       - case confirmation.existence
       - when 'existing'
-        .text-warning = t('messages.node_confirmaiton_unapproved')
+        .text-warning = t('messages.node_confirmation_unapproved')
         - if confirmation.content_problem?
           .text-danger = t('messages.node_content_problem')
         - if @node.operating_system.nil?
           .text-danger = t('messages.node_no_operating_system')
         - if confirmation.unknown?
-          .text-danger = t('messages.node_confirmaiton_unknown')
+          .text-danger = t('messages.node_confirmation_unknown')
         - if confirmation.os_update_problem?
           - if confirmation.os_update_eol?
             .text-danger = t('messages.node_os_eol')
@@ -135,13 +135,13 @@ dl
     - when :expire_soon
       i.fas.fa-exclamation-triangle.text-warning
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      = t('messages.node_confirmaiton_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
+      = t('messages.node_confirmation_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:expire_soon, scope: :messages)
-      .text-warning = t('messages.node_confirmaiton_expiring_soon')
+      .text-warning = t('messages.node_confirmation_expiring_soon')
     - when :approved
       i.fas.fa-check.text-success
       =<> l(confirmation.confirmed_at.to_date, format: :long)
-      = t('messages.node_confirmaiton_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
+      = t('messages.node_confirmation_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:approved, scope: :messages)
   = dt_dd_for @node, :note
   - if current_user.admin?
