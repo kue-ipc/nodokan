@@ -7,6 +7,8 @@ class SpecificNodeApplicationsController < ApplicationController
 
   def create
     @specific_node_application = SpecificNodeApplication.new(specific_node_application_params)
+    @specific_node_application.node_id = @node.id
+    @specific_node_application.user_id = current_user.id
     if @specific_node_application.valid?
       # TODO メーラー
       redirect_to @node, notice: '管理者に申請を送信しました。'
