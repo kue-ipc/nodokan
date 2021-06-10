@@ -251,10 +251,17 @@ class NodesController < ApplicationController
   # DELETE /nodes/1
   # DELETE /nodes/1.json
   def destroy
-    @node.destroy
     respond_to do |format|
-      format.html { redirect_to nodes_url, notice: 'Node was successfully destroyed.' }
-      format.json { head :no_content }
+      if @node.specific
+        format.html { redirect_to @node, alert: '特定端末は削除できません。特定端末の解除を申請してください。' }
+        format.json { render json: @node.errors, status: :unprocessable_entity }
+      elsif @node.destroy
+        format.html { redirect_to nodes_url, notice: '端末を削除しました。' }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to @node, alert: '端末の削除に失敗しました。' }
+        format.json { render json: @node.errors, status: :unprocessable_entity }
+      end
     end
   end
 
