@@ -79,14 +79,14 @@ specific_node_application:
         - out 443/tcp
     - name: 外部SSH直接アクセス (外部へのSSH)
       dns: false
-      external: nat
+      external: napt
       list:
         - out 22/tcp
     - name: >-
         外部メールサービス直接アクセス
         (外部へのSMTP Submission/SMTPS/POP3/POP3S/IMAP/IMAPS、ただしSMTP 25は除く)
       dns: false
-      external: nat
+      external: napt
       list:
         - out 587/tcp
         - out 465/tcp
@@ -104,3 +104,12 @@ specific_node_application:
     - name: VPN装置用直接アクセス
       external: direct
       list: []
+mailer:
+  options:
+    from: reply@example.jp
+  url_options:
+    host: nodokan.exapmle.jp
+admin:
+  username: admin
+  fullname: 管理者
+  email: admin@exapmle.jp

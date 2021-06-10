@@ -1,6 +1,7 @@
 class SpecificNodeApplication
   include ActiveModel::Model
   include ActiveModel::Attributes
+  include ActiveModel::Serialization
 
   attribute :node_id, :integer
   attribute :user_id, :integer
@@ -20,11 +21,11 @@ class SpecificNodeApplication
   validates :node_id, presence: true
   validates :user_id, presence: true
   validates :action, presence: true
-  
+
   validates :reason, presence: true, if: -> { action != 'destroy' }
   validates :rule_set, presence: true, if: -> { action != 'destroy' }
   validates :rule_list, presence: true, if: -> { rule_set == -1 }
   validates :external, presence: true, if: -> { action != 'destroy' }
-  validates :register_dns, presence: true, if: -> { action != 'destroy' }
+  validates :register_dns, inclusion: { in: [true, false] }, if: -> { action != 'destroy' }
   validates :fqdn, presence: true, if: -> { register_dns }
 end

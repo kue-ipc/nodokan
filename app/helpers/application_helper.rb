@@ -1,4 +1,8 @@
 module ApplicationHelper
+  def site_title
+    Settings.site.title || t(:nodokan)
+  end
+
   # traslation
   def t_enums(attr, model = nil)
     model_class =

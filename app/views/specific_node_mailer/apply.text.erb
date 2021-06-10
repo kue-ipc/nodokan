@@ -1,0 +1,50 @@
+<%= @user.fullname %> 様
+
+下記内容で特定端末の申請を行いました。
+
+---
+
+【申請者】
+ユーザー名: <%= @user.username %>
+Eメール: <%= @user.email %>
+フルネーム: <%= @user.fullname %>
+
+【申請対象】
+端末名: <%= @node.name %>
+ホスト名: <%= @node.hostname %>
+IPv4アドレス: <%= @node.nics.where.not(ipv4_data: nil).map(&:ipv4_address).join(' ') %> 
+IPv6アドレス: <%= @node.nics.where.not(ipv6_data: nil).map(&:ipv6_address).join(' ') %> 
+
+【申請内容】
+申請の種類: <% case @specific_node_application.action
+when 'create' then %>新規<%
+when 'update' then %>変更<%
+when 'destroy' then %>削除<%
+end %>
+申請理由: <% @specific_node_application.reason %>
+<% if @specific_node_application.action != 'destroy' %>
+アクセスルールセット:<% if @specific_node_application.rule_set >= 0 %>
+<%= Settings.specific_node_application.rules[@specific_node_application.rule_set].name %>
+<% else %>
+カスタムルール
+<% end %>
+外部接続: <% case @specific_node_application.external
+when 'none' then %>接続無し<%
+when 'nat' then %>NAT<%
+when 'napt' then %>NAPT (IPマスカレード)<%
+when 'through' then %>無変換<%
+when 'direct' then %>直接接続<%
+end %>
+アクセスルールリスト:
+<% @specific_node_application.rule_list %>
+DNS登録: <%= @specific_node_application.register_dns ? '有' : '無' %>
+FQDN (DNS登録に使用): <%= @specific_node_application.fqdn %>
+<% end %>
+備考:
+<% @specific_node_application.note %>
+
+---
+
+設定が完了後、管理者からメールが送られます。
+設定には時間がかかる場合があります。
+お急ぎの場合は、管理者に連絡してください。

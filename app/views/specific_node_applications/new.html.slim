@@ -3,23 +3,50 @@ h1 特定端末申請
 p
   | 申請対象:
   = link_to @node do
-    =< @node.name
-    =< @node.hostname
+    =<> @node.name
+    - if @node.hostname.present?
+      | -
+      =<> @node.hostname
+    | (
+    = @node.nics.find(&:ipv4_data)&.ipv4_address || @node.nics.find(&:ipv6_data)&.ipv6_address
+    | )
+
     - if @node.specific
       span.badge.badge-danger.ml-1
         = Node.human_attribute_name(:specific)
+
+p
+  | この画面で特定端末の申請を行います。
+  strong 特定端末の設定は即時反映ではありません。
+  | 管理者が申請を確認後、IPアドレスの割り当てやネットワークの設定を行います。
+  | 設定完了には数営業日かかる場合がありますので、急ぎの場合は予め管理者にご連絡ください。
+p
+  strong アクセスルールは必須です。
+  | どのようなアクセスルールが必要かわからない場合は、申請する事ができません。
+  | 管理者にご相談ください。
+
 - if @node.specific
   p
-    |
-      申請対象はすでに特定端末です。
-      申請内容によって設定は上書きされます。
-      ルールの追加を希望の場合は備考欄に詳細を記載してください。
+    | 申請対象の端末はすでに特定端末です。
+    | アクセスルール等は申請したものに上書きされます。
+  p
+    | ネットワーク設定の変更(IPアドレスや接続先の変更など)を希望する場合は、備考欄にその旨を記載してください。 
+  p
+    | この申請の「削除」により削除されるのは特定端末としての設定のみです。
+    | 端末自体は削除されません。
+    | 端末を削除するには、削除の申請を行った後、通常の端末画面で削除してください。
+hr
 
 = bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
-  - if @node.specific
-    = f.hidden_field :action, value: :update
-  - else
-    = f.hidden_field :action, value: :create
+  = f.form_group :action, label: { text: '申請' } do
+    - if @node.specific
+      = f.radio_button :action, 'create', label: '新規', wrapper_class: 'form-check-inline', disabled: true
+      = f.radio_button :action, 'update', label: '変更', wrapper_class: 'form-check-inline', checked: true, required: true
+      = f.radio_button :action, 'destroy', label: '削除', wrapper_class: 'form-check-inline', required: true
+    - else
+      = f.radio_button :action, 'create', label: '新規', wrapper_class: 'form-check-inline', checked: true, required: true
+      = f.radio_button :action, 'update', label: '変更', wrapper_class: 'form-check-inline', disabled: true
+      = f.radio_button :action, 'destroy', label: '削除', wrapper_class: 'form-check-inline', disabled: true
 
   = f.text_field :reason, label: '申請理由 (端末の用途や目的など)', required: true
 
@@ -30,14 +57,14 @@ p
     = f.radio_button :rule_set, -1, label: 'カスタムルール (下記に詳細を記載)', required: true
 
   = f.select :external, [ \
-    ['無し', 'none'],
+    ['接続無し', 'none'],
     ['NAT', 'nat'],
     ['NAPT (IPマスカレード)', 'napt'],
-    ['変換なし', 'through'],
+    ['無変換', 'through'],
     ['直接接続', 'direct'],
   ], { include_blank: '(未選択)', label: '外部接続' }, required: true
 
-  = f.text_area :rule_list, label: 'ルールリスト', rows: 5
+  = f.text_area :rule_list, label: 'アクセスルールリスト', rows: 5
 
   = f.check_box :register_dns, label: 'DNS登録'
 
@@ -49,27 +76,11 @@ p
 
 = javascript_pack_tag 'specific-node-application', 'data-turbolinks-track': 'reload'
 
-/ , data: { list: rules.list }
-
-
-
-/ - specific_node_application_list(:rule)&.each do |message, value|
-/   = f.radio_button :rule, value, label: message
-
-/ = f.select :action, t_enums(:action, @specific_node_application),
-/            { wrapper: { class: 'col-md-4' } }, class: 'custom-select'
-/     = f.select :rule, t_enums(:rule, @specific_node_application),
-/                { wrapper: { class: 'col-md-4' } }, class: 'custom-select'
+hr
 
 h3 注意事項
 
-p
-  |
-    双方向と明記されていない場合は、外部とのアクセスは片方向のみになります。
-    学内
-
-h4 カスタムルールの書き方
-
-p
-  | カスタムルールの書き方
-  | 内 - 外　
+ul
+  li 双方向(both)と明記されていない場合は、外部とのアクセスは片方向のみになります。
+  li 直接接続はファイアウォールを介さないため、ルールは設定されません。
+  li FQDN

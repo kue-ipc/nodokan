@@ -1,9 +1,22 @@
 # specific node application
 
+actionRadioMap = new Map
+for el in document.getElementsByName('specific_node_application[action]')
+  actionRadioMap.set(el.value, el)
+
+reasonText = document.getElementById('specific_node_application_reason')
+
+ruleSetRadioMap = new Map
+for el in document.getElementsByName('specific_node_application[rule_set]')
+  ruleSetRadioMap.set(el.value, el)
+
 externalSelect = document.getElementById('specific_node_application_external')
+
 ruleListTextArea = document.getElementById('specific_node_application_rule_list')
+
 registerDnsCheckBox = document.getElementById('specific_node_application_register_dns')
-fqdnInput = document.getElementById('specific_node_application_fqdn')
+
+fqdnText = document.getElementById('specific_node_application_fqdn')
 
 labelFor = (el) ->
   document.querySelector("label[for=\"#{el.id}\"]")
@@ -18,8 +31,37 @@ unsetRequired = (list...) ->
     el.required = false
     labelFor(el)?.classList?.remove('required')
 
-modifyRuleList = (el) ->
-  if el.checked
+setDisabled = (list...) ->
+  for el in list
+    el.disabled = true
+
+unsetDisabled = (list...) ->
+  for el in list
+    el.disabled = false
+
+checkAction = ->
+  if actionRadioMap.get('destroy').checked
+    setDisabled(
+      ruleSetRadioMap.values()...,
+      externalSelect,
+      ruleListTextArea,
+      registerDnsCheckBox,
+      fqdnText,
+    )
+  else
+    unsetDisabled(
+      ruleSetRadioMap.values()...,
+      externalSelect,
+      ruleListTextArea,
+      registerDnsCheckBox,
+      fqdnText,
+    )
+  checkRuleSet()
+
+checkRuleSet = ->
+  for el from ruleSetRadioMap.values()
+    continue unless el.checked
+
     if Number(el.value) >= 0
       for option in externalSelect.getElementsByTagName('option')
         if option.value == el.dataset.external
@@ -57,20 +99,36 @@ modifyRuleList = (el) ->
       setRequired(externalSelect, ruleListTextArea, registerDnsCheckBox)
 
     checkDns()
+    break
 
-for el in document.querySelectorAll('input[name="specific_node_application[rule_set]"]')
-  modifyRuleList(el)
-  el.addEventListener 'click', (e) ->
-    modifyRuleList(e.target)
+checkExternal = ->
+  if ['none', 'direct'].includes(externalSelect.value)
+    ruleListTextArea.value = ''
+    ruleListTextArea.readOnly = true
+    unsetRequired(ruleListTextArea)
+  else
+    ruleListTextArea.readOnly = false
+    setRequired(ruleListTextArea)
 
 checkDns = ->
   if registerDnsCheckBox.checked
-    setRequired(fqdnInput)
+    setRequired(fqdnText)
   else
-    unsetRequired(fqdnInput)
+    unsetRequired(fqdnText)
 
-checkDns()
+for el from actionRadioMap.values()
+  el.addEventListener 'click', ->
+    checkAction()
+
+for el from ruleSetRadioMap.values()
+  el.addEventListener 'click', ->
+    checkRuleSet()
+
+externalSelect.addEventListener 'click', ->
+  checkExternal()
 
 registerDnsCheckBox.addEventListener 'click', ->
   checkDns()
+
+checkAction()
 

@@ -10,12 +10,12 @@ class SpecificNodeApplicationsController < ApplicationController
     @specific_node_application.node_id = @node.id
     @specific_node_application.user_id = current_user.id
     if @specific_node_application.valid?
-      # TODO メーラー
-      redirect_to @node, notice: '管理者に申請を送信しました。'
+      SpecificNodeMailer.with(specific_node_application: @specific_node_application.serializable_hash).apply.deliver_later
+      redirect_to @node, notice: '特定端末申請を行いました。申請内容はメールをご確認ください。'
     else
       render :new
     end
-end
+  end
 
   private def set_node
     @node = Node.find(params[:node_id])
