@@ -9,7 +9,7 @@ class SpecificNodeMailer < ApplicationMailer
     @specific_node_application = SpecificNodeApplication.new(params[:specific_node_application])
     @user = User.find(@specific_node_application.user_id)
     @node = Node.find(@specific_node_application.node_id)
-    mail subect: '特定端末申請', to: @user.email, bcc: Settings.admin_email
+    mail subject: '特定端末申請', to: @user.email, bcc: Settings.admin_email
   end
 
   # Subject can be set in your I18n file at config/locales/en.yml
