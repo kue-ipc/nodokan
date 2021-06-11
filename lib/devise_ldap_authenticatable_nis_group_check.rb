@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# devise_ldap_authenticatable_nis_group_check.rb v0.1.2 2021-06-08
+# devise_ldap_authenticatable_nis_group_check.rb v0.1.3 2021-06-11
 
 # RFC 2307 LDAP as a NIS
 # setting: config.ldap_nis_group_check
@@ -81,7 +81,7 @@ module Devise
           DeviseLdapAuthenticatable::Logger.send("User #{dn} is included in nis group: #{group_name}")
         end
 
-        DeviseLdapAuthenticatable::Logger.send("User #{dn} is not in nis group: #{group_name}") unless in_group
+        # DeviseLdapAuthenticatable::Logger.send("User #{dn} is not in nis group: #{group_name}") unless in_group
 
         in_group
       end
