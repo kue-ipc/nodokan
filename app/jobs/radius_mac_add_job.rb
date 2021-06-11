@@ -2,6 +2,13 @@ class RadiusMacAddJob < ApplicationJob
   queue_as :default
 
   def perform(mac_address_raw, vlan)
+    if mac_address_raw !~ /\A[0-9a-f]{12}\z/
+      logger.error("Cannot add a invalid mac address to RADIUS: #{mac_address_raw}")
+      # TODO
+      # 管理者に通知を送る。
+      return
+    end
+
     username = mac_address_raw
 
     # 設定されていなければ、usernameと同じにする。

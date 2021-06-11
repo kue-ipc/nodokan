@@ -4,78 +4,74 @@ class UsersSyncJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    counter = sync_users
-    logger.info("UsersSyncJob: #{counter.to_json}")
+    list = sync_users
+    logger.info("Result: #{list.transform_values(&:size).to_json}")
   end
 
   private def sync_users
-    counter = {
-      create: 0,
-      update: 0,
-      undelete: 0,
-      delete: 0,
-      error: 0,
-      skip: 0,
+    list = {
+      create: Set.new,
+      update: Set.new,
+      delete: Set.new,
+      return: Set.new,
+      error: Set.new,
+      skip: Set.new,
     }
 
     # 既存ユーザーの確認
-    registerd_users = Set.new
     User.where(deleted: false).each do |user|
       if user.authorizable?
-        logger.debug("ユーザーをLDAPと同期: #{user.username}")
+        logger.debug("Update, sync LDAP: #{user.username}")
         user.sync_ldap!
-        registerd_users << user.username
-        counter[:update] += 1
+        list[:update].add(user.username)
       else
-        logger.info("ユーザーを削除済みとマーク: #{user.username}")
+        logger.info("Delete, mark deleted: #{user.username}")
         user.deleted = true
-        counter[:delete] += 1
+        list[:delete].add(user.username)
       end
       user.save!
     rescue StandardError => e
-      logger.error("ユーザーのLDAP同期に失敗: #{user.username} - #{e}")
-      counter[:error] += 1
+      logger.error("Failed to check an existing user: #{user.username} - #{e.message}")
+      logger.error(e.full_message)
+      list[:error].add(user.username)
+      list[:update].delete(user.username)
+      list[:delete].delete(user.username)
     end
 
     # 新規ユーザーの確認
     Devise::LDAP::Adapter.get_login_list.each do |username|
-      if registerd_users.include?(username)
-        logger.debug("登録済み: #{username}")
-        next
-      end
+      next if list[:update].include?(username) || list[:delete].include?(username)
 
       unless Devise::LDAP::Adapter.authorizable?(username)
         # 対象外
-        counter[:skip] += 1
+        list[:skip].add(username)
         next
       end
 
       # 削除済みユーザーの復活
       if (user = User.find_by(username: username))
+        logger.info("Return, sync LDAP and unmark deleted: #{username}")
         user.sync_ldap!
         user.deleted = false
-        user.save
-        logger.info("再登録完了: #{username}")
-        counter[:undelete] += 1
+        user.save!
+        list[:return].add(username)
         next
       end
 
       # 新規ユーザー
+      logger.info("Create: #{username}")
       user = User.new(username: username)
       user.ldap_before_save
+      user.save!
+      list[:create].add(username)
 
-      unless user.save
-        logger.error("登録エラー: #{username}")
-        counter[:error] += 1
-        next
-      end
-
-      logger.info("登録完了: #{username}")
-      counter[:create] += 1
     rescue StandardError => e
-      logger.error("ユーザーの登録に失敗: #{username} - #{e}")
-      counter[:error] += 1
+      logger.error("Failed to create a user: #{username} - #{e.message}")
+      list[:error].add(username)
+      list[:create].delete(username)
+      list[:return].delete(username)
     end
-    counter
+
+    list
   end
 end
