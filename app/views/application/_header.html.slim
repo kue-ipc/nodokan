@@ -1,6 +1,6 @@
 header.mb-2
   nav.navbar.navbar-expand-sm.navbar-light.bg-light
-    = link_to t(:nodokan), root_path, class: 'navbar-brand'
+    = link_to site_title, root_path, class: 'navbar-brand'
     - if user_signed_in?
       buttn.navbar-toggler(
         type="button"
@@ -25,7 +25,12 @@ header.mb-2
         ul.navbar-nav
           - if current_user.admin?
             li.nav-item
-              = link_to t('pages.admin'), rails_admin_path, class: 'btn btn-outline-danger my-2 my-sm-0 mr-1'
+              = link_to t('pages.admin'), rails_admin_path, class: 'btn btn-outline-danger my-2 my-sm-0 mr-1',
+                target: '_blank'
+
+            li.nav-item
+              = link_to t('pages.job'), delayed_job_web_path, class: 'btn btn-outline-secondary my-2 my-sm-0 mr-1',
+                target: '_blank'
           li.nav-item.px-1
             span.navbar-text.mx-1
               = link_to current_user.username, '/user'

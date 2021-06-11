@@ -95,18 +95,18 @@ specific_node_application:
         - out 143/tcp
         - out 993/tcp
     - name: テレビ会議システム用双方向フリーアクセス
+      dns: false
       external: through
       list:
-        - in */tcp
-        - in */udp
-        - out */tcp
-        - out */udp
+        - both */tcp
+        - both */udp
     - name: VPN装置用直接アクセス
+      dns: true
       external: direct
       list: []
 mailer:
   options:
-    from: reply@example.jp
+    from: no-reply@example.jp
   url_options:
     host: nodokan.exapmle.jp
 admin:

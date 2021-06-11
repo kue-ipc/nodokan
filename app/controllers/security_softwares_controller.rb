@@ -7,7 +7,7 @@ class SecuritySoftwaresController < ApplicationController
       :per,
       :target,
       :format,
-      order: [:id, :os_category_id, :installation_method, :name, :confirmation_count],
+      order: [:id, :os_category_id, :installation_method, :name, :confirmations_count],
       condition: [:os_category_id, :installation_method, :name],
     )
 
