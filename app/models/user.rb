@@ -15,15 +15,9 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :nullify
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments,
-    -> { where(auth: true) },
-    class_name: 'Assignment', inverse_of: :user
-  has_many :use_assignments,
-    -> { where(use: true) },
-    class_name: 'Assignment', inverse_of: :user
-  has_many :manage_assignments,
-    -> { where(manage: true) },
-    class_name: 'Assignment', inverse_of: :user
+  has_many :auth_assignments, -> { where(auth: true) }, class_name: 'Assignment', inverse_of: :user
+  has_many :use_assignments, -> { where(use: true) }, class_name: 'Assignment', inverse_of: :user
+  has_many :manage_assignments, -> { where(manage: true) }, class_name: 'Assignment', inverse_of: :user
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network
@@ -136,6 +130,9 @@ class User < ApplicationRecord
     Devise::LDAP::Adapter.authorizable?(username)
   end
 
+  def node_creatable?
+  end
+
   def selectable_networks
     @selectable_networks ||=
       if admin?
@@ -149,12 +146,20 @@ class User < ApplicationRecord
     @auth_network ||= auth_networks&.first
   end
 
+  def auth_network_id
+    auth_network.id
+  end
+
+  def auth_network_id=(id)
+    self.auth_network = id && Network.find(id)
+  end
+
   def auth_network=(network)
     if network.nil?
       auth_assignments.each do |assignment|
-        assignment.auth = false
-        assignment.destroy unless assignment.assigned?
+        assignment.update(auth: false)
       end
+      @auth_network = nil
       return
     end
 
@@ -163,35 +168,30 @@ class User < ApplicationRecord
       return
     end
 
-    auth_assignments.each do |assignment|
-      assignment.auth = false
-      assignment.destroy unless assignment.assigned?
+    auth_assignments.where.not(network_id: network.id).find_each do |assignment|
+      assignment.update(auth: false)
     end
 
     @auth_network = network
     assignment = assignments.find_or_initialize_by(network: network)
-    assignment.auth = true
-    assignment.save
+    assignment.update(auth: true)
   end
 
-  def add_use_network(network)
+  def add_use_network(network, manage: false)
     assignment = assignments.find_or_initialize_by(network: network)
-    assignment.use = true
-    assignment.save
+    assignment.update(use: true, manage: manage)
   end
 
   def remove_use_network(network)
     assignment = use_assignments.find_by(network: network)
     return if assignment.nil?
 
-    assignment.use = false
-    assignment.destroy unless assignment.assigned?
+    assignment.update(use: false, manage: false)
   end
 
   def clear_use_networks
     use_assignments.each do |assignment|
-      assignment.use = false
-      assignment.destroy unless assignment.assigned?
+      assignment.update(use: false, manage: false)
     end
   end
 

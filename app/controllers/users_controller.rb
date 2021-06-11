@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :update]
-  before_action :set_network_user, only: [:create_network, :delete_network]
   before_action :authorize_user, only: [:index]
 
   def index
@@ -61,50 +60,27 @@ class UsersController < ApplicationController
   end
 
   def sync
+    # TODO
   end
 
-  def create_network
-    @user.use_networks << Network.find(params[:network_id])
-    respond_to do |format|
-      format.html { redirect_to @user, notice: 'ネットワークの紐付けを追加しました。' }
-      format.json { render :show, status: :ok, location: @user }
-    end
+  private def set_user
+    @user =
+      if params[:id]
+        User.includes(:auth_networks, :use_networks, :manage_networks).find(params[:id])
+      else
+        current_user
+      end
+    authorize @user
   end
 
-  def delete_network
-    @user.use_networks.delete(Network.find(params[:network_id]))
-    respond_to do |format|
-      format.html { redirect_to @user, notice: 'ネットワークの紐付けを解除しました。' }
-      format.json { head :no_content }
-    end
+  private def authorize_user
+    authorize User
   end
 
-  private
-
-    def set_user
-      @user =
-        if params[:id]
-          User.includes(:networks).find(params[:id])
-        else
-          current_user
-        end
-      authorize @user
-    end
-
-    def set_network_user
-      @user = User.includes(:networks).find(params[:id])
-      # ネットワークの追加や削除は更新と同じ
-      authorize @user, :update?
-    end
-
-    def authorize_user
-      authorize User
-    end
-
-    def user_params
-      params.require(:user).permit(
-        :role,
-        :auth_network_ids,
-      )
-    end
+  private def user_params
+    params.require(:user).permit(
+      :role,
+      :auth_network_id,
+    )
+  end
 end

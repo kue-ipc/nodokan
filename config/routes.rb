@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'use_networks/create'
+  get 'use_networks/update'
+  get 'use_networks/destroy'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: 'pages#top'
   get 'about', to: 'pages#about'
@@ -25,10 +28,11 @@ Rails.application.routes.draw do
     end
     # resources :networks, only: [:create, :destroy], controller: 'user_networks'
 
-    member do
-      post 'networks', to: 'users#create_network', as: 'networks'
-      delete 'networks/:network_id', to: 'users#delete_network', as: 'network'
-    end
+    resources :use_networks, only: [:create, :update, :destroy]
+    # member do
+    #   post 'networks', to: 'users#create_network', as: 'networks'
+    #   delete 'networks/:network_id', to: 'users#delete_network', as: 'network'
+    # end
   end
 
   resource :user, only: [:show]

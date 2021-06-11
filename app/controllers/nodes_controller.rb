@@ -128,6 +128,10 @@ class NodesController < ApplicationController
       user: current_user,
     )
     authorize @node
+
+    if current_user.selectable_networks.count.zero?
+      redirect_to root_path, alert: 'あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。'
+    end
   end
 
   # GET /nodes/1/edit

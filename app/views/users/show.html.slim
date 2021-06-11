@@ -3,20 +3,15 @@
     = User.model_name.human
     =< t('actions.information')
 
-dl.row
-  dt.col-md-5 = User.human_attribute_name(:username)
-  dd.col-md-5
-    = @user.username
+dl
+  = dt_dd_for @user, :username do |username|
+    = username
     - if @user.deleted
-      | (
-      = User.human_attribute_name(:deleted)
-      | )
-  dt.col-md-5 = User.human_attribute_name(:email)
-  dd.col-md-5 = @user.email
-  dt.col-md-5 = User.human_attribute_name(:fullname)
-  dd.col-md-5 = @user.fullname
-  dt.col-md-5 = User.human_attribute_name(:role)
-  dd.col-md-5
+      span.badge.badge-danger.ml-1
+        = User.human_attribute_name(:deleted)
+  = dt_dd_for @user, :email
+  = dt_dd_for @user, :fullname
+  = dt_dd_for @user, :role do |role|
     - if current_user.admin?
       = bootstrap_form_for @user, layout: :inline do |f|
         = f.select :role, t_enums(:roles),
@@ -25,17 +20,16 @@ dl.row
         = f.submit '変更', class: 'btn btn-warning ml-1',
           disabled: current_user == @user
     - else
-      = t_enum(@user.role, :roles)
-  dt.col-md-5 = User.human_attribute_name(:auth_network)
-  dd.col-md-5
+      = t_enum(role, :roles)
+  = dt_dd_for @user, :auth_network do |auth_network|
     - if current_user.admin?
       = bootstrap_form_for @user, layout: :inline do |f|
-        = f.collection_select :auth_network_ids, Network.where(auth: true), :id, :name_vlan,
+        = f.collection_select :auth_network_id, Network.where(auth: true), :id, :name_vlan,
           { include_blank: t('values.none'), hide_label: true },
           {}
         = f.submit '変更', class: 'btn btn-warning ml-1'
     - else
-      = @user.auth_network&.name_vlan || t('values.none')
+      = auth_network&.name_vlan || t('values.none')
 
 h4 = User.human_attribute_name(:networks)
 
@@ -47,26 +41,37 @@ h4 = User.human_attribute_name(:networks)
       tr
         th scope="col" = Network.human_attribute_name(:name)
         th scope="col" = Network.human_attribute_name(:vlan)
-        th scope="col" = Network.human_attribute_name(:auth)
         th scope="col" = Network.human_attribute_name(:ipv4_network)
         th scope="col" = Network.human_attribute_name(:ipv6_network)
-        th scope="col"
+        th scope="col" = Assignment.human_attribute_name(:manage)
+        - if current_user.admin?
+          th scope="col"
+            | 操作
     tbody
       - @user.use_networks.each do |network|
-        tr.clickable-row data-href="#{network_path(network)}"
-          td = network.name
-          td = network.vlan
+        tr
           td
-            - if network.auth
-              i.far.fa-check-square
-            - else
-              i.far.fa-square
+            = link_to network.name, network_path(network)
+          td = network.vlan
           td = network.ipv4_network&.to_string
           td = network.ipv6_network&.to_string
+          td
+            - manage = @user.manage_networks.include?(network)
+            - if current_user.admin?
+              = link_to user_use_network_path(@user, network, params: {manage: !manage}), method: :patch
+                .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="クリックして変更"
+                  = check_box_tag "user_use_network_manage_#{network.id}", '1', manage, class: 'custom-control-input'
+                  = label_tag "user_use_network_manage_#{network.id}", '', class: 'custom-control-label'
+            - else
+              .custom-control.custom-switch
+                = check_box_tag "user_use_network_manage_#{network.id}", '1', manage, class: 'custom-control-input',
+                  disabled: true
+                = label_tag "user_use_network_manage_#{network.id}", '', class: 'custom-control-label'
+
           - if current_user.admin?
             td
               = link_to '解除',
-                network_user_path(@user, network),
+                user_use_network_path(@user, network),
                 data: { confirm: '本当に解除しますか？' },
                 method: :delete,
                 class: 'btn btn-danger'
@@ -76,13 +81,12 @@ h4 = User.human_attribute_name(:networks)
 - if current_user.admin?
   .mb-2
     - unregistered_networks = Network.where.not(id: @user.use_network_ids)
-    - if unregistered_networks.count.zero?
+    - unless unregistered_networks.exists?
       p 登録できるネットワークはありません
     - else
-      = bootstrap_form_tag url: networks_user_path(@user), layout: :inline do |f|
+      = bootstrap_form_tag url: user_use_networks_path(@user), layout: :inline do |f|
         = f.collection_select :network_id, unregistered_networks, :id, :name_vlan,
           { prompt: '選択してください。', hide_label: true },
-          { required: true }
+          { required: true, class: 'mr-2'}
+        = f.check_box :manage, label: '管理', custom: true
         = f.submit '追加', class: 'btn btn-primary ml-1'
-
-= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
