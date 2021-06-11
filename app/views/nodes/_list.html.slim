@@ -40,7 +40,12 @@ table.table.table-hover.table-sm
         data-contextmenu="contextmenu-node-#{node.id}"]
         - if current_user.admin?
           td.text-nowrap = node.user.username
-        td = node.name
+        td
+          = node.name
+          - if node.specific
+            span.badge.badge-danger.ml-1
+              = Node.human_attribute_name(:specific)
+
         td = node.hostname
         td = node.place&.room
         td = node.hardware&.product_name

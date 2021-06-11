@@ -20,8 +20,7 @@ p = t('forms.common.required_input')
       span.badge.badge-danger.ml-1
         = Node.human_attribute_name(:specific)
       small.text-muted<
-        |
-          この端末は管理者から特定端末として指定されています。
+        | この端末は特定端末として登録されています。
   .rounded.border.p-2.mb-2
     h4 = t('forms.node.place.title')
     small.text-muted = t('forms.node.place.help')
@@ -188,14 +187,19 @@ p = t('forms.common.required_input')
                 編集や削除はできません。
         - if nic_ro
           dl
-            = dt_dd_for nic_f.object, :interface_type
+            = dt_dd_for nic_f.object, :interface_type do |value|
+              = t_enum(value, :interface_types)
             = dt_dd_for nic_f.object, :name
             = dt_dd_for nic_f.object, :mac_address
+            = dt_dd_for nic_f.object, :auth
             = dt_dd_for nic_f.object, :network, &:name
-            = dt_dd_for nic_f.object, :ipv4_config
+            = dt_dd_for nic_f.object, :ipv4_config do |value|
+              = t_enum(value, :ipv4_configs)
             = dt_dd_for nic_f.object, :ipv4_address
-            = dt_dd_for nic_f.object, :ipv6_config
+            = dt_dd_for nic_f.object, :ipv6_config do |value|
+              = t_enum(value, :ipv6_configs)
             = dt_dd_for nic_f.object, :ipv6_address
+            = dt_dd_for nic_f.object, :duid
         - else
           = nic_f.check_box :_destroy, custom: true,
               label: 'このINCを削除する'

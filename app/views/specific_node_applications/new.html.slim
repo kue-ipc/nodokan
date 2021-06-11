@@ -30,8 +30,6 @@ p
     | 申請対象の端末はすでに特定端末です。
     | アクセスルール等は申請したものに上書きされます。
   p
-    | ネットワーク設定の変更(IPアドレスや接続先の変更など)を希望する場合は、備考欄にその旨を記載してください。 
-  p
     | この申請の「削除」により削除されるのは特定端末としての設定のみです。
     | 端末自体は削除されません。
     | 端末を削除するには、削除の申請を行った後、通常の端末画面で削除してください。
@@ -40,13 +38,15 @@ hr
 = bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
   = f.form_group :action, label: { text: '申請' } do
     - if @node.specific
-      = f.radio_button :action, 'create', label: '新規', wrapper_class: 'form-check-inline', disabled: true
-      = f.radio_button :action, 'update', label: '変更', wrapper_class: 'form-check-inline', checked: true, required: true
-      = f.radio_button :action, 'destroy', label: '削除', wrapper_class: 'form-check-inline', required: true
+      = f.radio_button :action, 'register', label: '登録', wrapper_class: 'form-check-inline', disabled: true
+      = f.radio_button :action, 'change', label: '変更', wrapper_class: 'form-check-inline', checked: true,
+        required: true
+      = f.radio_button :action, 'release', label: '解除', wrapper_class: 'form-check-inline', required: true
     - else
-      = f.radio_button :action, 'create', label: '新規', wrapper_class: 'form-check-inline', checked: true, required: true
-      = f.radio_button :action, 'update', label: '変更', wrapper_class: 'form-check-inline', disabled: true
-      = f.radio_button :action, 'destroy', label: '削除', wrapper_class: 'form-check-inline', disabled: true
+      = f.radio_button :action, 'register', label: '登録', wrapper_class: 'form-check-inline', checked: true,
+        required: true
+      = f.radio_button :action, 'change', label: '変更', wrapper_class: 'form-check-inline', disabled: true
+      = f.radio_button :action, 'release', label: '解除', wrapper_class: 'form-check-inline', disabled: true
 
   = f.text_field :reason, label: '申請理由 (端末の用途や目的など)', required: true
 
@@ -81,5 +81,8 @@ hr
 h3 注意事項
 
 ul
+  li 設定日を希望される場合は、備考欄にその旨を記入してください。
+  li ネットワーク設定の変更(IPアドレスや接続先の変更など)を希望する場合は、備考欄にその旨を記入してください。
   li 双方向(both)と明記されていない場合は、外部とのアクセスは片方向のみになります。
   li 直接接続はファイアウォールを介さないため、ルールは設定されません。
+  li ネットワーク構成上、申請通りのアクセススルールを提供できない場合があります。

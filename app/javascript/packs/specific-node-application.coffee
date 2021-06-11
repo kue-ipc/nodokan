@@ -40,7 +40,7 @@ unsetDisabled = (list...) ->
     el.disabled = false
 
 checkAction = ->
-  if actionRadioMap.get('destroy').checked
+  if actionRadioMap.get('release').checked
     setDisabled(
       ruleSetRadioMap.values()...,
       externalSelect,

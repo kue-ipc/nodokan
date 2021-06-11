@@ -275,15 +275,15 @@ button#confirm-form-modal-toggle.btn.btn-primary[
 hr
 h3 特定端末の申請
 
-p DNS登録や外部公開、外部との直接通信が必要な場合は、特定端末として申請する必要があります。
+p DNS登録、外部公開、外部との直接通信が必要な場合は、特定端末の申請を行う必要があります。
 
 - if @node.specific
   p
-    | この端末は特定端末です。変更や削除が必要な場合も、申請画面から申請を行ってください。
+    | この端末は特定端末です。「変更」や「解除」が必要な場合は、申請画面から申請を行ってください。
   = link_to '特定端末申請画面へ', new_node_specific_node_application_path(@node), class: 'btn btn-secondary'
 - elsif @node.confirmation&.status != :approved
   p
-    | この端末には確認において承認済みではないため、特定端末として申請することはできません。
+    | この端末は「確認」が「承認済み」ではないため、特定端末として申請することはできません。
     | 「確認」を実施し、端末の問題をすべて解決済みにしてください。
 - elsif @node.nics.all? { |nic| nic.ipv4_data.nil? && nic.ipv6_data.nil? }
   p
@@ -291,8 +291,6 @@ p DNS登録や外部公開、外部との直接通信が必要な場合は、特
     | ネットワークの設定で予約または固定を選択し、IPアドレスを割り当ててください。
 - else
   = link_to '特定端末申請画面へ', new_node_specific_node_application_path(@node), class: 'btn btn-secondary'
-
-
 
 hr
 =< link_to t(:back, scope: [:actions]), nodes_path

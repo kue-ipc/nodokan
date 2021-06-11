@@ -17,9 +17,9 @@ IPv6アドレス: <%= @node.nics.where.not(ipv6_data: nil).map(&:ipv6_address).j
 
 【申請内容】
 申請の種類: <% case @specific_node_application.action
-when 'create' then %>新規<%
-when 'update' then %>変更<%
-when 'destroy' then %>削除<%
+when 'register' then %>登録<%
+when 'change' then %>変更<%
+when 'release' then %>解除<%
 end %>
 申請理由: <% @specific_node_application.reason %>
 <% if @specific_node_application.action != 'destroy' %>
