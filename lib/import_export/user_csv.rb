@@ -32,7 +32,7 @@ module ImportExport
       row['role'] = user.role
       row['deleted'] = user.deleted
       row['auth_network'] = user.auth_network&.identifier
-      row['networks'] = user.networks.map(&:identifier).join(' ').presence
+      row['networks'] = user.use_networks.map(&:identifier).join(' ').sort.presence
       row
     end
 

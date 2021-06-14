@@ -323,7 +323,7 @@ ja:
         use_users: 利用者
         manage_users: 管理者
         auth_users: 認証割当
-        nics_count: 利用数
+        nics_count: NIC数
         assignments_count: 割当数
       nic:
         node: 端末

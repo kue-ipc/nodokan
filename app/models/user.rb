@@ -147,7 +147,7 @@ class User < ApplicationRecord
   end
 
   def auth_network_id
-    auth_network.id
+    auth_network&.id
   end
 
   def auth_network_id=(id)
