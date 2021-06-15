@@ -113,16 +113,19 @@ module ImportExport
           room: row['place[room]'] || '',
         ),
         hardware: Hardware.find_or_initialize_by(
-          device_type: DeviceType.find_by(name: row['hardware[device_type]']),
+          device_type:
+            row['hardware[device_type]'].presence &&
+            DeviceType.find_by!(name: row['hardware[device_type]']),
           maker: row['hardware[maker]'] || '',
           product_name: row['hardware[product_name]'] || '',
           model_number: row['hardware[model_number]'] || '',
         ),
-        operating_system: row['operating_system[os_category]'].presence ||
-                          OperatingSystem.find_or_initialize_by(
-                            os_category: OperatingSystem.find_by(name: row['operating_system[os_category]']),
-                            name: row['operating_system[name]'] || '',
-                          ),
+        operating_system:
+          row['operating_system[os_category]'].presence &&
+            OperatingSystem.find_or_initialize_by(
+              os_category: OperatingSystem.find_by!(name: row['operating_system[os_category]']),
+              name: row['operating_system[name]'] || '',
+            ),
       )
 
       first_nic = node.nics.first
@@ -157,7 +160,7 @@ module ImportExport
       end
 
       # 一旦保存しないとidがなくてうまくいかない。
-      node.save
+      node.save! if node.id.nil?
       node.nics = new_nics
 
       node

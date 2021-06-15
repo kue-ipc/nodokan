@@ -94,6 +94,10 @@
 - name: スマートスピーカー
 - name: スマートディスプレイ
 - name: デジタルメディアプレーヤー
+- name: 電子看板
+  description: |
+    デジタルサイネージとも言われます。
+- name: プロジェクター
 
 - name: ルーター
   icon: <i class="fas fa-network-wired"></i>
