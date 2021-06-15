@@ -263,6 +263,7 @@ ja:
   activerecord:
     models:
       confirmation: 確認
+      device_type: 機器形態
       hardware: 機器
       ipv4_pool: IPv4プール
       ipv6_pool: IPv6プール
@@ -270,6 +271,7 @@ ja:
       nic: NIC
       node: 端末
       operating_system: OS
+      os_category: OS種別
       place: 設置場所
       security_software: セキュリティソフト
       assignment: 割当
@@ -286,6 +288,12 @@ ja:
       security_software: セキュリティソフトウェア
       assignment: ユーザーネットワーク割り当て
     attributes:
+      device_type:
+        name: 形態名
+        icon: アイコン
+        order: 順序
+        locked: ロック
+        description: 説明
       hardware:
         device_type: 機器形態
         device_type_id: 機器形態
@@ -294,7 +302,7 @@ ja:
         model_number: 型番
         nodes_count: 端末数
       network:
-        name: 名前
+        name: ネットワーク名
         vlan: VLAN番号
         auth: 認証
         dhcp: DHCP
@@ -328,7 +336,7 @@ ja:
       nic:
         node: 端末
         number: No.
-        name: 名前
+        name: インターフェース名
         flags: フラグ
         locked: ロック
         auth: 認証
@@ -361,6 +369,11 @@ ja:
         user: 所有者
         user_id: 所有者
         specific: 特定
+      os_category:
+        name: 種別名
+        icon: アイコン
+        locked: ロック
+        description: 説明
       operating_system:
         os_category: OS種別
         os_category_id: OS種別
