@@ -63,8 +63,8 @@ class User < ApplicationRecord
   def ldap_before_save
     sync_ldap!
 
-    if User.count.zero?
-      # The first user is the admin, not allocate networks.
+    if Settings.admin.username == username
+      # Set admin, and not allocate networks.
       admin!
     elsif Settings.user_networks.present?
       Settings.user_networks.each do |net_config|
