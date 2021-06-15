@@ -123,7 +123,7 @@ module ImportExport
         operating_system:
           row['operating_system[os_category]'].presence &&
             OperatingSystem.find_or_initialize_by(
-              os_category: OperatingSystem.find_by!(name: row['operating_system[os_category]']),
+              os_category: OsCategory.find_by!(name: row['operating_system[os_category]']),
               name: row['operating_system[name]'] || '',
             ),
       )

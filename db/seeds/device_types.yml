@@ -98,6 +98,7 @@
   description: |
     デジタルサイネージとも言われます。
 - name: プロジェクター
+- name: ビデオ会議
 
 - name: ルーター
   icon: <i class="fas fa-network-wired"></i>
