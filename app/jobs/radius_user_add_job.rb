@@ -11,28 +11,23 @@ class RadiusUserAddJob < ApplicationJob
 
     # Auth-Typeを設定
     Radius::Radcheck.transaction do
-      radcheck = Radius::Radcheck.find_or_initialize_by(username: username)
-      radcheck.attr = 'Auth-Type'
-      radcheck.op = ':='
-      radcheck.value = 'LDAP'
-      radcheck.save!
+      params = { attr: 'Auth-Type', op: ':=', value: 'LDAP' }
+      Radius::Radcheck.find_or_create_by!(username: username, **params)
+      Radius::Radcheck.where(username: username).where.not(**params).destroy_all
     end
 
     # VLANを設定
     Radius::Radreply.transaction do
-      radreply = Radius::Radreply.find_or_initialize_by(username: username)
-      radreply.attr = 'Tunnel-Private-Group-Id'
-      radreply.op = ':='
-      radreply.value = vlan.to_s
-      radreply.save!
+      params = { attr: 'Tunnel-Private-Group-Id', op: ':=', value: vlan.to_s }
+      Radius::Radreply.find_or_create_by!(username: username, **params)
+      Radius::Radreply.where(username: username).where.not(**params).destroy_all
     end
 
     # グループを設定
     Radius::Radusergroup.transaction do
-      radusergroup = Radius::Radusergroup.find_or_initialize_by(username: username)
-      radusergroup.groupname = 'user'
-      radusergroup.priority = 1
-      radusergroup.save!
+      params = { groupname: 'user', priority: 1 }
+      Radius::Radusergroup.find_or_create_by!(username: username, **params)
+      Radius::Radusergroup.where(username: username).where.not(**params).destroy_all
     end
 
     logger.info("Added a user name to RADIUS: #{username} - #{vlan}")
