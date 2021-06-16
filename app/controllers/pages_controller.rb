@@ -8,12 +8,12 @@ class PagesController < ApplicationController
       return
     end
 
-    @need_confirm_count =
-      policy_scope(Node).includes(:confirmation)
-        .where.not(confirmations: Confirmation.all)
-        .or(policy_scope(Node).includes(:confirmation)
-          .where(confirmations: { expiration: Time.current.. }))
-        .count
+    # @need_confirm_count =
+    #   policy_scope(Node).includes(:confirmation)
+    #     .where.not(confirmations: Confirmation.all)
+    #     .or(policy_scope(Node).includes(:confirmation)
+    #       .where(confirmations: { expiration: Time.current.. }))
+    #     .count
     @networks = policy_scope(Network).all
 
     # flash[:alert] ||= []

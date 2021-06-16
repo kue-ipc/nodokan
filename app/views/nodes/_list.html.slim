@@ -26,10 +26,13 @@ table.table.table-hover.table-sm
         =< sort_link(:operating_system)
       th scope="col"
         = Nic.human_attribute_name(:ipv4_address)
+        =< sort_link(:ipv4_address)
       th scope="col"
         = Nic.human_attribute_name(:ipv6_address)
+        =< sort_link(:ipv6_address)
       th scope="col"
         = Nic.human_attribute_name(:mac_address)
+        =< sort_link(:mac_address)
       th scope="col"
         = Node.human_attribute_name(:confirmation)
 

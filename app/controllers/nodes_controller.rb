@@ -8,7 +8,8 @@ class NodesController < ApplicationController
     permitted_params = params.permit(
       :page, :per, :format,
       :query,
-      order: [:user, :name, :hostname, :domain, :place, :hardware, :operating_system],
+      order: [:user, :name, :hostname, :domain, :place, :hardware, :operating_system,
+              :ipv4_address, :ipv6_address, :mac_address],
       condition: [:user, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id],
     )
 
@@ -77,6 +78,12 @@ class NodesController < ApplicationController
         @nodes = @nodes.order("hardwares.product_name #{value}")
       when 'operating_system'
         @nodes = @nodes.order("operating_systems.name #{value}")
+      when 'ipv4_address'
+        @nodes = @nodes.order("nics.ipv4_data #{value}")
+      when 'ipv6_address'
+        @nodes = @nodes.order("nics.ipv6_data #{value}")
+      when 'mac_address'
+        @nodes = @nodes.order("nics.mac_address_data #{value}")
       end
     end
 

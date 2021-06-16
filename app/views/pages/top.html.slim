@@ -1,14 +1,14 @@
-- if @need_confirm_count.positive?
-  .alert.alert-danger.alertdismissible.fade.show role="alert"
-    strong
-      i.fas.fa-exclamation-triangle>
-      | 未確認または期限切れの端末が
-      =<> @need_confirm_count
-      | 台あります。
-    = link_to '要確認端末一覧', nodes_path(uc: 1)
-    | にアクセスし、確認を実施してください。
-    button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
-      span aria-hidden="true" &times;
+/ - if @need_confirm_count.positive?
+/   .alert.alert-danger.alertdismissible.fade.show role="alert"
+/     strong
+/       i.fas.fa-exclamation-triangle>
+/       | 未確認または期限切れの端末が
+/       =<> @need_confirm_count
+/       | 台あります。
+/     = link_to '要確認端末一覧', nodes_path(uc: 1)
+/     | にアクセスし、確認を実施してください。
+/     button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
+/       span aria-hidden="true" &times;
 
 h3 利用者メニュー
 
