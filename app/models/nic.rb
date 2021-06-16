@@ -3,7 +3,7 @@ class Nic < ApplicationRecord
   include Ipv6Config
 
   belongs_to :node, counter_cache: true
-  belongs_to :network, optional: true, counter_cache: true
+  belongs_to :network, counter_cache: true
 
   enum interface_type: {
     wired: 0,

@@ -131,7 +131,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
 
   create_table "nics", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "node_id", null: false
-    t.bigint "network_id"
+    t.bigint "network_id", null: false
     t.integer "number", limit: 1, null: false
     t.string "name"
     t.integer "interface_type", limit: 1, null: false

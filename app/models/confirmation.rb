@@ -67,7 +67,8 @@ class Confirmation < ApplicationRecord
 
   def os_update_ok?
     os_update_auto? ||
-      os_update_manual?
+      os_update_manual? ||
+      os_update_unnecessary?
   end
 
   def app_update_ok?

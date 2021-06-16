@@ -1,25 +1,19 @@
 h2 システム情報
 
-/ - if current_config&.contact_name&.size&.positive?
-/   h3 管理者の連絡先
-/   .row.my-1
-/     div class=col_name
-/       | 管理者:
-/     div class=col_value
-/       = current_config&.contact_name
-/   - if current_config&.contact_email&.size&.positive?
-/     .row.my-1
-/       div class=col_name
-/         | メールアドレス:
-/       div class=col_value
-/         = link_to current_config&.contact_email, "mailto:#{current_config&.contact_email}"
-/   - if current_config&.contact_phone&.size&.positive?
-/     .row.my-1
-/       div class=col_name
-/         | 電話番号:
-/       div class=col_value
-/         = current_config&.contact_phone
-/   hr
+h3 管理者の連絡先
+
+.row.my-1
+  div class=col_name
+    | 管理者:
+  div class=col_value
+    = Settings.admin.fullname
+.row.my-1
+  div class=col_name
+    | メールアドレス:
+  div class=col_value
+    = Settings.admin.email
+
+hr
 
 h3 のどかん (Nodokan)
 

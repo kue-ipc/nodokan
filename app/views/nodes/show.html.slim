@@ -211,9 +211,9 @@ button#confirm-form-modal-toggle.btn.btn-primary[
         - when 'static', 'manual'
           - ip_data = { \
             setting: '手動',
-            address: nic.ipv4_address.presence || t(empty),
-            netmask: nic.network.ipv4_netmask.presence || raw('&nbsp;'),
-            gateway: nic.network.ipv4_gateway.presence || raw('&nbsp;'),
+            address: nic.ipv4_address.presence || raw('&nbsp;'),
+            netmask: nic.network&.ipv4_netmask.presence || raw('&nbsp;'),
+            gateway: nic.network&.ipv4_gateway.presence || raw('&nbsp;'),
           }
         - when 'disabled'
           - ip_data = { \
@@ -247,9 +247,9 @@ button#confirm-form-modal-toggle.btn.btn-primary[
             - ip_data = { \
               setting: '手動',
               address: nic.ipv6_address.presence || raw('&nbsp;'),
-              prefix_length: nic.network.ipv6_prefix_length.presence || \
+              prefix_length: nic.network&.ipv6_prefix_length.presence || \
                             raw('&nbsp;'),
-              gateway: nic.network.ipv6_gateway.presence || raw('&nbsp;'),
+              gateway: nic.network&.ipv6_gateway.presence || raw('&nbsp;'),
             }
           - when 'disabled'
             - ip_data = { \

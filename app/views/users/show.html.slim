@@ -33,7 +33,7 @@ dl
 
 h4 = User.human_attribute_name(:networks)
 
-- if @user.networks.count.zero?
+- if @user.use_networks.count.zero?
   p ユーザーに紐付けられたネットワークはありません。
 - else
   table.table.table-hover.table-sm

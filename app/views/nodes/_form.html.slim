@@ -210,14 +210,14 @@ p = t('forms.common.required_input')
                             wrapper: { class: 'col-md-4' } },
                             class: 'custom-select', required: true
             = nic_f.text_field :name, wrapper: { class: 'col-md-8' }
-            - nic_networks = current_user.selectable_networks.dup
+            - nic_networks = current_user.selectable_networks.to_a
             - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
               - nic_networks << nic_f.object.network
             = nic_f.collection_select :network_id, nic_networks,
               :id, :name,
-              { include_blank: '(未接続)',
+              { prompt: '(選択してください。)',
               wrapper: { class: 'col-md-4' } },
-              class: 'custom-select'
+              class: 'custom-select', required: true
             = nic_f.text_field :mac_address,
               pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
               wrapper: { class: 'col-md-4' }

@@ -2,7 +2,7 @@ class CreateNics < ActiveRecord::Migration[6.0]
   def change
     create_table :nics do |t|
       t.references :node, null: false, foreign_key: true
-      t.references :network, foreign_key: true
+      t.references :network, null: false, foreign_key: true
 
       t.integer :number, null: false, limit: 1
       t.string  :name
