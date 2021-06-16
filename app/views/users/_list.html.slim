@@ -20,6 +20,9 @@ table.table.table-hover.table-sm
         =< filter_link(:deleted)
       th scope="col" = User.human_attribute_name(:auth_network)
       th scope="col" = User.human_attribute_name(:use_networks)
+      th scope="col"
+        = User.human_attribute_name(:nodes_count)
+        =< sort_link(:nodes_count)
   tbody
     - @users.each do |user|
       tr.clickable-row[
@@ -32,6 +35,7 @@ table.table.table-hover.table-sm
         td = i_bool_tag(user.deleted)
         td = user.auth_network&.identifier
         td = user.use_networks.map(&:identifier).join(', ')
+        td = user.nodes_count
 
 - list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
 - @users.each do |user|

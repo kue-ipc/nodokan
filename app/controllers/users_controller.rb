@@ -8,7 +8,7 @@ class UsersController < ApplicationController
       :per,
       :format,
       :query,
-      order: [:username, :email, :fullname, :role],
+      order: [:username, :email, :fullname, :role, :nodes_count],
       condition: [:username, :email, :fullname, :role, :deleted],
     )
 
