@@ -8,6 +8,7 @@ class NodesController < ApplicationController
     permitted_params = params.permit(
       :page, :per, :format,
       :query,
+      :search,
       order: [:user, :name, :hostname, :domain, :place, :hardware, :operating_system,
               :ipv4_address, :ipv6_address, :mac_address],
       condition: [:user, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id],
@@ -39,23 +40,43 @@ class NodesController < ApplicationController
         { query: "%#{@query}%" },
       )
 
-      # query_nics = Nic.where(
-      #   'name LIKE :query OR ' \
-      #   'ipv4_address LIKE :query OR ' \
-      #   'ipv6_address LIKE :query',
-      #   {query: "%#{@query}%"}
-      # )
+      query_nics = nil
+      begin
+        query_ip = IPAddress.parse(@query)
+        if query_ip.ipv4?
+          query_nics = Nic.where(ipv4_data: query_ip.data)
+        elsif query_ip.ipv6?
+          query_nics = Nic.where(ipv6_data: query_ip.data)
+        end
+      rescue ArgumentError
+        if @query =~ /\A\h{2}(?:[-:.]?\h{2}){5}\z/
+          query_mac = [@query.delete('-:')].pack('H12')
+          query_nics = Nic.where(mac_address_data: query_mac)
+        end
+      end
 
-      @nodes = @nodes
-        .where(
-          'name LIKE :query OR ' \
-          'hostname LIKE :query OR ' \
-          'domain LIKE :query',
-          { query: "%#{@query}%" },
-        )
-        .or(@nodes.where(place_id: query_places.map(&:id)))
-        .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
-      # .or(@nodes.where(nics: query_nics.map(&:id)))
+      if query_nics
+        @nodes = @nodes
+          .where(
+            'name LIKE :query OR ' \
+            'hostname LIKE :query OR ' \
+            'domain LIKE :query',
+            { query: "%#{@query}%" },
+          )
+          .or(@nodes.where(place_id: query_places.map(&:id)))
+          .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
+          .or(@nodes.where(nics: query_nics))
+      else
+        @nodes = @nodes
+          .where(
+            'name LIKE :query OR ' \
+            'hostname LIKE :query OR ' \
+            'domain LIKE :query',
+            { query: "%#{@query}%" },
+          )
+          .or(@nodes.where(place_id: query_places.map(&:id)))
+          .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
+      end
     end
 
     @nodes = @nodes.where(@condition) if @condition
