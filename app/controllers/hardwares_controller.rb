@@ -59,19 +59,12 @@ class HardwaresController < ApplicationController
 
     if other_hardware
       respond_to do |format|
-        if Node.update(@hardware.nodes_ids, hardware: other_hardware) &&
-           @hardware.destroy
-          format.html do
-            redirect_to other_hardware,
-              notice: '機器情報を統合しました。'
-          end
+        if Node.update(@hardware.nodes_ids, hardware: other_hardware) && @hardware.destroy
+          format.html { redirect_to other_hardware, notice: '同一の機器情報を統合しました。' }
           format.json { render :show, status: :ok, location: other_hardware }
         else
           format.html { render :edit }
-          format.json do
-            render json: @hardware.errors,
-              status: :unprocessable_entity
-          end
+          format.json { render json: @hardware.errors, status: :unprocessable_entity }
         end
       end
       return
@@ -79,17 +72,11 @@ class HardwaresController < ApplicationController
 
     respond_to do |format|
       if @hardware.save
-        format.html do
-          redirect_to @hardware,
-            notice: '機器情報を更新しました。'
-        end
+        format.html { redirect_to @hardware, notice: '機器情報を更新しました。' }
         format.json { render :show, status: :ok, location: other_hardware }
       else
         format.html { render :edit }
-        format.json do
-          render json: @hardware.errors,
-            status: :unprocessable_entity
-        end
+        format.json { render json: @hardware.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -100,6 +87,7 @@ class HardwaresController < ApplicationController
         format.html { redirect_to hardwares_url, alert: 'ロックされた機器は削除できません。' }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
+      return
     end
 
     @hardware.destroy
