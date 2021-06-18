@@ -175,12 +175,7 @@ class Nic < ApplicationRecord
     end
   end
 
-  def set_ipv4!
-    if same_old_nic?(:network_id, :ipv4_config)
-      self.ipv4_address = old_nic.ipv4_address
-      return true
-    end
-
+  def set_ipv4!(manageable = false)
     if network.nil?
       self.ipv4_address = nil
       return true
@@ -195,21 +190,43 @@ class Nic < ApplicationRecord
     when 'dynamic', 'disabled'
       self.ipv4_address = nil
     when 'reserved'
-      unless (ipv4 = network.next_ipv4('reserved'))
-        errors[:ipv4_config] << '予約用アドレスの空きがありません。'
-        return false
-      end
+      if manageable && ipv4_address.present?
+        # nothing
+      elsif same_old_nic?(:network_id, :ipv4_config)
+        self.ipv4_address = old_nic.ipv4_address
+      else
+        unless (ipv4 = network.next_ipv4('reserved'))
+          errors[:ipv4_config] << '予約用アドレスの空きがありません。'
+          return false
+        end
 
-      self.ipv4_address = ipv4.address
+        self.ipv4_address = ipv4.address
+      end
     when 'static'
-      unless (ipv4 = network.next_ipv4('static'))
-        errors[:ipv4_config] << '固定用アドレスの空きがありません。'
+      if manageable && ipv4_address.present?
+        # nothing
+      elsif same_old_nic?(:network_id, :ipv4_config)
+        self.ipv4_address = old_nic.ipv4_address
+      else
+        unless (ipv4 = network.next_ipv4('static'))
+          errors[:ipv4_config] << '固定用アドレスの空きがありません。'
+          return false
+        end
+
+        self.ipv4_address = ipv4.address
+      end
+    when 'manual'
+      if manageable
+        unless ipv4_address.blank?
+          errors[:ipv4_address] << '手動の場合はアドレスが必要です。'
+          return false
+        end
+      elsif same_old_nic?(:network_id, :ipv4_config)
+        self.ipv4_address = old_nic.ipv4_address
+      else
+        errors[:ipv4_config] << '管理者以外は手動に設定できません。'
         return false
       end
-
-      self.ipv4_address = ipv4.address
-    when 'manual'
-      # do nothing
     else
       errors[:ipv4_config] << '不正な設定です。'
       return false
@@ -218,12 +235,7 @@ class Nic < ApplicationRecord
     true
   end
 
-  def set_ipv6!
-    if same_old_nic?(:network_id, :ipv6_config)
-      self.ipv6_address = old_nic.ipv6_address
-      return true
-    end
-
+  def set_ipv6!(manageable = false)
     if network.nil?
       self.ipv6_address = nil
       return true
@@ -238,21 +250,43 @@ class Nic < ApplicationRecord
     when 'dynamic', 'disabled'
       self.ipv6_address = nil
     when 'reserved'
-      unless (ipv6 = network.next_ipv6('reserved'))
-        errors[:ipv6_config] << '予約用アドレスの空きがありません。'
-        return false
-      end
+      if manageable && ipv6_address.present?
+        # nothing
+      elsif same_old_nic?(:network_id, :ipv6_config)
+        self.ipv6_address = old_nic.ipv6_address
+      else
+        unless (ipv6 = network.next_ipv6('reserved'))
+          errors[:ipv6_config] << '予約用アドレスの空きがありません。'
+          return false
+        end
 
-      self.ipv6_address = ipv6.address
+        self.ipv6_address = ipv6.address
+      end
     when 'static'
-      unless (ipv6 = network.next_ipv6('static'))
-        errors[:ipv6_config] << '固定用アドレスの空きがありません。'
+      if manageable && ipv6_address.present?
+        # nothing
+      elsif same_old_nic?(:network_id, :ipv6_config)
+        self.ipv6_address = old_nic.ipv6_address
+      else
+        unless (ipv6 = network.next_ipv6('static'))
+          errors[:ipv6_config] << '固定用アドレスの空きがありません。'
+          return false
+        end
+
+        self.ipv6_address = ipv6.address
+      end
+    when 'manual'
+      if manageable
+        unless ipv6_address.blank?
+          errors[:ipv6_address] << '手動の場合はアドレスが必要です。'
+          return false
+        end
+      elsif same_old_nic?(:network_id, :ipv6_config)
+        self.ipv6_address = old_nic.ipv6_address
+      else
+        errors[:ipv6_config] << '管理者以外は手動に設定できません。'
         return false
       end
-
-      self.ipv6_address = ipv6.address
-    when 'manual'
-      # do nothing
     else
       errors[:ipv6_config] << '不正な設定です。'
       return false

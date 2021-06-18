@@ -181,14 +181,10 @@ class NodesController < ApplicationController
 
     number_count = 1
     @node.nics.each do |nic|
-      unless current_user.admin?
-        nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。' if nic.ipv4_config == 'manual'
-        nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。' if nic.ipv6_config == 'manual'
-      end
-
       nic.number = number_count
-      nic.set_ipv4!
-      nic.set_ipv6!
+      manageable = nic.network.manageable?(current_user)
+      nic.set_ipv4!(manageable)
+      nic.set_ipv6!(manageable)
 
       number_count += 1
     end
@@ -236,20 +232,10 @@ class NodesController < ApplicationController
 
     number_count = 1
     @node.nics.each do |nic|
-      unless current_user.admin?
-        if nic.ipv4_config == 'manual' &&
-           !same_old_nic?(:network_id, :ipv4_config)
-          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
-        end
-        if nic.ipv6_config == 'manual' &&
-           !same_old_nic?(:network_id, :ipv6_config)
-          nic.errors[:ipv4_config] << '管理者以外は手動に設定できません。'
-        end
-      end
-
       nic.number = number_count
-      nic.set_ipv4!
-      nic.set_ipv6!
+      manageable = nic.network.manageable?(current_user)
+      nic.set_ipv4!(manageable)
+      nic.set_ipv6!(manageable)
 
       number_count += 1
     end
