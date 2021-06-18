@@ -37,12 +37,17 @@ class Nic < ApplicationRecord
   validates :ipv4_address, allow_blank: true, ipv4: true
   validates :ipv6_address, allow_blank: true, ipv6: true
 
+  validates :ipv4_data, allow_nil: true, uniqueness: { case_sensitive: true }
+  validates :ipv6_data, allow_nil: true, uniqueness: { case_sensitive: true }
+  validates :mac_address_data, allow_nil: true, uniqueness: { case_sensitive: true }
+
   normalize_attribute :name
   normalize_attribute :mac_address
   normalize_attribute :duid
   normalize_attribute :ipv4_address
   normalize_attribute :ipv6_address
 
+  after_validation :replace_errors
   before_update :old_nic
   after_commit :radius_mac, :kea_reservation
 
@@ -348,5 +353,17 @@ class Nic < ApplicationRecord
           end
     format_str = [[hex] * list.size].join(sep || '')
     format_str % list
+  end
+
+  private def replace_errors
+    errors[:mac_address_data].each do |msg|
+      errors.add(:mac_address, msg)
+    end
+    errors[:ipv4_data].each do |msg|
+      errors.add(:ipv4_address, msg)
+    end
+    errors[:ipv6_data].each do |msg|
+      errors.add(:ipv6_address, msg)
+    end
   end
 end

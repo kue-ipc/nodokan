@@ -260,7 +260,10 @@ class NodesController < ApplicationController
         format.html { redirect_to @node, notice: '端末を更新しました。' }
         format.json { render :show, status: :ok, location: @node }
       else
-        format.html { render :edit }
+        format.html {
+          flash.now[:alert] = '端末更新に失敗しました。'
+          render :edit
+        }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
