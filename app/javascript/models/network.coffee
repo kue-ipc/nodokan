@@ -34,7 +34,7 @@ export default class Network extends ApplicationRecord
       ipv4_network_address, ipv4_prefix_length, ipv4_gateway_address,
       ipv6_network_address, ipv6_prefix_length, ipv6_gateway_address,
       ipv4_pools, ipv6_pools,
-      @selectable, @managable,
+      @current_user,
       props...}) ->
     super(props)
     @ipv4_network = if ipv4_network_address
@@ -66,7 +66,7 @@ export default class Network extends ApplicationRecord
   # disabledは常に設定可能
   availableIpConfig: (ip_version) ->
     # 選択不可の場合は選択肢なし
-    return [] unless @selectable
+    return [] unless @current_user.usable
 
     # ネットワークがない場合は disabled
     return ['disabled'] unless @[ip_version].network
@@ -74,7 +74,7 @@ export default class Network extends ApplicationRecord
     configs = new Set(pool.ip_config() for pool in @[ip_version].pools)
 
     # 管理可能な場合
-    if @managable
+    if @current_user.manageable
       configs.add('manual')
 
     configs.add('disabled')

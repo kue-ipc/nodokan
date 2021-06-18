@@ -210,7 +210,7 @@ p = t('forms.common.required_input')
                             wrapper: { class: 'col-md-4' } },
                             class: 'custom-select', required: true
             = nic_f.text_field :name, wrapper: { class: 'col-md-8' }
-            - nic_networks = current_user.selectable_networks.to_a
+            - nic_networks = current_user.usable_networks.to_a
             - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
               - nic_networks << nic_f.object.network
             = nic_f.collection_select :network_id, nic_networks,

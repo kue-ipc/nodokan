@@ -1,4 +1,6 @@
 json.partial! 'networks/network', network: @network
-json.auth_user @network.auth_users.exists?(current_user.id)
-json.selectable current_user.admin? || @network.use_users.exists?(current_user.id)
-json.managable current_user.admin? || @network.manage_users.exists?(current_user.id)
+json.current_user do
+  json.auth @network.auth?(current_user)
+  json.usable @network.usable?(current_user)
+  json.manageable @network.manageable?(current_user)
+end

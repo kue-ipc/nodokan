@@ -15,9 +15,9 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :nullify
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments, -> { where(auth: true) }, class_name: 'Assignment', inverse_of: :user
-  has_many :use_assignments, -> { where(use: true) }, class_name: 'Assignment', inverse_of: :user
-  has_many :manage_assignments, -> { where(manage: true) }, class_name: 'Assignment', inverse_of: :user
+  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: 'Assignment', inverse_of: :user
+  has_many :use_assignments, -> { where(use: true).readonly }, class_name: 'Assignment', inverse_of: :user
+  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: 'Assignment', inverse_of: :user
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network
@@ -130,18 +130,6 @@ class User < ApplicationRecord
     Devise::LDAP::Adapter.authorizable?(username)
   end
 
-  def node_creatable?
-  end
-
-  def selectable_networks
-    @selectable_networks ||=
-      if admin?
-        Network.all
-      else
-        use_networks
-      end
-  end
-
   def auth_network
     @auth_network ||= auth_networks&.first
   end
@@ -193,6 +181,24 @@ class User < ApplicationRecord
     use_assignments.each do |assignment|
       assignment.update(use: false, manage: false)
     end
+  end
+
+  def usable_networks
+    @usable_networks ||=
+      if admin?
+        Network.all.readonly
+      else
+        use_networks
+      end
+  end
+
+  def manageable_networks
+    @manageable_networks ||=
+      if admin?
+        Network.all.readonly
+      else
+        manage_networks
+      end
   end
 
   def radius_user

@@ -152,7 +152,7 @@ class NodeNic
     else
       node.value = ''
 
-    if !@network?.managable or ['dynamic', 'disabled'].includes(config)
+    if !@network?.current_user?.manageable || ['dynamic', 'disabled'].includes(config)
       node.disabled = true
     else
       node.disabled = false

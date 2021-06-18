@@ -19,12 +19,9 @@ class Network < ApplicationRecord
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments,
-    -> { where(auth: true) }, class_name: 'Assignment'
-  has_many :use_assignments,
-    -> { where(use: true) }, class_name: 'Assignment'
-  has_many :manage_assignments,
-    -> { where(manage: true) }, class_name: 'Assignment'
+  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: 'Assignment', inverse_of: :network
+  has_many :use_assignments, -> { where(use: true).readonly }, class_name: 'Assignment', inverse_of: :network
+  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: 'Assignment', inverse_of: :network
 
   has_many :users, through: :assignments
   has_many :auth_users, through: :auth_assignments, source: :user
@@ -278,6 +275,18 @@ class Network < ApplicationRecord
 
   def flag=(str)
     FLAGS.each { |attr, c| self[attr] = str.present? && str.include?(c) }
+  end
+
+  def auth?(user)
+    auth_users.exists?(user.id)
+  end
+
+  def usable?(user)
+    user.admin? || use_users.exists?(user.id)
+  end
+
+  def manageable?(user)
+    user.admin? || manage_users.exists?(user.id)
   end
 
   # class methods

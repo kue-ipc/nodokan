@@ -157,7 +157,7 @@ class NodesController < ApplicationController
     )
     authorize @node
 
-    if current_user.selectable_networks.count.zero?
+    if current_user.usable_networks.count.zero?
       redirect_to root_path, alert: 'あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。'
     end
   end
@@ -372,7 +372,9 @@ class NodesController < ApplicationController
         :duid,
         :network_id,
         :ipv4_config,
+        :ipv4_address,
         :ipv6_config,
+        :ipv6_address,
       ],
     )
 
