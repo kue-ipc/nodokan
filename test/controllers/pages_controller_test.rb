@@ -23,13 +23,13 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
   class SignInUser < PagesControllerTest
     setup do
-      sign_in users(:user01)
+      sign_in users(:user)
     end
 
     test 'should get root' do
       get root_url
       assert_response :success
-      assert_select 'span', 'user01'
+      assert_select 'span', 'user'
     end
 
     test 'should get about' do

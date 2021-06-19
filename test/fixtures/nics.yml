@@ -2,6 +2,7 @@
 
 desktop:
   node: desktop
+  number: 1
   network: client
   name: イーサネット
   interface_type: :wired
@@ -16,6 +17,7 @@ desktop:
 
 note:
   node: note
+  number: 1
   network: client
   name: Wi-Fi
   interface_type: :wireless
@@ -30,6 +32,7 @@ note:
 
 server:
   node: server
+  number: 1
   network: server
   name: 物理ネットワーク
   interface_type: :wired
@@ -44,6 +47,7 @@ server:
 
 server_ext:
   node: server
+  number: 2
   network: ext
   name: 外部ネットワーク
   interface_type: :wired

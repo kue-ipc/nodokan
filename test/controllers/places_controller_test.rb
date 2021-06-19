@@ -31,7 +31,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
 
   class SignInUser < PlacesControllerTest
     setup do
-      sign_in users(:user01)
+      sign_in users(:user)
     end
     test 'should get index' do
       get places_url
