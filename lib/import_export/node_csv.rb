@@ -82,7 +82,7 @@ module ImportExport
       row['place[building]'] = node.place&.building
       row['place[floor]'] = node.place&.floor
       row['place[room]'] = node.place&.room
-      row['hardware[device_type]'] = node.hardware&.device_type
+      row['hardware[device_type]'] = node.hardware&.device_type&.name
       row['hardware[maker]'] = node.hardware&.maker
       row['hardware[product_name]'] = node.hardware&.product_name
       row['hardware[model_number]'] = node.hardware&.model_number
