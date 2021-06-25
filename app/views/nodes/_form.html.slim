@@ -202,7 +202,7 @@ p = t('forms.common.required_input')
             = dt_dd_for nic_f.object, :duid
         - else
           = nic_f.check_box :_destroy, custom: true,
-              label: 'このINCを削除する'
+              label: 'このNICを削除する'
           .form-row.node-nic-form
             = nic_f.select :interface_type,
                             t_enums(:interface_types, Nic),
