@@ -213,9 +213,12 @@ class Confirmation < ApplicationRecord
       self.content = :unknown
       self.os_update = :unknown
       self.app_update = :unknown
+      self.security_software = nil
+    end
+
+    if security_software.nil?
       self.security_update = :unknown
       self.security_scan = :unknown
-      self.security_software = nil
     end
 
     self.approved = approvable?

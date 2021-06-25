@@ -56,6 +56,7 @@ class ConfirmationsController < ApplicationController
         flash[:alert] = t('messages.confirmation_unapproved')
       end
     else
+      logger.error("confirmation seve error: #{@confirmation.errors.to_json}")
       flash[:alert] = '確認の処理に失敗しました。再度実行し直してください。'
     end
 
