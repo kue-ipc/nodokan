@@ -193,69 +193,38 @@ button#confirm-form-modal-toggle.btn.btn-primary[
       | 番目のネットワーク [
       = t(nic.interface_type, scope: 'activerecord.enums.interface_types')
       | ]
-    - if nic.name.present?
-      |< (
-      = nic.name
-      | )
-    .row
-      .col-md-6
-        h4 IPv4
-        - case nic.ipv4_config
-        - when 'dynamic', 'reserved'
-          - ip_data = { \
-            setting: '自動',
-            address: '-',
-            netmask: '-',
-            gateway: '-',
-          }
-        - when 'static', 'manual'
-          - ip_data = { \
-            setting: '手動',
-            address: nic.ipv4_address.presence || raw('&nbsp;'),
-            netmask: nic.network&.ipv4_netmask.presence || raw('&nbsp;'),
-            gateway: nic.network&.ipv4_gateway.presence || raw('&nbsp;'),
-          }
-        - when 'disabled'
-          - ip_data = { \
-            setting: '無効',
-            address: '-',
-            netmask: '-',
-            gateway: '-',
-          }
-
-        dl.row.line
-          dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
-          dd.col-sm-6 = ip_data[:setting]
-          dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
-          dd.col-sm-6 = ip_data[:address]
-          dt.col-sm-6 = Network.human_attribute_name(:netmask)
-          dd.col-sm-6 = ip_data[:netmask]
-          dt.col-sm-6 = Network.human_attribute_name(:gateway)
-          dd.col-sm-6 = ip_data[:gateway]
-      - if Settings.config.ipv6
+      - if nic.name.present?
+        | (
+        = nic.name
+        | )
+    - if nic.nat?
+      p
+        |
+          NATはファイアウォールで設定されるため、端末に設定する必要はありません。
+    - else
+      .row
         .col-md-6
-          h4 IPv6
-          - case nic.ipv6_config
+          h4 IPv4
+          - case nic.ipv4_config
           - when 'dynamic', 'reserved'
             - ip_data = { \
               setting: '自動',
               address: '-',
-              prefix_length: '-',
+              netmask: '-',
               gateway: '-',
             }
           - when 'static', 'manual'
             - ip_data = { \
               setting: '手動',
-              address: nic.ipv6_address.presence || raw('&nbsp;'),
-              prefix_length: nic.network&.ipv6_prefix_length.presence || \
-                            raw('&nbsp;'),
-              gateway: nic.network&.ipv6_gateway.presence || raw('&nbsp;'),
+              address: nic.ipv4_address.presence || raw('&nbsp;'),
+              netmask: nic.network&.ipv4_netmask.presence || raw('&nbsp;'),
+              gateway: nic.network&.ipv4_gateway.presence || raw('&nbsp;'),
             }
           - when 'disabled'
             - ip_data = { \
               setting: '無効',
               address: '-',
-              prefix_length: '-',
+              netmask: '-',
               gateway: '-',
             }
 
@@ -264,10 +233,46 @@ button#confirm-form-modal-toggle.btn.btn-primary[
             dd.col-sm-6 = ip_data[:setting]
             dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
             dd.col-sm-6 = ip_data[:address]
-            dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
-            dd.col-sm-6 = ip_data[:prefix_length]
+            dt.col-sm-6 = Network.human_attribute_name(:netmask)
+            dd.col-sm-6 = ip_data[:netmask]
             dt.col-sm-6 = Network.human_attribute_name(:gateway)
             dd.col-sm-6 = ip_data[:gateway]
+        - if Settings.config.ipv6
+          .col-md-6
+            h4 IPv6
+            - case nic.ipv6_config
+            - when 'dynamic', 'reserved'
+              - ip_data = { \
+                setting: '自動',
+                address: '-',
+                prefix_length: '-',
+                gateway: '-',
+              }
+            - when 'static', 'manual'
+              - ip_data = { \
+                setting: '手動',
+                address: nic.ipv6_address.presence || raw('&nbsp;'),
+                prefix_length: nic.network&.ipv6_prefix_length.presence || \
+                              raw('&nbsp;'),
+                gateway: nic.network&.ipv6_gateway.presence || raw('&nbsp;'),
+              }
+            - when 'disabled'
+              - ip_data = { \
+                setting: '無効',
+                address: '-',
+                prefix_length: '-',
+                gateway: '-',
+              }
+
+            dl.row.line
+              dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
+              dd.col-sm-6 = ip_data[:setting]
+              dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
+              dd.col-sm-6 = ip_data[:address]
+              dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
+              dd.col-sm-6 = ip_data[:prefix_length]
+              dt.col-sm-6 = Network.human_attribute_name(:gateway)
+              dd.col-sm-6 = ip_data[:gateway]
 
   - if Settings.additional_messages.nic_setting
     p = Settings.additional_messages.nic_setting
