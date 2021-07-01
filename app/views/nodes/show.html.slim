@@ -172,14 +172,16 @@ button#confirm-form-modal-toggle.btn.btn-primary[
 
 - if @node.confirmation.transferable?
   hr
-  h3 所有の譲渡
+  h3 管理の譲渡
   p
     |
-      端末の所有者(管理者)ではない場合は、本来の所有者に譲渡してください。
-      譲渡先ユーザーのアカウント名のみを入力してください。
+      端末の所有者(管理者)ではない場合は、本来の所有者に管理を譲渡してください。
+      譲渡先ユーザーのユーザー名を入力してください。
 
-  = bootstrap_form_with url: transfer_node_path(@node), class: 'form-inline' do |f|
+  = bootstrap_form_with url: transfer_node_path(@node) do |f|
     = f.text_field :username, label: 'ユーザー名', label_class: 'mr-1'
+    = f.text_area :note, label: '備考 (下記のメッセージを端末の備考に追加します)', label_class: 'mr-1',
+      value: "[#{current_user.username}から管理譲渡]"
     = f.submit '譲渡', class: 'btn btn-primary ml-1'
 
 - if @node.nics.count.positive?

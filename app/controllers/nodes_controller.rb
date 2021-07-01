@@ -310,9 +310,20 @@ class NodesController < ApplicationController
   # POST /nodes/1/tranfer
   def transfer
     user = User.find_by(username: params[:username])
+    note = params[:note]
     if user
       @node.user = user
       @node.confirmation = nil
+      if note.present?
+        @node.note =
+          if @node.note.blank?
+            note
+          elsif @node.note.end_with?("\n")
+            @node.note + note
+          else
+            [@node.note, note].join("\n")
+          end
+      end
       respond_to do |format|
         if @node.save
           format.html { redirect_to nodes_path, notice: '端末を譲渡しました。' }
