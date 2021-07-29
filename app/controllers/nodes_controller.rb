@@ -81,6 +81,8 @@ class NodesController < ApplicationController
 
     # @nodes = @nodes.where(@condition) if @condition
     @condition&.each do |key, value|
+      next if value.blank?
+
       case key
       when 'specific'
         value = %w[1 yes true].include?(value)
