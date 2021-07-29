@@ -337,6 +337,7 @@ ja:
         auth_users: 認証割当
         nics_count: NIC数
         assignments_count: 割当数
+        nodes: 端末
       nic:
         node: 端末
         number: No.

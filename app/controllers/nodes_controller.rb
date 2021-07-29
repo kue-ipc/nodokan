@@ -9,9 +9,20 @@ class NodesController < ApplicationController
       :page, :per, :format,
       :query,
       :search,
-      order: [:user, :name, :hostname, :domain, :place, :hardware, :operating_system,
-              :ipv4_address, :ipv6_address, :mac_address],
-      condition: [:user, :name, :hostname, :domain, :place_id, :hardware_id, :operating_system_id],
+      order: [
+        :user, :name, :hostname, :domain, :place, :hardware, :operating_system,
+        :ipv4_address, :ipv6_address, :mac_address,
+      ],
+      filter: [
+        :specific,
+        :user_id,
+        :place_id,
+        :hardware_id,
+        :device_type_id,
+        :os_category_id,
+        :operating_system_id,
+        :network_id,
+      ],
     )
 
     @page = permitted_params[:page]
@@ -21,24 +32,34 @@ class NodesController < ApplicationController
 
     @query = permitted_params[:query]
 
-    @condition = permitted_params[:condition]
+    @filter = permitted_params[:filter]
 
     @nodes = policy_scope(Node).includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
 
     if @query.present?
       query_places = Place.where(
-        'area LIKE :query OR ' \
-        'building LIKE :query OR ' \
-        'room LIKE :query',
+        'area LIKE :query OR building LIKE :query OR room LIKE :query',
         { query: "%#{@query}%" },
       )
 
       query_hardwares = Hardware.where(
-        'maker LIKE :query OR ' \
-        'product_name LIKE :query OR ' \
-        'model_number LIKE :query',
+        'maker LIKE :query OR product_name LIKE :query OR model_number LIKE :query',
         { query: "%#{@query}%" },
       )
+
+      query_operating_systems = OperatingSystem.where(
+        'name LIKE :query',
+        { query: "%#{@query}%" },
+      )
+
+      @nodes = @nodes
+        .where(
+          'name LIKE :query OR hostname LIKE :query OR domain LIKE :query',
+          { query: "%#{@query}%" },
+        )
+        .or(@nodes.where(place_id: query_places.map(&:id)))
+        .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
+        .or(@nodes.where(operating_system_id: query_operating_systems.map(&:id)))
 
       query_nics = nil
       begin
@@ -55,31 +76,34 @@ class NodesController < ApplicationController
         end
       end
 
-      if query_nics
-        @nodes = @nodes
-          .where(
-            'name LIKE :query OR ' \
-            'hostname LIKE :query OR ' \
-            'domain LIKE :query',
-            { query: "%#{@query}%" },
-          )
-          .or(@nodes.where(place_id: query_places.map(&:id)))
-          .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
-          .or(@nodes.where(nics: query_nics))
-      else
-        @nodes = @nodes
-          .where(
-            'name LIKE :query OR ' \
-            'hostname LIKE :query OR ' \
-            'domain LIKE :query',
-            { query: "%#{@query}%" },
-          )
-          .or(@nodes.where(place_id: query_places.map(&:id)))
-          .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
-      end
+      @nodes = @nodes.or(@nodes.where(nics: query_nics)) if query_nics
     end
 
-    @nodes = @nodes.where(@condition) if @condition
+    # @nodes = @nodes.where(@condition) if @condition
+    @filter&.each do |key, value|
+      case key
+      when 'specific'
+        value = %w[1 yes true].include?(value)
+        @filter[key] = value
+        # non はなし
+        @nodes = @nodes.where(specific: value) if value
+      when 'network_id'
+        # value = value.to_i
+        # @filter[key] = value
+        query_nics = Nic.where(network_id: value)
+        @nodes = @nodes.where(nics: query_nics)
+      when 'user_id'
+        @nodes = @nodes.where(user_id: value)
+      end
+      # when
+      # :user_id,
+      # :place_id,
+      # :hardware_id,
+      # :device_type_id,
+      # :os_category_id,
+      # :operating_system_id,
+      # :network_id,
+    end
 
     @order&.each do |key, value|
       value = if value.to_s.downcase == 'desc'
