@@ -13,7 +13,7 @@ class NodesController < ApplicationController
         :user, :name, :hostname, :domain, :place, :hardware, :operating_system,
         :ipv4_address, :ipv6_address, :mac_address,
       ],
-      filter: [
+      condition: [
         :specific,
         :user_id,
         :place_id,
@@ -32,7 +32,7 @@ class NodesController < ApplicationController
 
     @query = permitted_params[:query]
 
-    @filter = permitted_params[:filter]
+    @condition = permitted_params[:condition] || {}
 
     @nodes = policy_scope(Node).includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
 
@@ -80,16 +80,16 @@ class NodesController < ApplicationController
     end
 
     # @nodes = @nodes.where(@condition) if @condition
-    @filter&.each do |key, value|
+    @condition&.each do |key, value|
       case key
       when 'specific'
         value = %w[1 yes true].include?(value)
-        @filter[key] = value
+        @condition[key] = value
         # non はなし
         @nodes = @nodes.where(specific: value) if value
       when 'network_id'
         # value = value.to_i
-        # @filter[key] = value
+        # @condition[key] = value
         query_nics = Nic.where(network_id: value)
         @nodes = @nodes.where(nics: query_nics)
       when 'user_id'
