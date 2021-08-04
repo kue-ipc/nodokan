@@ -52,14 +52,15 @@ class NodesController < ApplicationController
         { query: "%#{@query}%" },
       )
 
-      @nodes = @nodes
+      nodes_repo = @nodes
+      @nodes = nodes_repo
         .where(
           'name LIKE :query OR hostname LIKE :query OR domain LIKE :query',
           { query: "%#{@query}%" },
         )
-        .or(@nodes.where(place_id: query_places.map(&:id)))
-        .or(@nodes.where(hardware_id: query_hardwares.map(&:id)))
-        .or(@nodes.where(operating_system_id: query_operating_systems.map(&:id)))
+        .or(nodes_repo.where(place_id: query_places.map(&:id)))
+        .or(nodes_repo.where(hardware_id: query_hardwares.map(&:id)))
+        .or(nodes_repo.where(operating_system_id: query_operating_systems.map(&:id)))
 
       query_nics = nil
       begin
@@ -76,7 +77,7 @@ class NodesController < ApplicationController
         end
       end
 
-      @nodes = @nodes.or(@nodes.where(nics: query_nics)) if query_nics
+      @nodes = @nodes.or(nodes_repo.where(nics: query_nics)) if query_nics
     end
 
     # @nodes = @nodes.where(@condition) if @condition
