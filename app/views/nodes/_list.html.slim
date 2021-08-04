@@ -1,4 +1,4 @@
-p 端末の操作（確認、変更、削除）を行う場合は、列をクリックしてください。IPアドレス等は1番目のNICのみ表示されます。
+p 端末の操作（確認、変更、削除）を行う場合は、列をクリックしてください。
 
 = paginate @nodes
 
@@ -54,17 +54,23 @@ table.table.table-hover.table-sm
         td = node.hardware&.product_name
         td = node.operating_system&.name
         td.text-nowrap
-          - if node.nics.first&.ipv4_dynamic?
-            = t_enum(:dynamic, :ipv4_configs)
-          - else
-            = node.nics.first&.ipv4_address
+          - node.nics.each do |nic|
+            - if nic.ipv4_dynamic?
+              = t_enum(:dynamic, :ipv4_configs)
+            - else
+              = nic.ipv4_address
+            br
         td.text-nowrap
-          - if node.nics.first&.ipv6_dynamic?
-            = t_enum(:dynamic, :ipv6_configs)
-          - else
-            = node.nics.first&.ipv6_address
+          - node.nics.each do |nic|
+            - if nic.ipv6_dynamic?
+              = t_enum(:dynamic, :ipv6_configs)
+            - else
+              = nic.ipv6_address
+            br
         td.text-nowrap
-          = node.nics.first&.mac_address
+          - node.nics.each do |nic|
+            = nic.mac_address
+            br
         td.text-nowrap
           - case node.confirmation&.status
           - when nil, :unconfirmed
