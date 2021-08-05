@@ -1,4 +1,5 @@
 class PlacesController < ApplicationController
+  before_action :set_place, only: [:show, :update, :destroy]
   before_action :authorize_place, only: [:index]
 
   def index
@@ -37,18 +38,18 @@ class PlacesController < ApplicationController
     @places = @places.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
-  def edit
+  def show
   end
 
   def update
   end
 
-  def merge
+  private def set_place
+    @place = policy_scope(Place).find(params[:id])
+    authorize @place
   end
 
-  private
-
-    def authorize_place
-      authorize Place
-    end
+  private def authorize_place
+    authorize Place
+  end
 end
