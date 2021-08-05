@@ -44,3 +44,21 @@ h3 利用者メニュー
           | ユーザー一覧
         .card-body
           | ユーザーの操作を行います。
+    .col-md-6.col-lg-4.my-1
+      = link_to places_path, class: 'card border-warning' do
+        .card-header.text-center
+          | 設置場所一覧
+        .card-body
+          | 設置場所の整理を行います。
+    .col-md-6.col-lg-4.my-1
+      = link_to hardwares_path, class: 'card border-warning' do
+        .card-header.text-center
+          | ハードウェア一覧
+        .card-body
+          | ハードウェアの整理を行います。
+    .col-md-6.col-lg-4.my-1
+      = link_to operating_systems_path, class: 'card border-warning' do
+        .card-header.text-center
+          | OS一覧
+        .card-body
+          | OSの整理を行います。

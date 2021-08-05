@@ -22,6 +22,7 @@ class PlacesController < ApplicationController
 
     @places = @places.where(@condition) if @condition
 
+    pp @order.to_h
     @places = @places.order(@order.to_h) if @order
 
     if @target

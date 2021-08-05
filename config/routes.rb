@@ -17,10 +17,10 @@ Rails.application.routes.draw do
 
   resources :networks
 
-  resources :places, only: [:index, :edit, :update]
-  resources :hardwares, only: [:index, :edit, :update]
-  resources :operating_systems, only: [:index]
-  resources :security_softwares, only: [:index]
+  resources :places, only: [:index, :show, :update]
+  resources :hardwares, only: [:index, :show, :update]
+  resources :operating_systems, only: [:index, :show, :update]
+  resources :security_softwares, only: [:index, :show, :update]
 
   resources :users, only: [:index, :show, :update] do
     collection do
