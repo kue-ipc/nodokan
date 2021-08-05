@@ -221,8 +221,9 @@ class Nic < ApplicationRecord
         self.ipv4_address = ipv4.address
       end
     when 'manual'
+      pp ipv4_address
       if manageable
-        unless ipv4_address.blank?
+        if ipv4_address.blank?
           errors[:ipv4_address] << '手動の場合はアドレスが必要です。'
           return false
         end
@@ -282,7 +283,7 @@ class Nic < ApplicationRecord
       end
     when 'manual'
       if manageable
-        unless ipv6_address.blank?
+        if ipv6_address.blank?
           errors[:ipv6_address] << '手動の場合はアドレスが必要です。'
           return false
         end
