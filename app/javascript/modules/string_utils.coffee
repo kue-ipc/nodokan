@@ -24,7 +24,9 @@ export listToField = (list...) ->
 
 # 'abc_xyz' -> ['abc', 'xyz']
 export strToList = (str) ->
-  str.replace(/[A-Z]+/g, '_$&').toLowerCase().split(/[-_\s]+/)
+  str.replace(/([A-Z\d]+)([A-Z][a-z])/g, '$1 $2')
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    .toLowerCase().split(/[-_\s]+/)
 
 # camelCase
 export camelize = (str) ->

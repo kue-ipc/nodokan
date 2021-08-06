@@ -1,7 +1,15 @@
 import ApplicationRecord from './application_record'
+import csrf from '../modules/csrf'
 
 export default class Place extends ApplicationRecord
-  @places = new Map
+  @attrs: [
+    {name: 'area', type: 'string'}
+    {name: 'building', type: 'string'}
+    {name: 'floor', type: 'integer'}
+    {name: 'room', type: 'string'}
+    {name: 'confirmed', type: 'boolean'}
+    {name: 'nodes_count', type: 'integer', readonly: true}
+  ]
 
   @list: ({page, per, order, condition}) ->
     params = new URLSearchParams()
@@ -24,3 +32,28 @@ export default class Place extends ApplicationRecord
 
   constructor: ({@area, @building, @floor, @room, @confirmed, @nodes_count, props...}) ->
     super(props)
+    @edit = false
+
+  update: ->
+    {param, token} = csrf()
+    data =
+      [param]: token
+      place:
+        area: @area
+        building: @building
+        floor: @floor
+        room: @room
+        confirmed: @confirmed
+
+    console.log data
+
+    response = await fetch @url,
+      method: 'PUT'
+      mode: 'same-origin'
+      credentials: 'same-origin'
+      headers:
+        'Content-Type': 'application/json'
+        'Accept': 'application/json'
+      body: JSON.stringify(data)
+    
+    console.log response

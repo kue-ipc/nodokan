@@ -9,7 +9,7 @@ class HardwarePolicy < ApplicationPolicy
     true
   end
 
-  def show?
-    true
+  def manage?
+    user.admin?
   end
 end

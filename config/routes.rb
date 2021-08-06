@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  get 'use_networks/create'
-  get 'use_networks/update'
-  get 'use_networks/destroy'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: 'pages#top'
   get 'about', to: 'pages#about'
@@ -17,10 +14,19 @@ Rails.application.routes.draw do
 
   resources :networks
 
-  resources :places, only: [:index, :show, :update]
-  resources :hardwares, only: [:index, :show, :update]
-  resources :operating_systems, only: [:index, :show, :update]
-  resources :security_softwares, only: [:index, :show, :update]
+  defaults format: :json do
+    resources :places, only: [:index, :show, :create, :update, :destroy]
+    resources :hardwares, only: [:index, :show, :create, :update, :destroy]
+    resources :operating_systems, only: [:index, :show, :create, :update, :destroy]
+    resources :security_softwares, only: [:index, :show, :create, :update, :destroy]
+  end
+
+  namespace 'manage' do
+    get 'places'
+    get 'hardwares'
+    get 'operating_systems'
+    get 'security_softwares'
+    end
 
   resources :users, only: [:index, :show, :update] do
     collection do
