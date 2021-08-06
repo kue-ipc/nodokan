@@ -1,9 +1,9 @@
 json.pramas params
 json.page do
-  json.count @places.total_count
-  json.size @places.size
-  json.current @places.current_page
-  json.total @places.total_pages
+  json.partial! 'page', entities: @places
+end
+json.class do
+  json.partial! 'class', klass: Place
 end
 json.data do
   if @target
