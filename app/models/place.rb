@@ -8,7 +8,7 @@ class Place < ApplicationRecord
   }
   validates :room, length: { maximum: 255 }, uniqueness: {
     scope: [:area, :building, :floor],
-      case_sensitive: true,
+    case_sensitive: true,
   }
 
   def name
@@ -23,5 +23,14 @@ class Place < ApplicationRecord
     else
       "地下#{-floor}階"
     end
+  end
+
+  def same
+    Place.find_by(
+      area: area,
+      building: building,
+      floor: floor,
+      room: room,
+    )
   end
 end

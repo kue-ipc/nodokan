@@ -42,6 +42,22 @@ class PlacesController < ApplicationController
   end
 
   def update
+    if @place.update(place_params)
+      render :show, status: :ok, location: @place
+    elsif (same_place = @place.same)
+      @place.nodes.find_each do |node|
+        same_place.nodes << node
+      end
+      Place.find(@place.id).destroy
+      @place = same_place
+      render :show, status: :ok, location: @place
+    else
+      render json: @place.errors, status: :unprocessable_entity
+    end
+  end
+
+  private def authorize_place
+    authorize Place
   end
 
   private def set_place
@@ -49,7 +65,13 @@ class PlacesController < ApplicationController
     authorize @place
   end
 
-  private def authorize_place
-    authorize Place
+  private def place_params
+    params.require(:place).permit(
+      :area,
+      :building,
+      :floor,
+      :room,
+      :confirmed,
+    )
   end
 end

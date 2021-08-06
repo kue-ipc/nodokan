@@ -45,8 +45,6 @@ export default class Place extends ApplicationRecord
         room: @room
         confirmed: @confirmed
 
-    console.log data
-
     response = await fetch @url,
       method: 'PUT'
       mode: 'same-origin'
@@ -55,5 +53,6 @@ export default class Place extends ApplicationRecord
         'Content-Type': 'application/json'
         'Accept': 'application/json'
       body: JSON.stringify(data)
-    
-    console.log response
+
+    data = await response.json()
+    place = new Place(data)
