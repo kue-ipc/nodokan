@@ -180,16 +180,16 @@ mergeEntity = (state, {entity, newEntity}) ->
     entities
   }
 
-margeList = (state, data) ->
+fetchAll = (dispatch, url) ->
+  response = await fetch(url)
+  data = await response.json()
+  dispatch(margeAll, data)
+
+margeAll = (state, data) ->
   {
     state...
     data...
   }
-
-fetchList = (dispatch, url) ->
-  response = await fetch(url)
-  data = await response.json()
-  dispatch(margeList, data)
 
 main = ->
   node = document.getElementById('manage-table')
@@ -198,7 +198,7 @@ main = ->
   app
     init: -> [
       {url: url}
-      [fetchList, url]
+      [fetchAll, url]
     ]
     view: view
     node: document.getElementById('manage-table')
