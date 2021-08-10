@@ -43,6 +43,7 @@ class PlacesController < ApplicationController
   def create
     @place = Place.new(place_params)
     authorize @place
+
     if @place.save
       render :show, status: :ok, location: @place
     else
@@ -53,6 +54,7 @@ class PlacesController < ApplicationController
   def update
     @place.assign_attributes(place_params)
     same_place = @place.same
+
     if same_place
       @place.nodes.find_each do |node|
         same_place.nodes << node

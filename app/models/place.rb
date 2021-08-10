@@ -11,6 +11,8 @@ class Place < ApplicationRecord
     case_sensitive: true,
   }
 
+  before_destroy
+
   def name
     [area, building, floor_human, room].select(&:present?).join(' ')
   end
