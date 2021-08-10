@@ -2,7 +2,6 @@ import {app, h, text} from 'hyperapp'
 import csrf from '../modules/csrf'
 
 MASKED_ATTRIBUTES = [
-  'id'
   'created_at'
   'updated_at'
 ]
@@ -49,10 +48,8 @@ showRow = ({model, entity}) ->
 
 editRow = ({model, entity}) ->
   id = "#{model.param_key}-#{entity.id}"
-  console.log entity
   h 'tr', id: "tr-#{id}",
     model.attributes.map (attribute) ->
-      console.log attribute
       attributeId = "#{id}-#{attribute.name}"
       h 'td', id: "td-#{attributeId}",
         if attribute.readonly
@@ -212,9 +209,17 @@ fetchAll = (dispatch, url) ->
   dispatch(margeAll, data)
 
 margeAll = (state, data) ->
+  model = data.model
+  maskedData = {
+    data...
+    model: {
+      model...
+      attributes: (a for a in model.attributes when !MASKED_ATTRIBUTES.includes(a.name))
+    }
+  }
   {
     state...
-    data...
+    maskedData...
   }
 
 main = ->
