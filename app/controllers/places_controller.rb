@@ -48,7 +48,8 @@ class PlacesController < ApplicationController
         same_place.nodes << node
       end
       Place.find(@place.id).destroy
-      @place = same_place
+      # 再度取得しないとカウントがおかしい
+      @place = Place.find(same_place.id)
       render :show, status: :ok, location: @place
     else
       render json: @place.errors, status: :unprocessable_entity

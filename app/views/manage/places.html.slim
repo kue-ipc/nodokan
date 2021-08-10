@@ -2,10 +2,15 @@
   h2
     = Place.model_name.human
 
-script#translation type="application/json"
-  - list = %w[area building floor room confirmed nodes_count].map do |name|
-    - "activerecord.attributes.place.#{name}"
-  == list.index_with { |e| t(e) }.to_json
+/ script#translation type="application/json"
+/   - list = %w[area building floor room confirmed nodes_count].map do |name|
+/     - "activerecord.attributes.place.#{name}"
+/   == list.index_with { |e| t(e) }.to_json
 
-#places-table
-= javascript_pack_tag 'places-table', 'data-turbolinks-track': 'reload'
+/ #places-table
+/ = javascript_pack_tag 'places-table', 'data-turbolinks-track': 'reload'
+
+
+#manage-table data-url=places_url
+  p loading...
+= javascript_pack_tag 'manage-table', 'data-turbolinks-track': 'reload'

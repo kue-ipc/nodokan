@@ -1,104 +1,192 @@
 import {app, h, text} from 'hyperapp'
-import Place from 'models/place'
-import {t} from 'modules/translation'
+import csrf from '../modules/csrf'
 
-view = ({klass, list}) ->
-  h 'table', {class: ['table', 'table-sm']}, [
-    thead({klass})
-    tbody({klass, list})
-  ]
+MASKED_ATTRIBUTES = [
+  'id'
+  'created_at'
+  'updated_at'
+]
 
-thead = ({klass}) ->
-  h 'thead', {},
-    h 'tr', {}, klass.attrs.map (attr) ->
-      h 'th', {}, text t(['activerecord', 'attributes', klass.model_name().i18n_key, attr.name].join('.'))
-
-tbody = ({klass, list}) ->
-  h 'tbody', {},
-    list.map (entity) -> row({klass, entity})
-
-row = ({klass, entity}) ->
-  if entity.edit
-    row_edit({klass, entity})
+view = ({model, entities}) ->
+  if model? && entities?
+    h 'table', {class: ['table', 'table-sm']}, [
+      thead({model})
+      tbody({model, entities})
+    ]
   else
-    row_show({klass, entity})
+    h 'p', {}, text 'loading...'
 
-row_show = ({klass, entity}) ->
-  id = "#{klass.param_key}-#{entity.id}"
+thead = ({model}) ->
+  h 'thead', {},
+    h 'tr', {}, model.attributes.map (attribute) ->
+      h 'th', {}, text attribute.human_name
+
+tbody = ({model, entities}) ->
+  h 'tbody', {},
+    entities.map (entity) -> row({model, entity})
+
+row = ({model, entity}) ->
+  if entity.edit
+    editRow({model, entity})
+  else
+    showRow({model, entity})
+
+showRow = ({model, entity}) ->
+  id = "#{model.param_key}-#{entity.id}"
   h 'tr', id: "tr-#{id}",
-    klass.attrs.map (attr) ->
-      attrId = "#{id}-#{attr.name}"
-      h 'td', id: "td-#{attrId}",
-        text entity[attr.name]
+    model.attributes.map (attribute) ->
+      attributeId = "#{id}-#{attribute.name}"
+      h 'td', id: "td-#{attributeId}",
+        text entity[attribute.name]
     .concat [
       h 'td', {},
         h 'input',
           class: 'btn btn-warning btn-sm'
           type: 'button'
-          value: '編集'
-          onclick: (state, event) ->
-            entity.edit = true
-            {state...}
+          value: 'edit'
+          onclick: [updateEntity, {id: entity.id, name: 'edit', value: true}]
     ]
 
-row_edit = ({klass, entity}) ->
-  id = "#{klass.param_key}-#{entity.id}"
+editRow = ({model, entity}) ->
+  id = "#{model.param_key}-#{entity.id}"
   h 'tr', id: "tr-#{id}",
-    klass.attrs.map (attr) ->
-      attrId = "#{id}-#{attr.name}"
-      h 'td', id: "td-#{attrId}",
-        if attr.readonly
-          text entity[attr.name]
+    model.attributes.map (attribute) ->
+      attributeId = "#{id}-#{attribute.name}"
+      h 'td', id: "td-#{attributeId}",
+        if attribute.readonly
+          text entity[attribute.name]
         else
-          switch attr.type
+          switch attribute.type
             when 'string'
               h 'input',
-                id: attrId
+                id: attributeId
                 class: 'form-control'
                 type: 'text'
-                value: entity[attr.name]
+                value: entity[attribute.name]
                 onchange: (state, event) ->
-                  entity[attr.name] = event.target.value
-                  {state...}
+                  [updateEntity, {
+                    id: entity.id
+                    name: attribute.name
+                    value: event.target.value
+                  }]
             when 'integer'
               h 'input',
-                id: attrId
+                id: attributeId
                 class: 'form-control'
                 type: 'number'
-                value: entity[attr.name]
+                value: entity[attribute.name]
                 onchange: (state, event) ->
-                  entity[attr.name] = event.target.value
-                  {state...}
+                  [updateEntity, {
+                    id: entity.id
+                    name: attribute.name
+                    value: event.target.value
+                  }]
             when 'boolean'
               h 'div', class: 'custom-control custom-checkbox', [
                 h 'input',
                   type: 'checkbox'
-                  id: attrId
+                  id: attributeId
                   class: 'custom-control-input'
-                  checked: entity[attr.name]
+                  checked: entity[attribute.name]
                   onchange: (state, event) ->
-                    entity[attr.name] = event.target.checked
-                    {state...}
+                    [updateEntity, {
+                      id: entity.id
+                      name: attribute.name
+                      value: event.target.checked
+                    }]
                 h 'label',
                   class: 'custom-control-label'
-                  for: attrId
+                  for: attributeId
               ]
     .concat [
       h 'td', {},
         h 'input',
           class: 'btn btn-primary btn-sm'
           type: 'button'
-          value: '保存'
-          onclick: (state, event) ->
-            entity.update()
-            entity.edit = false
-            {state...}
+          value: 'save'
+          onclick: [saveEntity, {id: entity.id, model}]
     ]
 
-margeList = (state, data) =>
-  data
+updateEntity = (state, {id, name, value}) ->
+  index = state.entities.findIndex (e) -> e.id == id
+  entitiy = {
+    state.entities[index]...
+    [name]: value
+  }
+  entities = [
+    state.entities.slice(0, index)...
+    entitiy
+    state.entities.slice(index + 1)...
+  ]
+  {
+    state...
+    entities
+  }
 
-fetchList = (dispatch, url) =>
+
+saveEntity = (state, {id, model}) ->
+  index = state.entities.findIndex (e) -> e.id == id
+  entity = state.entities[index]
+  [
+    updateEntity(state, {id, name: 'edit', value: false})
+    [putEntity, {model, entity}]
+  ]
+
+putEntity = (dispatch, {entity, model}) ->
+  params = (attribute.name for attribute in model.attributes when !attribute.readonly)
+  entityData = Object.fromEntries([param, entity[param]] for param in params)
+
+  putData = {
+    csrf()...
+    [model.param_key]: entityData
+  }
+
+  response = await fetch entity.url,
+    method: 'PUT'
+    mode: 'same-origin'
+    credentials: 'same-origin'
+    headers:
+      'Content-Type': 'application/json'
+      'Accept': 'application/json'
+    body: JSON.stringify(putData)
+
+  newEntity = await response.json()
+
+  dispatch(mergeEntity, {entity, newEntity})
+
+mergeEntity = (state, {entity, newEntity}) ->
+  index = state.entities.findIndex (e) -> e.id == entity.id
+  entities =
+  if newEntity.id == entity.id
+    [
+      state.entities.slice(0, index)...
+      newEntity
+      state.entities.slice(index + 1)...
+    ]
+  else
+    deletedEntities = [
+      state.entities.slice(0, index)...
+      state.entities.slice(index + 1)...
+    ]
+    newIndex = deletedEntities.findIndex (e) -> e.id == newEntity.id
+    [
+      deletedEntities.slice(0, newIndex)...
+      newEntity
+      deletedEntities.slice(newIndex + 1)...
+    ]
+
+  {
+    state...
+    entities
+  }
+
+margeList = (state, data) ->
+  {
+    state...
+    data...
+  }
+
+fetchList = (dispatch, url) ->
   response = await fetch(url)
   data = await response.json()
   dispatch(margeList, data)
@@ -108,7 +196,7 @@ main = ->
   url = node.dataset.url
 
   app
-    init: => [
+    init: -> [
       {url: url}
       [fetchList, url]
     ]
