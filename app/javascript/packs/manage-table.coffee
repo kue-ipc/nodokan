@@ -49,8 +49,10 @@ showRow = ({model, entity}) ->
 
 editRow = ({model, entity}) ->
   id = "#{model.param_key}-#{entity.id}"
+  console.log entity
   h 'tr', id: "tr-#{id}",
     model.attributes.map (attribute) ->
+      console.log attribute
       attributeId = "#{id}-#{attribute.name}"
       h 'td', id: "td-#{attributeId}",
         if attribute.readonly
