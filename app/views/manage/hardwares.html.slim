@@ -1,11 +1,7 @@
 - content_for :heading
   h2
-    = Place.model_name.human
+    = Hardware.model_name.human
 
-script#translation type="application/json"
-  - list = %w[area building floor room confirmed nodes_count].map do |name|
-    - 'activerecord.attributes.place.' + name
-  == list.to_h { |name| [name, t(name)] }.to_json
-
-#places-table
-= javascript_pack_tag 'places-table', 'data-turbolinks-track': 'reload'
+#manage-table data-url=hardwares_url
+  p loading...
+= javascript_pack_tag 'manage-table', 'data-turbolinks-track': 'reload'

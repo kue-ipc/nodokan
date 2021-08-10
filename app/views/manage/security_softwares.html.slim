@@ -1,2 +1,7 @@
-h1 Manage#security_softwares
-p Find me in app/views/manage/security_softwares.html.slim
+- content_for :heading
+  h2
+    = SecuritySoftware.model_name.human
+
+#manage-table data-url=security_softwares_url
+  p loading...
+= javascript_pack_tag 'manage-table', 'data-turbolinks-track': 'reload'

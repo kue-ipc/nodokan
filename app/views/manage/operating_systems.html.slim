@@ -1,2 +1,7 @@
-h1 Manage#operating_systems
-p Find me in app/views/manage/operating_systems.html.slim
+- content_for :heading
+  h2
+    = OperatingSystem.model_name.human
+
+#manage-table data-url=operating_systems_url
+  p loading...
+= javascript_pack_tag 'manage-table', 'data-turbolinks-track': 'reload'

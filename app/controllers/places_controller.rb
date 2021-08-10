@@ -40,10 +40,20 @@ class PlacesController < ApplicationController
   def show
   end
 
-  def update
-    if @place.update(place_params)
+  def create
+    @place = Place.new(place_params)
+    authorize @place
+    if @place.save
       render :show, status: :ok, location: @place
-    elsif (same_place = @place.same)
+    else
+      render json: @place.errors, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    @place.assign_attributes(place_params)
+    same_place = @place.same
+    if same_place
       @place.nodes.find_each do |node|
         same_place.nodes << node
       end
@@ -51,6 +61,16 @@ class PlacesController < ApplicationController
       # 再度取得しないとカウントがおかしい
       @place = Place.find(same_place.id)
       render :show, status: :ok, location: @place
+    elsif @place.save
+      render :show, status: :ok, location: @place
+    else
+      render json: @place.errors, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @place.destroy
+      render head :no_content
     else
       render json: @place.errors, status: :unprocessable_entity
     end

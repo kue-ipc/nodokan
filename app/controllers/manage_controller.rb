@@ -4,11 +4,14 @@ class ManageController < ApplicationController
   end
 
   def hardwares
+    authorize Hardware, :manage?
   end
 
   def operating_systems
+    authorize OperatingSystem, :manage?
   end
 
   def security_softwares
+    authorize SecuritySoftware, :manage?
   end
 end
