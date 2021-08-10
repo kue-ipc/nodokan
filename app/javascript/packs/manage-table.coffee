@@ -37,7 +37,7 @@ showRow = ({model, entity}) ->
     model.attributes.map (attribute) ->
       attributeId = "#{id}-#{attribute.name}"
       h 'td', id: "td-#{attributeId}",
-        text entity[attribute.name]
+        text entity[attribute.name] ? ''
     .concat [
       h 'td', {},
         h 'input',
@@ -54,7 +54,7 @@ editRow = ({model, entity}) ->
       attributeId = "#{id}-#{attribute.name}"
       h 'td', id: "td-#{attributeId}",
         if attribute.readonly
-          text entity[attribute.name]
+          text entity[attribute.name] ? ''
         else
           switch attribute.type
             when 'string'
@@ -98,6 +98,30 @@ editRow = ({model, entity}) ->
                   class: 'custom-control-label'
                   for: attributeId
               ]
+            when 'date'
+              h 'input',
+                id: attributeId
+                class: 'form-control'
+                type: 'date'
+                value: entity[attribute.name]
+                onchange: (state, event) ->
+                  [updateEntity, {
+                    id: entity.id
+                    name: attribute.name
+                    value: event.target.value
+                  }]
+            when 'text'
+              h 'textarea',
+                id: attributeId
+                class: 'form-control'
+                onchange: (state, event) ->
+                  [updateEntity, {
+                    id: entity.id
+                    name: attribute.name
+                    value: event.target.value
+                  }]
+                text entity[attribute.name] ? ''
+
     .concat [
       h 'td', {},
         h 'input',

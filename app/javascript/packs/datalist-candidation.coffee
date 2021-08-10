@@ -51,8 +51,7 @@ class DatalistCandidation
   createUrl: ->
     list = []
     list.push("per=#{@per}")
-    unless @description
-      list.push("target=#{@target}")
+    list.push("target=#{@target}")
     if @order?
       for k, v of @order
         list.push("order[#{k}]=#{v}")
