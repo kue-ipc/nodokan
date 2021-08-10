@@ -27,7 +27,7 @@ class SecuritySoftwaresController < ApplicationController
 
     if @target
       if [:name].include?(@target)
-        @security_softwares = @security_softwares.select(@target,).distinct
+        @security_softwares = @security_softwares.select(@target, :description).distinct
       else
         raise ActionController::BadRequest,
           "[security_softwares#index] invalid target: #{@target}"
