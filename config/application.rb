@@ -7,7 +7,7 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Nodokan
-  VERSION = '0.0.6'.freeze
+  VERSION = '0.1.0'.freeze
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
