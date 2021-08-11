@@ -407,7 +407,11 @@ class NodesController < ApplicationController
 
     place = Place.find_or_initialize_by(permitted_params[:place])
 
-    hardware = Hardware.find_or_initialize_by(permitted_params[:hardware])
+    hardware_params = permitted_params[:hardware]
+    if hardware_params[:device_type_id].empty?
+      hardware_params[:device_type_id] = nil
+    end
+    hardware = Hardware.find_or_initialize_by(hardware_params)
 
     operating_system = if permitted_params[:operating_system][:os_category_id].present?
                          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
