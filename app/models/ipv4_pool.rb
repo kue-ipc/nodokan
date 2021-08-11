@@ -15,7 +15,7 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def ipv4_first_address
-    @ipv4_first_address ||= ipv4_first.address
+    @ipv4_first_address ||= ipv4_first.to_s
   end
 
   def ipv4_first_address=(value)
@@ -32,7 +32,7 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def ipv4_last_address
-    @ipv4_last_address ||= ipv4_last.address
+    @ipv4_last_address ||= ipv4_last.to_s
   end
 
   def ipv4_last_address=(value)

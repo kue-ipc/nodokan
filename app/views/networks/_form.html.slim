@@ -38,28 +38,27 @@
         = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: 'col-md-4'}
         = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: 'col-md-4'}
     .form-row
-      = f.submit 'IPプールを追加', class: 'btn btn-secondary', name: 'add_ip_pool'
+      = f.submit 'IPプールを追加', class: 'btn btn-secondary', name: 'add_ipv4_pool'
 
-
-  / 未作成
-  / .rounded.border.p-2.mb-2
-  /   h4 IPv6ネットワーク情報
-  /   small.form-text.text-muted
-  /     | 空欄の場合、IPv6は設定されていません。
-  /   .form-row
-  /     .form-group.col-md-6
-  /       = f.label :ipv6_address
-  /       = f.text_field :ipv6_address, class: 'form-control'
-  /     .form-group.col-md-3
-  /       = f.label :ipv6_prefix
-  /       .input-group
-  /         .input-group-prepend
-  /           span.input-group-text
-  /             | /
-  /         = f.number_field :ipv6_prefix, class: 'form-control', min: 0, max: 128, default: 64
-  /     .form-group.col-md-6
-  /       = f.label :ipv6_gateway
-  /       = f.text_field :ipv6_gateway, class: 'form-control'
+  .rounded.border.p-2.mb-2
+    h4 IPv6ネットワーク情報
+    small.form-text.text-muted
+      | 空欄の場合、IPv6は設定されていません。
+    .form-row
+      = f.text_field :ipv6_network_address, wrapper: {class: 'col-md-4'}
+      = f.number_field :ipv6_prefix_length, min: 0, max: 128, prepend: '/', wrapper: {class: 'col-md-4'}
+      = f.text_field :ipv6_gateway_address, wrapper: {class: 'col-md-4'}
+    .form-row
+      = f.fields_for :ipv6_pools do |ipv6_pool_f|
+        = ipv6_pool_f.hidden_field :id
+        .col-md-1.mt-1
+          = ipv6_pool_f.check_box :_destroy, custom: true
+        = ipv6_pool_f.select :ipv6_config, t_enums(:ipv6_configs, Ipv6Pool),
+                           hide_label: true, custom: true, wrapper: {class: 'col-md-3'}
+        = ipv6_pool_f.text_field :ipv6_first_address, hide_label: true, wrapper: {class: 'col-md-4'}
+        = ipv6_pool_f.text_field :ipv6_last_address, hide_label: true, wrapper: {class: 'col-md-4'}
+    .form-row
+      = f.submit 'IPプールを追加', class: 'btn btn-secondary', name: 'add_ipv6_pool'
 
   .rounded.border.p-2.mb-2
     .form-row

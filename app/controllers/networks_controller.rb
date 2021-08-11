@@ -73,7 +73,7 @@ class NetworksController < ApplicationController
           format.html { render :new }
           format.json { render json: @network.errors, status: :unprocessable_entity }
         end
-      elsif params['add_ip_pool'] && @network.ipv4_network
+      elsif params['add_ipv4_pool'] && @network.ipv4_network
         next_ipv4 = @network.next_ipv4_pool
         @network.ipv4_pools << Ipv4Pool.new(
           ipv4_config: :static,
@@ -110,7 +110,7 @@ class NetworksController < ApplicationController
           format.html { render :edit }
           format.json { render json: @network.errors, status: :unprocessable_entity }
         end
-      elsif params['add_ip_pool']
+      elsif params['add_ipv4_pool']
         @network.assign_attributes(network_params)
         next_ipv4 = @network.next_ipv4_pool
         @network.ipv4_pools << Ipv4Pool.new(

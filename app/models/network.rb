@@ -71,7 +71,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_network_address
-    @ipv4_network_address ||= (ipv4_network&.address || '')
+    @ipv4_network_address ||= (ipv4_network&.to_s || '')
   end
 
   def ipv4_network_address=(value)
@@ -103,7 +103,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_gateway_address
-    @ipv4_gateway_address ||= (ipv4_gateway&.address || '')
+    @ipv4_gateway_address ||= (ipv4_gateway&.to_s || '')
   end
 
   def ipv4_gateway_address=(value)
@@ -130,7 +130,7 @@ class Network < ApplicationRecord
   end
 
   def ipv6_network_address
-    @ipv6_network_address ||= (ipv6_network&.address || '')
+    @ipv6_network_address ||= (ipv6_network&.to_s || '')
   end
 
   def ipv6_network_address=(value)
@@ -149,7 +149,7 @@ class Network < ApplicationRecord
   end
 
   def ipv6_gateway_address
-    @ipv6_gateway_address ||= (ipv6_gateway&.address || '')
+    @ipv6_gateway_address ||= (ipv6_gateway&.to_s || '')
   end
 
   def ipv6_gateway_address=(value)
@@ -234,7 +234,7 @@ class Network < ApplicationRecord
   def next_ipv6_pool
     return unless ipv6_network
 
-    (ipv6_network.first..ipv4_network.last).find do |ipv6|
+    (ipv6_network.first..ipv6_network.last).find do |ipv6|
       next if ipv6 == ipv6_gateway
 
       ipv6_pools.all? do |ipv6_pool|
