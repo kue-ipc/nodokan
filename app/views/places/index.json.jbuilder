@@ -1,14 +1,17 @@
+json.url request.url
 json.pramas params
 json.page do
-  json.count @places.total_count
-  json.size @places.size
-  json.current @places.current_page
-  json.total @places.total_pages
+  json.partial! 'page', entities: @places
 end
-json.data do
-  if @target
+json.model do
+  json.partial! 'model', model: Place
+end
+if @target
+  json.data do
     json.array! @places, @target
-  else
+  end
+else
+  json.entities do
     json.array! @places, partial: 'places/place', as: :place
   end
 end

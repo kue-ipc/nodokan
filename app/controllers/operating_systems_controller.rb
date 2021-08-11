@@ -1,4 +1,5 @@
 class OperatingSystemsController < ApplicationController
+  before_action :set_operating_system, only: [:show, :update, :destroy]
   before_action :authorize_operating_system, only: [:index]
 
   def index
@@ -26,8 +27,7 @@ class OperatingSystemsController < ApplicationController
 
     if @target
       if [:name].include?(@target)
-        @operating_systems = @operating_systems.select(:os_category_id, @target)
-          .distinct
+        @operating_systems = @operating_systems.select(:os_category_id, @target, :description).distinct
       else
         raise ActionController::BadRequest,
           "[operating_systems#index] invalid target: #{@target}"
@@ -37,13 +37,63 @@ class OperatingSystemsController < ApplicationController
     @operating_systems = @operating_systems.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
-  private
+  def show
+  end
 
-    def query_params
-      params.permit
-    end
+  def create
+    @operating_system = OperatingSystem.new(operating_system_params)
+    authorize @operating_system
 
-    def authorize_operating_system
-      authorize OperatingSystem
+    if @operating_system.save
+      render :show, status: :ok, location: @operating_system
+    else
+      render json: @operating_system.errors, status: :unprocessable_entity
     end
+  end
+
+  def update
+    @operating_system.assign_attributes(operating_system_params)
+    same_operating_system = @operating_system.same
+
+    if same_operating_system
+      @operating_system.nodes.find_each do |node|
+        same_operating_system.nodes << node
+      end
+      OperatingSystem.find(@operating_system.id).destroy
+      # 再度取得しないとカウントがおかしい
+      @operating_system = OperatingSystem.find(same_operating_system.id)
+      render :show, status: :ok, location: @operating_system
+    elsif @operating_system.save
+      render :show, status: :ok, location: @operating_system
+    else
+      render json: @operating_system.errors, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @operating_system.destroy
+      render head :no_content
+    else
+      render json: @operating_system.errors, status: :unprocessable_entity
+    end
+  end
+
+  private def authorize_operating_system
+    authorize OperatingSystem
+  end
+
+  private def set_operating_system
+    @operating_system = policy_scope(OperatingSystem).find(params[:id])
+    authorize @operating_system
+  end
+
+  private def operating_system_params
+    params.require(:operating_system).permit(
+      :os_category_id,
+      :name,
+      :eol,
+      :confirmed,
+      :description,
+    )
+  end
 end

@@ -15,6 +15,11 @@ class SecuritySoftware < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
+  validates :name, length: { maximum: 255 }, uniqueness: {
+    scope: [:os_category_id, :installation_method],
+    case_sensitive: true,
+  }
+
   before_save :auto_approve
 
   def os_category_name
@@ -85,5 +90,13 @@ class SecuritySoftware < ApplicationRecord
         locked: true,
       },
     }.with_indifferent_access
+  end
+
+  def same
+    SecuritySoftware.where.not(id: id).find_by(
+      os_category_id: os_category_id,
+      installation_method: installation_method,
+      name: name,
+    )
   end
 end

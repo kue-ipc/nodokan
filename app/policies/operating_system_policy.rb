@@ -8,4 +8,8 @@ class OperatingSystemPolicy < ApplicationPolicy
   def index?
     true
   end
+
+  def manage?
+    user.admin?
+  end
 end

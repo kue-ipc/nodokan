@@ -390,6 +390,7 @@ ja:
         building: 建屋
         floor: フロア
         room: 部屋
+        confirmed: 確認済
         nodes_count: 端末数
       security_software:
         os_category: OS種別

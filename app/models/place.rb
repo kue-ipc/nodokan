@@ -8,8 +8,10 @@ class Place < ApplicationRecord
   }
   validates :room, length: { maximum: 255 }, uniqueness: {
     scope: [:area, :building, :floor],
-      case_sensitive: true,
+    case_sensitive: true,
   }
+
+  before_destroy
 
   def name
     [area, building, floor_human, room].select(&:present?).join(' ')
@@ -23,5 +25,14 @@ class Place < ApplicationRecord
     else
       "地下#{-floor}階"
     end
+  end
+
+  def same
+    Place.where.not(id: id).find_by(
+      area: area,
+      building: building,
+      floor: floor,
+      room: room,
+    )
   end
 end

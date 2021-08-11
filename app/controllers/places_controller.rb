@@ -1,4 +1,5 @@
 class PlacesController < ApplicationController
+  before_action :set_place, only: [:show, :update, :destroy]
   before_action :authorize_place, only: [:index]
 
   def index
@@ -36,18 +37,63 @@ class PlacesController < ApplicationController
     @places = @places.page(@page).per(@per) unless permitted_params[:format] == 'csv'
   end
 
-  def edit
+  def show
+  end
+
+  def create
+    @place = Place.new(place_params)
+    authorize @place
+
+    if @place.save
+      render :show, status: :ok, location: @place
+    else
+      render json: @place.errors, status: :unprocessable_entity
+    end
   end
 
   def update
-  end
+    @place.assign_attributes(place_params)
+    same_place = @place.same
 
-  def merge
-  end
-
-  private
-
-    def authorize_place
-      authorize Place
+    if same_place
+      @place.nodes.find_each do |node|
+        same_place.nodes << node
+      end
+      Place.find(@place.id).destroy
+      # 再度取得しないとカウントがおかしい
+      @place = Place.find(same_place.id)
+      render :show, status: :ok, location: @place
+    elsif @place.save
+      render :show, status: :ok, location: @place
+    else
+      render json: @place.errors, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    if @place.destroy
+      render head :no_content
+    else
+      render json: @place.errors, status: :unprocessable_entity
+    end
+  end
+
+  private def authorize_place
+    authorize Place
+  end
+
+  private def set_place
+    @place = policy_scope(Place).find(params[:id])
+    authorize @place
+  end
+
+  private def place_params
+    params.require(:place).permit(
+      :area,
+      :building,
+      :floor,
+      :room,
+      :confirmed,
+    )
+  end
 end

@@ -1,5 +1,5 @@
 class HardwaresController < ApplicationController
-  before_action :set_hardware, only: [:show, :edit, :update, :destroy]
+  before_action :set_hardware, only: [:show, :update, :destroy]
   before_action :authorize_hardware, only: [:index]
 
   def index
@@ -45,61 +45,47 @@ class HardwaresController < ApplicationController
   def show
   end
 
-  def edit
+  def create
+    @hardware = Hardware.new(hardwrae_params)
+    authorize @hardware
+
+    if @hardware.save
+      render :show, status: :ok, location: @hardware
+    else
+      render json: @hardware.errors, status: :unprocessable_entity
+    end
   end
 
   def update
-    @hardware.assign_attributes(permited_params)
-    other_hardware = Hardware.find_by(
-      device_type_id: @hardware.device_type_id,
-      maker: @hardware.maker,
-      product_name: @hardware.product_name,
-      model_number: @hardware.model_name,
-    )
+    @hardware.assign_attributes(hardware_params)
+    same_hardware = @hardware.same
 
-    if other_hardware
-      respond_to do |format|
-        if Node.update(@hardware.nodes_ids, hardware: other_hardware) && @hardware.destroy
-          format.html { redirect_to other_hardware, notice: '同一の機器情報を統合しました。' }
-          format.json { render :show, status: :ok, location: other_hardware }
-        else
-          format.html { render :edit }
-          format.json { render json: @hardware.errors, status: :unprocessable_entity }
-        end
+    if same_hardware
+      @hardware.nodes.find_each do |node|
+        same_hardware.nodes << node
       end
-      return
-    end
-
-    respond_to do |format|
-      if @hardware.save
-        format.html { redirect_to @hardware, notice: '機器情報を更新しました。' }
-        format.json { render :show, status: :ok, location: other_hardware }
-      else
-        format.html { render :edit }
-        format.json { render json: @hardware.errors, status: :unprocessable_entity }
-      end
+      Hardware.find(@hardware.id).destroy
+      # 再度取得しないとカウントがおかしい
+      @hardware = Hardware.find(same_hardware.id)
+      render :show, status: :ok, location: @hardware
+    elsif @hardware.save
+      render :show, status: :ok, location: @hardware
+    else
+      render json: @hardware.errors, status: :unprocessable_entity
     end
   end
 
   def destroy
-    if @hardware.locked
-      respond_to do |format|
-        format.html { redirect_to hardwares_url, alert: 'ロックされた機器は削除できません。' }
-        format.json { render json: @node.errors, status: :unprocessable_entity }
-      end
-      return
-    end
-
-    @hardware.destroy
-    respond_to do |format|
-      format.html { redirect_to nodes_url, notice: 'Node was successfully destroyed.' }
-      format.json { head :no_content }
+    if @hardware.destroy
+      render head :no_content
+    else
+      render json: @hardware.errors, status: :unprocessable_entity
     end
   end
 
   private def set_hardware
-    @hardware = plociy_scope(Hardware).includes(:device_type).find(params[:id])
-    authorize @node
+    @hardware = policy_scope(Hardware).includes(:device_type).find(params[:id])
+    authorize @hardware
   end
 
   private def authorize_hardware
