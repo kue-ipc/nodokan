@@ -24,6 +24,6 @@ class OperatingSystem < ApplicationRecord
   end
 
   def same
-    Place.where.not(id: id).find_by(name: name)
+    OperatingSystem.where.not(id: id).find_by(name: name)
   end
 end
