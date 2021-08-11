@@ -145,7 +145,7 @@ class Network < ApplicationRecord
   def ipv6_gateway
     @ipv6_gateway ||=
       ipv6_gateway_data.presence &&
-      IPAddress::IPv6.parse_data(ipv6_gateway_data, ipv6_prefix_length)
+      IPAddress::IPv6.parse_hex(ipv6_gateway_data.unpack('H*').first, ipv6_prefix_length)
   end
 
   def ipv6_gateway_address

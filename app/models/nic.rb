@@ -135,7 +135,7 @@ class Nic < ApplicationRecord
   end
 
   def ipv4_address
-    @ipv4_address ||= (ipv4&.address || '')
+    @ipv4_address ||= (ipv4&.to_s || '')
   end
 
   def ipv4_address=(value)
@@ -148,12 +148,13 @@ class Nic < ApplicationRecord
 
   # readonly
   def ipv6
+    # bug? IPv6.parse_data is not prefix
     @ipv6 ||= ipv6_data.presence &&
-              IPAddress::IPv6.parse_data(ipv6_data, network.ipv6_prefix_length)
+              IPAddress::IPv6.parse_hex(ipv6_data.unpack('H*').first, network.ipv6_prefix_length)
   end
 
   def ipv6_address
-    @ipv6_address ||= (ipv6&.address || '')
+    @ipv6_address ||= (ipv6&.to_s || '')
   end
 
   def ipv6_address=(value)
