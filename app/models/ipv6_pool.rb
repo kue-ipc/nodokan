@@ -1,5 +1,6 @@
 class Ipv6Pool < ApplicationRecord
   include Ipv6Config
+
   belongs_to :network
 
   validates :ipv6_first_address, allow_blank: false, ipv6: true
@@ -47,6 +48,8 @@ class Ipv6Pool < ApplicationRecord
     addr = IPAddress::IPv6.new(addr.to_s) unless addr.is_a?(IPAddress::IPv6)
     ipv6_range.cover?(addr)
   end
+
+  delegate :cover?, to: :ipv6_range
 
   def identifier
     prefix =

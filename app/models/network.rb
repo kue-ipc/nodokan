@@ -226,7 +226,7 @@ class Network < ApplicationRecord
       next if ipv4 == ipv4_gateway
 
       ipv4_pools.all? do |ipv4_pool|
-        ipv4_pool.exclude?(ipv4)
+        !ipv4_pool.include?(ipv4)
       end
     end
   end
@@ -234,11 +234,12 @@ class Network < ApplicationRecord
   def next_ipv6_pool
     return unless ipv6_network
 
-    (ipv6_network.first..ipv6_network.last).find do |ipv6|
+    # bug? first is network address
+    (ipv6_network.first.next...ipv6_network.last).find do |ipv6|
       next if ipv6 == ipv6_gateway
 
       ipv6_pools.all? do |ipv6_pool|
-        ipv6_pool.exclude?(ipv6)
+        !ipv6_pool.include?(ipv6)
       end
     end
   end
