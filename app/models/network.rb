@@ -155,7 +155,7 @@ class Network < ApplicationRecord
   def ipv6_gateway_address=(value)
     @ipv6_gateway_address = value
     self.ipv6_gateway_data = @ipv6_gateway_address.presence &&
-                             IPAddress::IPv6.new(@ipv6_address).data
+                             IPAddress::IPv6.new(@ipv6_gateway_address).data
   rescue ArgumentError
     self.ipv6_gateway_data = nil
   end
