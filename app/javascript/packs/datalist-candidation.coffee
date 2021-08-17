@@ -80,13 +80,13 @@ class DatalistCandidation
     result = await response.json()
     result['data']
 
-  updateDatalist: (_) =>
+  updateDatalist: ({init = false}) ->
     @checkAttrValues()
     return unless @checkAvailable()
 
     data = await @getData()
 
-    if @clear
+    if @clear && !init
       @targetNode.value =
         if data.some (entry) => @initialValue == entry[@target]
           @initialValue
@@ -131,18 +131,18 @@ class DatalistCandidation
         @targetDescriptions.set(entry[@target], entry['description'])
       @updateDescription()
 
-  updateDescription: (_) =>
+  updateDescription: (_) ->
     message = @targetDescriptions.get(@targetNode.value)
     @descriptionNode.textContent = message ? ''
 
   run: ->
     for {node} in @attrList
-      node.addEventListener 'change', @updateDatalist
+      node.addEventListener 'change', => @updateDatalist({})
 
     if @description
-      @targetNode.addEventListener 'change', @updateDescription
+      @targetNode.addEventListener 'change', => @updateDescription({})
 
-    @updateDatalist()
+    @updateDatalist({init: true})
 
 for node in document.getElementsByClassName('datalist-canadidaiton')
   dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
