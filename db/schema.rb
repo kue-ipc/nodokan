@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_27_072221) do
+ActiveRecord::Schema.define(version: 2021_08_17_073745) do
 
   create_table "assignments", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -167,6 +167,7 @@ ActiveRecord::Schema.define(version: 2021_05_27_072221) do
     t.integer "nics_count", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "virtual", default: false, null: false
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["hostname", "domain"], name: "fqdn", unique: true
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
