@@ -14,6 +14,7 @@ p = t('forms.common.required_input')
         wrapper: { class: 'col-md-3' }
       = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
         wrapper: { class: 'col-md-5' }
+    = f.check_box :virtual, custom: true, wrapper: { class: 'col-md-3' }
     - if current_user.admin?
       = f.check_box :specific, custom: true
     - elsif @node.specific

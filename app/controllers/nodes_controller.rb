@@ -383,6 +383,7 @@ class NodesController < ApplicationController
       :hostname,
       :domain,
       :specific,
+      :virtual,
       :note,
       :user_id,
       place: [:area, :building, :floor, :room],
@@ -405,17 +406,20 @@ class NodesController < ApplicationController
       ],
     )
 
-    place = Place.find_or_initialize_by(permitted_params[:place])
+    if permitted_params[:virtual]
+      place = nil
+      hardware = nil
+      operating_system = nil
+    else
+      place = Place.find_or_initialize_by(permitted_params[:place])
 
-    hardware_params = permitted_params[:hardware]
-    if hardware_params[:device_type_id].empty?
-      hardware_params[:device_type_id] = nil
-    end
-    hardware = Hardware.find_or_initialize_by(hardware_params)
+      hardware_params = permitted_params[:hardware]
+      hardware_params[:device_type_id] = hardware_params[:device_type_id].presence
+      hardware = Hardware.find_or_initialize_by(hardware_params)
 
-    operating_system = if permitted_params[:operating_system][:os_category_id].present?
+      operating_system = permitted_params[:operating_system][:os_category_id].presence &&
                          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
-                       end
+    end
 
     permitted_params.except(:place, :hardware, :operating_system).merge(
       place: place,
