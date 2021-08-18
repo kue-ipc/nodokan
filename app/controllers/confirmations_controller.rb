@@ -39,10 +39,8 @@ class ConfirmationsController < ApplicationController
       ],
     )
 
-    security_software =
-      if permitted_params.dig(:security_software, :installation_method).present?
-        SecuritySoftware.find_or_initialize_by(permitted_params[:security_software])
-      end
+    security_software = permitted_params.dig(:security_software, :installation_method).presence &&
+                        SecuritySoftware.find_or_initialize_by(permitted_params[:security_software])
 
     permitted_params.except(:security_software).merge(security_software: security_software)
   end

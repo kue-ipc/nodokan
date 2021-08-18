@@ -32,4 +32,12 @@ class Node < ApplicationRecord
 
     "#{hostname}.#{domain}"
   end
+
+  def virutal?
+    virtual
+  end
+
+  def physical?
+    !virtual
+  end
 end

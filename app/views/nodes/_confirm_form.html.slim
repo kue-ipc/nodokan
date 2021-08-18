@@ -10,25 +10,25 @@
           - question_count = 1
           p
             = t(:node_confirmation, scope: :messages)
-          - attr_name = :existence
-          = f.form_group attr_name, \
-            label: { \
-              text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-              tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
-            }, \
-            help: t(attr_name, scope: [:messages, :node_confirm_helps], default: nil) do
-            - t_enums(attr_name.to_s.pluralize.intern,
-                      Confirmation).each do |message, value|
-              = f.radio_button attr_name, value, label: message, required: true
-          - question_count += 1
-          .d-none
-            a[id="node-confirm-collapse-link" class="btn btn-primary"
-            role="button" aria-expanded="false"
-            aria-controls="node-confirm-fields" data-toggle="collapse"
-            href="#node-confirm-fields"]
-              | 端末存在
+          - [:existence].each do |attr_name|
+            = f.form_group attr_name, \
+              label: { \
+                text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
+                tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+              }, \
+              help: t(attr_name, scope: [:messages, :node_confirm_helps], default: nil) do
+              - t_enums(attr_name.to_s.pluralize.intern,
+                        Confirmation).each do |message, value|
+                = f.radio_button attr_name, value, label: message, required: true
+            - question_count += 1
+            .d-none
+              a[id="node-confirm-collapse-link" class="btn btn-primary"
+              role="button" aria-expanded="false"
+              aria-controls="node-confirm-fields" data-toggle="collapse"
+              href="#node-confirm-fields"]
+                | 端末存在
           #node-confirm-fields.collapse
-            - %i[content os_update app_update].each do |attr_name|
+            - [:content].each do |attr_name|
               = f.form_group attr_name, \
                 label: { \
                   text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
@@ -40,50 +40,8 @@
                   = f.radio_button attr_name, value, label: message
               - question_count += 1
 
-            - if @confirmation.security_software
-              - attr_name = :security_software
-              = f.form_group attr_name, \
-                label: { \
-                  text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                  tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
-                }, \
-                help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
-                .form-row
-                  = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
-                    = security_software_f.hidden_field :os_category_id
-                    = security_software_f.select :installation_method,
-                      t_enums(:installation_methods, SecuritySoftware).select \
-                        { |k, v| @installation_methods.include?(v) },
-                      { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } },
-                      class: 'custom-select'
-                    = security_software_f.text_field :name,
-                      list: 'confirmation_security_software_name-list',
-                      disabled: true,
-                      wrapper: { class: 'col-md-8' }
-                    - confirmation_security_software_name_params = { \
-                        parent: 'confirmation',
-                        name: 'security_software',
-                        target: 'name',
-                        order: { confirmations_count: 'desc' },
-                        inputList: ['os_category_id', 'installation_method'],
-                        url: '/security_softwares.json',
-                        requiredInput: 'installation_method',
-                        description: true,
-                        clear: true,
-                        locked: { \
-                          name: 'installation_method',
-                          list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:locked] }.keys,
-                        },
-                        required: { \
-                          name: 'installation_method',
-                          list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:required] }.keys,
-                        },
-                      }
-                    #confirmation_security_software_name-app.datalist-canadidaiton[
-                      data-params=confirmation_security_software_name_params.to_json]
-                small#confirmation_security_software_name-description.form-text.text-muted
-              - question_count += 1
-              - %i[security_update security_scan].each do |attr_name|
+            - if @node.physical?
+              - [:os_update, :app_update].each do |attr_name|
                 = f.form_group attr_name, \
                   label: { \
                     text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
@@ -94,11 +52,68 @@
                             Confirmation).each do |message, value|
                     = f.radio_button attr_name, value, label: message
                 - question_count += 1
-            - else
-              p.text-danger
-                | OS情報が登録されていないため、
-                | セキュリティソフトウェアに関する確認ができません。
-                | OS情報を登録後に再度確認作業を実施してください。
+
+
+              - if @confirmation.security_software
+                - attr_name = :security_software
+                = f.form_group attr_name, \
+                  label: { \
+                    text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
+                    tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                  }, \
+                  help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
+                  .form-row
+                    = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
+                      = security_software_f.hidden_field :os_category_id
+                      = security_software_f.select :installation_method,
+                        t_enums(:installation_methods, SecuritySoftware).select \
+                          { |k, v| @installation_methods.include?(v) },
+                        { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } },
+                        class: 'custom-select'
+                      = security_software_f.text_field :name,
+                        list: 'confirmation_security_software_name-list',
+                        disabled: true,
+                        wrapper: { class: 'col-md-8' }
+                      - confirmation_security_software_name_params = { \
+                          parent: 'confirmation',
+                          name: 'security_software',
+                          target: 'name',
+                          order: { confirmations_count: 'desc' },
+                          inputList: ['os_category_id', 'installation_method'],
+                          url: '/security_softwares.json',
+                          requiredInput: 'installation_method',
+                          description: true,
+                          clear: true,
+                          locked: { \
+                            name: 'installation_method',
+                            list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:locked] }.keys,
+                          },
+                          required: { \
+                            name: 'installation_method',
+                            list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:required] }.keys,
+                          },
+                        }
+                      #confirmation_security_software_name-app.datalist-canadidaiton[
+                        data-params=confirmation_security_software_name_params.to_json]
+                  small#confirmation_security_software_name-description.form-text.text-muted
+                - question_count += 1
+                - %i[security_update security_scan].each do |attr_name|
+                  = f.form_group attr_name, \
+                    label: { \
+                      text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
+                      tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                    }, \
+                    help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
+                    - t_enums(attr_name.to_s.pluralize.intern,
+                              Confirmation).each do |message, value|
+                      = f.radio_button attr_name, value, label: message
+                  - question_count += 1
+              - else
+                p.text-danger
+                  | OS情報が登録されていないため、
+                  | セキュリティソフトウェアに関する確認ができません。
+                  | OS情報を登録後に再度確認作業を実施してください。
+
         .modal-footer
           = f.submit '確認終了', class: 'btn btn-primary'
           button.btn.btn-dark data-dismiss="modal"

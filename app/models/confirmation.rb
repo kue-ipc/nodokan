@@ -139,15 +139,22 @@ class Confirmation < ApplicationRecord
   end
 
   def ok?
-    %w[
-      existence
-      content
-      os_update
-      app_update
-      security_update
-      security_scan
-      security_software
-    ].all? { |name| __send__("#{name}_ok?") }
+    if node.physical?
+      %w[
+        existence
+        content
+        os_update
+        app_update
+        security_update
+        security_scan
+        security_software
+      ].all? { |name| __send__("#{name}_ok?") }
+    else
+      %w[
+        existence
+        content
+      ].all? { |name| __send__("#{name}_ok?") }
+    end
   end
 
   alias approvable? ok?
@@ -209,14 +216,20 @@ class Confirmation < ApplicationRecord
   end
 
   def check_and_approve!
-    unless exist?
+    if !exist?
       self.content = :unknown
       self.os_update = :unknown
       self.app_update = :unknown
       self.security_software = nil
-    end
-
-    if security_software.nil?
+      self.security_update = :unknown
+      self.security_scan = :unknown
+    elsif node.virtual?
+      self.os_update = :unknown
+      self.app_update = :unknown
+      self.security_software = nil
+      self.security_update = :unknown
+      self.security_scan = :unknown
+    elsif security_software.nil?
       self.security_update = :unknown
       self.security_scan = :unknown
     end

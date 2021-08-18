@@ -26,6 +26,14 @@ p = t('forms.common.required_input')
             = Node.human_attribute_name(:specific)
           small.text-muted<
             | この端末は特定端末として登録されています。
+    .form-row.virtual-show.d-none
+      .col
+        small.text-secondary<
+          | 「仮想」フラグが選択されています。この端末は実際には存在せず、HAクラスタ等が利用する仮想的なIPアドレスまたは将来利用のために予約されたIPアドレスなどを割り当てるために登録されます。
+          strong 仮想化システム上の仮想マシンのことではありません。
+          | 仮想マシンの場合は、「仮想」のチェックを外し、機器情報で「仮想サーバー」等を選択してください。
+
+
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.place.title')
     small.text-muted = t('forms.node.place.help')
