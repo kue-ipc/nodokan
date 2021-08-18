@@ -406,7 +406,7 @@ class NodesController < ApplicationController
       ],
     )
 
-    if permitted_params[:virtual]
+    if permitted_params[:virtual] == '1'
       place = nil
       hardware = nil
       operating_system = nil
@@ -417,7 +417,7 @@ class NodesController < ApplicationController
       hardware_params[:device_type_id] = hardware_params[:device_type_id].presence
       hardware = Hardware.find_or_initialize_by(hardware_params)
 
-      operating_system = permitted_params[:operating_system][:os_category_id].presence &&
+      operating_system = permitted_params.dig(:operating_system, :os_category_id).presence &&
                          OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
     end
 
