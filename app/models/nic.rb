@@ -13,7 +13,8 @@ class Nic < ApplicationRecord
     vpn: 5,
     virtual: 8,
     nat: 16,
-    share: 17,
+    shared: 17,
+    reserved: 18,
     other: 127,
     unknown: -1,
   }

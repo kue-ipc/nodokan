@@ -14,15 +14,19 @@ p = t('forms.common.required_input')
         wrapper: { class: 'col-md-3' }
       = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
         wrapper: { class: 'col-md-5' }
-    = f.check_box :virtual, custom: true, wrapper: { class: 'col-md-3' }
-    - if current_user.admin?
-      = f.check_box :specific, custom: true
-    - elsif @node.specific
-      span.badge.badge-danger.ml-1
-        = Node.human_attribute_name(:specific)
-      small.text-muted<
-        | この端末は特定端末として登録されています。
-  .rounded.border.p-2.mb-2
+    .form-row
+      .col
+        = f.check_box :virtual, custom: true
+    .form-row
+      .col
+        - if current_user.admin?
+          = f.check_box :specific, custom: true
+        - elsif @node.specific
+          span.badge.badge-danger.ml-1
+            = Node.human_attribute_name(:specific)
+          small.text-muted<
+            | この端末は特定端末として登録されています。
+  .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.place.title')
     small.text-muted = t('forms.node.place.help')
     .form-row
@@ -74,7 +78,7 @@ p = t('forms.common.required_input')
           data-params=node_place_room_params.to_json
         )
 
-  .rounded.border.p-2.mb-2
+  .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.hardware.title')
     small.text-muted = t('forms.node.hardware.help')
     .form-row
@@ -126,7 +130,7 @@ p = t('forms.common.required_input')
           data-params=node_hardware_model_number_params.to_json
         )
 
-  .rounded.border.p-2.mb-2
+  .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.operating_system.title')
     small.text-muted = t('forms.node.operating_system.help')
     .form-row
@@ -275,3 +279,4 @@ p = t('forms.common.required_input')
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
 = javascript_pack_tag 'node-nic', 'data-turbolinks-track': 'reload'
+= javascript_pack_tag 'node-virtual', 'data-turbolinks-track': 'reload'

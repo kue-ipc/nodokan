@@ -374,6 +374,7 @@ ja:
         user: 所有者
         user_id: 所有者
         specific: 特定
+        virtual: 仮想
       os_category:
         name: 種別名
         icon: アイコン
@@ -456,7 +457,8 @@ ja:
         vpn: VPN
         virtual: 仮想
         nat: NAT
-        share: 共有
+        shared: 共有
+        reserved: 予約
         other: その他
         unknown: 不明
       ipv4_configs:
