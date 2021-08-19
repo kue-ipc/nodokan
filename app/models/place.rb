@@ -17,6 +17,10 @@ class Place < ApplicationRecord
     [area, building, floor_human, room].select(&:present?).join(' ')
   end
 
+  def short_name
+    room.presence || building.presence || area
+  end
+
   def floor_human
     if floor.zero?
       ''

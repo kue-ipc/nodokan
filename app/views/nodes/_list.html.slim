@@ -52,7 +52,7 @@ table.table.table-hover.table-sm
             span.badge.badge-secondary.ml-1
               = Node.human_attribute_name(:virtual)
         td = node.hostname
-        td = node.place&.room
+        td = node.place&.short_name
         td = node.hardware&.product_name
         td = node.operating_system&.name
         td.text-nowrap
