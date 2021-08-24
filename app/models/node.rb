@@ -1,4 +1,9 @@
 class Node < ApplicationRecord
+  FLAGS = {
+    specific: 's',
+    virtual: 'v',
+  }.freeze
+
   belongs_to :user, counter_cache: true
 
   belongs_to :place, optional: true, counter_cache: true
@@ -39,5 +44,13 @@ class Node < ApplicationRecord
 
   def physical?
     !virtual
+  end
+
+  def flag
+    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
+  end
+
+  def flag=(str)
+    FLAGS.each { |attr, c| self[attr] = str&.include?(c) }
   end
 end

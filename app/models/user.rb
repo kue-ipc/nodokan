@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  FLAGS = {
+    deleted: 'd',
+  }.freeze
+
   # Include default devise modules.
   # :database_authenticatable or :ldap_authenticatable
   # Others available are:
@@ -207,5 +211,13 @@ class User < ApplicationRecord
     else
       RadiusUserDelJob.perform_later(username)
     end
+  end
+
+  def flag
+    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
+  end
+
+  def flag=(str)
+    FLAGS.each { |attr, c| self[attr] = str&.include?(c) }
   end
 end

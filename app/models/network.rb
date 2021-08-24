@@ -271,11 +271,11 @@ class Network < ApplicationRecord
   end
 
   def flag
-    FLAGS.map { |attr, c| self[attr] ? c : nil }.compact.join.presence
+    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
   end
 
   def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = str.present? && str.include?(c) }
+    FLAGS.each { |attr, c| self[attr] = str&.include?(c) }
   end
 
   def auth?(user)

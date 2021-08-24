@@ -2,6 +2,11 @@ class Nic < ApplicationRecord
   include Ipv4Config
   include Ipv6Config
 
+  FLAGS = {
+    auth: 'a',
+    locked: 'l',
+  }.freeze
+
   belongs_to :node, counter_cache: true
   belongs_to :network, counter_cache: true
 
@@ -343,6 +348,14 @@ class Nic < ApplicationRecord
     if old_nic&.duid_data.present? && old_nic.duid_data != duid_data
       KeaReservation6DelJob.perform_later(old_nic.duid_data)
     end
+  end
+
+  def flag
+    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
+  end
+
+  def flag=(str)
+    FLAGS.each { |attr, c| self[attr] = str&.include?(c) }
   end
 
   private def hex_str(list, char_case: :lower, sep: nil)
