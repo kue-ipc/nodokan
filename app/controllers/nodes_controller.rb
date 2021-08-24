@@ -6,7 +6,7 @@ class NodesController < ApplicationController
   # GET /nodes.json
   def index
     permitted_params = params.permit(
-      :page, :per, :format,
+      :page, :per,
       :query,
       :search,
       order: [
@@ -135,7 +135,11 @@ class NodesController < ApplicationController
       end
     end
 
-    @nodes = @nodes.page(@page).per(@per) unless permitted_params[:format] == 'csv'
+    respond_to do |format|
+      format.html { @nodes = @nodes.page(@page).per(@per) }
+      format.json { @nodes = @nodes.page(@page).per(@per) }
+      format.csv { @nodes }
+    end
   end
 
   # GET /nodes/1
