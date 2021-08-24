@@ -138,7 +138,7 @@ class NodesController < ApplicationController
     respond_to do |format|
       format.html { @nodes = @nodes.page(@page).per(@per) }
       format.json { @nodes = @nodes.page(@page).per(@per) }
-      format.csv { @nodes }
+      format.csv { @nodes = @nodes.includes(hardware: :device_type, operating_system: :os_category) }
     end
   end
 
