@@ -1,38 +1,7 @@
 <%== "\u{feff}" -%>
-<%- require 'csv' -%>
-<%= %w[
-  action
-  id
-  name
-  flag
-  vlan
-  ipv4_network
-  ipv4_gateway
-  ipv4_pools
-  ipv6_network
-  ipv6_gateway
-  ipv6_pools
-  note
-  result
-  message
-].join(',') %>
+<%- require 'import_export/network_csv' -%>
+<%- network_csv = ImportExport::NetworkCSV.new(nil, logger: logger) -%>
+<%== network_csv.header.to_csv -%>
 <%- @networks.each do |network| -%>
-<%==
-[
-  nil,
-  network.id,
-  network.name,
-  network.flag,
-  network.vlan,
-  network.ipv4_network&.to_string,
-  network.ipv4_gateway,
-  network.ipv4_pools.map(&:identifier).join(' '),
-  network.ipv6_network&.to_string,
-  network.ipv6_gateway,
-  network.ipv6_pools.map.map(&:identifier).join(' '),
-  network.note,
-  :success,
-  nil,
-].to_csv
--%>
+<%== network_csv.record_to_row_with_id(network) -%>
 <%- end -%>

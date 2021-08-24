@@ -8,7 +8,6 @@ class NetworksController < ApplicationController
     permitted_params = params.permit(
       :page,
       :per,
-      :format,
       :query,
       order: [
         :id, :name, :vlan, :ipv4_network, :ipv6_network,
@@ -40,7 +39,11 @@ class NetworksController < ApplicationController
       @networks = @networks.order(order_hash)
     end
 
-    @networks = @networks.page(@page).per(@per) unless permitted_params[:format] == 'csv'
+    respond_to do |format|
+      format.html { @networks = @networks.page(@page).per(@per) }
+      format.json { @networks = @networks.page(@page).per(@per) }
+      format.csv { @networks }
+    end
   end
 
   # GET /networks/1

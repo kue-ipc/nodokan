@@ -6,7 +6,6 @@ class UsersController < ApplicationController
     permitted_params = params.permit(
       :page,
       :per,
-      :format,
       :query,
       order: [:username, :email, :fullname, :role, :nodes_count],
       condition: [:username, :email, :fullname, :role, :deleted],
@@ -32,6 +31,12 @@ class UsersController < ApplicationController
     @users = @users.order(@order.to_h) if @order
 
     @users = @users.page(@page).per(@per) unless permitted_params[:format] == 'csv'
+
+    respond_to do |format|
+      format.html { @users = @users.page(@page).per(@per) }
+      format.json { @users = @users.page(@page).per(@per) }
+      format.csv { @users }
+    end
   end
 
   def show

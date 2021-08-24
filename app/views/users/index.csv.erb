@@ -1,32 +1,7 @@
 <%== "\u{feff}" -%>
-<%- require 'csv' -%>
-<%= %w[
-  action
-  id
-  username
-  email
-  fullname
-  role
-  deleted
-  auth_network
-  networks
-  result
-  message
-].join(',') %>
+<%- require 'import_export/user_csv' -%>
+<%- user_csv = ImportExport::UserCSV.new(nil, logger: logger) -%>
+<%== user_csv.header.to_csv -%>
 <%- @users.each do |user| -%>
-<%==
-[
-  '',
-  user.id,
-  user.username,
-  user.email,
-  user.fullname,
-  user.role,
-  user.deleted,
-  user.auth_network&.identifier,
-  user.use_networks.map(&:identifier).join(' '),
-  'success',
-  '',
-].to_csv
--%>
+<%== user_csv.record_to_row_with_id(user) -%>
 <%- end -%>
