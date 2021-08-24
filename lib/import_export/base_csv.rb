@@ -72,27 +72,30 @@ module ImportExport
     end
 
     def do_action(row)
-      if row['action'].blank?
-        row['result'] = :skip
-        return
-      end
-
-      success, message =
-        case row['action'].first.upcase
-        when 'C' then create(row)
-        when 'R' then read(row)
-        when 'U' then update(row)
-        when 'D' then delete(row)
-        else raise "unknown action: #{row['action']}"
+      model_class.transaction do
+        if row['action'].blank?
+          row['result'] = :skip
+          return
         end
 
-      if success
+        success, message =
+          case row['action'].first.upcase
+          when 'C' then create(row)
+          when 'R' then read(row)
+          when 'U' then update(row)
+          when 'D' then delete(row)
+          else raise "unknown action: #{row['action']}"
+          end
+
+        unless success
+          row['result'] = :failure
+          row['message'] = message
+          raise ActiveRecord::Rollback
+        end
+
         row['action'] = nil
         row['result'] = :success
         row['message'] = nil
-      else
-        row['result'] = :failure
-        row['message'] = message
       end
       row
     end
