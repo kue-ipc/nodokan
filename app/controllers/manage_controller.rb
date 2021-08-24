@@ -14,4 +14,12 @@ class ManageController < ApplicationController
   def security_softwares
     authorize SecuritySoftware, :manage?
   end
+
+  def device_types
+    authorize DeviceType, :manage?
+  end
+
+  def os_categories
+    authorize OsCategory, :manage?
+  end
 end

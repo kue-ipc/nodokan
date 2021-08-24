@@ -27,6 +27,8 @@ Rails.application.routes.draw do
     get 'hardwares'
     get 'operating_systems'
     get 'security_softwares'
+    get 'device_types'
+    get 'os_categories'
     end
 
   resources :users, only: [:index, :show, :update] do

@@ -62,6 +62,18 @@ h3 利用者メニュー
           | OS管理
         .card-body
           | OSの管理を行います。
+    .col-md-6.col-lg-4.my-1
+      = link_to manage_os_categories_path, class: 'card border-warning' do
+        .card-header.text-center
+          | OS種別管理
+        .card-body
+          | OS種別の管理を行います。
+    .col-md-6.col-lg-4.my-1
+      = link_to manage_device_types_path, class: 'card border-warning' do
+        .card-header.text-center
+          | 機器形態
+        .card-body
+          | 機器形態の管理を行います。
     / .col-md-6.col-lg-4.my-1
     /   = link_to manage_security_softwares_path, class: 'card border-warning' do
     /     .card-header.text-center
