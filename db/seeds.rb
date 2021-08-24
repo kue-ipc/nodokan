@@ -25,7 +25,7 @@ def create_models(model_class)
 end
 
 create_models(DeviceType)
-create_models(Hardware)
+# create_models(Hardware)
 
 create_models(OsCategory)
 create_models(OperatingSystem)
