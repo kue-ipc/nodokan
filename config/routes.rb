@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  get 'device_types/index'
+  get 'device_types/show'
+  get 'device_types/create'
+  get 'device_types/update'
+  get 'device_types/destroy'
+  get 'os_categories/index'
+  get 'os_categories/show'
+  get 'os_categories/create'
+  get 'os_categories/update'
+  get 'os_categories/destroy'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: 'pages#top'
   get 'about', to: 'pages#about'
