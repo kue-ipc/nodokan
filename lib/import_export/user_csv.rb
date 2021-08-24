@@ -12,7 +12,7 @@ module ImportExport
         email
         fullname
         role
-        deleted
+        flag
         auth_network
         networks
       ]
@@ -30,7 +30,7 @@ module ImportExport
       row['email'] = user.email
       row['fullname'] = user.fullname
       row['role'] = user.role
-      row['deleted'] = user.deleted
+      row['flag'] = user.flag
       row['auth_network'] = user.auth_network&.identifier
       row['networks'] = user.use_networks.map(&:identifier).sort.join(' ').presence
       row
@@ -42,7 +42,7 @@ module ImportExport
         email: row['email'],
         fullname: row['fullname'],
         role: row['role'],
-        deleted: %w[true 1 on yes].include?(row['deleted'].downcase),
+        flag: row['flag'],
         auth_network: Network.find_identifier(row['auth_network']),
       )
       user.clear_use_networks

@@ -10,6 +10,7 @@ module ImportExport
       %w[
         user
         name
+        flag
         hostname
         domain
         place[area]
@@ -25,7 +26,7 @@ module ImportExport
         nic[name]
         nic[interface_type]
         nic[network]
-        nic[auth]
+        nic[flag]
         nic[mac_address]
         nic[duid]
         nic[ipv4_config]
@@ -46,7 +47,7 @@ module ImportExport
         name: nic&.name,
         interface_type: nic&.interface_type,
         network: nic&.network&.identifier,
-        auth: nic&.auth,
+        flag: nic&.flag,
         mac_address: nic&.mac_address,
         duid: nic&.duid,
         ipv4_config: nic&.ipv4_config,
@@ -61,7 +62,7 @@ module ImportExport
         name: data[:name],
         interface_type: data[:interface_type],
         network: Network.find_identifier(data[:network]),
-        auth: data[:auth],
+        flag: data[:flag],
         mac_address: data[:mac_address],
         duid: data[:duid],
         ipv4_config: data[:ipv4_config],
@@ -75,6 +76,7 @@ module ImportExport
     def record_to_row(node, row = CSV::Row.new(header.headers, []))
       row['user'] = node.user.username
       row['name'] = node.name
+      row['flag'] = node.flag
       row['hostname'] = node.hostname
       row['domain'] = node.domain
       row['place[area]'] = node.place&.area
@@ -102,6 +104,7 @@ module ImportExport
       node.assign_attributes(
         user: User.find_by(username: row['user']),
         name: row['name'],
+        flag: row['flag'],
         hostname: row['hostname'],
         domain: row['domain'],
         note: row['note'],
@@ -137,7 +140,7 @@ module ImportExport
           name: row['nic[name]'],
           interface_type: row['nic[interface_type]'],
           network: row['nic[network]'],
-          auth: %w[true 1 on yes].include?(row['nic[auth]']&.downcase),
+          flag: row['nic[flag]'],
           mac_address: row['nic[mac_address]'],
           duid: row['nic[duid]'],
           ipv4_config: row['nic[ipv4_config]'].presence || 'disabled',
