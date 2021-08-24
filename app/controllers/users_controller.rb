@@ -30,8 +30,6 @@ class UsersController < ApplicationController
 
     @users = @users.order(@order.to_h) if @order
 
-    @users = @users.page(@page).per(@per) unless permitted_params[:format] == 'csv'
-
     respond_to do |format|
       format.html { @users = @users.page(@page).per(@per) }
       format.json { @users = @users.page(@page).per(@per) }
