@@ -73,7 +73,6 @@ module ImportExport
     end
 
     def record_to_row(node, row = CSV::Row.new(header.headers, []))
-      row['id'] = node.id
       row['user'] = node.user.username
       row['name'] = node.name
       row['hostname'] = node.hostname

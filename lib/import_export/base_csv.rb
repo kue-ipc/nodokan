@@ -125,6 +125,11 @@ module ImportExport
       raise NotImplementedError
     end
 
+    def record_to_row_with_id(record, row = CSV::Row.new(header.headers, []))
+      row['id'] = record.id
+      record_to_row(record, row)
+    end
+
     def row_to_record(row, record = model_class.new)
       raise NotImplementedError
     end
@@ -166,7 +171,6 @@ module ImportExport
       return [false, 'Not found.'] unless record
 
       row['id'] = record.id
-
       row_to_record(row, record)
 
       if record.save

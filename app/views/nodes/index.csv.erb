@@ -1,66 +1,7 @@
 <%== "\u{feff}" -%>
-<%- require 'csv' -%>
-<%= %w[
-  action
-  id
-  user
-  name
-  hostname
-  domain
-  place[area]
-  place[building]
-  place[floor]
-  place[room]
-  hardware[device_type]
-  hardware[maker]
-  hardware[product_name]
-  hardware[model_number]
-  operating_system[os_category]
-  operating_system[name]
-  nic[name]
-  nic[interface_type]
-  nic[network]
-  nic[auth]
-  nic[mac_address]
-  nic[duid]
-  nic[ipv4_config]
-  nic[ipv4_address]
-  nic[ipv6_config]
-  nic[ipv6_address]
-  note
-  result
-  message
-].join(',') %>
+<%- require 'import_export/node_csv' -%>
+<%- node_csv = ImportExport::NodeCSV.new(nil, logger: logger) -%>
+<%== node_csv.header.to_csv -%>
 <%- @nodes.each do |node| -%>
-<%==
-[
-  '',
-  node.id,
-  node.user.username,
-  node.name,
-  node.hostname,
-  node.domain,
-  node.place&.area,
-  node.place&.building,
-  node.place&.floor,
-  node.place&.room,
-  node.hardware&.device_type,
-  node.hardware&.maker,
-  node.hardware&.product_name,
-  node.hardware&.model_number,
-  node.operating_system&.os_category,
-  node.operating_system&.name,
-  node.nics.first&.name,
-  node.nics.first&.interface_type,
-  node.nics.first&.network&.identifier,
-  node.nics.first&.auth,
-  node.nics.first&.mac_address,
-  node.nics.first&.duid,
-  node.nics.first&.ipv4_config,
-  node.nics.first&.ipv4_address,
-  node.nics.first&.ipv6_config,
-  node.nics.first&.ipv6_address,
-  node.note
-].to_csv
--%>
+<%== node_csv.record_to_row_with_id(node) -%>
 <%- end -%>
