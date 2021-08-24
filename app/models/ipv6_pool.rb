@@ -91,11 +91,11 @@ class Ipv6Pool < ApplicationRecord
       when '!'
         'disabled'
       else
-        logger.error("Invalid Ipv4Pool idetifier: #{str}")
-        raise ArgumentError, "Invalid Ipv4Pool idetifier: #{str}"
+        logger.error("Invalid Ipv6Pool idetifier: #{str}")
+        raise ArgumentError, "Invalid Ipv6Pool idetifier: #{str}"
       end
 
-    Ipv4Pool.new(
+    Ipv6Pool.new(
       ipv6_config: config,
       ipv6_first_address: first,
       ipv6_last_address: last,

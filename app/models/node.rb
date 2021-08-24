@@ -51,6 +51,6 @@ class Node < ApplicationRecord
   end
 
   def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = str&.include?(c) }
+    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 end

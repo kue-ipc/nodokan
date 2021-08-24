@@ -355,7 +355,7 @@ class Nic < ApplicationRecord
   end
 
   def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = str&.include?(c) }
+    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 
   private def hex_str(list, char_case: :lower, sep: nil)
