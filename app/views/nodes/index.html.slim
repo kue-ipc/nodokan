@@ -7,7 +7,7 @@
   = link_to t('actions.new'), new_node_path, class: 'btn btn-secondary mr-2'
   = link_to 'CSVダウンロード', nodes_path(format: :csv),
       class: 'btn btn-primary',
-      download: "node_#{Time.now.strftime('%Y%m%d')}.csv"
+      download: "nodes_#{Time.now.strftime('%Y%m%d')}.csv"
 
 p
   | 1年に1度、端末の確認を行ってください。
