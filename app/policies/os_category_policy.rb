@@ -1,4 +1,4 @@
-class SecuritySoftwarePolicy < ApplicationPolicy
+class OsCategoryPolicy < ApplicationPolicy
   class Scope < Scope
   end
 

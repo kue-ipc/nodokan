@@ -1,7 +1,11 @@
 class NetworkPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope.all
+      if user.admin?
+        scope.all
+      else
+        scope.joins(:users).where(users: user)
+      end
     end
   end
 

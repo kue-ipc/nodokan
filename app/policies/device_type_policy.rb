@@ -1,4 +1,4 @@
-class HardwarePolicy < ApplicationPolicy
+class DeviceTypePolicy < ApplicationPolicy
   class Scope < Scope
   end
 

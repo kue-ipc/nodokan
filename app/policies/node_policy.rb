@@ -9,10 +9,6 @@ class NodePolicy < ApplicationPolicy
     end
   end
 
-  def index?
-    true
-  end
-
   def show?
     user.admin? || record.user == user
   end
