@@ -57,6 +57,11 @@ class Nic < ApplicationRecord
   before_update :old_nic
   after_commit :radius_mac, :kea_reservation
 
+  def global?
+    ipv4_global? || ipv6_global?
+  end
+  alias global global?
+
   def mac_address_gl
     @mac_address_gl ||= !((mac_address_list.first || 0) & 0x02).zero?
   end
@@ -140,6 +145,10 @@ class Nic < ApplicationRecord
               IPAddress::IPv4.parse_data(ipv4_data, network.ipv4_prefix_length)
   end
 
+  def ipv4_global?
+    !(ipv4.nil? || ipv4.private?)
+  end
+
   def ipv4_address
     @ipv4_address ||= (ipv4&.to_s || '')
   end
@@ -157,6 +166,10 @@ class Nic < ApplicationRecord
     # bug? IPv6.parse_data is not prefix
     @ipv6 ||= ipv6_data.presence &&
               IPAddress::IPv6.parse_hex(ipv6_data.unpack('H*').first, network.ipv6_prefix_length)
+  end
+
+  def ipv6_global?
+    !(ipv6.nil? || ipv6.unique_local?)
   end
 
   def ipv6_address

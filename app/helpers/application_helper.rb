@@ -92,6 +92,14 @@ module ApplicationHelper
         list_html
       end
     when IPAddress
+      opts[:class] ||= []
+      case value
+      when IPAddress::IPv4
+        opts[:class] << 'text-danger' unless value.private?
+      when IPAddress::IPv6
+        opts[:class] << 'text-danger' unless value.unique_local?
+      end
+
       if value.network?
         span_text_tag(value.to_string, **opts)
       else
@@ -106,13 +114,13 @@ module ApplicationHelper
     end
   end
 
-  def span_text_tag(value = nil, around: nil, **_, &block)
+  def span_text_tag(value = nil, around: nil, **opts, &block)
     if around.present?
       tag.span(around[0], class: 'text-muted') +
-        tag.span(value, &block) +
+        tag.span(value, **opts, &block) +
         tag.span(around[1], class: 'text-muted')
     else
-      tag.span(value, &block)
+      tag.span(value, **opts, &block)
     end
   end
 

@@ -30,6 +30,11 @@ class Node < ApplicationRecord
   normalize_attribute :domain, with: [:strip, :blank, :downcase]
   normalize_attribute :note
 
+  def global?
+    nics.any?(&:global?)
+  end
+  alias global global?
+
   def fqdn
     return if hostname.blank?
 

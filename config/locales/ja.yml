@@ -313,7 +313,6 @@ ja:
         locked: ロック
         specific: 特定
         global: 外部
-        public: 公開
         ipv4_network_address: IPv4ネットワークアドレス
         ipv4_netmask: IPv4サブネットマスク
         ipv4_prefix_length: IPv4プレフィックス長
@@ -347,6 +346,7 @@ ja:
         flags: フラグ
         locked: ロック
         auth: 認証
+        global: 外部
         interface_type: 接続形態
         mac_address: MACアドレス
         duid: DUID(DHCP固有識別子)
@@ -377,6 +377,8 @@ ja:
         user_id: 所有者
         specific: 特定
         virtual: 仮想
+        global: 外部
+        public: 公開
       os_category:
         name: 種別名
         icon: アイコン
