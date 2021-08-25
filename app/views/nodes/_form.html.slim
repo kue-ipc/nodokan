@@ -14,25 +14,47 @@ p = t('forms.common.required_input')
         wrapper: { class: 'col-md-3' }
       = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
         wrapper: { class: 'col-md-5' }
-    .form-row
-      .col
-        = f.check_box :virtual, custom: true
-    .form-row
-      .col
-        - if current_user.admin?
+    - if current_user.admin?
+      .form-row
+        .col
+          = f.check_box :virtual, custom: true
+        .col
           = f.check_box :specific, custom: true
-        - elsif @node.specific
-          span.badge.badge-danger.ml-1
-            = Node.human_attribute_name(:specific)
-          small.text-muted<
-            | この端末は特定端末として登録されています。
+        .col
+          = f.check_box :public, custom: true
+        .col
+          = f.check_box :dns, custom:true
+    - else
+      .form-row
+          .col
+            = f.check_box :virtual, custom: true
+      - if @node.specific
+        .form-row
+          .col
+            span.badge.badge-warning.ml-1
+              = Node.human_attribute_name(:specific)
+            small.text-muted<
+              | この端末は特定端末として登録されています。(解除したい場合は、閲覧画面から特定端末の申請を行ってください。)
+      - if @node.public
+        .form-row
+          .col
+            span.badge.badge-primary.ml-1
+              = Node.human_attribute_name(:public)
+            small.text-muted<
+              | この端末はインターネットに公開されています。(負荷分散装置やリバースプロキシ等により間接的に公開されている場合を含みます。)
+      - if @node.dns
+        .form-row
+          .col
+            span.badge.badge-success.ml-1
+              = Node.human_attribute_name(:dns)
+            small.text-muted<
+              | この端末はDNSに登録されています。(DNSに登録されているIPアドレスはロックされています。)
     .form-row.virtual-show.d-none
       .col
         small.text-secondary<
-          | 「仮想」フラグが選択されています。この端末は実際には存在せず、HAクラスタ等が利用する仮想的なIPアドレスまたは将来利用のために予約されたIPアドレスなどを割り当てるために登録されます。
+          | 「仮想」フラグが選択されています。この端末は実際には存在せず、HAクラスタや予約等の目的で登録されます。
           strong 仮想化システム上の仮想マシンのことではありません。
           | 仮想マシンの場合は、「仮想」のチェックを外し、機器情報で「仮想サーバー」等を選択してください。
-
 
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.place.title')

@@ -379,6 +379,7 @@ ja:
         virtual: 仮想
         global: 外部
         public: 公開
+        dns: DNS
       os_category:
         name: 種別名
         icon: アイコン

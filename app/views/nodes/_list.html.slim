@@ -54,6 +54,12 @@ table.table.table-hover.table-sm
           - if node.global
             span.badge.badge-danger.ml-1
               = Node.human_attribute_name(:global)
+          - if node.public
+            span.badge.badge-primary.ml-1
+              = Node.human_attribute_name(:public)
+          - if node.dns
+            span.badge.badge-success.ml-1
+              = Node.human_attribute_name(:dns)
         td = node.hostname
         td = node.place&.short_name
         td = node.hardware&.product_name

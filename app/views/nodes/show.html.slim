@@ -13,6 +13,12 @@ dl
     - if @node.global
       span.badge.badge-danger.ml-1
         = Node.human_attribute_name(:global)
+    - if @node.public
+      span.badge.badge-primary.ml-1
+        = Node.human_attribute_name(:public)
+    - if @node.dns
+      span.badge.badge-success.ml-1
+        = Node.human_attribute_name(:dns)
   = dt_dd_for @node, :fqdn
   - unless @node.virtual
     = dt_dd_for @node, :place do |place|

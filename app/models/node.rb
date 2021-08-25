@@ -2,6 +2,8 @@ class Node < ApplicationRecord
   FLAGS = {
     specific: 's',
     virtual: 'v',
+    pulbic: 'p',
+    dns: 'd'
   }.freeze
 
   belongs_to :user, counter_cache: true

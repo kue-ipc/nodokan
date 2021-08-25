@@ -388,6 +388,8 @@ class NodesController < ApplicationController
       :domain,
       :specific,
       :virtual,
+      :public,
+      :dns,
       :note,
       :user_id,
       place: [:area, :building, :floor, :room],
