@@ -55,6 +55,9 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
+  validates :ipv4_network, allow_nil: true, ipv4_network: true
+  validates :ipv6_network, allow_nil: true, ipv6_network: true
+
   after_commit :kea_subnet4, :kea_subnet6
 
   # IPv4
@@ -64,6 +67,10 @@ class Network < ApplicationRecord
     @ipv4_network ||=
       ipv4_network_data.presence &&
       IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefix_length)
+  end
+
+  def ipv4_network_global?
+    !(@ipv4_network.private?)
   end
 
   def ipv4_network_prefix
@@ -123,6 +130,10 @@ class Network < ApplicationRecord
       IPAddress::IPv6.parse_data(ipv6_network_data).tap do |ipv6|
         ipv6.prefix = ipv6_prefix_length
       end
+  end
+
+  def ipv6_network_global?
+    !(@ipv6_network.unique_local?)
   end
 
   def ipv6_network_prefix
@@ -235,7 +246,8 @@ class Network < ApplicationRecord
     return unless ipv6_network
 
     # bug? first is network address
-    (ipv6_network.first.next...ipv6_network.last).find do |ipv6|
+    (ipv6_network.first..ipv6_network.last).find do |ipv6|
+      next if ipv6.network?
       next if ipv6 == ipv6_gateway
 
       ipv6_pools.all? do |ipv6_pool|

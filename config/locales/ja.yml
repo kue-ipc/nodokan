@@ -594,6 +594,19 @@ ja:
       invalid: 不正な値です
       invalid_ipv4_address: IPv4アドレスではありません
       invalid_ipv6_address: IPv6アドレスではありません
+      not_ipv4_network: ネットワークアドレスではありません、アドレスまたはサブネットマスクが間違っています
+      not_ipv6_network: ネットワークアドレスではありません、アドレスまたはプレフィックスが間違っています
+      ipv4_unspecified: 未指定アドレスを設定することはできません。
+      ipv4_loopback: ループバックアドレスを設定することはできません
+      ipv4_link_local: リンクローカルアドレスを設定することはできません
+      ipv4_multicast: マルチキャストアドレスを設定することはできません
+      ipv6_unspecified: 未指定アドレスを設定することはできません。
+      ipv6_loopback: ループバックアドレスを設定することはできません
+      ipv6_link_local: リンクローカルアドレスを設定することはできません
+      ipv6_multicast: マルチキャストアドレスを設定することはできません
+      ipv6_mapped: IPv4射影IPv6アドレスを設定することはできません
+
+
       less_than: "%{count}より小さい値にしてください"
       less_than_or_equal_to: "%{count}以下の値にしてください"
       model_invalid: "バリデーションに失敗しました: %{errors}"
