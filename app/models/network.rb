@@ -60,6 +60,11 @@ class Network < ApplicationRecord
 
   after_commit :kea_subnet4, :kea_subnet6
 
+  def global?
+    ipv4_network_global? || ipv6_network_global?
+  end
+  alias global global?
+
   # IPv4
 
   # readonly
@@ -70,7 +75,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_network_global?
-    !(@ipv4_network.private?)
+    !(ipv4_network.nil? || ipv4_network.private?)
   end
 
   def ipv4_network_prefix
@@ -133,7 +138,7 @@ class Network < ApplicationRecord
   end
 
   def ipv6_network_global?
-    !(@ipv6_network.unique_local?)
+    !(ipv6_network.nil? || ipv6_network.unique_local?)
   end
 
   def ipv6_network_prefix
@@ -270,16 +275,16 @@ class Network < ApplicationRecord
       end
   end
 
-  def kea_subnet4
-    if !destroyed? && dhcp && ipv4_network
-      KeaSubnet4AddJob.perform_later(self)
-    else
-      KeaSubnet4DelJob.perform_later(self)
-    end
+  def ipv4_include?(ipv4)
+    return false unless ipv4_network
+
+    ipv4_network.include?(ipv4)
   end
 
-  def kea_subnet6
-    # TODO
+  def ipv6_include?(ipv6)
+    return false unless ipv6_network
+
+    ipv6_network.include?(ipv6)
   end
 
   def flag
@@ -300,6 +305,18 @@ class Network < ApplicationRecord
 
   def manageable?(user)
     user.admin? || manage_users.exists?(user.id)
+  end
+
+  def kea_subnet4
+    if !destroyed? && dhcp && ipv4_network
+      KeaSubnet4AddJob.perform_later(self)
+    else
+      KeaSubnet4DelJob.perform_later(self)
+    end
+  end
+
+  def kea_subnet6
+    # TODO
   end
 
   # class methods

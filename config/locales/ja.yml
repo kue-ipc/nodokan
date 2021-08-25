@@ -312,6 +312,8 @@ ja:
         dhcp: DHCP
         locked: ロック
         specific: 特定
+        global: 外部
+        public: 公開
         ipv4_network_address: IPv4ネットワークアドレス
         ipv4_netmask: IPv4サブネットマスク
         ipv4_prefix_length: IPv4プレフィックス長

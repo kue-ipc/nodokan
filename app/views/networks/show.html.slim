@@ -15,8 +15,12 @@ dl
       span.badge.badge-dark.ml-1
         = Network.human_attribute_name(:locked)
     - if @network.specific
-      span.badge.badge-danger.ml-1
+      span.badge.badge-warning.ml-1
         = Network.human_attribute_name(:specific)
+    - if @network.global
+      span.badge.badge-danger.ml-1
+        = Network.human_attribute_name(:global)
+
   = dt_dd_for @network, :vlan
   = dt_dd_for @network, :ipv4_network
   = dt_dd_for @network, :ipv4_gateway

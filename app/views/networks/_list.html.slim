@@ -42,8 +42,12 @@ table.table.table-hover.table-sm
             span.badge.badge-dark.ml-1
               = Network.human_attribute_name(:locked)
           - if network.specific
-            span.badge.badge-danger.ml-1
+            span.badge.badge-warning.ml-1
               = Network.human_attribute_name(:specific)
+          - if network.global
+            span.badge.badge-danger.ml-1
+              = Network.human_attribute_name(:global)
+
         td = network.vlan
         td = network.ipv4_network&.to_string
         td = network.ipv6_network&.to_string
