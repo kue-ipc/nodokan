@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ipv4_data: 
+  mac_address_data: 
+  discovered_at: 2021-08-26 16:58:10
+
+two:
+  ipv4_data: 
+  mac_address_data: 
+  discovered_at: 2021-08-26 16:58:10

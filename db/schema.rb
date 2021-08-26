@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_25_030931) do
+ActiveRecord::Schema.define(version: 2021_08_26_075835) do
 
   create_table "assignments", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -85,6 +85,16 @@ ActiveRecord::Schema.define(version: 2021_08_25_030931) do
     t.index ["product_name"], name: "index_hardwares_on_product_name"
   end
 
+  create_table "ipv4_arps", charset: "utf8mb4", force: :cascade do |t|
+    t.binary "ipv4_data", limit: 4, null: false
+    t.binary "mac_address_data", limit: 6, null: false
+    t.datetime "discovered_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ipv4_data"], name: "index_ipv4_arps_on_ipv4_data"
+    t.index ["mac_address_data"], name: "index_ipv4_arps_on_mac_address_data"
+  end
+
   create_table "ipv4_pools", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "network_id", null: false
     t.integer "ipv4_config", limit: 1, null: false
@@ -93,6 +103,16 @@ ActiveRecord::Schema.define(version: 2021_08_25_030931) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["network_id"], name: "index_ipv4_pools_on_network_id"
+  end
+
+  create_table "ipv6_neighbors", charset: "utf8mb4", force: :cascade do |t|
+    t.binary "ipv6_data", limit: 16, null: false
+    t.binary "mac_address_data", limit: 6, null: false
+    t.datetime "discovered_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ipv6_data"], name: "index_ipv6_neighbors_on_ipv6_data"
+    t.index ["mac_address_data"], name: "index_ipv6_neighbors_on_mac_address_data"
   end
 
   create_table "ipv6_pools", charset: "utf8mb4", force: :cascade do |t|
