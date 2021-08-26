@@ -3,11 +3,9 @@ module Kea
     self.primary_key = 'scope_id'
     self.table_name = 'dhcp_option_scope'
 
-    has_many :dhcp4_options,
-      primary_key: 'scope_id', foreign_key: 'scope_id',
+    has_many :dhcp4_options, primary_key: 'scope_id', foreign_key: 'scope_id',
       dependent: :restrict_with_exception, inverse_of: :dhcp_option_scope
-    has_many :dhcp6_options,
-      primary_key: 'scope_id', foreign_key: 'scope_id',
+    has_many :dhcp6_options, primary_key: 'scope_id', foreign_key: 'scope_id',
       dependent: :restrict_with_exception, inverse_of: :dhcp_option_scope
 
     def name
