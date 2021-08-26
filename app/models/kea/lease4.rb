@@ -10,10 +10,6 @@ module Kea
       @ipv4 ||= IPAddress::IPv4.parse_u32(address)
     end
 
-    def ipv4_address
-      ipv4.to_s
-    end
-
     def name
       ipv4_address
     end
