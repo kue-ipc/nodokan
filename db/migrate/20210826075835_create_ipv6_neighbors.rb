@@ -7,5 +7,7 @@ class CreateIpv6Neighbors < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+
+    add_index :ipv6_neighbors, [:ipv6_data, :mac_address_data], unique: true
   end
 end

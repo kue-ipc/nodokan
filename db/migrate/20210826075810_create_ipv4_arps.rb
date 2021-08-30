@@ -7,5 +7,7 @@ class CreateIpv4Arps < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+
+    add_index :ipv4_arps, [:ipv4_data, :mac_address_data], unique: true
   end
 end
