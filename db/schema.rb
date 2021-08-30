@@ -88,7 +88,7 @@ ActiveRecord::Schema.define(version: 2021_08_26_075835) do
   create_table "ipv4_arps", charset: "utf8mb4", force: :cascade do |t|
     t.binary "ipv4_data", limit: 4, null: false
     t.binary "mac_address_data", limit: 6, null: false
-    t.datetime "discovered_at", null: false
+    t.datetime "resolved_at", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ipv4_data", "mac_address_data"], name: "index_ipv4_arps_on_ipv4_data_and_mac_address_data", unique: true
