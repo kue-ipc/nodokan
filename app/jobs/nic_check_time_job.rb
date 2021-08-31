@@ -11,16 +11,16 @@ class NicCheckTimeJob < ApplicationJob
     end
 
     if nic.mac_address_data
-      if (leaes4 = Kea::Lease4.where(hwaddr: nic.mac_address_data).order(:expire).last)
+      if (lease4 = Kea::Lease4.where(hwaddr: nic.mac_address_data).order(:expire).last)
         nic.ipv4_leased_at = lease4.leased_at
       end
 
-      if (leaes6 = Kea::Lease4.where(hwaddr: nic.mac_address_data).order(:expire).last)
+      if (lease6 = Kea::Lease6.where(hwaddr: nic.mac_address_data).order(:expire).last)
         nic.ipv6_leased_at = lease6.leased_at
       end
 
       if (auth = Radius::Radpostauth.where(username: nic.mac_address_raw).order(:authdate).last)
-        nic.auth_at = auth.leased_at
+        nic.auth_at = auth.authdate
       end
     end
 
