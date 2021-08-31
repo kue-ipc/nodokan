@@ -17,6 +17,7 @@ class NicsConnectedAtJob < ApplicationJob
     nic.auth_at = nic.mac_address_data &&
       Radius::Radpostauth.where(username: nic.mac_address_raw).order(:authdate).last&.authdate
 
+    nic.skip_after_job = true
     nic.save
   end
 end

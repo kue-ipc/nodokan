@@ -57,6 +57,8 @@ class Nic < ApplicationRecord
   before_update :old_nic
   after_commit :radius_mac, :kea_reservation
 
+  attr_accessor :skip_after_job
+
   def global?
     ipv4_global? || ipv6_global?
   end
@@ -322,6 +324,8 @@ class Nic < ApplicationRecord
   end
 
   def radius_mac
+    return if skip_after_job
+
     if mac_address_data.present?
       if !destroyed? && auth
         RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
@@ -338,6 +342,8 @@ class Nic < ApplicationRecord
   end
 
   def kea_reservation
+    return if skip_after_job
+
     if mac_address_data.present?
       if !destroyed? && ipv4_reserved? && ipv4_data.present? && network&.dhcp
         KeaReservation4AddJob.perform_later(mac_address_data, ipv4.to_i, network.id)
