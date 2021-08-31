@@ -163,12 +163,18 @@ dl
   = dt_dd_for @node, :note
   - if current_user.admin?
     = dt_dd_for @node, :user
+  = dt_dd_for @node, :connected_at do |value|
+    - if value.present?
+      = span_value_for value
+    - else
+      | -
 
-button#confirm-form-modal-toggle.btn.btn-primary[
-  type="button" data-toggle="modal" data-target="#confirm-form-modal"]
-  = t(:confirm, scope: [:actions])
-=<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
-  class: 'btn btn-warning'
+p
+  button#confirm-form-modal-toggle.btn.btn-primary[
+    type="button" data-toggle="modal" data-target="#confirm-form-modal"]
+    = t(:confirm, scope: [:actions])
+  =<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
+    class: 'btn btn-warning'
 
 - if @node.confirmation.destroyable?
   hr

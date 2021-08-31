@@ -380,6 +380,7 @@ ja:
         global: 外部
         public: 公開
         dns: DNS
+        connected_at: 接続確認日時
       os_category:
         name: 種別名
         icon: アイコン

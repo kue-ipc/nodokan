@@ -36,11 +36,11 @@ module ApplicationHelper
 
   # build node
   def dt_col
-    %w[col-sm-6 col-md-4 col-xl-2 col-print-full]
+    %w[col-sm-6 col-md-4 col-lg-3 col-xl-2 col-print-full]
   end
 
   def dd_col
-    %w[col-sm-6 col-md-8 col-xl-10 col-print-full]
+    %w[col-sm-6 col-md-8 col-lg-9 col-xl-10 col-print-full]
   end
 
   def dt_dd_tag(term, &block)

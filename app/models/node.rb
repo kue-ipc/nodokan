@@ -60,4 +60,14 @@ class Node < ApplicationRecord
   def flag=(str)
     FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
+
+  def connected_at
+    return @connected_at if @connected_at_checked
+
+    @connected_at = nics.flat_map do |nic|
+      %i[ipv4_resolved_at ipv6_discovered_at ipv4_leased_at ipv6_leased_at auth_at].map { |name| nic[name] }
+    end.compact.max
+    @connected_at_checked = true
+    @connected_at
+  end
 end
