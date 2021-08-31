@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_26_075835) do
+ActiveRecord::Schema.define(version: 2021_08_31_015647) do
 
   create_table "assignments", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -167,6 +167,12 @@ ActiveRecord::Schema.define(version: 2021_08_26_075835) do
     t.binary "ipv6_data", limit: 16
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "ivp4_leased_at"
+    t.datetime "ipv4_resolved_at"
+    t.datetime "ipv6_discovered_at"
+    t.datetime "ipv4_leased_at"
+    t.datetime "ipv6_leased_at"
+    t.datetime "auth_at"
     t.index ["duid_data"], name: "index_nics_on_duid_data", unique: true
     t.index ["ipv4_data"], name: "index_nics_on_ipv4_data", unique: true
     t.index ["ipv6_data"], name: "index_nics_on_ipv6_data", unique: true

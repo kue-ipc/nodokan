@@ -11,5 +11,9 @@ module Kea
     def name
       address
     end
+
+    def leased_at
+      expire - valid_lifetime
+    end
   end
 end
