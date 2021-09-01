@@ -65,9 +65,13 @@ module ApplicationHelper
   def span_value_for(value, **opts)
     case value
     when nil
-      tag.span(opts[:blank_alt] || t(:none, scope: :values), class: 'font-italic text-muted')
+      if !opts[:hide_blank]
+        tag.span(opts[:blank_alt] || t(:none, scope: :values), class: 'font-italic text-muted')
+      end
     when '', [], {}
-      tag.span(opts[:blank_alt] || t(:empty, scope: :values), class: 'font-italic text-muted')
+      if !opts[:hide_blank]
+        tag.span(opts[:blank_alt] || t(:empty, scope: :values), class: 'font-italic text-muted')
+      end
     when String
       case opts[:format]
       when :translate

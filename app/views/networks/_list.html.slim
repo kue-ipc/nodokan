@@ -49,8 +49,8 @@ table.table.table-hover.table-sm
               = Network.human_attribute_name(:global)
 
         td = network.vlan
-        td = span_value_for(network.ipv4_network)
-        td = span_value_for(network.ipv6_network)
+        td = span_value_for(network.ipv4_network, hide_blank: true)
+        td = span_value_for(network.ipv6_network, hide_blank: true)
         td = network.nics_count
         td = network.assignments_count
 - list_group_item_class = [ \

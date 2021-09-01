@@ -85,11 +85,11 @@ dl
                   = link_to nic.network.name, nic.network
               td
                 = t(nic.ipv4_config, scope: 'activerecord.enums.ipv4_configs')
-                =< span_value_for(nic.ipv4)
+                =< span_value_for(nic.ipv4, hide_blank: true)
               - if Settings.config.ipv6
                 td
                   = t(nic.ipv6_config, scope: 'activerecord.enums.ipv6_configs')
-                  =< span_value_for(nic.ipv6)
+                  =< span_value_for(nic.ipv6, hide_blank: true)
   = dt_dd_for @node, :confirmation do |confirmation|
     - case confirmation.status
     - when :unconfirmed
@@ -163,11 +163,7 @@ dl
   = dt_dd_for @node, :note
   - if current_user.admin?
     = dt_dd_for @node, :user
-  = dt_dd_for @node, :connected_at do |value|
-    - if value.present?
-      = span_value_for value
-    - else
-      | -
+  = dt_dd_for @node, :connected_at, blank_alt: '-'
 
 p
   button#confirm-form-modal-toggle.btn.btn-primary[

@@ -69,14 +69,14 @@ table.table.table-hover.table-sm
             - if nic.ipv4_dynamic?
               = t_enum(:dynamic, :ipv4_configs)
             - else
-              = span_value_for(nic.ipv4)
+              = span_value_for(nic.ipv4, hide_blank: true)
             br
         td.text-nowrap
           - node.nics.each do |nic|
             - if nic.ipv6_dynamic?
               = t_enum(:dynamic, :ipv6_configs)
             - else
-              = span_value_for(nic.ipv6)
+              = span_value_for(nic.ipv6, hide_blank: true)
             br
         td.text-nowrap
           - node.nics.each do |nic|
