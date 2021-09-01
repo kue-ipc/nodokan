@@ -16,7 +16,7 @@ class User < ApplicationRecord
     guest: 2,
   }
 
-  has_many :nodes, dependent: :nullify
+  has_many :nodes, dependent: :restrict_with_error
 
   has_many :assignments, dependent: :destroy
   has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: 'Assignment', inverse_of: :user
@@ -116,7 +116,7 @@ class User < ApplicationRecord
   def name
     @name ||=
       if fullname.present?
-        "#{fullname} (#{username})"
+        "#{username} (#{fullname})"
       else
         username
       end
