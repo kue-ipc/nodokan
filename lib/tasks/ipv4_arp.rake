@@ -8,7 +8,7 @@ namespace :ipv4_arp do
     results = {
       success: 0,
       skip: 0,
-      failure:  0,
+      failure: 0,
       error: 0,
     }
     CSV.open(csv_file, 'rb:BOM|UTF-8', headers: :first_row) do |csv|
