@@ -31,22 +31,19 @@ p = t('forms.common.required_input')
       - if @node.specific
         .form-row
           .col
-            span.badge.badge-warning.ml-1
-              = Node.human_attribute_name(:specific)
+            = badge_for(:specific, scope: 'activerecord.attributes.node')
             small.text-muted<
               | この端末は特定端末として登録されています。(解除したい場合は、閲覧画面から特定端末の申請を行ってください。)
       - if @node.public
         .form-row
           .col
-            span.badge.badge-primary.ml-1
-              = Node.human_attribute_name(:public)
+            = badge_for(:public, scope: 'activerecord.attributes.node')
             small.text-muted<
               | この端末はインターネットに公開されています。(負荷分散装置やリバースプロキシ等により間接的に公開されている場合を含みます。)
       - if @node.dns
         .form-row
           .col
-            span.badge.badge-success.ml-1
-              = Node.human_attribute_name(:dns)
+            = badge_for(:dns, scope: 'activerecord.attributes.node')
             small.text-muted<
               | この端末はDNSに登録されています。(DNSに登録されているIPアドレスはロックされています。)
     .form-row.virtual-show.d-none
@@ -214,8 +211,7 @@ p = t('forms.common.required_input')
         - else
           - if nic_f.object.locked
             - nic_ro = true
-            span.badge.badge-dark.ml-1
-              = Nic.human_attribute_name(:locked)
+            = badge_for(:locked, scope: 'activerecord.attributes.nic')
             small.text-muted<
               |
                 このNICは管理者によってロックされているため、

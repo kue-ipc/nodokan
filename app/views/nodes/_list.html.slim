@@ -45,21 +45,9 @@ table.table.table-hover.table-sm
           td.text-nowrap = node.user.username
         td
           = node.name
-          - if node.virtual
-            span.badge.badge-secondary.ml-1
-              = Node.human_attribute_name(:virtual)
-          - if node.specific
-            span.badge.badge-warning.ml-1
-              = Node.human_attribute_name(:specific)
-          - if node.global
-            span.badge.badge-danger.ml-1
-              = Node.human_attribute_name(:global)
-          - if node.public
-            span.badge.badge-primary.ml-1
-              = Node.human_attribute_name(:public)
-          - if node.dns
-            span.badge.badge-success.ml-1
-              = Node.human_attribute_name(:dns)
+          - %i[virtual specific global public dns].each do |attr|
+            - if node.__send__(attr)
+              = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ml-1')
         td = node.hostname
         td = node.place&.short_name
         td = node.hardware&.product_name
@@ -67,14 +55,16 @@ table.table.table-hover.table-sm
         td.text-nowrap
           - node.nics.each do |nic|
             - if nic.ipv4_dynamic?
-              = t_enum(:dynamic, :ipv4_configs)
+              span.text-success
+                = t_enum(:dynamic, :ipv4_configs)
             - else
               = span_value_for(nic.ipv4, hide_blank: true)
             br
         td.text-nowrap
           - node.nics.each do |nic|
             - if nic.ipv6_dynamic?
-              = t_enum(:dynamic, :ipv6_configs)
+              span.text-primary
+                = t_enum(:dynamic, :ipv6_configs)
             - else
               = span_value_for(nic.ipv6, hide_blank: true)
             br

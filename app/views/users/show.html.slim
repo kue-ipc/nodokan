@@ -7,8 +7,7 @@ dl
   = dt_dd_for @user, :username do |username|
     = username
     - if @user.deleted
-      span.badge.badge-danger.ml-1
-        = User.human_attribute_name(:deleted)
+      = badge_for(:deleted, scope: 'activerecord.attributes.user', badge_class: 'ml-1')
   = dt_dd_for @user, :email
   = dt_dd_for @user, :fullname
   = dt_dd_for @user, :nodes_count do |value|

@@ -1,4 +1,22 @@
 module ApplicationHelper
+  NAME_COLORS = {
+    dynamic: 'success',
+    reserved: 'secondary',
+    static: 'primary',
+    manual: 'warning',
+    disabled: 'light',
+    locked: 'dark',
+    auth: 'primary',
+    global: 'danger',
+    virtual: 'secondary',
+    specific: 'warning',
+    public: 'primary',
+    dns: 'success',
+    dhcp: 'secondary',
+    deleted: 'danger',
+  }
+
+
   def site_title
     Settings.site.title || t(:nodokan)
   end
@@ -260,5 +278,12 @@ module ApplicationHelper
     link_to path, class: 'btn btn-sm btn-light' do
       tag.i('', class: i_class)
     end
+  end
+
+  def badge_for(value, scope: '', badge_class: [])
+    badge_class = badge_class.to_s.split unless badge_class.is_a?(Array)
+    badge_class << 'badge'
+    NAME_COLORS[value.intern]&.then { |color| badge_class << "badge-#{color}" }
+    tag.span(t(value, scope: scope), class: badge_class)
   end
 end

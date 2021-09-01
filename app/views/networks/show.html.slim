@@ -5,22 +5,9 @@
 dl
   = dt_dd_for @network, :name do |value|
     = value
-    - if @network.auth
-      span.badge.badge-primary.ml-1
-        = Network.human_attribute_name(:auth)
-    - if @network.dhcp
-      span.badge.badge-secondary.ml-1
-        = Network.human_attribute_name(:dhcp)
-    - if @network.locked
-      span.badge.badge-dark.ml-1
-        = Network.human_attribute_name(:locked)
-    - if @network.specific
-      span.badge.badge-warning.ml-1
-        = Network.human_attribute_name(:specific)
-    - if @network.global
-      span.badge.badge-danger.ml-1
-        = Network.human_attribute_name(:global)
-
+    - %i[auth dhcp locked specific global].each do |attr|
+      - if @network.__send__(attr)
+        = badge_for(attr, scope: 'activerecord.attributes.network', badge_class: 'ml-1')
   = dt_dd_for @network, :vlan
   = dt_dd_for @network, :ipv4_network
   = dt_dd_for @network, :ipv4_gateway

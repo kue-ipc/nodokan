@@ -1,6 +1,32 @@
 h1 特定端末申請
 
 p
+  | この画面で特定端末の申請を行います。
+  strong 特定端末の設定は即時反映ではありません。
+  | ネットワーク管理者が申請を確認後、IPアドレスの割り当てやネットワークの設定を行います。
+  | 設定完了には数営業日かかる場合がありますので、急ぎの場合は予め管理者にご連絡ください。
+
+- if @node.specific
+  p
+    | 申請対象の端末はすでに特定端末です。
+  
+  p
+    | アクセスルールやDNS登録等の変更を申請することができます。
+    | アクセスルールやDNS登録以外の端末情報を変更した場合は、その旨を備考欄に記載してください。
+    | 現在のアクセスルールがわからない場合は、管理者にお問い合わせください。
+  p
+    | この申請の「解除」により解除されるのは特定端末としての設定のみです。
+    | 端末自体は削除されません。
+    | 端末を削除するには、解除の申請を行った後、通常の端末画面で削除してください。
+- else
+  p
+    strong アクセスルールは必須です。
+    | どのようなアクセスルールが必要かわからない場合は、申請する事ができません。
+    | 管理者にご相談ください。
+
+hr
+
+p
   | 申請対象:
   = link_to @node do
     =<> @node.name
@@ -11,29 +37,9 @@ p
     = @node.nics.find(&:ipv4_data)&.ipv4_address || @node.nics.find(&:ipv6_data)&.ipv6_address
     | )
 
-    - if @node.specific
-      span.badge.badge-danger.ml-1
-        = Node.human_attribute_name(:specific)
-
-p
-  | この画面で特定端末の申請を行います。
-  strong 特定端末の設定は即時反映ではありません。
-  | 管理者が申請を確認後、IPアドレスの割り当てやネットワークの設定を行います。
-  | 設定完了には数営業日かかる場合がありますので、急ぎの場合は予め管理者にご連絡ください。
-p
-  strong アクセスルールは必須です。
-  | どのようなアクセスルールが必要かわからない場合は、申請する事ができません。
-  | 管理者にご相談ください。
-
-- if @node.specific
-  p
-    | 申請対象の端末はすでに特定端末です。
-    | アクセスルール等は申請したものに上書きされます。
-  p
-    | この申請の「解除」により解除されるのは特定端末としての設定のみです。
-    | 端末自体は削除されません。
-    | 端末を削除するには、解除の申請を行った後、通常の端末画面で削除してください。
-hr
+    - %i[virtual specific global public dns].each do |attr|
+      - if @node.__send__(attr)
+        = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ml-1')
 
 = bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
   = f.form_group :action, label: { text: '申請' } do
