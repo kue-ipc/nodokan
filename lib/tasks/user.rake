@@ -14,6 +14,13 @@ namespace :user do
     end
   end
 
+  desc 'Clean users: destroy user who is deleted and has no node'
+  task clean: :environment do
+    puts 'clean users ...'
+    users = User.where(deleted: true, nodes_count: 0).destroy_all
+    puts "detroied: #{users.count}"
+  end
+
   desc 'Export CSV of users'
   task export: :environment do
     csv_file = Rails.root / 'data' / 'users.csv'

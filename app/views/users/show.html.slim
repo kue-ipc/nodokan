@@ -11,6 +11,15 @@ dl
         = User.human_attribute_name(:deleted)
   = dt_dd_for @user, :email
   = dt_dd_for @user, :fullname
+  = dt_dd_for @user, :nodes_count do |value|
+    - if current_user.admin?
+      = link_to nodes_path(condition: {user_id: @user.id}) do
+        span.badge.badge-primary
+          = value
+    - else
+      span.badge.badge-primary
+        = value
+
   = dt_dd_for @user, :role do |role|
     - if current_user.admin?
       = bootstrap_form_for @user, layout: :inline do |f|
