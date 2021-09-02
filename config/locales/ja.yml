@@ -279,7 +279,7 @@ ja:
       place: 設置場所
       security_software: セキュリティソフト
       assignment: 割当
-      ipv4_apr: IPv4 ARP
+      ipv4_arp: IPv4 ARP
       ipv6_neighbor: IPv6近隣
     long_models:
       confirmation: 端末の確認
