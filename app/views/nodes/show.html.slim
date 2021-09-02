@@ -153,6 +153,13 @@ p
   =<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
     class: 'btn btn-warning'
 
+p.text-muted
+  small
+    | 最終接続日時は、端末がネットワークに接続されたことをシステムが検知した最後の日時です。
+    | 接続してから表示までには数十分のタイムラグがあります。
+    | 一部のネットワークは検知に対応してません。
+    | 端末の実在確認の参考にしてください。
+
 - if @node.confirmation.destroyable?
   hr
   h3 端末の削除
