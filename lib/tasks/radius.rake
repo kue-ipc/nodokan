@@ -73,4 +73,15 @@ namespace :radius do
       RadiusCheckAllJob.perform_now
     end
   end
+
+  desc 'Compress radpostauth'
+  task compress: :environment do
+    if Rails.env.production?
+      puts 'add job queue commpress radpostauths, please see log'
+      RadiusCompressJob.perform_later
+    else
+      puts 'add job queue commpress radpostauths, please wait...'
+      RadiusCompressJob.perform_now
+    end
+  end
 end
