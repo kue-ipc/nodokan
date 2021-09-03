@@ -2,7 +2,7 @@ class Node < ApplicationRecord
   FLAGS = {
     specific: 's',
     virtual: 'v',
-    pulbic: 'p',
+    public: 'p',
     dns: 'd'
   }.freeze
 
