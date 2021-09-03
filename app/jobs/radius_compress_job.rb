@@ -12,6 +12,6 @@ class RadiusCompressJob < ApplicationJob
           .limit(limit_size).delete_all
       end
     end
-    logger.info("Destroied: #{total}")
+    logger.info("Deleted: #{total}")
   end
 end
