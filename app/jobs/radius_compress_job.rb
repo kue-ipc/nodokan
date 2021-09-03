@@ -9,7 +9,7 @@ class RadiusCompressJob < ApplicationJob
         total += Radius::Radpostauth
           .where(username: username)
           .where.not(id: Radius::Radpostauth.where(username: username).order(:authdate).last.id)
-          .limit(limit_size).destroy_all.count
+          .limit(limit_size).delete_all.count
       end
     end
     logger.info("Destroied: #{total}")
