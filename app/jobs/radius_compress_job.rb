@@ -2,11 +2,16 @@ class RadiusCompressJob < ApplicationJob
   queue_as :default
 
   def perform(*args)
-    count = 0
-    Radius::Radpostauth.group(:username).count.filter { |_k, v| v > 1 }.each_key do |username|
-      last = Radius::Radpostauth.where(username: username).order(:authdate).last
-      count += Radius::Radpostauth.where(username: username).where.not(id: last.id).destroy_all.count
+    limit_size = 1000
+    total = 0
+    Radius::Radpostauth.group(:username).count.filter { |_k, v| v > 1 }.each do |username, count|
+      (count / limit_size + 1).times do
+        total += Radius::Radpostauth
+          .where(username: username)
+          .where.not(id: Radius::Radpostauth.where(username: username).order(:authdate).last.id)
+          .limit(limit_size).destroy_all.count
+      end
     end
-    logger.info("Destroied: #{count}")
+    logger.info("Destroied: #{total}")
   end
 end
