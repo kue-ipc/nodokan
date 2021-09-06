@@ -97,6 +97,8 @@ module ImportExport
       end
       row['nics'] = other_nics.presence&.map { |nic| nic_to_data(nic) }&.to_json
 
+      row['note'] = node.note
+
       row
     end
 
