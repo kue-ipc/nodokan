@@ -5,6 +5,7 @@ class Confirmation < ApplicationRecord
   enum existence: {
     existing: 0,
     abandoned: 16,
+    unnecessary: 19,
     missing: 17,
     not_my_own: 18,
     unknown: -1,
@@ -94,6 +95,7 @@ class Confirmation < ApplicationRecord
 
   def existence_problem?
     existence_abandoned? ||
+      existence_unnecessary? ||
       existence_missing? ||
       existence_not_my_own?
   end
@@ -199,6 +201,7 @@ class Confirmation < ApplicationRecord
 
   def destroyable?
     existence_abandoned? ||
+      existence_unnecessary? ||
       existence_missing? ||
       existence_unknown?
   end

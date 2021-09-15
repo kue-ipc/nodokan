@@ -124,6 +124,8 @@ dl
                 .text-danger = t('messages.node_security_scan_problem')
       - when 'abandoned'
         .text-danger = t('messages.node_abandoned')
+      - when 'unnecessary'
+        .text-danger = t('messages.node_unnecessary')
       - when 'missing'
         .text-danger = t('messages.node_missing')
       - when 'not_my_own'
