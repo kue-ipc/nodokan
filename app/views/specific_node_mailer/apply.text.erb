@@ -44,7 +44,7 @@ DNS登録: <%= @specific_node_application.register_dns ? '有' : '無' %>
 FQDN: <%= @specific_node_application.fqdn %>
 <% end %>
 備考:
-<% @specific_node_application.note %>
+<%= @specific_node_application.note %>
 ---
 
 設定が完了後、管理者からメールが送られます。
