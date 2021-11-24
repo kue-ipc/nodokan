@@ -2,7 +2,7 @@ require 'test_helper'
 
 class NetworksControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @network = networks(:one)
+    @network = networks(:client)
   end
 
   test 'should get index' do
