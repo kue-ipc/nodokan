@@ -27,13 +27,9 @@ hr
           { include_blank: '(全て)', selected: @condition[:user_id], label: '所有者' }
 
     .input-group.ml-2
-      = f.search_field :query, hide_label: true, value: @query
-      .input-group-append
-        = f.primary name: :search, class: 'btn btn-primary' do
-          i.fas.fa-search>
-          | |
-          i.fas.fa-filter<
-
+      = f.search_field :query, value: @query, hide_label: true, wrapper: false
+      = f.primary '<i class="fas fa-search"></i> | <i class="fas fa-filter"></i>'.html_safe,
+                  name: :search, render_as_button: true
 
 = render 'list'
 
