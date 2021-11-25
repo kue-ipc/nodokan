@@ -1,28 +1,27 @@
 noscript
-  .alert.alert-danger.alertdismissible.fade.show role="alert"
+  .alert.alert-danger.alert-dismissible.fade.show role="alert"
     = t(:require_javascript, scope: :messages)
 
 /[if IE]
-  .alert.alert-danger.alertdismissible.fade.show role="alert"
+  .alert.alert-danger.alert-dismissible.fade.show role="alert"
     = t(:require_other_than_ie, scope: :messages)
 
 #require-modern-browser.d-none
-  .alert.alert-danger.alertdismissible.fade.show role="alert"
+  .alert.alert-danger.alert-dismissible.fade.show role="alert"
     = t(:require_modern_browser, scope: :messages)
 javascript:
   if (window.Promise == null) document.getElementById('require-modern-browser').classList.remove('d-none');
 
 - if alert
   - [*alert].each do |msg|
-    .alert.alert-danger.alertdismissible.fade.show role="alert"
+    .alert.alert-danger.alert-dismissible.fade.show role="alert"
       i.fas.fa-exclamation-triangle>
       = msg
-      button.close type="button" data-bs-dismiss="alert" aria-label=t(:close, scope: :do_actions)
-        span aria-hidden="true" &times;
+      button.btn-close type="button" data-bs-dismiss="alert" aria-label=t('do_actions.close')
+
 - if notice
   - [*notice].each do |msg|
-    .alert.alert-success.alertdismissible.fade.show role="alert"
+    .alert.alert-success.alert-dismissible.fade.show role="alert"
       i.fas.fa-check>
       = msg
-      button.close type="button" data-bs-dismiss="alert" aria-label=t(:close, scope: :do_actions)
-        span aria-hidden="true" &times;
+      button.btn-close type="button" data-bs-dismiss="alert" aria-label=t('do_actions.close')

@@ -4,8 +4,7 @@
       = bootstrap_form_for @confirmation, url: node_confirmation_path(@node) do |f|
         .modal-header
           h5.modal-title 確認事項
-          button.close type="button" data-bs-dismiss="modal" aria-label="Close"
-            span aria-hidden="true" &times;
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label=t('do_actions.close')
         .modal-body
           - question_count = 1
           p

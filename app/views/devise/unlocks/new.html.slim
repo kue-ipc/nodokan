@@ -1,0 +1,8 @@
+h2
+  = t('.resend_unlock_instructions')
+= bootstrap_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f|
+  .mb-3
+    = f.email_field :email, autofocus: true, autocomplete: "email"
+  .mb-3
+    = f.submit t('.resend_unlock_instructions')
+= render "devise/shared/links"
