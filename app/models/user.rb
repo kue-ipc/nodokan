@@ -8,7 +8,7 @@ class User < ApplicationRecord
   # Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   # :registerable, :recoverable, :rememberable, :validatable
-  devise :ldap_authenticatable
+  devise :ldap_authenticatable, :lockable, :rememberable
 
   enum role: {
     user: 0,
