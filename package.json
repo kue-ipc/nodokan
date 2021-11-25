@@ -8,7 +8,7 @@
     "@rails/activestorage": "^6.1.4",
     "@rails/ujs": "^6.1.4",
     "@rails/webpacker": "^5.4.2",
-    "bootstrap.native": "^4.0.4",
+    "bootstrap": "^5.1.3",
     "coffee-loader": "^1.0.1",
     "coffeescript": "^2.5.1",
     "hyperapp": "^2.0.18",

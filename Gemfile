@@ -63,8 +63,8 @@ gem 'rails_admin', '~> 2.0'
 gem 'rails_admin-i18n'
 
 # Bootstrap
-gem 'bootstrap', '~> 4.6'
-gem 'bootstrap_form', '~> 4.0'
+gem 'bootstrap', '~> 5.1'
+gem 'bootstrap_form', '~> 5.0'
 
 # Sanitize
 gem 'sanitize'

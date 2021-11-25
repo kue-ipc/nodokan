@@ -8,5 +8,5 @@ activestorage.start()
 
 import 'channels'
 
-import 'modules/bootstrap-native'
+import 'modules/bootstrap-trigger'
 import 'modules/fontawesome'
