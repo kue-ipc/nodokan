@@ -7,7 +7,7 @@ p = t('forms.common.required_input')
   .rounded.border.p-2.mb-2
     h4 = t('forms.node.base.title')
     small.text-muted = t('forms.node.base.help')
-    .form-row
+    .row
       = f.text_field :name, required: true,
         wrapper: { class: 'col-md-4' }
       = f.text_field :hostname, pattern: '[0-9A-Za-z-]*',
@@ -15,7 +15,7 @@ p = t('forms.common.required_input')
       = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
         wrapper: { class: 'col-md-5' }
     - if current_user.admin?
-      .form-row
+      .row
         .col
           = f.check_box :virtual
         .col
@@ -25,28 +25,28 @@ p = t('forms.common.required_input')
         .col
           = f.check_box :dns
     - else
-      .form-row
+      .row
           .col
             = f.check_box :virtual
       - if @node.specific
-        .form-row
+        .row
           .col
             = badge_for(:specific, scope: 'activerecord.attributes.node')
             small.text-muted<
               | この端末は特定端末として登録されています。(解除したい場合は、閲覧画面から特定端末の申請を行ってください。)
       - if @node.public
-        .form-row
+        .row
           .col
             = badge_for(:public, scope: 'activerecord.attributes.node')
             small.text-muted<
               | この端末はインターネットに公開されています。(負荷分散装置やリバースプロキシ等により間接的に公開されている場合を含みます。)
       - if @node.dns
-        .form-row
+        .row
           .col
             = badge_for(:dns, scope: 'activerecord.attributes.node')
             small.text-muted<
               | この端末はDNSに登録されています。(DNSに登録されているIPアドレスはロックされています。)
-    .form-row.virtual-show.d-none
+    .row.virtual-show.d-none
       .col
         small.text-secondary<
           | 「仮想」フラグが選択されています。この端末は実際には存在せず、HAクラスタや予約等の目的で登録されます。
@@ -56,7 +56,7 @@ p = t('forms.common.required_input')
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.place.title')
     small.text-muted = t('forms.node.place.help')
-    .form-row
+    .row
       = f.fields_for :place, @node.place || Place.new do |place_f|
         = place_f.text_field :area,
           list: 'node_place_area-list',
@@ -107,7 +107,7 @@ p = t('forms.common.required_input')
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.hardware.title')
     small.text-muted = t('forms.node.hardware.help')
-    .form-row
+    .row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         = hardware_f.collection_select :device_type_id, 
           DeviceType.order(:order), :id, :name,
@@ -158,7 +158,7 @@ p = t('forms.common.required_input')
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.operating_system.title')
     small.text-muted = t('forms.node.operating_system.help')
-    .form-row
+    .row
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
         = operating_system_f.collection_select :os_category_id,
@@ -230,7 +230,7 @@ p = t('forms.common.required_input')
             = dt_dd_for nic_f.object, :duid
         - else
           = nic_f.check_box :_destroy, label: 'このNICを削除する'
-          .form-row.node-nic-form
+          .row.node-nic-form
             = nic_f.select :interface_type,
                             t_enums(:interface_types, Nic),
                             { prompt: '(選択してください)',
@@ -287,7 +287,7 @@ p = t('forms.common.required_input')
   .rounded.border.p-2.mb-2
     = f.text_area :note
     - if current_user.admin?
-      .form-row
+      .row
         = f.collection_select :user_id,
           User.order(:username).where(deleted: false),
           :id, :name,
