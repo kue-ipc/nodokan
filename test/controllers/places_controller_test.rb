@@ -57,7 +57,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   class Anonymous < PlacesControllerTest
     test 'redirect to login INSTEAD OF get index' do
       get places_url
-      assert_redirected_to new_user_session_path
+      assert_response 401
     end
   end
 end

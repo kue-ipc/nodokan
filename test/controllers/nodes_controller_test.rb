@@ -1,8 +1,11 @@
 require 'test_helper'
 
 class NodesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
-    @node = nodes(:one)
+    sign_in users(:admin)
+    @node = nodes(:desktop)
   end
 
   test 'should get index' do
@@ -18,8 +21,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test 'should create node' do
     assert_difference('Node.count') do
       post nodes_url,
-        params: { node: { confirmed_at: @node.confirmed_at, name: @node.name, note: @node.note,
-owner_id: @node.owner_id, } }
+        params: { node: { name: @node.name, note: @node.note, user_id: users(:admin).id } }
     end
 
     assert_redirected_to node_url(Node.last)
@@ -37,8 +39,7 @@ owner_id: @node.owner_id, } }
 
   test 'should update node' do
     patch node_url(@node),
-      params: { node: { confirmed_at: @node.confirmed_at, name: @node.name, note: @node.note,
-owner_id: @node.owner_id, } }
+      params: { node: { name: @node.name, note: @node.note } }
     assert_redirected_to node_url(@node)
   end
 

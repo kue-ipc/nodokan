@@ -42,7 +42,7 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
   class Anonymous < HardwaresControllerTest
     test 'redirect to login INSTEAD OF get index' do
       get hardwares_url
-      assert_redirected_to new_user_session_path
+      assert_response 401
     end
   end
 end

@@ -45,10 +45,10 @@ server:
   ipv6_config: :disabled
   ipv6_data:
 
-server_ext:
+server_extra:
   node: server
   number: 2
-  network: ext
+  network: extra
   name: 外部ネットワーク
   interface_type: :wired
   auth: false
