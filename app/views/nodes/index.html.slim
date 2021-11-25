@@ -17,16 +17,14 @@ hr
 .mb-3
   = bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
     = f.fields_for :condition do |ff|
-      = ff.check_box :specific, checked: @condition[:specific], label: '特定端末のみ表示', custom: true
+      = ff.check_box :specific, checked: @condition[:specific], label: '特定端末のみ表示'
       = ff.collection_select :network_id, current_user.usable_networks.to_a,
         :id, :name,
-        { include_blank: '(全て)', selected: @condition[:network_id], label: 'ネットワーク' },
-        class: 'custom-select'
+        { include_blank: '(全て)', selected: @condition[:network_id], label: 'ネットワーク' }
       - if current_user.admin?
         = ff.collection_select :user_id, User.all,
           :id, :username,
-          { include_blank: '(全て)', selected: @condition[:user_id], label: '所有者' },
-          class: 'custom-select'
+          { include_blank: '(全て)', selected: @condition[:user_id], label: '所有者' }
 
     .input-group.ml-2
       = f.search_field :query, hide_label: true, value: @query

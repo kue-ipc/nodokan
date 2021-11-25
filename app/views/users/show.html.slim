@@ -23,7 +23,7 @@ dl
     - if current_user.admin?
       = bootstrap_form_for @user, layout: :inline do |f|
         = f.select :role, t_enums(:roles),
-          { hide_label: true, custom: true },
+          { hide_label: true },
           disabled: current_user == @user
         = f.submit '変更', class: 'btn btn-warning ml-1',
           disabled: current_user == @user
@@ -67,14 +67,14 @@ h4 = User.human_attribute_name(:networks)
             - manage = @user.manage_networks.include?(network)
             - if current_user.admin?
               = link_to user_use_network_path(@user, network, params: {manage: !manage}), method: :patch
-                .custom-control.custom-switch data-toggle="tooltip" data-placement="left" title="クリックして変更"
-                  = check_box_tag "user_use_network_manage_#{network.id}", '1', manage, class: 'custom-control-input'
-                  = label_tag "user_use_network_manage_#{network.id}", '', class: 'custom-control-label'
+                .form-check.form-switch data-bs-toggle="tooltip" data-bs-placement="left" title="クリックして変更"
+                  = check_box_tag "user_use_network_manage_#{network.id}", '1', manage, class: 'form-check-input'
+                  = label_tag "user_use_network_manage_#{network.id}", '', class: 'form-check-label'
             - else
-              .custom-control.custom-switch
-                = check_box_tag "user_use_network_manage_#{network.id}", '1', manage, class: 'custom-control-input',
+              .form-check.form-switch
+                = check_box_tag "user_use_network_manage_#{network.id}", '1', manage, class: 'form-check-input',
                   disabled: true
-                = label_tag "user_use_network_manage_#{network.id}", '', class: 'custom-control-label'
+                = label_tag "user_use_network_manage_#{network.id}", '', class: 'form-check-label'
 
           - if current_user.admin?
             td
@@ -96,5 +96,5 @@ h4 = User.human_attribute_name(:networks)
         = f.collection_select :network_id, unregistered_networks, :id, :name_vlan,
           { prompt: '選択してください。', hide_label: true },
           { required: true, class: 'mr-2'}
-        = f.check_box :manage, label: '管理', custom: true
+        = f.check_box :manage, label: '管理'
         = f.submit '追加', class: 'btn btn-primary ml-1'

@@ -13,13 +13,13 @@
       = f.number_field :vlan, min: 1, max: 4094, wrapper: {class: 'col-md-4'}
     .form-row
       .col-md-2
-        = f.check_box :auth, custom: true
+        = f.check_box :auth
       .col-md-2
-        = f.check_box :dhcp, custom: true
+        = f.check_box :dhcp
       .col-md-2
-        = f.check_box :locked, custom: true
+        = f.check_box :locked
       .col-md-2
-        = f.check_box :specific, custom: true
+        = f.check_box :specific
   .rounded.border.p-2.mb-2
     h4 IPv4ネットワーク情報
     small.form-text.text-muted
@@ -32,9 +32,9 @@
       = f.fields_for :ipv4_pools do |ipv4_pool_f|
         = ipv4_pool_f.hidden_field :id
         .col-md-1.mt-1
-          = ipv4_pool_f.check_box :_destroy, custom: true
+          = ipv4_pool_f.check_box :_destroy
         = ipv4_pool_f.select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool),
-                           hide_label: true, custom: true, wrapper: {class: 'col-md-3'}
+                           hide_label: true, wrapper: {class: 'col-md-3'}
         = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: 'col-md-4'}
         = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: 'col-md-4'}
     .form-row
@@ -52,9 +52,9 @@
       = f.fields_for :ipv6_pools do |ipv6_pool_f|
         = ipv6_pool_f.hidden_field :id
         .col-md-1.mt-1
-          = ipv6_pool_f.check_box :_destroy, custom: true
+          = ipv6_pool_f.check_box :_destroy
         = ipv6_pool_f.select :ipv6_config, t_enums(:ipv6_configs, Ipv6Pool),
-                           hide_label: true, custom: true, wrapper: {class: 'col-md-3'}
+                             hide_label: true, wrapper: {class: 'col-md-3'}
         = ipv6_pool_f.text_field :ipv6_first_address, hide_label: true, wrapper: {class: 'col-md-4'}
         = ipv6_pool_f.text_field :ipv6_last_address, hide_label: true, wrapper: {class: 'col-md-4'}
     .form-row

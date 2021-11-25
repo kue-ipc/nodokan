@@ -81,11 +81,11 @@ editRow = ({model, entity}) ->
                     value: event.target.value
                   }]
             when 'boolean'
-              h 'div', class: 'custom-control custom-checkbox', [
+              h 'div', class: 'form-check', [
                 h 'input',
                   type: 'checkbox'
                   id: attributeId
-                  class: 'custom-control-input'
+                  class: 'form-check-input'
                   checked: entity[attribute.name]
                   onchange: (state, event) ->
                     [updateEntity, {
@@ -94,7 +94,7 @@ editRow = ({model, entity}) ->
                       value: event.target.checked
                     }]
                 h 'label',
-                  class: 'custom-control-label'
+                  class: 'form-check-label'
                   for: attributeId
               ]
             when 'date'

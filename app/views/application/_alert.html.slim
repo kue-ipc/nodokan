@@ -17,12 +17,12 @@ javascript:
     .alert.alert-danger.alertdismissible.fade.show role="alert"
       i.fas.fa-exclamation-triangle>
       = msg
-      button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
+      button.close type="button" data-bs-dismiss="alert" aria-label=t(:close, scope: :do_actions)
         span aria-hidden="true" &times;
 - if notice
   - [*notice].each do |msg|
     .alert.alert-success.alertdismissible.fade.show role="alert"
       i.fas.fa-check>
       = msg
-      button.close type="button" data-dismiss="alert" aria-label=t(:close, scope: :do_actions)
+      button.close type="button" data-bs-dismiss="alert" aria-label=t(:close, scope: :do_actions)
         span aria-hidden="true" &times;

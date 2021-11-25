@@ -17,17 +17,17 @@ p = t('forms.common.required_input')
     - if current_user.admin?
       .form-row
         .col
-          = f.check_box :virtual, custom: true
+          = f.check_box :virtual
         .col
-          = f.check_box :specific, custom: true
+          = f.check_box :specific
         .col
-          = f.check_box :public, custom: true
+          = f.check_box :public
         .col
-          = f.check_box :dns, custom:true
+          = f.check_box :dns
     - else
       .form-row
           .col
-            = f.check_box :virtual, custom: true
+            = f.check_box :virtual
       - if @node.specific
         .form-row
           .col
@@ -88,8 +88,7 @@ p = t('forms.common.required_input')
         )
         = place_f.select :floor,
           10.downto(-5).map { |i| [t_floor(i), i] },
-          { wrapper: { class: 'col-md-2' } },
-          class: 'custom-select'
+          { wrapper: { class: 'col-md-2' } }
         = place_f.text_field :room,
                              list: 'node_place_room-list',
                              wrapper: { class: 'col-md-4' }
@@ -112,8 +111,7 @@ p = t('forms.common.required_input')
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         = hardware_f.collection_select :device_type_id, 
           DeviceType.order(:order), :id, :name,
-          { include_blank: '(未選択)', wrapper: { class: 'col-md-3' } },
-          class: 'custom-select'
+          { include_blank: '(未選択)', wrapper: { class: 'col-md-3' } }
         = hardware_f.text_field :maker,
           list: 'node_hardware_maker-list',
           wrapper: { class: 'col-md-2' }
@@ -165,8 +163,7 @@ p = t('forms.common.required_input')
         @node.operating_system || OperatingSystem.new do |operating_system_f|
         = operating_system_f.collection_select :os_category_id,
           OsCategory.order(:order), :id, :name,
-          { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } },
-          class: 'custom-select'
+          { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } }
         = operating_system_f.text_field :name,
           list: 'node_operating_system_name-list',
           disabled: true,
@@ -207,7 +204,7 @@ p = t('forms.common.required_input')
           | 番目のNIC
         - nic_ro = false
         - if current_user.admin?
-          = nic_f.check_box :locked, custom: true
+          = nic_f.check_box :locked
         - else
           - if nic_f.object.locked
             - nic_ro = true
@@ -232,14 +229,13 @@ p = t('forms.common.required_input')
             = dt_dd_for nic_f.object, :ipv6_address
             = dt_dd_for nic_f.object, :duid
         - else
-          = nic_f.check_box :_destroy, custom: true,
-              label: 'このNICを削除する'
+          = nic_f.check_box :_destroy, label: 'このNICを削除する'
           .form-row.node-nic-form
             = nic_f.select :interface_type,
                             t_enums(:interface_types, Nic),
                             { prompt: '(選択してください)',
                             wrapper: { class: 'col-md-4' } },
-                            class: 'custom-select', required: true
+                            required: true
             = nic_f.text_field :name, wrapper: { class: 'col-md-8' }
             - nic_networks = current_user.usable_networks.to_a
             - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
@@ -248,24 +244,21 @@ p = t('forms.common.required_input')
               :id, :name,
               { prompt: '(選択してください。)',
               wrapper: { class: 'col-md-4' } },
-              class: 'custom-select', required: true
+              required: true
             = nic_f.text_field :mac_address,
               pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
               wrapper: { class: 'col-md-4' }
             = nic_f.form_group :auth, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
-              = nic_f.check_box :auth,
-                custome: true,
-                label: 'MACアドレスを登録する'
+              = nic_f.check_box :auth, label: 'MACアドレスを登録する'
             = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
-                            { wrapper: { class: 'col-md-4' } },
-                            class: 'custom-select'
+                            { wrapper: { class: 'col-md-4' } }
             = nic_f.text_field :ipv4_address,
               pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
               wrapper: { class: 'col-md-4' }
             .col-md-4
             - if Settings.config.ipv6
               = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
-                              { wrapper: { class: 'col-md-4' } }, class: 'custom-select'
+                              { wrapper: { class: 'col-md-4' } }
               = nic_f.text_field :ipv6_address,
                 pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
                 wrapper: { class: 'col-md-4' }
@@ -298,8 +291,7 @@ p = t('forms.common.required_input')
         = f.collection_select :user_id,
           User.order(:username).where(deleted: false),
           :id, :name,
-          { wrapper: { class: 'col-md-4' } },
-          class: 'custom-select'
+          { wrapper: { class: 'col-md-4' } }
 
   = f.submit class: 'btn btn-primary'
 

@@ -4,8 +4,8 @@ header.mb-2
     - if user_signed_in?
       buttn.navbar-toggler(
         type="button"
-        data-toggle="collapse"
-        data-target="#navbar-menu"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbar-menu"
         aria-controls="navbar-menu"
         aria-expanded="false"
         aria-label="Toggle navigation"
@@ -37,5 +37,5 @@ header.mb-2
           li.nav-item.px-1
             span.navbar-text.mx-1
               = link_to destroy_user_session_path,
-                method: :delete, title: t('actions.sign_out'), 'data-toggle': 'tooltip' do
+                method: :delete, title: t('actions.sign_out'), 'data-bs-toggle': 'tooltip' do
                 i.fas.fa-sign-out-alt

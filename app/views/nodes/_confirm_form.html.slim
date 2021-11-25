@@ -4,7 +4,7 @@
       = bootstrap_form_for @confirmation, url: node_confirmation_path(@node) do |f|
         .modal-header
           h5.modal-title 確認事項
-          button.close type="button" data-dismiss="modal" aria-label="Close"
+          button.close type="button" data-bs-dismiss="modal" aria-label="Close"
             span aria-hidden="true" &times;
         .modal-body
           - question_count = 1
@@ -24,7 +24,7 @@
             .d-none
               a[id="node-confirm-collapse-link" class="btn btn-primary"
               role="button" aria-expanded="false"
-              aria-controls="node-confirm-fields" data-toggle="collapse"
+              aria-controls="node-confirm-fields" data-bs-toggle="collapse"
               href="#node-confirm-fields"]
                 | 端末存在
           #node-confirm-fields.collapse
@@ -68,8 +68,7 @@
                       = security_software_f.select :installation_method,
                         t_enums(:installation_methods, SecuritySoftware).select \
                           { |k, v| @installation_methods.include?(v) },
-                        { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } },
-                        class: 'custom-select'
+                        { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } }
                       = security_software_f.text_field :name,
                         list: 'confirmation_security_software_name-list',
                         disabled: true,
@@ -116,7 +115,7 @@
 
         .modal-footer
           = f.submit '確認終了', class: 'btn btn-primary'
-          button.btn.btn-dark data-dismiss="modal"
+          button.btn.btn-dark data-bs-dismiss="modal"
             | キャンセルして
             = t(:close, scope: [:do_actions])
 
