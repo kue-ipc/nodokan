@@ -417,14 +417,20 @@ class NodesController < ApplicationController
       hardware = nil
       operating_system = nil
     else
-      place = Place.find_or_initialize_by(permitted_params[:place])
+      place =
+        permitted_params[:place]&.values_at(:area, :building, :room)&.find(&:presence) &&
+        Place.find_or_initialize_by(**permitted_params[:place])
 
-      hardware_params = permitted_params[:hardware]
-      hardware_params[:device_type_id] = hardware_params[:device_type_id].presence
-      hardware = Hardware.find_or_initialize_by(hardware_params)
+      hardware = 
+        permitted_params[:hardware]&.values&.find(&:presence) &&
+        Hardware.find_or_initialize_by(
+          **permitted_params[:hardware],
+          device_type_id: permitted_params.dig(:hardware, :device_type_id).presence,
+        )
 
-      operating_system = permitted_params.dig(:operating_system, :os_category_id).presence &&
-                         OperatingSystem.find_or_initialize_by(permitted_params[:operating_system])
+      operating_system =
+        permitted_params.dig(:operating_system, :os_category_id).presence &&
+        OperatingSystem.find_or_initialize_by(**permitted_params[:operating_system])
     end
 
     permitted_params.except(:place, :hardware, :operating_system).merge(
