@@ -187,9 +187,9 @@ module ApplicationHelper
 
     badge_classes = ['badge']
     if enabled
-      badge_classes << "badge-#{level}"
+      badge_classes << "bg-#{level}"
     else
-      badge_classes << 'badge-light' << 'text-muted'
+      badge_classes << 'bg-light' << 'text-muted'
     end
     tag.span(name, class: badge_classes, id: id)
   end
@@ -201,9 +201,9 @@ module ApplicationHelper
     name = model.class.human_attribute_name(attr)
     badge_classes = ['badge']
     if enabled
-      badge_classes << "badge-#{level}"
+      badge_classes << "bg-#{level}"
     else
-      badge_classes << 'badge-light' << 'text-muted'
+      badge_classes << 'bg-light' << 'text-muted'
     end
     tag.span(name, class: badge_classes, id: id)
   end
@@ -283,7 +283,7 @@ module ApplicationHelper
   def badge_for(value, scope: '', badge_class: [])
     badge_class = badge_class.to_s.split unless badge_class.is_a?(Array)
     badge_class << 'badge'
-    NAME_COLORS[value.intern]&.then { |color| badge_class << "badge-#{color}" }
+    NAME_COLORS[value.intern]&.then { |color| badge_class << "bg-#{color}" }
     tag.span(t(value, scope: scope), class: badge_class)
   end
 end

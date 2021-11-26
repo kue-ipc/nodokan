@@ -13,10 +13,10 @@ dl
   = dt_dd_for @user, :nodes_count do |value|
     - if current_user.admin?
       = link_to nodes_path(condition: {user_id: @user.id}) do
-        span.badge.badge-primary
+        span.badge.bg-primary
           = value
     - else
-      span.badge.badge-primary
+      span.badge.bg-primary
         = value
 
   = dt_dd_for @user, :role do |role|
