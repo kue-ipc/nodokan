@@ -5,6 +5,14 @@
 @import "bootstrap"
 @import "rails_bootstrap_forms"
 
+a, .btn-link
+  text-decoration: none
+  &:hover
+    text-decoration: underline
+
+a.btn:not(.btn-link):hover
+  text-decoration: none
+
 label.required
   &::after
     color: $danger
