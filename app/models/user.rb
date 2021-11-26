@@ -175,14 +175,14 @@ class User < ApplicationRecord
   end
 
   def remove_use_network(network)
-    assignment = use_assignments.find_by(network: network)
+    assignment = assignments.find_by(network: network)
     return if assignment.nil?
 
     assignment.update(use: false, manage: false)
   end
 
   def clear_use_networks
-    use_assignments.each do |assignment|
+    assignments.each do |assignment|
       assignment.update(use: false, manage: false)
     end
   end
