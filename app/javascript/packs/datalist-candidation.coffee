@@ -1,10 +1,10 @@
 # DatalisntCandidation#constructor
-# parent: 親のモデルの名前
-# name: モデルの名前
-# target: 対象となる属性
+# name: モデルの名前 [必須]
+# target: 対象となる属性 [必須]
+# url: indexのJSONのパス [必須]
+# parent: 親のモデルの名前のリスト
 # order: リストの順番
 # inputList: 条件の参照となるinputのリスト
-# url: indexのJSONのパス
 # requiredInput: 検索するときに入力が必須であるinput
 # per: 検索するアイテム数上限
 # description: 説明があるかどうか
@@ -14,7 +14,12 @@
 
 class DatalistCandidation
   constructor: ({
-    @parent, @name, @target, @order, @inputList, @url,
+    @name,
+    @target,
+    @url,
+    @parent = [],
+    @order = null,
+    @inputList = [],
     @requiredInput = null,
     @per = 1000,
     @description = false,
@@ -22,6 +27,23 @@ class DatalistCandidation
     @locked = null,
     @required = null,
   }) ->
+    unless @name?
+      throw 'Name required for DatalistCandidation'
+    unless @target?
+      throw 'Target required for DatalistCandidation'
+    unless @url?
+      throw 'Url required for DatalistCandidation'
+
+    unless Array.isArray(@parent)
+      @parent =
+        if @parent?
+          [@parent.toString()]
+        else
+          []
+
+    unless @order?
+      @order = {[@target]: 'asc'}
+
     @targetId = @attrId(@target)
     @appId = [@targetId, 'app'].join('-')
     @datalistId = [@targetId, 'list'].join('-')
@@ -46,7 +68,7 @@ class DatalistCandidation
     @targetDescriptions = new Map
 
   attrId: (attr) ->
-    [@parent, @name, attr].join('_')
+    [@parent..., @name, attr].join('_')
 
   createUrl: ->
     list = []
