@@ -61,17 +61,6 @@ p = t('forms.common.required_input')
         = place_f.text_field :area,
           list: 'node_place_area-list',
           wrapper: { class: 'col-md-3' }
-        - node_place_area_params = { \
-          parent: 'node',
-          name: 'place',
-          target: 'area',
-          order: { area: 'asc' },
-          inputList: [],
-          url: '/places.json',
-        }
-        #node_place_area-app.datalist-canadidaiton(
-          data-params=node_place_area_params.to_json
-        )
         = place_f.text_field :building,
           list: 'node_place_building-list',
           wrapper: { class: 'col-md-3' }
@@ -83,7 +72,7 @@ p = t('forms.common.required_input')
           inputList: ['area'],
           url: '/places.json',
         }
-        #node_place_building-app.datalist-canadidaiton(
+        #node_place_building-app.datalist-canadidation(
           data-params=node_place_building_params.to_json
         )
         = place_f.select :floor,
@@ -100,7 +89,7 @@ p = t('forms.common.required_input')
           inputList: ['area', 'building', 'floor'],
           url: '/places.json',
         }
-        #node_place_room-app.datalist-canadidaiton(
+        #node_place_room-app.datalist-canadidation(
           data-params=node_place_room_params.to_json
         )
 
@@ -123,7 +112,7 @@ p = t('forms.common.required_input')
           inputList: ['device_type_id'],
           url: '/hardwares.json',
         }
-        #node_hardware_maker-app.datalist-canadidaiton(
+        #node_hardware_maker-app.datalist-canadidation(
           data-params=node_hardware_maker_params.to_json
         )
         = hardware_f.text_field :product_name,
@@ -137,7 +126,7 @@ p = t('forms.common.required_input')
           inputList: ['device_type_id', 'maker'],
           url: '/hardwares.json',
         }
-        #node_hardware_product_name-app.datalist-canadidaiton(
+        #node_hardware_product_name-app.datalist-canadidation(
           data-params=node_hardware_product_name_params.to_json
         )
         = hardware_f.text_field :model_number,
@@ -151,7 +140,7 @@ p = t('forms.common.required_input')
           inputList: ['device_type_id', 'maker', 'product_name'],
           url: '/hardwares.json',
         }
-        #node_hardware_model_number-app.datalist-canadidaiton(
+        #node_hardware_model_number-app.datalist-canadidation(
           data-params=node_hardware_model_number_params.to_json
         )
 
@@ -183,7 +172,7 @@ p = t('forms.common.required_input')
               list: OsCategory.where(locked: true).map(&:id).map(&:to_s),
             },
           }
-        #node_operating_system_name-app.datalist-canadidaiton data-params=node_operating_system_name_params.to_json
+        #node_operating_system_name-app.datalist-canadidation data-params=node_operating_system_name_params.to_json
     small#node_operating_system_name-description.form-text
 
   .rounded.border.p-2.mb-2
@@ -294,6 +283,21 @@ p = t('forms.common.required_input')
           { wrapper: { class: 'col-md-4' } }
 
   = f.submit class: 'btn btn-primary'
+
+
+
+- node_place_area_params = { \
+  parent: 'node',
+  name: 'place',
+  target: 'area',
+  order: { area: 'asc' },
+  inputList: [],
+  url: '/places.json',
+}
+#node_place_area-app.datalist-canadidation.d-none(
+  data-params=node_place_area_params.to_json
+)
+
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
 = javascript_pack_tag 'node-nic', 'data-turbolinks-track': 'reload'

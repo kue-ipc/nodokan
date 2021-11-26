@@ -144,6 +144,6 @@ class DatalistCandidation
 
     @updateDatalist({init: true})
 
-for node in document.getElementsByClassName('datalist-canadidaiton')
+for node in document.getElementsByClassName('datalist-canadidation')
   dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
   dc.run()
