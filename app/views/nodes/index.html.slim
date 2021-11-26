@@ -3,11 +3,18 @@
     = Node.model_name.human
     = t('actions.index')
 
-.mb-3
-  = link_to t('actions.new'), new_node_path, class: 'btn btn-secondary mr-2'
-  = link_to 'CSVダウンロード', nodes_path(format: :csv),
-      class: 'btn btn-primary',
-      download: "nodes_#{Time.now.strftime('%Y%m%d')}.csv"
+.mb-2
+  = bootstrap_form_tag url: nodes_path, method: 'get' do |f|
+    .row.row-cols-md-auto.g-3.align-items-center
+      .col-12
+        = f.search_field :query, value: @query, hide_label: true,
+          append: f.primary('<i class="fas fa-search"></i>'.html_safe, name: :search, render_as_button: true)
+      .col-12.mb-3
+        = link_to t('actions.download_csv'), nodes_path(format: :csv),
+            class: 'btn btn-primary',
+            download: "nodes_#{Time.now.strftime('%Y%m%d')}.csv"
+      .col-12.mb-3
+        = link_to t('actions.new'), new_node_path, class: 'btn btn-secondary'
 
 p
   | 1年に1度、端末の確認を行ってください。
@@ -15,21 +22,18 @@ p
 hr
 
 .mb-3
-  = bootstrap_form_tag url: nodes_path, method: 'get', layout: :inline do |f|
-    = f.fields_for :condition do |ff|
-      = ff.check_box :specific, checked: @condition[:specific], label: '特定端末のみ表示'
-      = ff.collection_select :network_id, current_user.usable_networks.to_a,
-        :id, :name,
-        { include_blank: '(全て)', selected: @condition[:network_id], label: 'ネットワーク' }
-      - if current_user.admin?
-        = ff.collection_select :user_id, User.all,
-          :id, :username,
-          { include_blank: '(全て)', selected: @condition[:user_id], label: '所有者' }
-
-    .input-group.ml-2
-      = f.search_field :query, value: @query, hide_label: true, wrapper: false
-      = f.primary '<i class="fas fa-search"></i> | <i class="fas fa-filter"></i>'.html_safe,
-                  name: :search, render_as_button: true
+  = bootstrap_form_tag url: nodes_path, method: 'get' do |f|
+    .row.row-cols-md-auto.g-3.align-items-center
+      = f.fields_for :condition do |ff|
+        = ff.check_box :specific, checked: @condition[:specific], label: '特定端末のみ表示',
+          wrapper_class: 'col-12 mb-3'
+        = ff.collection_select :network_id, current_user.usable_networks.to_a, :id, :name,
+          include_blank: '(全てのネットワーク)', selected: @condition[:network_id], hide_label: true,
+          wrapper_class: 'col-12'
+        - if current_user.admin?
+          = ff.collection_select :user_id, User.all, :id, :username,
+            include_blank: '(全てのユーザー)', selected: @condition[:user_id], hide_label: true,
+            wrapper_class: 'col-12'
 
 = render 'list'
 

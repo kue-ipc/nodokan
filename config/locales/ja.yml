@@ -38,6 +38,8 @@ ja:
     confirm: 確認
     information: 情報
     back: 戻る
+    download_csv: CSVダウンロード
+    upload_csv: CSVアップロード
 
   do_actions:
     close: 閉じる
