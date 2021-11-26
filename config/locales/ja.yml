@@ -40,6 +40,8 @@ ja:
     back: 戻る
     download_csv: CSVダウンロード
     upload_csv: CSVアップロード
+    change: 変更
+    release: 解除
 
   do_actions:
     close: 閉じる

@@ -44,15 +44,18 @@ p
 = bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
   = f.form_group :action, label: { text: '申請' } do
     - if @node.specific
-      = f.radio_button :action, 'register', label: '登録', wrapper_class: 'form-check-inline', disabled: true
-      = f.radio_button :action, 'change', label: '変更', wrapper_class: 'form-check-inline', checked: true,
-        required: true
-      = f.radio_button :action, 'release', label: '解除', wrapper_class: 'form-check-inline', required: true
+      - enabled_actions = %w[change release]
+      - checked_action = 'change'
     - else
-      = f.radio_button :action, 'register', label: '登録', wrapper_class: 'form-check-inline', checked: true,
-        required: true
-      = f.radio_button :action, 'change', label: '変更', wrapper_class: 'form-check-inline', disabled: true
-      = f.radio_button :action, 'release', label: '解除', wrapper_class: 'form-check-inline', disabled: true
+      - enabled_actions = %w[register]
+      - checked_action = 'register'
+    - %w[register change release].each do |action|
+      - enabled = enabled_actions.include?(action)
+      = f.radio_button :action, action, label: t(action, scope: 'actions'), inline: true,
+        disabled: !enabled, required: enabled,
+        checked: checked_action == action
+
+
 
   = f.text_field :reason, label: '申請理由 (端末の用途や目的など)', required: true
 
