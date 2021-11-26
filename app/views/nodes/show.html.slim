@@ -6,7 +6,7 @@ dl
     = name
     - %i[virtual specific global public dns].each do |attr|
       - if @node.__send__(attr)
-        = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ml-1')
+        = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ms-1')
   = dt_dd_for @node, :fqdn
   - unless @node.virtual
     = dt_dd_for @node, :place do |place|
@@ -59,7 +59,7 @@ dl
                 = nic.name
                 - %i[locked auth global].each do |attr|
                   - if nic.__send__(attr)
-                    = badge_for(attr, scope: 'activerecord.attributes.nic', badge_class: 'ml-1')
+                    = badge_for(attr, scope: 'activerecord.attributes.nic', badge_class: 'ms-1')
               td = nic.mac_address
               td
                 - if nic.network
@@ -188,10 +188,10 @@ p.text-muted
       譲渡先ユーザーのユーザー名を入力してください。
 
   = bootstrap_form_with url: transfer_node_path(@node) do |f|
-    = f.text_field :username, label: 'ユーザー名', label_class: 'mr-1'
-    = f.text_area :note, label: '備考 (下記のメッセージを端末の備考に追加します)', label_class: 'mr-1',
+    = f.text_field :username, label: 'ユーザー名', label_class: 'me-1'
+    = f.text_area :note, label: '備考 (下記のメッセージを端末の備考に追加します)', label_class: 'me-1',
       value: "[#{current_user.username}から管理譲渡]"
-    = f.submit '譲渡', class: 'btn btn-primary ml-1'
+    = f.submit '譲渡', class: 'btn btn-primary ms-1'
 
 - if @node.nics.count.positive?
   hr

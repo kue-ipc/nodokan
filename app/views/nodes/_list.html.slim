@@ -47,7 +47,7 @@ table.table.table-hover.table-sm
           = node.name
           - %i[virtual specific global public dns].each do |attr|
             - if node.__send__(attr)
-              = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ml-1')
+              = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ms-1')
         td = node.hostname
         td = node.place&.short_name
         td = node.hardware&.product_name

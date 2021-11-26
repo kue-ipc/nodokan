@@ -187,7 +187,7 @@ p = t('forms.common.required_input')
     small#node_operating_system_name-description.form-text
 
   .rounded.border.p-2.mb-2
-    .float-right
+    .float-end
       = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic', formnovalidate: true
     h4 = t('forms.node.nic.title')
     small.text-muted = t('forms.node.nic.help')

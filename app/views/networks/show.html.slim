@@ -7,7 +7,7 @@ dl
     = value
     - %i[auth dhcp locked specific global].each do |attr|
       - if @network.__send__(attr)
-        = badge_for(attr, scope: 'activerecord.attributes.network', badge_class: 'ml-1')
+        = badge_for(attr, scope: 'activerecord.attributes.network', badge_class: 'ms-1')
   = dt_dd_for @network, :vlan
   = dt_dd_for @network, :ipv4_network
   = dt_dd_for @network, :ipv4_gateway

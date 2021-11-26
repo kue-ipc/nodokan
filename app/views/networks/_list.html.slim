@@ -34,7 +34,7 @@ table.table.table-hover.table-sm
         td
           - %i[auth dhcp locked specific global].each do |attr|
             - if network.__send__(attr)
-              = badge_for(attr, scope: 'activerecord.attributes.network', badge_class: 'ml-1')
+              = badge_for(attr, scope: 'activerecord.attributes.network', badge_class: 'ms-1')
         td = network.vlan
         td = span_value_for(network.ipv4_network, hide_blank: true)
         td = span_value_for(network.ipv6_network, hide_blank: true)
