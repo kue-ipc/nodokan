@@ -9,11 +9,11 @@ p = t('forms.common.required_input')
     small.text-muted = t('forms.node.base.help')
     .row
       = f.text_field :name, required: true,
-        wrapper: { class: 'col-md-4' }
+        wrapper_class: 'col-md-4'
       = f.text_field :hostname, pattern: '[0-9A-Za-z-]*',
-        wrapper: { class: 'col-md-3' }
+        wrapper_class: 'col-md-3'
       = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
-        wrapper: { class: 'col-md-5' }
+        wrapper_class: 'col-md-5'
     - if current_user.admin?
       .row
         .col
@@ -58,91 +58,37 @@ p = t('forms.common.required_input')
     small.text-muted = t('forms.node.place.help')
     .row
       = f.fields_for :place, @node.place || Place.new do |place_f|
-        = place_f.text_field :area,
-          list: 'node_place_area-list',
-          wrapper: { class: 'col-md-3' }
-        = place_f.text_field :building,
-          list: 'node_place_building-list',
-          wrapper: { class: 'col-md-3' }
-        - node_place_building_params = { \
-          parent: 'node',
-          name: 'place',
-          target: 'building',
-          order: { building: 'asc' },
-          inputList: ['area'],
-          url: '/places.json',
-        }
-        #node_place_building-app.datalist-canadidation(
-          data-params=node_place_building_params.to_json
-        )
-        = place_f.select :floor,
-          10.downto(-5).map { |i| [t_floor(i), i] },
-          { wrapper: { class: 'col-md-2' } }
-        = place_f.text_field :room,
-                             list: 'node_place_room-list',
-                             wrapper: { class: 'col-md-4' }
-        - node_place_room_params = { \
-          parent: 'node',
-          name: 'place',
-          target: 'room',
-          order: { nodes_count: 'desc' },
-          inputList: ['area', 'building', 'floor'],
-          url: '/places.json',
-        }
-        #node_place_room-app.datalist-canadidation(
-          data-params=node_place_room_params.to_json
-        )
+        = place_f.text_field :area, list: 'node_place_area-list', wrapper_class: 'col-md-3'
+        = datalist_canadidation :place, :area, places_path, parents: [:node]
+
+        = place_f.text_field :building, list: 'node_place_building-list', wrapper_class: 'col-md-3'
+        = datalist_canadidation :place, :building, places_path, parents: [:node], inputList: [:area]
+
+        - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
+        = place_f.select :floor, floor_list, wrapper_class: 'col-md-2'
+
+        = place_f.text_field :room, list: 'node_place_room-list', wrapper_class: 'col-md-4'
+        = datalist_canadidation :place, :room, places_path, parents: [:node],order: { nodes_count: 'desc' },
+          inputList: [:area, :building, :floor]
 
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.hardware.title')
     small.text-muted = t('forms.node.hardware.help')
     .row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
-        = hardware_f.collection_select :device_type_id, 
-          DeviceType.order(:order), :id, :name,
-          { include_blank: '(未選択)', wrapper: { class: 'col-md-3' } }
-        = hardware_f.text_field :maker,
-          list: 'node_hardware_maker-list',
-          wrapper: { class: 'col-md-2' }
-        - node_hardware_maker_params = { \
-          parent: 'node',
-          name: 'hardware',
-          target: 'maker',
-          order: { maker: 'asc' },
-          inputList: ['device_type_id'],
-          url: '/hardwares.json',
-        }
-        #node_hardware_maker-app.datalist-canadidation(
-          data-params=node_hardware_maker_params.to_json
-        )
-        = hardware_f.text_field :product_name,
-          list: 'node_hardware_product_name-list',
-          wrapper: { class: 'col-md-4' }
-        - node_hardware_product_name_params = { \
-          parent: 'node',
-          name: 'hardware',
-          target: 'product_name',
-          order: { product_name: 'asc' },
-          inputList: ['device_type_id', 'maker'],
-          url: '/hardwares.json',
-        }
-        #node_hardware_product_name-app.datalist-canadidation(
-          data-params=node_hardware_product_name_params.to_json
-        )
-        = hardware_f.text_field :model_number,
-          list: 'node_hardware_model_number-list',
-          wrapper: { class: 'col-md-3' }
-        - node_hardware_model_number_params = { \
-          parent: 'node',
-          name: 'hardware',
-          target: 'model_number',
-          order: { model_number: 'asc' },
-          inputList: ['device_type_id', 'maker', 'product_name'],
-          url: '/hardwares.json',
-        }
-        #node_hardware_model_number-app.datalist-canadidation(
-          data-params=node_hardware_model_number_params.to_json
-        )
+        = hardware_f.collection_select :device_type_id, DeviceType.order(:order), :id, :name,
+          include_blank: '(未選択)', wrapper_class: 'col-md-3'
+
+        = hardware_f.text_field :maker, list: 'node_hardware_maker-list', wrapper_class: 'col-md-2'
+        = datalist_canadidation :hardware, :maker, hardwares_path, parents: [:node], inputList: [:device_type_id]
+
+        = hardware_f.text_field :product_name, list: 'node_hardware_product_name-list', wrapper_class: 'col-md-4'
+        = datalist_canadidation :hardware, :product_name, hardwares_path, parents: [:node],
+          inputList: [:device_type_id, :maker]
+
+        = hardware_f.text_field :model_number, list: 'node_hardware_model_number-list', wrapper_class: 'col-md-3'
+        = datalist_canadidation :hardware, :model_number, hardwares_path, parents: [:node],
+          inputList: [:device_type_id, :maker, :product_name]
 
   .rounded.border.p-2.mb-2.virtual-hide
     h4 = t('forms.node.operating_system.title')
@@ -150,29 +96,19 @@ p = t('forms.common.required_input')
     .row
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
-        = operating_system_f.collection_select :os_category_id,
-          OsCategory.order(:order), :id, :name,
-          { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } }
-        = operating_system_f.text_field :name,
-          list: 'node_operating_system_name-list',
-          disabled: true,
-          wrapper: { class: 'col-md-8' }
-        - node_operating_system_name_params = { \
-            parent: 'node',
-            name: 'operating_system',
-            target: 'name',
-            order: { nodes_count: 'desc' },
-            inputList: ['os_category_id'],
-            url: '/operating_systems.json',
-            requiredInput: 'os_category_id',
-            description: true,
-            clear: true,
-            locked: { \
-              name: 'os_category_id',
-              list: OsCategory.where(locked: true).map(&:id).map(&:to_s),
-            },
-          }
-        #node_operating_system_name-app.datalist-canadidation data-params=node_operating_system_name_params.to_json
+        = operating_system_f.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
+          include_blank: '(未選択)', wrapper_class: 'col-md-4'
+
+        = operating_system_f.text_field :name, list: 'node_operating_system_name-list', wrapper_class: 'col-md-8',
+          disabled: true
+        = datalist_canadidation :operating_system, :name, operating_systems_path, parents: [:node],
+          order: {nodes_count: 'desc'},
+          inputList: [:os_category_id],
+          requiredInput: :os_category_id,
+          description: true,
+          clear: true,
+          locked: {name: :os_category_id, list: OsCategory.where(locked: true).map(&:id).map(&:to_s)}
+
     small#node_operating_system_name-description.form-text
 
   .rounded.border.p-2.mb-2
@@ -223,37 +159,37 @@ p = t('forms.common.required_input')
             = nic_f.select :interface_type,
                             t_enums(:interface_types, Nic),
                             { prompt: '(選択してください)',
-                            wrapper: { class: 'col-md-4' } },
+                            wrapper_class: 'col-md-4' },
                             required: true
-            = nic_f.text_field :name, wrapper: { class: 'col-md-8' }
+            = nic_f.text_field :name, wrapper_class: 'col-md-8'
             - nic_networks = current_user.usable_networks.to_a
             - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
               - nic_networks << nic_f.object.network
             = nic_f.collection_select :network_id, nic_networks,
               :id, :name,
               { prompt: '(選択してください。)',
-              wrapper: { class: 'col-md-4' } },
+              wrapper_class: 'col-md-4' },
               required: true
             = nic_f.text_field :mac_address,
               pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-              wrapper: { class: 'col-md-4' }
+              wrapper_class: 'col-md-4'
             = nic_f.form_group :auth, label: { text: '認証ネットワーク登録' }, class: 'col-md-4' do
               = nic_f.check_box :auth, label: 'MACアドレスを登録する'
             = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
-                            { wrapper: { class: 'col-md-4' } }
+                            { wrapper_class: 'col-md-4' }
             = nic_f.text_field :ipv4_address,
               pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
-              wrapper: { class: 'col-md-4' }
+              wrapper_class: 'col-md-4'
             .col-md-4
             - if Settings.config.ipv6
               = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
-                              { wrapper: { class: 'col-md-4' } }
+                              { wrapper_class: 'col-md-4' }
               = nic_f.text_field :ipv6_address,
                 pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
-                wrapper: { class: 'col-md-4' }
+                wrapper_class: 'col-md-4'
               = nic_f.text_field :duid,
                 pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-                wrapper: { class: 'col-md-4' }
+                wrapper_class: 'col-md-4'
             - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
             - [ \
               'no_network',
@@ -280,24 +216,9 @@ p = t('forms.common.required_input')
         = f.collection_select :user_id,
           User.order(:username).where(deleted: false),
           :id, :name,
-          { wrapper: { class: 'col-md-4' } }
+          { wrapper_class: 'col-md-4' }
 
   = f.submit class: 'btn btn-primary'
-
-
-
-- node_place_area_params = { \
-  parent: 'node',
-  name: 'place',
-  target: 'area',
-  order: { area: 'asc' },
-  inputList: [],
-  url: '/places.json',
-}
-#node_place_area-app.datalist-canadidation.d-none(
-  data-params=node_place_area_params.to_json
-)
-
 
 = javascript_pack_tag 'datalist-candidation', 'data-turbolinks-track': 'reload'
 = javascript_pack_tag 'node-nic', 'data-turbolinks-track': 'reload'

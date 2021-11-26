@@ -64,35 +64,26 @@
                   .row
                     = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
                       = security_software_f.hidden_field :os_category_id
+
                       = security_software_f.select :installation_method,
                         t_enums(:installation_methods, SecuritySoftware).select \
                           { |k, v| @installation_methods.include?(v) },
-                        { include_blank: '(未選択)', wrapper: { class: 'col-md-4' } }
-                      = security_software_f.text_field :name,
-                        list: 'confirmation_security_software_name-list',
-                        disabled: true,
-                        wrapper: { class: 'col-md-8' }
-                      - confirmation_security_software_name_params = { \
-                          parent: 'confirmation',
-                          name: 'security_software',
-                          target: 'name',
-                          order: { confirmations_count: 'desc' },
-                          inputList: ['os_category_id', 'installation_method'],
-                          url: '/security_softwares.json',
-                          requiredInput: 'installation_method',
-                          description: true,
-                          clear: true,
-                          locked: { \
-                            name: 'installation_method',
-                            list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:locked] }.keys,
-                          },
-                          required: { \
-                            name: 'installation_method',
-                            list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:required] }.keys,
-                          },
-                        }
-                      #confirmation_security_software_name-app.datalist-canadidation[
-                        data-params=confirmation_security_software_name_params.to_json]
+                        { include_blank: '(未選択)', wrapper_class: 'col-md-4' }
+
+                      = security_software_f.text_field :name, list: 'confirmation_security_software_name-list',
+                        wrapper_class: 'col-md-8', disabled: true
+                      = datalist_canadidation :security_software, :name, security_softwares_path,
+                        parents: [:confirmation],
+                        order: {confirmations_count: 'desc'},
+                        inputList: [:os_category_id, :installation_method],
+                        requiredInput: :installation_method,
+                        description: true,
+                        clear: true,
+                        locked: {name: :installation_method,
+                          list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:locked] }.keys},
+                        required: {name: :installation_method,
+                          list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:required] }.keys}
+
                   small#confirmation_security_software_name-description.form-text.text-muted
                 - question_count += 1
                 - %i[security_update security_scan].each do |attr_name|

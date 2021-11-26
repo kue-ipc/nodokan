@@ -2,7 +2,8 @@
 # name: モデルの名前 [必須]
 # target: 対象となる属性 [必須]
 # url: indexのJSONのパス [必須]
-# parent: 親のモデルの名前のリスト
+# parent: 親のモデルの名前
+# parents: 親のモデルの名前のリスト
 # order: リストの順番
 # inputList: 条件の参照となるinputのリスト
 # requiredInput: 検索するときに入力が必須であるinput
@@ -17,7 +18,8 @@ class DatalistCandidation
     @name,
     @target,
     @url,
-    @parent = [],
+    @parent = null
+    @parents = [],
     @order = null,
     @inputList = [],
     @requiredInput = null,
@@ -34,12 +36,8 @@ class DatalistCandidation
     unless @url?
       throw 'Url required for DatalistCandidation'
 
-    unless Array.isArray(@parent)
-      @parent =
-        if @parent?
-          [@parent.toString()]
-        else
-          []
+    if @parent?
+      @parents.push(@parent)
 
     unless @order?
       @order = {[@target]: 'asc'}
@@ -68,7 +66,7 @@ class DatalistCandidation
     @targetDescriptions = new Map
 
   attrId: (attr) ->
-    [@parent..., @name, attr].join('_')
+    [@parents..., @name, attr].join('_')
 
   createUrl: ->
     list = []
