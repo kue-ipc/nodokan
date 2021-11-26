@@ -149,8 +149,8 @@ dl
   = dt_dd_for @node, :connected_at, blank_alt: '-'
 
 p
-  button#confirm-form-modal-toggle.btn.btn-primary[
-    type="button" data-bs-toggle="modal" data-bs-target="#confirm-form-modal"]
+  button#node-confirm-modal-toggle.btn.btn-primary[
+    type="button" data-bs-toggle="modal" data-bs-target="#node-confirm-modal"]
     = t(:confirm, scope: [:actions])
   =<> link_to t(:edit, scope: [:actions]), edit_node_path(@node),
     class: 'btn btn-warning'
