@@ -115,7 +115,7 @@ class DatalistCandidation
         else
           ''
 
-    if @locked
+    if @locked?
       if (attr for attr in @attrList when attr.name is @locked.name and @locked.list.includes(attr.value))[0]?
         @targetNode.readOnly = true
         @targetNodeLabel.classList.add('readonly')
@@ -124,7 +124,7 @@ class DatalistCandidation
         @targetNodeLabel.classList.remove('readonly')
         @targetNode.readOnly = false
 
-    if @required
+    if @required?
       if (attr for attr in @attrList when attr.name is @required.name and @required.list.includes(attr.value))[0]?
         @targetNode.required = true
         @targetNodeLabel.classList.add('required')
