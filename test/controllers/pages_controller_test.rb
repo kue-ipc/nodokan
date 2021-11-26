@@ -11,7 +11,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     test 'should get root' do
       get root_url
       assert_response :success
-      assert_select 'span', 'admin'
+      assert_select 'a', 'admin'
       assert_select 'a', '管理'
     end
 
@@ -29,7 +29,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     test 'should get root' do
       get root_url
       assert_response :success
-      assert_select 'span', 'user'
+      assert_select 'a', 'user'
     end
 
     test 'should get about' do
