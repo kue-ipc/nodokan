@@ -1,41 +1,39 @@
 header.mb-2
-  nav.navbar.navbar-expand-sm.navbar-light.bg-light
-    = link_to site_title, root_path, class: 'navbar-brand'
-    - if user_signed_in?
-      buttn.navbar-toggler(
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbar-menu"
-        aria-controls="navbar-menu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      )
-        span.navbar-toggler-icon
-      #navbar-menu.collapse.navbar-collapse
-        ul.navbar-nav.me-auto
-          li.nav-item
-            = link_to '端末登録', new_node_path, class: 'nav-link'
-          li.nav-item
-            = link_to '端末一覧', nodes_path, class: 'nav-link'
-          - if current_user.admin?
+  nav.navbar.navbar-expand-md.navbar-light.bg-light
+    .container-fluid
+      = link_to site_title, root_path, class: 'navbar-brand'
+      - if user_signed_in?
+        buttn.navbar-toggler(
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbar-menu"
+          aria-controls="navbar-menu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        )
+          span.navbar-toggler-icon
+        #navbar-menu.collapse.navbar-collapse
+          ul.navbar-nav.me-auto.mb-1.mb-md-0
             li.nav-item
-              = link_to 'ネットワーク一覧', networks_path, class: 'nav-link'
+              = link_to '端末登録', new_node_path, class: 'nav-link'
             li.nav-item
-              = link_to 'ユーザー一覧', users_path, class: 'nav-link'
-        ul.navbar-nav
-          - if current_user.admin?
+              = link_to '端末一覧', nodes_path, class: 'nav-link'
+            - if current_user.admin?
+              li.nav-item
+                = link_to 'ネットワーク一覧', networks_path, class: 'nav-link'
+              li.nav-item
+                = link_to 'ユーザー一覧', users_path, class: 'nav-link'
+          ul.navbar-nav.d-flex
+            - if current_user.admin?
+              li.nav-item
+                = link_to t('pages.admin'), rails_admin_path, class: 'btn btn-outline-danger my-2 my-md-0 me-2',
+                  target: '_blank'
+              li.nav-item
+                = link_to t('pages.job'), delayed_job_web_path, class: 'btn btn-outline-secondary my-2 my-md-0 me-2',
+                  target: '_blank'
             li.nav-item
-              = link_to t('pages.admin'), rails_admin_path, class: 'btn btn-outline-danger my-2 my-sm-0 me-1',
-                target: '_blank'
-
+              = link_to current_user.username, '/user', class: 'nav-link'
             li.nav-item
-              = link_to t('pages.job'), delayed_job_web_path, class: 'btn btn-outline-secondary my-2 my-sm-0 me-1',
-                target: '_blank'
-          li.nav-item.px-1
-            span.navbar-text.mx-1
-              = link_to current_user.username, '/user'
-          li.nav-item.px-1
-            span.navbar-text.mx-1
-              = link_to destroy_user_session_path,
+              = link_to destroy_user_session_path, class: 'nav-link',
                 method: :delete, title: t('actions.sign_out'), 'data-bs-toggle': 'tooltip' do
                 i.fas.fa-sign-out-alt
