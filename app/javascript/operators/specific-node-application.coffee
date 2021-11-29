@@ -44,7 +44,7 @@ document.addEventListener 'turbolinks:load', ->
   checkAction = ->
     if actionRadioMap.get('release').checked
       setDisabled(
-        Array.from(ruleSetRadioMap.values())...,
+        ruleSetRadioMap.values()...,
         externalSelect,
         ruleListTextArea,
         registerDnsCheckBox,
@@ -52,7 +52,7 @@ document.addEventListener 'turbolinks:load', ->
       )
     else
       unsetDisabled(
-        Array.from(ruleSetRadioMap.values())...,
+        ruleSetRadioMap.values()...,
         externalSelect,
         ruleListTextArea,
         registerDnsCheckBox,
