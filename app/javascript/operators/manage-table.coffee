@@ -1,5 +1,5 @@
 import {app, h, text} from 'hyperapp'
-import csrf from '../modules/csrf'
+import csrf from 'utils/csrf'
 
 MASKED_ATTRIBUTES = [
   'created_at'
@@ -224,6 +224,8 @@ margeAll = (state, data) ->
 
 main = ->
   node = document.getElementById('manage-table')
+  return unless node?
+
   url = node.dataset.url
 
   app
@@ -234,6 +236,7 @@ main = ->
     view: view
     node: document.getElementById('manage-table')
 
-main()
+document.addEventListener 'turbolinks:load', ->
+  main()
 
 

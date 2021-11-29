@@ -6,7 +6,15 @@ ujs.start()
 turbolinks.start()
 activestorage.start()
 
-import 'channels'
+# import 'channels'
 
-import 'modules/bootstrap-trigger'
-import 'modules/fontawesome'
+import 'operators/bootstrap-trigger'
+import 'operators/icon-font'
+
+import 'operators/clickable-row'
+import 'operators/datalist-candidation'
+import 'operators/manage-table'
+import 'operators/node-confirm'
+import 'operators/node-nic'
+import 'operators/node-virtual'
+import 'operators/specific-node-application'

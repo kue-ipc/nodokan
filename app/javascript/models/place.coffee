@@ -1,5 +1,5 @@
 import ApplicationRecord from './application_record'
-import csrf from '../modules/csrf'
+import csrf from '../utils/csrf'
 
 export default class Place extends ApplicationRecord
   @attrs: [

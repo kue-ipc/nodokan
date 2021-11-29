@@ -78,4 +78,4 @@ export default class Network extends ApplicationRecord
       configs.add('manual')
 
     configs.add('disabled')
-    [...configs]
+    Array.from(configs)

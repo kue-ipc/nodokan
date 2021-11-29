@@ -58,8 +58,6 @@ table.table.table-hover.table-sm
         method: :delete,
         class: list_group_item_class + ['bg-danger', 'text-white']
 
-= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
-
 = paginate @networks
 p
   = page_entries_info @networks

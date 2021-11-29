@@ -164,6 +164,7 @@ class DatalistCandidation
 
     @updateDatalist({init: true})
 
-for node in document.getElementsByClassName('datalist-canadidation')
-  dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
-  dc.run()
+document.addEventListener 'turbolinks:load', ->
+  for node in document.getElementsByClassName('datalist-canadidation')
+    dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
+    dc.run()

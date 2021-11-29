@@ -1,6 +1,6 @@
 # NodeのNICを操作するためのJavaScript
 
-import {listToSnake, listToField} from 'modules/string_utils'
+import {listToSnake, listToField} from 'utils/string_utils'
 import Network from 'models/network'
 import ipaddr from 'ipaddr.js'
 
@@ -114,6 +114,7 @@ class NodeNic
       value.node.classList.add('d-none')
 
   adjustConfig: (ip, list) ->
+    console.log(ip, list)
     config_name = ip + '_config'
     {node, init, options} = @inputs.get(config_name)
     selectedIndex = -1
@@ -267,6 +268,9 @@ class NodeNic
     if @network['note']
       @displayMessage('network_note', @network['note'])
 
-info = JSON.parse(document.getElementById('node-nic-info').textContent)
-for id in info.list
-  new NodeNic(id, info.options)
+document.addEventListener 'turbolinks:load', ->
+  nodeNicInfoEl = document.getElementById('node-nic-info')
+  if nodeNicInfoEl?
+    info = JSON.parse(document.getElementById('node-nic-info').textContent)
+    for id in info.list
+      new NodeNic(id, info.options)

@@ -1,4 +1,4 @@
-import ModelName from '../modules/model_name'
+import ModelName from 'utils/model_name'
 
 export default class ApplicationRecord
   @model_name: ->

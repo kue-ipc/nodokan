@@ -21,5 +21,6 @@ class ClickableRow
         @contextmenuNode.style.display = 'block'
         ClickableRow.activeContextmenuNode = @contextmenuNode
 
-for node in document.getElementsByClassName('clickable-row')
-  new ClickableRow(node)
+document.addEventListener 'turbolinks:load', ->
+  for node in document.getElementsByClassName('clickable-row')
+    new ClickableRow(node)

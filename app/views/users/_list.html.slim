@@ -44,8 +44,6 @@ table.table.table-hover.table-sm
       = link_to t('actions.show'), user,
         class: list_group_item_class + ['bg-dark', 'text-white']
 
-= javascript_pack_tag 'clickable-row', 'data-turbolinks-track': 'reload'
-
 = paginate @users
 p
   = page_entries_info @users
