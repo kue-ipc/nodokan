@@ -1,7 +1,6 @@
 {
   "name": "nodokan",
   "private": true,
-  "version": "0.1.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@popperjs/core": "^2.11.0",
@@ -16,9 +15,21 @@
     "ipaddr.js": "^2.0.0",
     "resolve-url-loader": "^4.0.0",
     "sass": "^1.37.5",
-    "turbolinks": "^5.2.0"
+    "turbolinks": "^5.2.0",
+    "webpack": "^5.53.0",
+    "webpack-cli": "^4.8.0"
   },
+  "version": "0.1.0",
+  "babel": {
+    "presets": [
+      "./node_modules/@rails/webpacker/package/babel/preset.js"
+    ]
+  },
+  "browserslist": [
+    "defaults"
+  ],
   "devDependencies": {
+    "@webpack-cli/serve": "^1.6.0",
     "webpack-dev-server": "^4.6.0"
   }
 }
