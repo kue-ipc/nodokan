@@ -20,6 +20,8 @@ class Confirmation < ApplicationRecord
   enum os_update: {
     auto: 0,
     manual: 1,
+    updated: 2,
+    secured: 3,
     unnecessary: 8,
     not_do: 16,
     eol: 17,
@@ -29,7 +31,10 @@ class Confirmation < ApplicationRecord
   enum app_update: {
     auto: 0,
     manual: 1,
+    updated: 2,
+    secured: 3,
     unnecessary: 8,
+    not_implemented: 9,
     not_do: 16,
     eol: 17,
     unknown: -1,
@@ -37,6 +42,7 @@ class Confirmation < ApplicationRecord
 
   enum security_update: {
     auto: 0,
+    built_in: 4,
     not_implemented: 9,
     not_do: 16,
     eol: 17,
@@ -58,35 +64,62 @@ class Confirmation < ApplicationRecord
   validates :security_update, presence: true
   validates :security_scan, presence: true
 
+  def check(num)
+    if num.nil? || num.negative?
+      :unknown
+    elsif num < 16
+      :ok
+    else
+      :problem
+    end
+  end
+
+  def check_existence
+    check(Confirmation.existences[existence])
+  end
+
+  def check_content
+    check(Confirmation.contents[content])
+  end
+
+  def check_os_update
+    check(Confirmation.os_updates[os_update])
+  end
+
+  def check_app_update
+    check(Confirmation.app_updates[app_update])
+  end
+
+  def check_security_update
+    check(Confirmation.security_updates[security_update])
+  end
+
+  def check_security_scan
+    check(Confirmation.security_scans[security_scan])
+  end
+
   def existence_ok?
-    existence_existing?
+    check_existence == :ok
   end
 
   def content_ok?
-    content_correct?
+    check_content == :ok
   end
 
   def os_update_ok?
-    os_update_auto? ||
-      os_update_manual? ||
-      os_update_unnecessary?
+    check_os_update == :ok
   end
 
   def app_update_ok?
-    app_update_auto? ||
-      app_update_manual? ||
-      app_update_unnecessary?
+    check_app_update == :ok
   end
 
   def security_update_ok?
-    security_update_auto? ||
-      security_update_not_implemented?
+    check_security_update == :ok
   end
 
   def security_scan_ok?
-    security_scan_auto? ||
-      security_scan_manual? ||
-      security_scan_not_implemented?
+    check_security_scan == :ok
   end
 
   def security_software_ok?
@@ -94,33 +127,28 @@ class Confirmation < ApplicationRecord
   end
 
   def existence_problem?
-    existence_abandoned? ||
-      existence_unnecessary? ||
-      existence_missing? ||
-      existence_not_my_own?
+    check_existence == :problem
   end
 
   def content_problem?
-    content_incorrect?
+    check_content == :problem
   end
 
   def os_update_problem?
-    os_update_not_do? ||
-      os_update_eol?
+    check_os_update == :problem
   end
 
   def app_update_problem?
-    app_update_not_do? ||
-      app_update_eol?
+    check_app_update == :problem
   end
 
   def security_update_problem?
-    security_update_not_do? ||
-      security_update_eol?
+    check_security_update == :problem
+
   end
 
   def security_scan_problem?
-    security_scan_not_do?
+    check_security_scan == :problem
   end
 
   def security_software_problem?

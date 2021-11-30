@@ -41,8 +41,8 @@
                     tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
                   }, \
                   help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
-                  - t_enums(attr_name.to_s.pluralize.intern,
-                            Confirmation).each do |message, value|
+                  - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
+                    - next if value == 'unnecessary'
                     = f.radio_button attr_name, value, label: message
                 - question_count += 1
 
@@ -96,7 +96,10 @@
                   | OS情報が登録されていないため、
                   | セキュリティソフトウェアに関する確認ができません。
                   | OS情報を登録後に再度確認作業を実施してください。
-
+          p#high-tech.text-danger.d-none
+            | 【高度な技術的判断】の付く項目が選択されました。
+            | この項目の判断には、高度な技術的知識が必要とされます。
+            | 専門家による判断に基づく場合のみ、「確認終了」を押してください。
         .modal-footer
           = f.submit '確認終了', class: 'btn btn-primary'
           button.btn.btn-dark data-bs-dismiss="modal"
