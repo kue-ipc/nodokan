@@ -101,7 +101,7 @@
             | この項目の判断には、高度な技術的知識が必要とされます。
             | 専門家による判断に基づく場合のみ、「確認終了」を押してください。
         .modal-footer
-          = f.submit '確認終了', class: 'btn btn-primary'
           button.btn.btn-dark type="button" data-bs-dismiss="modal"
             | キャンセルして
             = t(:close, scope: [:do_actions])
+          = f.submit '確認終了', class: 'btn btn-primary'
