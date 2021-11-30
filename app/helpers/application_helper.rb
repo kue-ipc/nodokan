@@ -136,11 +136,17 @@ module ApplicationHelper
     end
   end
 
-  def span_text_tag(value = nil, around: nil, **opts, &block)
+  def span_text_tag(value = nil, around: nil, line_break: false, **opts, &block)
     if around.present?
       tag.span(around[0], class: 'text-muted') +
-        tag.span(value, **opts, &block) +
+        span_text_tag(value, **opts, &block) +
         tag.span(around[1], class: 'text-muted')
+    elsif line_break
+      tag_list = value.each_line.flat_map do |line|
+        [tag.span(line, **opts, &block), tag.br]
+      end
+      tag_list.pop
+      tag_list.sum
     else
       tag.span(value, **opts, &block)
     end

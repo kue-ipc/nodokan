@@ -143,7 +143,7 @@ dl
       =<> l(confirmation.confirmed_at.to_date, format: :long)
       = t('messages.node_confirmation_expiration_date', date: l(confirmation.expiration.to_date, format: :long))
       =< t(:approved, scope: :messages)
-  = dt_dd_for @node, :note
+  = dt_dd_for @node, :note, line_break: true
   - if current_user.admin?
     = dt_dd_for @node, :user
   = dt_dd_for @node, :connected_at, blank_alt: '-'
