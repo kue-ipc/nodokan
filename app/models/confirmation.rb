@@ -20,7 +20,7 @@ class Confirmation < ApplicationRecord
   enum os_update: {
     auto: 0,
     manual: 1,
-    updated: 2,
+    # updated: 2,
     secured: 3,
     unnecessary: 8,
     not_do: 16,
@@ -31,7 +31,7 @@ class Confirmation < ApplicationRecord
   enum app_update: {
     auto: 0,
     manual: 1,
-    updated: 2,
+    # updated: 2,
     secured: 3,
     unnecessary: 8,
     not_implemented: 9,

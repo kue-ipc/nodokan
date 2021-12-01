@@ -34,6 +34,19 @@ class NodeConfirm
         el.addEventListener 'change', =>
           @collapse.hide()
 
+    ['os_update', 'app_update'].forEach (attrName) =>
+      collapseSecuredEl = document.getElementById("node-confirm-secured-#{attrName}")
+      collapseSecured = Collapse.getOrCreateInstance(collapseSecuredEl, toggle: false)
+      for el in document.querySelectorAll("input[name=\"confirmation[#{attrName}]\"]")
+        if el.value == 'secured'
+          collapseSecured.show() if el.checked
+
+          el.addEventListener 'change', =>
+            collapseSecured.show()
+        else
+          el.addEventListener 'change', =>
+            collapseSecured.hide()
+
   modalShow: ->
     @modal.show()
 

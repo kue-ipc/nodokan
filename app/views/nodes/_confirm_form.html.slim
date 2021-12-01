@@ -44,6 +44,21 @@
                   - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                     - next if value == 'unnecessary'
                     = f.radio_button attr_name, value, label: message
+                .collapse id="node-confirm-secured-#{attr_name}"
+                  .card
+                    .card-body.text-danger
+                      | 【高度な技術的判断】が必要な項目が選択されています。
+                      | この項目は、
+                      strong
+                        | セキュリティに関する知識を有する技術者が脆弱性が存在しないと総合的に判断した
+                      | 場合のみ選択できます。
+                      | 例えば、次のような場合の組み合わせです。
+                      ul
+                        li 最新ではないが、既知の脆弱性が無いバージョンを使用している。
+                        li 既知の脆弱性がある機能を無効化している。
+                        li 設定等により、既知の脆弱性を回避している。
+                        li 他の機器やソフトウェアによる保護機能等により、既知の脆弱性の影響を受けないようにしている。
+                        li その他の理由で、脆弱性が無いと判断できる。
                 - question_count += 1
 
 
@@ -96,10 +111,6 @@
                   | OS情報が登録されていないため、
                   | セキュリティソフトウェアに関する確認ができません。
                   | OS情報を登録後に再度確認作業を実施してください。
-          p#high-tech.text-danger.d-none
-            | 【高度な技術的判断】の付く項目が選択されました。
-            | この項目の判断には、高度な技術的知識が必要とされます。
-            | 専門家による判断に基づく場合のみ、「確認終了」を押してください。
         .modal-footer
           button.btn.btn-dark type="button" data-bs-dismiss="modal"
             | キャンセルして
