@@ -7,7 +7,7 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module Nodokan
-  VERSION = '0.3.10'.freeze
+  VERSION = '0.4.0'.freeze
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -20,5 +20,5 @@ module Nodokan
 
     config.time_zone = 'Tokyo'
     config.active_record.default_timezone = :local
-    end
+  end
 end
