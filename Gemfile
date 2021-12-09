@@ -77,11 +77,6 @@ gem 'delayed_job_active_record'
 gem 'delayed_job_web'
 gem 'daemons'
 
-group :production do
-  # Dalli memchaced
-  gem 'dalli'
-end
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
