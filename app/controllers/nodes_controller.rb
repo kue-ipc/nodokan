@@ -32,6 +32,9 @@ class NodesController < ApplicationController
 
     @query = permitted_params[:query]
 
+    # 検索文字があるときは並び替えは不可
+    @order = nil if @query.present?
+
     @condition = permitted_params[:condition] || {}
 
     @nodes = policy_scope(Node).includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)

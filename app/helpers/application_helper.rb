@@ -224,10 +224,10 @@ module ApplicationHelper
         model.class_name.tableize
       end
 
+    # queryは設定しない
     params = {
       page: @page,
       per: @per,
-      queray: @query,
       order: {},
       condition: @condition&.to_h || {},
     }
