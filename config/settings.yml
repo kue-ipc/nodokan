@@ -2,9 +2,9 @@ site:
   title: null
 database:
   # credentials
-  username: nodokan
+  username: admin
   # credentials
-  password: pass+nodokan42
+  password: admin_password
   host: localhost
   # database: <same database in development and production>
 config:
