@@ -95,11 +95,33 @@ class NodeNic
 
   disableInputs: (names, {excludes = []} = {}) ->
     for name in names when !excludes.includes(name)
-      @inputs.get(name)?.node?.disabled = true
+      node = @inputs.get(name)?.node
+      next unless node?
+
+      # 現在の設定値で固定化する
+      if node.tagName == 'INPUT' && node.type == 'checkbox'
+        checkboxElements = {}
+        for element in document.getElementsByName(node.name)
+          checkboxElements[element.type] = element
+        if checkboxElements.checkbox?.checked
+          checkboxElements.hidden?.value = '1'
+        else
+          checkboxElements.hidden?.value = '0'
+
+      node.disabled = true
 
   enableInputs: (names, {excludes = []} = {}) ->
     for name in names when !excludes.includes(name)
-      @inputs.get(name)?.node?.disabled = false
+      node = @inputs.get(name)?.node
+      next unless node?
+
+      # 0に戻す
+      if node.tagName == 'INPUT' && node.type == 'checkbox'
+        for element in document.getElementsByName(node.name)
+          if element.type == 'hidden'
+            element.value = '0'
+
+      node.disabled = false
 
   displayMessage: (name, message = null) ->
     node = @messages.get(name).node
