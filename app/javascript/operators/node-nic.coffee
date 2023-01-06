@@ -25,6 +25,7 @@ class NodeNic
     'require_mac'
     'require_duid'
     'network_note'
+    'unconfigurable'
   ]
 
   constructor: (@number, {@ipv6 = true, @address_placeholders = {}}) ->
