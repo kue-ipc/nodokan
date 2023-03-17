@@ -2,31 +2,31 @@
   "name": "nodokan",
   "private": true,
   "dependencies": {
-    "@babel/core": "7",
-    "@babel/plugin-transform-runtime": "7",
-    "@babel/preset-env": "7",
-    "@babel/runtime": "7",
-    "@fortawesome/fontawesome-free": "^6.2.1",
+    "@babel/core": "^7.21.3",
+    "@babel/plugin-transform-runtime": "^7.21.0",
+    "@babel/preset-env": "^7",
+    "@babel/runtime": "^7.21.0",
+    "@fortawesome/fontawesome-free": "^6.3.0",
     "@popperjs/core": "^2.11.6",
-    "@rails/actioncable": "^6.1.7",
-    "@rails/activestorage": "^6.1.7",
-    "@rails/ujs": "^6.1.7",
+    "@rails/actioncable": "6.1.7-3",
+    "@rails/activestorage": "6.1.7-3",
+    "@rails/ujs": "6.1.7-3",
     "babel-loader": "9.1.2",
     "bootstrap": "^5.2.3",
     "coffee-loader": "^4.0.0",
     "coffeescript": "^2.7.0",
-    "compression-webpack-plugin": "10.0.0",
+    "compression-webpack-plugin": "^10.0.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.0.1",
     "resolve-url-loader": "^5.0.0",
-    "sass": "^1.57.1",
-    "shakapacker": "6.5.5",
-    "terser-webpack-plugin": "5",
+    "sass": "^1.59.3",
+    "shakapacker": "^6.6.0",
+    "terser-webpack-plugin": "^5.3.7",
     "turbolinks": "^5.2.0",
-    "webpack": "5",
-    "webpack-assets-manifest": "5",
-    "webpack-cli": "5.0.1",
-    "webpack-merge": "5"
+    "webpack": "^5.76.2",
+    "webpack-assets-manifest": "^5",
+    "webpack-cli": "^5.0.1",
+    "webpack-merge": "^5"
   },
   "version": "0.1.0",
   "babel": {
@@ -40,6 +40,6 @@
   ],
   "devDependencies": {
     "@webpack-cli/serve": "^2.0.1",
-    "webpack-dev-server": "^4.11.1"
+    "webpack-dev-server": "^4.12.0"
   }
 }
