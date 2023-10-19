@@ -19,7 +19,7 @@ gem 'slim-rails'
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. From webpacker to shakapacker
 # https://github.com/shakacode/shakapacker
-gem 'shakapacker', '~> 6'
+gem 'shakapacker', '~> 7'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
