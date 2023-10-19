@@ -57,7 +57,7 @@ class SecuritySoftwaresController < ApplicationController
 
     if same_security_software
       @security_software.confirmations.find_each do |confirmation|
-        same_security_software.confirmations << confiramtion
+        same_security_software.confirmations << confirmation
       end
       SecuritySoftware.find(@security_software.id).destroy
       # 再度取得しないとカウントがおかしい
