@@ -60,7 +60,7 @@ gem 'paper_trail'
 gem 'paper_trail-association_tracking'
 
 # Rails Admin
-gem 'rails_admin', '~> 2.0'
+gem 'rails_admin', '~> 3.0'
 gem 'rails_admin-i18n'
 
 # Bootstrap
@@ -93,7 +93,7 @@ group :development do
   gem 'listen', '~> 3.3'
   # Spring speeds up development by keeping your application running in the background. Read more:
   #   https://github.com/rails/spring
-  gem 'spring'
+  # gem 'spring'
   # RuboCop / Lint
   gem 'rubocop'
   gem 'rubocop-rails'
