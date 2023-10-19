@@ -123,6 +123,9 @@ Style/AccessModifierDeclarations:
 Style/GuardClause:
   AllowConsecutiveConditionals: true
 
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
 # Bundler
 # https://docs.rubocop.org/rubocop/cops_bundler.html
 
