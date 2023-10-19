@@ -12,8 +12,8 @@ module ImportExport
 
     def import
       results = {
-        success:  0,
-        failure:  0,
+        success: 0,
+        failure: 0,
         error: 0,
         skip: 0,
       }
@@ -48,8 +48,8 @@ module ImportExport
 
     def export
       results = {
-        success:  0,
-        failure:  0,
+        success: 0,
+        failure: 0,
         error: 0,
         skip: 0,
       }

@@ -64,7 +64,6 @@ class UsersSyncJob < ApplicationJob
       user.ldap_before_save
       user.save!
       list[:create].add(username)
-
     rescue StandardError => e
       logger.error("Failed to create a user: #{username} - #{e.message}")
       list[:error].add(username)

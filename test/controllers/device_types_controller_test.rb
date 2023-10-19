@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class DeviceTypesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -8,12 +8,12 @@ class DeviceTypesControllerTest < ActionDispatch::IntegrationTest
     @device_type = device_types(:pc)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get device_types_url
     assert_response :success
   end
 
-  test "should get show" do
+  test 'should get show' do
     get device_type_url(@device_type)
     assert_response :success
   end

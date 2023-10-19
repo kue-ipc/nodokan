@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class UseNetworksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -18,7 +18,7 @@ class UseNetworksControllerTest < ActionDispatch::IntegrationTest
   #   assert_response :success
   # end
 
-  test "should get destroy" do
+  test 'should get destroy' do
     delete user_use_network_url(@assignment.user, @assignment.network)
     assert_redirected_to user_url(@assignment.user)
   end

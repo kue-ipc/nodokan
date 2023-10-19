@@ -2,7 +2,7 @@ namespace :kea do
   desc 'Migration kea database'
   task migrate: :environment do
     puts 'create or replace view ipv6_reservations_alt on kea'
-    Kea::KeaRecord.connection.execute <<-'SQL'.squish
+    Kea::KeaRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW ipv6_reservations_alt AS SELECT
         reservation_id,
         address,
@@ -13,7 +13,7 @@ namespace :kea do
     SQL
 
     puts 'create or replace view host_identifier_type_alt on kea'
-    Kea::KeaRecord.connection.execute <<-'SQL'.squish
+    Kea::KeaRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW host_identifier_type_alt AS SELECT
         type AS identifier_type,
         name FROM host_identifier_type;

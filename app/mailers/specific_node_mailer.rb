@@ -1,5 +1,4 @@
 class SpecificNodeMailer < ApplicationMailer
-
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
   #
@@ -20,8 +19,8 @@ class SpecificNodeMailer < ApplicationMailer
   #   en.specific_node_mailer.notify_change.subject
   #
   def notify_change
-    @greeting = "Hi"
+    @greeting = 'Hi'
 
-    mail to: "to@example.org"
+    mail to: 'to@example.org'
   end
 end

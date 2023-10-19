@@ -30,11 +30,11 @@ class Network < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,
-                   numericality: {
-                     only_integer: true,
-                     greater_than_or_equal_to: 1,
-                     less_than_or_equal_to: 4094,
-                   }
+    numericality: {
+      only_integer: true,
+      greater_than_or_equal_to: 1,
+      less_than_or_equal_to: 4094,
+    }
 
   validates :ipv4_network_address, allow_blank: true, ipv4: true
   validates :ipv4_gateway_address, allow_blank: true, ipv4: true
@@ -161,7 +161,7 @@ class Network < ApplicationRecord
   def ipv6_gateway
     @ipv6_gateway ||=
       ipv6_gateway_data.presence &&
-      IPAddress::IPv6.parse_hex(ipv6_gateway_data.unpack('H*').first, ipv6_prefix_length)
+      IPAddress::IPv6.parse_hex(ipv6_gateway_data.unpack1('H*'), ipv6_prefix_length)
   end
 
   def ipv6_gateway_address
@@ -193,7 +193,7 @@ class Network < ApplicationRecord
     elsif ipv6_network
       "k#{ipv6_network_address}"
     else
-      "\##{id}"
+      "##{id}"
     end
   end
 

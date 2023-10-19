@@ -1,11 +1,11 @@
 module DatalistCanadidationHelper
   def datalist_canadidation(
-      name,
-      target,
-      url,
-      parents: [],
-      **opts
-    )
+    name,
+    target,
+    url,
+    parents: [],
+    **opts
+  )
     params = {
       name: name,
       target: target,
@@ -17,7 +17,7 @@ module DatalistCanadidationHelper
     tag.div(
       id: "#{attr_name}-app",
       class: ['datalist-canadidation', 'd-none'],
-      'data-params': params.to_json
+      'data-params': params.to_json,
     )
   end
 end

@@ -29,17 +29,17 @@ class Nic < ApplicationRecord
     uniqueness: { scope: :node }
   validates :name, length: { maximum: 255 }
   validates :mac_address, allow_blank: true,
-                          format: {
-                            with: /\A\h{2}(?:[-:.]?\h{2}){5}\z/,
-                            message: 'MACアドレスの形式ではありません。' \
-                            '通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。',
-                          }
+    format: {
+      with: /\A\h{2}(?:[-:.]?\h{2}){5}\z/,
+      message: 'MACアドレスの形式ではありません。' \
+               '通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。',
+    }
   validates :duid, allow_blank: true,
-                   format: {
-                     with: /\A\h{2}(?:[-:]h{2})*\z/,
-                     message: 'DUIDの形式ではありません。' \
-                     '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
-                   }
+    format: {
+      with: /\A\h{2}(?:[-:]h{2})*\z/,
+      message: 'DUIDの形式ではありません。' \
+               '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
+    }
   validates :ipv4_address, allow_blank: true, ipv4: true
   validates :ipv6_address, allow_blank: true, ipv6: true
 
@@ -167,7 +167,7 @@ class Nic < ApplicationRecord
   def ipv6
     # bug? IPv6.parse_data is not prefix
     @ipv6 ||= ipv6_data.presence &&
-              IPAddress::IPv6.parse_hex(ipv6_data.unpack('H*').first, network.ipv6_prefix_length)
+              IPAddress::IPv6.parse_hex(ipv6_data.unpack1('H*'), network.ipv6_prefix_length)
   end
 
   def ipv6_global?
@@ -334,11 +334,9 @@ class Nic < ApplicationRecord
       end
     end
 
-    # rubocop:disable Style/GuardClause
     if old_nic&.mac_address_data.present? && old_nic.mac_address_data != mac_address_data
       RadiusMacDelJob.perform_later(old_nic.mac_address_raw)
     end
-    # rubocop:enable Style/GuardClause
   end
 
   def kea_reservation

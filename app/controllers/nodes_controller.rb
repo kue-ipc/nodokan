@@ -191,9 +191,9 @@ class NodesController < ApplicationController
     )
     authorize @node
 
-    if current_user.usable_networks.count.zero?
-      redirect_to root_path, alert: 'あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。'
-    end
+    return unless current_user.usable_networks.count.zero?
+
+    redirect_to root_path, alert: 'あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。'
   end
 
   # GET /nodes/1/edit
@@ -294,10 +294,10 @@ class NodesController < ApplicationController
         format.html { redirect_to @node, notice: '端末を更新しました。' }
         format.json { render :show, status: :ok, location: @node }
       else
-        format.html {
+        format.html do
           flash.now[:alert] = '端末更新に失敗しました。'
           render :edit
-        }
+        end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -424,7 +424,7 @@ class NodesController < ApplicationController
         permitted_params[:place]&.values_at(:area, :building, :room)&.find(&:presence) &&
         Place.find_or_initialize_by(**permitted_params[:place])
 
-      hardware = 
+      hardware =
         permitted_params[:hardware]&.values&.find(&:presence) &&
         Hardware.find_or_initialize_by(
           **permitted_params[:hardware],

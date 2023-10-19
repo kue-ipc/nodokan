@@ -1,5 +1,5 @@
 namespace :nic do
-  desc "check nic"
+  desc 'check nic'
   task check: :environment do
     if Rails.env.production?
       puts 'add job queue all nics check, please see log'

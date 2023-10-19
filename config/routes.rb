@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     get 'security_softwares'
     get 'device_types'
     get 'os_categories'
-    end
+  end
 
   resources :users, only: [:index, :show, :update] do
     collection do

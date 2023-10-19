@@ -2,7 +2,7 @@ namespace :radius do
   desc 'Migrate radisu database'
   task migrate: :environment do
     puts 'create or replace view radcheck_alt on radius'
-    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
+    Radius::RadiusRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW radcheck_alt AS SELECT
         id,
         username,
@@ -12,7 +12,7 @@ namespace :radius do
     SQL
 
     puts 'create or replace view radreply_alt on radius'
-    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
+    Radius::RadiusRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW radreply_alt AS SELECT
         id,
         username,
@@ -22,7 +22,7 @@ namespace :radius do
     SQL
 
     puts 'create or replace view radgroupcheck_alt on radius'
-    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
+    Radius::RadiusRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW radgroupcheck_alt AS SELECT
         id,
         groupname,
@@ -32,7 +32,7 @@ namespace :radius do
     SQL
 
     puts 'create or replace view radgroupreply_alt on radius'
-    Radius::RadiusRecord.connection.execute <<-'SQL'.squish
+    Radius::RadiusRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW radgroupreply_alt AS SELECT
         id,
         groupname,

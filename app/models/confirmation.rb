@@ -144,7 +144,6 @@ class Confirmation < ApplicationRecord
 
   def security_update_problem?
     check_security_update == :problem
-
   end
 
   def security_scan_problem?

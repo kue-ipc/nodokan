@@ -3,7 +3,7 @@ class Node < ApplicationRecord
     specific: 's',
     virtual: 'v',
     public: 'p',
-    dns: 'd'
+    dns: 'd',
   }.freeze
 
   belongs_to :user, counter_cache: true
@@ -19,9 +19,9 @@ class Node < ApplicationRecord
 
   validates :name, presence: true
   validates :hostname, allow_nil: true,
-                       format: {
-                         with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
-                       }
+    format: {
+      with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
+    }
   validates :domain,
     allow_nil: true,
     format: {
@@ -65,7 +65,7 @@ class Node < ApplicationRecord
     return @connected_at if @connected_at_checked
 
     @connected_at = nics.flat_map do |nic|
-      %i[ipv4_resolved_at ipv6_discovered_at ipv4_leased_at ipv6_leased_at auth_at].map { |name| nic[name] }
+      [:ipv4_resolved_at, :ipv6_discovered_at, :ipv4_leased_at, :ipv6_leased_at, :auth_at].map { |name| nic[name] }
     end.compact.max
     @connected_at_checked = true
     @connected_at

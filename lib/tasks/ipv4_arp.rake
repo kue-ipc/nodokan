@@ -1,7 +1,7 @@
 require 'csv'
 
 namespace :ipv4_arp do
-  desc "register ipv4 arp"
+  desc 'register ipv4 arp'
   task register: :environment do
     PaperTrail.request.disable_model(Ipv4Arp)
     csv_file = Rails.root / 'data' / 'ipv4_arp_register.csv'
@@ -28,7 +28,7 @@ namespace :ipv4_arp do
         else
           results[:skip] += 1
         end
-      rescue => e
+      rescue StandardError => e
         Rails.logger.error(e.full_message)
         results[:error] += 1
       end

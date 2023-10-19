@@ -9,7 +9,7 @@ class Ipv6Pool < ApplicationRecord
   delegate :ipv6_prefix_length, to: :network
 
   def ipv6_first
-    @ipv6_first ||= IPAddress::IPv6.parse_hex(ipv6_first_data.unpack('H*').first, ipv6_prefix_length)
+    @ipv6_first ||= IPAddress::IPv6.parse_hex(ipv6_first_data.unpack1('H*'), ipv6_prefix_length)
   end
 
   def ipv6_first_address
@@ -25,7 +25,7 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def ipv6_last
-    @ipv6_last ||= IPAddress::IPv6.parse_hex(ipv6_last_data.unpack('H*').first, ipv6_prefix_length)
+    @ipv6_last ||= IPAddress::IPv6.parse_hex(ipv6_last_data.unpack1('H*'), ipv6_prefix_length)
   end
 
   def ipv6_last_address
