@@ -1,4 +1,7 @@
-authorizations: &AUTHORIZATIONS
+## devise_ldap_authenticatable
+# Can not use yaml aliases
+<% %w[development test production].each do |env| %>
+<%= env %>:
   host: <%= Settings.ldap.host.to_json %>
   port: <%= Settings.ldap.port.to_json %>
   attribute: <%= Settings.ldap.attribute.to_json %>
@@ -11,14 +14,4 @@ authorizations: &AUTHORIZATIONS
   required_groups: <%= Settings.ldap.required_groups.to_json %>
   require_attribute: <%= Settings.ldap.require_attribute.to_json %>
   require_attribute_presence: <%= Settings.ldap.require_attribute_presence.to_json %>
-
-## Environment
-
-development:
-  <<: *AUTHORIZATIONS
-
-test:
-  <<: *AUTHORIZATIONS
-
-production:
-  <<: *AUTHORIZATIONS
+<% end %>
