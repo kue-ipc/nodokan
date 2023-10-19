@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '>= 3.0.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.7.6'
+gem 'rails', '~> 7.0.8'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3', '~> 1.4'
 # Use mysql as the database for Active Record
@@ -45,7 +45,7 @@ gem 'attribute_normalizer'
 gem 'config'
 
 # i18n
-gem 'rails-i18n', '~> 6.0.0'
+gem 'rails-i18n', '~> 7.0.0'
 
 # Devise
 gem 'devise'
@@ -71,7 +71,7 @@ gem 'bootstrap_form', '~> 5.0'
 gem 'sanitize'
 
 # Composite primary keys
-gem 'composite_primary_keys', '~> 13.0'
+gem 'composite_primary_keys', '~> 14.0'
 
 # Delayed::Job
 gem 'delayed_job_active_record'
@@ -89,8 +89,7 @@ group :development do
   # Display performance information such as SQL time and flame graphs for each request in your browser.
   # Can be configured to work on production as well see:
   #   https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
-  gem 'rack-mini-profiler', '~> 2.0'
-  gem 'listen', '~> 3.3'
+  # gem 'rack-mini-profiler'
   # Spring speeds up development by keeping your application running in the background. Read more:
   #   https://github.com/rails/spring
   # gem 'spring'
@@ -100,19 +99,19 @@ group :development do
   # gem 'parser', '~> 2.7.0.0'
   gem 'slim_lint'
   # pry
-  gem 'pry-rails'
-  gem 'pry-byebug'
-  gem 'pry-doc'
+  # gem 'pry-rails'
+  # gem 'pry-byebug'
+  # gem 'pry-doc'
   # Formatter / Lint
   gem 'rufo'
 end
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '>= 3.26'
+  gem 'capybara'
   gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
-  gem 'webdrivers'
+  # gem 'webdrivers'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
