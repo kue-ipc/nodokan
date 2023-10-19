@@ -16,7 +16,6 @@ module ApplicationHelper
     deleted: 'danger',
   }
 
-
   def site_title
     Settings.site.title || t(:nodokan)
   end
@@ -83,13 +82,9 @@ module ApplicationHelper
   def span_value_for(value, **opts)
     case value
     when nil
-      if !opts[:hide_blank]
-        tag.span(opts[:blank_alt] || t(:none, scope: :values), class: 'font-italic text-muted')
-      end
+      tag.span(opts[:blank_alt] || t('values.none'), class: 'font-italic text-muted') unless opts[:hide_blank]
     when '', [], {}
-      if !opts[:hide_blank]
-        tag.span(opts[:blank_alt] || t(:empty, scope: :values), class: 'font-italic text-muted')
-      end
+      tag.span(opts[:blank_alt] || t('values.empty'), class: 'font-italic text-muted') unless opts[:hide_blank]
     when String
       case opts[:format]
       when :translate
@@ -146,7 +141,7 @@ module ApplicationHelper
         [tag.span(line, **opts, &block), tag.br]
       end
       tag_list.pop
-      tag_list.sum
+      tag_list.sum('')
     else
       tag.span(value, **opts, &block)
     end
