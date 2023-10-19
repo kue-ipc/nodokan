@@ -228,11 +228,11 @@ GEM
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     orm_adapter (0.5.0)
-    paper_trail (11.1.0)
-      activerecord (>= 5.2)
-      request_store (~> 1.1)
-    paper_trail-association_tracking (2.1.3)
-      paper_trail (< 12.0)
+    paper_trail (15.0.0)
+      activerecord (>= 6.1)
+      request_store (~> 1.4)
+    paper_trail-association_tracking (2.2.1)
+      paper_trail (>= 12.0)
     parallel (1.23.0)
     parser (3.2.2.4)
       ast (~> 2.4.1)
@@ -427,7 +427,7 @@ PLATFORMS
 
 DEPENDENCIES
   attribute_normalizer
-  bootsnap (>= 1.4.4)
+  bootsnap
   bootstrap (~> 5.1)
   bootstrap_form (~> 5.0)
   byebug
@@ -441,10 +441,10 @@ DEPENDENCIES
   devise-i18n
   devise_ldap_authenticatable
   ipaddress_2
-  jbuilder (~> 2.7)
+  jbuilder
   listen (~> 3.3)
   mysql2 (>= 0.4.4)
-  paper_trail (~> 11.0)
+  paper_trail
   paper_trail-association_tracking
   pry-byebug
   pry-doc
@@ -468,7 +468,7 @@ DEPENDENCIES
   spring
   turbolinks (~> 5)
   tzinfo-data
-  web-console (>= 4.1.0)
+  web-console
   webdrivers
 
 RUBY VERSION

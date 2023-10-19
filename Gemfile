@@ -23,7 +23,7 @@ gem 'shakapacker', '~> 7'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+gem 'jbuilder'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
@@ -33,7 +33,7 @@ gem 'jbuilder', '~> 2.7'
 # gem 'image_processing', '~> 1.2'
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.4.4', require: false
+gem 'bootsnap', require: false
 
 # IP Address / MAC Address
 gem 'ipaddress_2'
@@ -56,7 +56,7 @@ gem 'devise_ldap_authenticatable'
 gem 'pundit'
 
 # Paper Trail
-gem 'paper_trail', '~> 11.0'
+gem 'paper_trail'
 gem 'paper_trail-association_tracking'
 
 # Rails Admin
@@ -85,7 +85,7 @@ end
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'web-console', '>= 4.1.0'
+  gem 'web-console'
   # Display performance information such as SQL time and flame graphs for each request in your browser.
   # Can be configured to work on production as well see:
   #   https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
