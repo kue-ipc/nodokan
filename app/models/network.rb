@@ -41,7 +41,7 @@ class Network < ApplicationRecord
   validates :ipv6_network_address, allow_blank: true, ipv6: true
   validates :ipv6_gateway_address, allow_blank: true, ipv6: true
 
-  validates :ipv4_netmask, allow_blank: true, inclusion: { in: IP_MASKS }
+  validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
 
   validates :ipv4_prefix_length, allow_blank: true, numericality: {
     only_integer: true,

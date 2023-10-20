@@ -121,7 +121,7 @@ module ImportExport
       return model_class.find(row["id"]) if row["id"].present?
 
       unique_attrs.find { |attr| row[attr.to_s].present? }
-        &.then { |attr| model_class.find_by({ attr => row[attr.to_s] }) }
+        &.then { |attr| model_class.find_by({attr => row[attr.to_s]}) }
     end
 
     def record_to_row(record, row = CSV::Row.new(header.headers, []))

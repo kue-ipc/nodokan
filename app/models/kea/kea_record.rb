@@ -2,7 +2,7 @@ module Kea
   # rubocop:disable Rails/ApplicationRecord
   class KeaRecord < ActiveRecord::Base
     self.abstract_class = true
-    connects_to database: { writing: :kea }
+    connects_to database: {writing: :kea}
 
     def self.no_audit
       connection.execute("SET @disable_audit = 1;")

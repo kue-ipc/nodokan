@@ -29,11 +29,11 @@ class User < ApplicationRecord
   has_many :manage_networks, through: :manage_assignments, source: :network
 
   validates :username, presence: true,
-    uniqueness: { case_sensitive: true },
-    length: { maximum: 255 }
+    uniqueness: {case_sensitive: true},
+    length: {maximum: 255}
   validates :email, presence: true,
-    length: { maximum: 255 }
-  validates :fullname, allow_blank: true, length: { maximum: 255 }
+    length: {maximum: 255}
+  validates :fullname, allow_blank: true, length: {maximum: 255}
 
   after_save :allocate_network
 

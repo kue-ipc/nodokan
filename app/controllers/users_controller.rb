@@ -22,7 +22,7 @@ class UsersController < ApplicationController
     if @query.present?
       @users = @users.where(
         "username LIKE :query OR email LIKE :query OR fullname LIKE :query",
-        { query: "%#{@query}%" },
+        {query: "%#{@query}%"},
       )
     end
 

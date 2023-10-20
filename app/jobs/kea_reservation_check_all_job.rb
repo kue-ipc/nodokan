@@ -6,7 +6,7 @@ class KeaReservationCheckAllJob < ApplicationJob
   def perform
     # IPv4
     mac_address_list = Nic.includes(:network)
-      .where(network: { dhcp: true })
+      .where(network: {dhcp: true})
       .where(ipv4_config: :reserved)
       .where.not(mac_address_data: nil)
       .map(&:mac_address_data)

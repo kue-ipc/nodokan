@@ -21,7 +21,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node" do
     assert_difference("Node.count") do
       post nodes_url,
-        params: { node: { name: @node.name, note: @node.note, user_id: users(:admin).id } }
+        params: {node: {name: @node.name, note: @node.note, user_id: users(:admin).id}}
     end
 
     assert_redirected_to node_url(Node.last)
@@ -39,7 +39,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node" do
     patch node_url(@node),
-      params: { node: { name: @node.name, note: @node.note } }
+      params: {node: {name: @node.name, note: @node.note}}
     assert_redirected_to node_url(@node)
   end
 

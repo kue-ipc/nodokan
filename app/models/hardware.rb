@@ -3,9 +3,9 @@ class Hardware < ApplicationRecord
 
   has_many :nodes, dependent: :restrict_with_error
 
-  validates :maker, length: { maximum: 255 }
-  validates :product_name, length: { maximum: 255 }
-  validates :model_number, length: { maximum: 255 }, uniqueness: {
+  validates :maker, length: {maximum: 255}
+  validates :product_name, length: {maximum: 255}
+  validates :model_number, length: {maximum: 255}, uniqueness: {
     scope: [:device_type_id, :maker, :product_name],
     case_sensitive: true,
   }

@@ -25,9 +25,9 @@ class Nic < ApplicationRecord
   }
 
   validates :number,
-    numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 64 },
-    uniqueness: { scope: :node }
-  validates :name, length: { maximum: 255 }
+    numericality: {only_integer: true, greater_than: 0, less_than_or_equal_to: 64},
+    uniqueness: {scope: :node}
+  validates :name, length: {maximum: 255}
   validates :mac_address, allow_blank: true,
     format: {
       with: /\A\h{2}(?:[-:.]?\h{2}){5}\z/,
@@ -43,9 +43,9 @@ class Nic < ApplicationRecord
   validates :ipv4_address, allow_blank: true, ipv4: true
   validates :ipv6_address, allow_blank: true, ipv6: true
 
-  validates :ipv4_data, allow_nil: true, uniqueness: { case_sensitive: true }
-  validates :ipv6_data, allow_nil: true, uniqueness: { case_sensitive: true }
-  validates :mac_address_data, allow_nil: true, uniqueness: { case_sensitive: true }
+  validates :ipv4_data, allow_nil: true, uniqueness: {case_sensitive: true}
+  validates :ipv6_data, allow_nil: true, uniqueness: {case_sensitive: true}
+  validates :mac_address_data, allow_nil: true, uniqueness: {case_sensitive: true}
 
   normalize_attribute :name
   normalize_attribute :mac_address

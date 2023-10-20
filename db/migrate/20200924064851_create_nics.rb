@@ -11,13 +11,13 @@ class CreateNics < ActiveRecord::Migration[6.0]
       t.boolean :auth, null: false, default: false
       t.boolean :locked, null: false, default: false
 
-      t.binary  :mac_address_data, limit: 6,   index: { unique: true }
-      t.binary  :duid_data,        limit: 130, index: { unique: true }
+      t.binary  :mac_address_data, limit: 6,   index: {unique: true}
+      t.binary  :duid_data,        limit: 130, index: {unique: true}
 
       t.integer :ipv4_config, limit: 1,  null: false, default: -1
-      t.binary  :ipv4_data,   limit: 4,  index: { unique: true }
+      t.binary  :ipv4_data,   limit: 4,  index: {unique: true}
       t.integer :ipv6_config, limit: 1,  null: false, default: -1
-      t.binary  :ipv6_data,   limit: 16, index: { unique: true }
+      t.binary  :ipv6_data,   limit: 16, index: {unique: true}
 
       t.timestamps
     end

@@ -19,21 +19,21 @@ class RadiusMacAddJob < ApplicationJob
 
     # パスワードを設定
     Radius::Radcheck.transaction do
-      params = { attr: "Cleartext-Password", op: ":=", value: password }
+      params = {attr: "Cleartext-Password", op: ":=", value: password}
       Radius::Radcheck.find_or_create_by!(username: username, **params)
       Radius::Radcheck.where(username: username).where.not(**params).destroy_all
     end
 
     # VLANを設定
     Radius::Radreply.transaction do
-      params = { attr: "Tunnel-Private-Group-Id", op: ":=", value: vlan.to_s }
+      params = {attr: "Tunnel-Private-Group-Id", op: ":=", value: vlan.to_s}
       Radius::Radreply.find_or_create_by!(username: username, **params)
       Radius::Radreply.where(username: username).where.not(**params).destroy_all
     end
 
     # グループを設定
     Radius::Radusergroup.transaction do
-      params = { groupname: "mac", priority: 1 }
+      params = {groupname: "mac", priority: 1}
       Radius::Radusergroup.find_or_create_by!(username: username, **params)
       Radius::Radusergroup.where(username: username).where.not(**params).destroy_all
     end

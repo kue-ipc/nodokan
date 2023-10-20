@@ -26,6 +26,6 @@ class SpecificNodeApplication
   validates :rule_set, presence: true, if: -> { action != "release" }
   validates :rule_list, presence: true, if: -> { rule_set == -1 }
   validates :external, presence: true, if: -> { action != "release" }
-  validates :register_dns, inclusion: { in: [true, false] }, if: -> { action != "release" }
+  validates :register_dns, inclusion: {in: [true, false]}, if: -> { action != "release" }
   validates :fqdn, presence: true, if: -> { register_dns }
 end

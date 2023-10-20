@@ -43,6 +43,9 @@ Layout/ArgumentAlignment:
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
 # Loose Metrics
 Metrics/AbcSize:
   Max: 23

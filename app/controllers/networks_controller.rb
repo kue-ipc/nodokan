@@ -24,7 +24,7 @@ class NetworksController < ApplicationController
 
     @networks = policy_scope(Network).includes(:ipv4_pools, :ipv6_pools)
 
-    @networks = @networks.where("name LIKE :query", { query: "%#{@query}%" }) if @query.present?
+    @networks = @networks.where("name LIKE :query", {query: "%#{@query}%"}) if @query.present?
 
     @networks = @networks.where(@condition) if @condition
 

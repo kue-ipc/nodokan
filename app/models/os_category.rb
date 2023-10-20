@@ -2,8 +2,8 @@ class OsCategory < ApplicationRecord
   has_many :operating_systems, dependent: :restrict_with_error
   has_many :security_softwares, dependent: :restrict_with_error
 
-  validates :name, presence: true, length: { maximum: 255 }, uniqueness: { case_sensitive: false }
-  validates :order, presence: true, numericality: { only_integer: true }
+  validates :name, presence: true, length: {maximum: 255}, uniqueness: {case_sensitive: false}
+  validates :order, presence: true, numericality: {only_integer: true}
 
   normalize_attribute :name
   normalize_attribute :icon, with: [:strip, :blank, :sanitize]

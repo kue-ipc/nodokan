@@ -42,24 +42,24 @@ class NodesController < ApplicationController
     if @query.present?
       query_places = Place.where(
         "area LIKE :query OR building LIKE :query OR room LIKE :query",
-        { query: "%#{@query}%" },
+        {query: "%#{@query}%"},
       )
 
       query_hardwares = Hardware.where(
         "maker LIKE :query OR product_name LIKE :query OR model_number LIKE :query",
-        { query: "%#{@query}%" },
+        {query: "%#{@query}%"},
       )
 
       query_operating_systems = OperatingSystem.where(
         "name LIKE :query",
-        { query: "%#{@query}%" },
+        {query: "%#{@query}%"},
       )
 
       nodes_repo = @nodes
       @nodes = nodes_repo
         .where(
           "name LIKE :query OR hostname LIKE :query OR domain LIKE :query",
-          { query: "%#{@query}%" },
+          {query: "%#{@query}%"},
         )
         .or(nodes_repo.where(place_id: query_places.map(&:id)))
         .or(nodes_repo.where(hardware_id: query_hardwares.map(&:id)))
@@ -122,7 +122,7 @@ class NodesController < ApplicationController
       when "user"
         @nodes = @nodes.order("users.username #{value}")
       when "name", "hostname", "domain"
-        @nodes = @nodes.order({ key => value })
+        @nodes = @nodes.order({key => value})
       when "place"
         @nodes = @nodes.order("places.room #{value}")
       when "hardware"
@@ -370,7 +370,7 @@ class NodesController < ApplicationController
     else
       respond_to do |format|
         format.html { redirect_to @node, alert: "該当するユーザーがいません。" }
-        format.json { render json: { username: "該当のユーザーがいません。" }, status: :unprocessable_entity }
+        format.json { render json: {username: "該当のユーザーがいません。"}, status: :unprocessable_entity }
       end
     end
   end
