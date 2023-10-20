@@ -236,7 +236,7 @@ main = ->
     view: view
     node: document.getElementById('manage-table')
 
-document.addEventListener 'turbolinks:load', ->
+document.addEventListener 'turbo:load', ->
   main()
 
 

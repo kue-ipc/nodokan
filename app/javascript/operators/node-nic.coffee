@@ -291,7 +291,7 @@ class NodeNic
     if @network['note']
       @displayMessage('network_note', @network['note'])
 
-document.addEventListener 'turbolinks:load', ->
+document.addEventListener 'turbo:load', ->
   nodeNicInfoEl = document.getElementById('node-nic-info')
   if nodeNicInfoEl?
     info = JSON.parse(document.getElementById('node-nic-info').textContent)

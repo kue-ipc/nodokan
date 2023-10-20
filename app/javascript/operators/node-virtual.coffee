@@ -1,4 +1,4 @@
-document.addEventListener 'turbolinks:load', ->
+document.addEventListener 'turbo:load', ->
   nodeVirtual = document.getElementById('node_virtual')
   return unless nodeVirtual?
 

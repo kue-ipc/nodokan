@@ -1,6 +1,6 @@
 # specific node application
 
-document.addEventListener 'turbolinks:load', ->
+document.addEventListener 'turbo:load', ->
   reasonText = document.getElementById('specific_node_application_reason')
   return unless reasonText?
 

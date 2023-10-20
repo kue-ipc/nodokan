@@ -7,7 +7,7 @@ bootstrapComponentSelectors = [
   {component: bootstrap.Tooltip,   selector: '[data-bs-toggle="tooltip"]'}
 ]
 
-document.addEventListener 'turbolinks:load', ->
+document.addEventListener 'turbo:load', ->
   for {component, selector} in bootstrapComponentSelectors
     for el in document.querySelectorAll selector
       new component(el)
