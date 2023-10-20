@@ -1,0 +1,16 @@
+/**
+bootstrap_form gem
+/app/assets/stylesheets/rails_bootstrap_forms.css
+See https://github.com/bootstrap-ruby/bootstrap_form/
+*/
+
+.rails-bootstrap-forms-date-select select,
+.rails-bootstrap-forms-time-select select,
+.rails-bootstrap-forms-datetime-select select {
+  display: inline-block;
+  width: auto;
+}
+
+.rails-bootstrap-forms-error-summary {
+  margin-top: 10px;
+}
