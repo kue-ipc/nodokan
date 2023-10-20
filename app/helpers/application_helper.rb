@@ -141,7 +141,7 @@ module ApplicationHelper
         [tag.span(line, **opts, &block), tag.br]
       end
       tag_list.pop
-      tag_list.sum("")
+      tag_list.inject { |result, item| result + item }
     else
       tag.span(value, **opts, &block)
     end
