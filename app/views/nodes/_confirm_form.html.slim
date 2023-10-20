@@ -10,14 +10,11 @@
           p
             = t("messages.node_confirmation")
           - [:existence].each do |attr_name|
-            = f.form_group attr_name, \
-              label: { \
-                text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
-              }, \
+            = f.form_group attr_name,
+              label: {text: tag.strong(t("messages.question_with_number", count: question_count)) + \
+                            " " + t(attr_name, scope: "messages.node_confirm_questions")},
               help: t(attr_name, scope: "messages.node_confirm_helps", default: nil) do
-              - t_enums(attr_name.to_s.pluralize.intern,
-                        Confirmation).each do |message, value|
+              - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                 = f.radio_button attr_name, value, label: message, required: true
             - question_count += 1
           #node-confirm-collapse.collapse
@@ -25,11 +22,12 @@
               = f.form_group attr_name, \
                 label: { \
                   text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                  tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
+                    tag.span(" ") + \
+                    tag.span(t(attr_name, scope: "messages.node_confirm_questions")),
                 }, \
                 help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                 - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
-                  = f.radio_button attr_name, value, label: message
+                  = f.radio_button attr_name, value, label: message, required: false
               - question_count += 1
 
             - if @node.physical?
@@ -42,7 +40,7 @@
                   help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                   - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                     - next if value == "unnecessary"
-                    = f.radio_button attr_name, value, label: message
+                    = f.radio_button attr_name, value, label: message, required: false
                 .collapse id="node-confirm-secured-#{attr_name}"
                   .card
                     .card-body.text-danger
@@ -87,10 +85,14 @@
                         requiredInput: :installation_method,
                         description: true,
                         clear: true,
-                        locked: {name: :installation_method,
-                          list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:locked] }.keys},
-                        required: {name: :installation_method,
-                          list: SecuritySoftware.conf_installation_methods.select { |k, v| v[:required] }.keys}
+                        locked: { \
+                          name: :installation_method,
+                          list: SecuritySoftware.conf_installation_methods.select { |_, v| v[:locked] }.keys,
+                        },
+                        required: { \
+                          name: :installation_method,
+                          list: SecuritySoftware.conf_installation_methods.select { |_, v| v[:required] }.keys,
+                        }
 
                   small#confirmation_security_software_name-description.form-text.text-muted
                 - question_count += 1
@@ -101,9 +103,8 @@
                       tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
                     }, \
                     help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
-                    - t_enums(attr_name.to_s.pluralize.intern,
-                              Confirmation).each do |message, value|
-                      = f.radio_button attr_name, value, label: message
+                    - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
+                      = f.radio_button attr_name, value, label: message, required: false
                   - question_count += 1
               - else
                 p.text-danger
@@ -113,5 +114,5 @@
         .modal-footer
           button.btn.btn-dark type="button" data-bs-dismiss="modal"
             | キャンセルして
-            = t(:close, scope: [:do_actions])
+            = t("do_actions.close")
           = f.submit "確認終了", class: "btn btn-primary"
