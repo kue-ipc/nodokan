@@ -25,7 +25,7 @@ dl
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
             = f.select :role, t_enums(:roles),
-              { hide_label: true, wrapper: false},
+              {hide_label: true, wrapper: false},
               disabled: current_user == @user
           .col-12
             = f.submit "変更", class: "btn btn-warning",
@@ -38,7 +38,7 @@ dl
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
             = f.collection_select :auth_network_id, Network.where(auth: true), :id, :name_vlan,
-              { include_blank: t("values.none"), hide_label: true, wrapper: false}
+              {include_blank: t("values.none"), hide_label: true, wrapper: false}
           .col-12
             = f.submit "変更", class: "btn btn-warning"
     - else

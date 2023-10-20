@@ -32,7 +32,7 @@ table.table.table-hover.table-sm
         td
           = network.name
         td
-          - %i[auth dhcp locked specific global].each do |attr|
+          - [:auth, :dhcp, :locked, :specific, :global].each do |attr|
             - if network.__send__(attr)
               = badge_for(attr, scope: "activerecord.attributes.network", badge_class: "ms-1")
         td = network.vlan
@@ -40,12 +40,7 @@ table.table.table-hover.table-sm
         td = span_value_for(network.ipv6_network, hide_blank: true)
         td = network.nics_count
         td = network.assignments_count
-- list_group_item_class = [ \
-  "list-group-item",
-  "list-group-item-action",
-  "flex-fill",
-  "text-nowrap",
-]
+- list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
 - @networks.each do |network|
   .context-menu id="contextmenu-network-#{network.id}"
     .list-group.list-group-horizontal
@@ -54,7 +49,7 @@ table.table.table-hover.table-sm
       = link_to t("actions.edit"), edit_network_path(network),
         class: list_group_item_class + ["bg-primary", "text-white"]
       = button_to t("actions.destroy"), network,
-        data: { turbo_confirm: t("messages.corfirm_destroy_name", name: network.name) },
+        data: {turbo_confirm: t("messages.corfirm_destroy_name", name: network.name)},
         method: :delete,
         class: list_group_item_class + ["bg-danger", "text-white"]
 

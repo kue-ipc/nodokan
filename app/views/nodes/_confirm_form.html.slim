@@ -11,8 +11,8 @@
             = t("messages.node_confirmation")
           - [:existence].each do |attr_name|
             = f.form_group attr_name,
-              label: {text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                            " " + t(attr_name, scope: "messages.node_confirm_questions")},
+              label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
+                                       " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
               help: t(attr_name, scope: "messages.node_confirm_helps", default: nil) do
               - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                 = f.radio_button attr_name, value, label: message, required: true
@@ -20,11 +20,8 @@
           #node-confirm-collapse.collapse
             - [:content].each do |attr_name|
               = f.form_group attr_name, \
-                label: { \
-                  text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                    tag.span(" ") + \
-                    tag.span(t(attr_name, scope: "messages.node_confirm_questions")),
-                }, \
+                label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
+                                         " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
                 help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                 - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                   = f.radio_button attr_name, value, label: message, required: false
@@ -33,10 +30,8 @@
             - if @node.physical?
               - [:os_update, :app_update].each do |attr_name|
                 = f.form_group attr_name, \
-                  label: { \
-                    text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                    tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
-                  }, \
+                  label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
+                                           " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
                   help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                   - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                     - next if value == "unnecessary"
@@ -58,50 +53,45 @@
                         li その他の理由で、脆弱性が無いと判断できる。
                 - question_count += 1
 
-
               - if @confirmation.security_software
-                - attr_name = :security_software
-                = f.form_group attr_name, \
-                  label: { \
-                    text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                    tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
-                  }, \
-                  help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
-                  .row
-                    = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
-                      = security_software_f.hidden_field :os_category_id
-
-                      = security_software_f.select :installation_method,
-                        t_enums(:installation_methods, SecuritySoftware).select \
-                          { |k, v| @installation_methods.include?(v) },
-                        { include_blank: "(未選択)", wrapper_class: "col-md-4" }
-
-                      = security_software_f.text_field :name, list: "confirmation_security_software_name-list",
-                        wrapper_class: "col-md-8", disabled: true
-                      = datalist_canadidation :security_software, :name, security_softwares_path,
-                        parents: [:confirmation],
-                        order: {confirmations_count: "desc"},
-                        inputList: [:os_category_id, :installation_method],
-                        requiredInput: :installation_method,
-                        description: true,
-                        clear: true,
-                        locked: { \
-                          name: :installation_method,
-                          list: SecuritySoftware.conf_installation_methods.select { |_, v| v[:locked] }.keys,
-                        },
-                        required: { \
-                          name: :installation_method,
-                          list: SecuritySoftware.conf_installation_methods.select { |_, v| v[:required] }.keys,
-                        }
-
-                  small#confirmation_security_software_name-description.form-text.text-muted
-                - question_count += 1
-                - %i[security_update security_scan].each do |attr_name|
+                - [:security_software].each do |attr_name|
                   = f.form_group attr_name, \
-                    label: { \
-                      text: tag.strong(t("messages.question_with_number", count: question_count)) + \
-                      tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
-                    }, \
+                    label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
+                                            " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
+                    help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
+                    .row
+                      = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
+                        = security_software_f.hidden_field :os_category_id
+
+                        = security_software_f.select :installation_method,
+                          t_enums(:installation_methods, SecuritySoftware).select \
+                            { |_, v| @installation_methods.include?(v) },
+                          {include_blank: "(未選択)", wrapper_class: "col-md-4"}
+
+                        = security_software_f.text_field :name, list: "confirmation_security_software_name-list",
+                          wrapper_class: "col-md-8", disabled: true
+                        = datalist_canadidation :security_software, :name, security_softwares_path,
+                          parents: [:confirmation],
+                          order: {confirmations_count: "desc"},
+                          inputList: [:os_category_id, :installation_method],
+                          requiredInput: :installation_method,
+                          description: true,
+                          clear: true,
+                          locked: { \
+                            name: :installation_method,
+                            list: SecuritySoftware.conf_installation_methods.select { |_, v| v[:locked] }.keys,
+                          },
+                          required: { \
+                            name: :installation_method,
+                            list: SecuritySoftware.conf_installation_methods.select { |_, v| v[:required] }.keys,
+                          }
+
+                    small#confirmation_security_software_name-description.form-text.text-muted
+                  - question_count += 1
+                - [:security_update, :security_scan].each do |attr_name|
+                  = f.form_group attr_name, \
+                    label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
+                                             " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
                     help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                     - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                       = f.radio_button attr_name, value, label: message, required: false

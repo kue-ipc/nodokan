@@ -287,4 +287,10 @@ module ApplicationHelper
     NAME_COLORS[value.intern]&.then { |color| badge_class << "bg-#{color}" }
     tag.span(t(value, scope: scope), class: badge_class)
   end
+
+  def sp(number = 1)
+    # rubocop:disable Rails/OutputSafety
+    ("&nbsp;" * number).html_safe
+    # rubocop:enable Rails/OutputSafety
+  end
 end

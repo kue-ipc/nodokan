@@ -5,7 +5,7 @@
 dl
   = dt_dd_for @network, :name do |value|
     = value
-    - %i[auth dhcp locked specific global].each do |attr|
+    - [:auth, :dhcp, :locked, :specific, :global].each do |attr|
       - if @network.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.network", badge_class: "ms-1")
   = dt_dd_for @network, :vlan
@@ -30,7 +30,7 @@ dl
   =<> link_to t("actions.edit"), edit_network_path(@network),
     class: "btn btn-primary"
   =<> button_to t("actions.destroy"), @network,
-    data: { turbo_confirm: t("messages.corfirm_destroy") }, method: :delete,
+    data: {turbo_confirm: t("messages.corfirm_destroy")}, method: :delete,
       class: "btn btn-danger"
   hr
 

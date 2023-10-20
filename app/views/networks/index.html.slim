@@ -12,7 +12,7 @@
       .col-12.mb-3
         = link_to t("actions.download_csv"), networks_path(format: :csv),
             class: "btn btn-primary",
-            download: "networks_#{Time.now.strftime("%Y%m%d")}.csv"
+            download: "networks_#{Time.current.strftime('%Y%m%d')}.csv"
       - if current_user.admin?
         .col-12.mb-3
           = link_to t("actions.new"), new_network_path, class: "btn btn-secondary"

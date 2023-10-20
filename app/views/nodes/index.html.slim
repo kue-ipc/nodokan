@@ -16,7 +16,7 @@
       .col-12.mb-3
         = link_to t("actions.download_csv"), nodes_path(format: :csv),
             class: "btn btn-primary",
-            download: "nodes_#{Time.now.strftime("%Y%m%d")}.csv"
+            download: "nodes_#{Time.current.strftime('%Y%m%d')}.csv"
       .col-12.mb-3
         = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
 
@@ -46,4 +46,3 @@ hr
         = f.primary('<i class="fas fa-filter"></i>'.html_safe, name: :submit, render_as_button: true)
 
 = render "list"
-

@@ -9,7 +9,6 @@ p
 - if @node.specific
   p
     | 申請対象の端末はすでに特定端末です。
-  
   p
     | アクセスルールやDNS登録等の変更を申請することができます。
     | アクセスルールやDNS登録以外の端末情報を変更した場合は、その旨を備考欄に記載してください。
@@ -37,12 +36,12 @@ p
     = @node.nics.find(&:ipv4_data)&.ipv4_address || @node.nics.find(&:ipv6_data)&.ipv6_address
     | )
 
-    - %i[virtual specific global public dns].each do |attr|
+    - [:virtual, :specific, :global, :public, :dns].each do |attr|
       - if @node.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
 
 = bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
-  = f.form_group :action, label: { text: "申請" } do
+  = f.form_group :action, label: {text: "申請"} do
     - if @node.specific
       - enabled_actions = %w[change release]
       - checked_action = "change"
@@ -55,8 +54,6 @@ p
         disabled: !enabled, required: enabled,
         checked: checked_action == action
 
-
-
   = f.text_field :reason, label: "申請理由 (端末の用途や目的など)", required: true
 
   = f.form_group :rule_set, label: {text: "アクセスルールセット"} do
@@ -65,13 +62,12 @@ p
         data: {dns: rule.dns, external: rule.external, list: rule.list.to_json}, required: true
     = f.radio_button :rule_set, -1, label: "カスタムルール (下記に詳細を記載)", required: true
 
-  = f.select :external, [ \
-    ["接続無し", "none"],
-    ["NAT", "nat"],
-    ["NAPT (IPマスカレード)", "napt"],
-    ["無変換", "through"],
-    ["直接接続", "direct"],
-  ], {include_blank: "(未選択)", label: "外部接続"}, required: true
+  = f.select :external, [["接続無し", "none"],
+                          ["NAT", "nat"],
+                          ["NAPT (IPマスカレード)", "napt"],
+                          ["無変換", "through"],
+                          ["直接接続", "direct"],
+                        ], {include_blank: "(未選択)", label: "外部接続"}, required: true
 
   = f.text_area :rule_list, label: "アクセスルールリスト", rows: 5
 

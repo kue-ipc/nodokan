@@ -12,6 +12,6 @@
       .col-12.mb-3
         = link_to t("actions.download_csv"), users_path(format: :csv),
             class: "btn btn-primary",
-            download: "users_#{Time.current.strftime("%Y%m%d")}.csv"
+            download: "users_#{Time.current.strftime('%Y%m%d')}.csv"
 
 = render "list"

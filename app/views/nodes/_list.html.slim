@@ -45,7 +45,7 @@ table.table.table-hover.table-sm
           td.text-nowrap = node.user.username
         td
           = node.name
-          - %i[virtual specific global public dns].each do |attr|
+          - [:virtual, :specific, :global, :public, :dns].each do |attr|
             - if node.__send__(attr)
               = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
         td = node.hostname
@@ -76,25 +76,20 @@ table.table.table-hover.table-sm
           - case node.confirmation&.status
           - when nil, :unconfirmed
             i.fas.fa-times-circle.text-danger
-            span.text-danger = t(:unconfirmed, scope: :messages)
+            span.text-danger = t("messages.unconfirmed")
           - when :expired
             i.fas.fa-times-circle.text-danger
-            span.text-danger = t(:expired, scope: :messages)
+            span.text-danger = t("messages.expired")
           - when :unapproved
             i.fas.fa-exclamation-triangle.text-warning
-            span.text-warning = t(:unapproved, scope: :messages)
+            span.text-warning = t("messages.unapproved")
           - when :expire_soon
             i.fas.fa-exclamation-triangle.text-warning
-            span.text-warning = t(:expire_soon, scope: :messages)
+            span.text-warning = t("messages.expire_soon")
           - when :approved
             i.fas.fa-check.text-success
-            span.text-success = t(:approved, scope: :messages)
-- list_group_item_class = [ \
-  "list-group-item",
-  "list-group-item-action",
-  "flex-fill",
-  "text-nowrap",
-]
+            span.text-success = t("messages.approved")
+- list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
 - @nodes.each do |node|
   .context-menu id="contextmenu-node-#{node.id}"
     .list-group.list-group-horizontal
@@ -106,11 +101,10 @@ table.table.table-hover.table-sm
         class: list_group_item_class + ["bg-warning", "text-white"]
       - if node.confirmation&.destroyable?
         = button_to t("actions.destroy"), node,
-          data: { turbo_confirm: t("messages.corfirm_destroy_name", name: node.name) },
+          data: {turbo_confirm: t("messages.corfirm_destroy_name", name: node.name)},
           method: :delete,
           class: list_group_item_class + ["bg-danger", "text-white"]
 
 = paginate @nodes
 p
   = page_entries_info @nodes
-
