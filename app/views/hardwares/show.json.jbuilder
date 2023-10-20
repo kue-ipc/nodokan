@@ -1,1 +1,1 @@
-json.partial! 'hardwares/hardware', hardware: @hardware
+json.partial! "hardwares/hardware", hardware: @hardware

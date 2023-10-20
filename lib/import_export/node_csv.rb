@@ -1,4 +1,4 @@
-require 'import_export/base_csv'
+require "import_export/base_csv"
 
 module ImportExport
   class NodeCSV < BaseCSV
@@ -74,61 +74,61 @@ module ImportExport
     end
 
     def record_to_row(node, row = CSV::Row.new(header.headers, []))
-      row['user'] = node.user.username
-      row['name'] = node.name
-      row['flag'] = node.flag
-      row['hostname'] = node.hostname
-      row['domain'] = node.domain
-      row['place[area]'] = node.place&.area
-      row['place[building]'] = node.place&.building
-      row['place[floor]'] = node.place&.floor
-      row['place[room]'] = node.place&.room
-      row['hardware[device_type]'] = node.hardware&.device_type&.name
-      row['hardware[maker]'] = node.hardware&.maker
-      row['hardware[product_name]'] = node.hardware&.product_name
-      row['hardware[model_number]'] = node.hardware&.model_number
-      row['operating_system[os_category]'] = node.operating_system&.os_category&.name
-      row['operating_system[name]'] = node.operating_system&.name
+      row["user"] = node.user.username
+      row["name"] = node.name
+      row["flag"] = node.flag
+      row["hostname"] = node.hostname
+      row["domain"] = node.domain
+      row["place[area]"] = node.place&.area
+      row["place[building]"] = node.place&.building
+      row["place[floor]"] = node.place&.floor
+      row["place[room]"] = node.place&.room
+      row["hardware[device_type]"] = node.hardware&.device_type&.name
+      row["hardware[maker]"] = node.hardware&.maker
+      row["hardware[product_name]"] = node.hardware&.product_name
+      row["hardware[model_number]"] = node.hardware&.model_number
+      row["operating_system[os_category]"] = node.operating_system&.os_category&.name
+      row["operating_system[name]"] = node.operating_system&.name
 
       first_nic = node.nics.first
       other_nics = node.nics - [first_nic]
       nic_to_data(first_nic).each do |key, value|
         row["nic[#{key}]"] = value
       end
-      row['nics'] = other_nics.presence&.map { |nic| nic_to_data(nic) }&.to_json
+      row["nics"] = other_nics.presence&.map { |nic| nic_to_data(nic) }&.to_json
 
-      row['note'] = node.note
+      row["note"] = node.note
 
       row
     end
 
     def row_to_record(row, node = Node.new)
       node.assign_attributes(
-        user: User.find_by(username: row['user']),
-        name: row['name'],
-        flag: row['flag'],
-        hostname: row['hostname'],
-        domain: row['domain'],
-        note: row['note'],
+        user: User.find_by(username: row["user"]),
+        name: row["name"],
+        flag: row["flag"],
+        hostname: row["hostname"],
+        domain: row["domain"],
+        note: row["note"],
         place: Place.find_or_initialize_by(
-          area: row['place[area]'] || '',
-          building: row['place[building]'] || '',
-          floor: row['place[floor]'].presence || 0,
-          room: row['place[room]'] || '',
+          area: row["place[area]"] || "",
+          building: row["place[building]"] || "",
+          floor: row["place[floor]"].presence || 0,
+          room: row["place[room]"] || "",
         ),
         hardware: Hardware.find_or_initialize_by(
           device_type:
-            row['hardware[device_type]'].presence &&
-            DeviceType.find_by!(name: row['hardware[device_type]']),
-          maker: row['hardware[maker]'] || '',
-          product_name: row['hardware[product_name]'] || '',
-          model_number: row['hardware[model_number]'] || '',
+            row["hardware[device_type]"].presence &&
+            DeviceType.find_by!(name: row["hardware[device_type]"]),
+          maker: row["hardware[maker]"] || "",
+          product_name: row["hardware[product_name]"] || "",
+          model_number: row["hardware[model_number]"] || "",
         ),
         operating_system:
-          row['operating_system[os_category]'].presence &&
+          row["operating_system[os_category]"].presence &&
             OperatingSystem.find_or_initialize_by(
-              os_category: OsCategory.find_by!(name: row['operating_system[os_category]']),
-              name: row['operating_system[name]'] || '',
+              os_category: OsCategory.find_by!(name: row["operating_system[os_category]"]),
+              name: row["operating_system[name]"] || "",
             ),
       )
 
@@ -136,26 +136,26 @@ module ImportExport
       other_nics = node.nics - [first_nic]
       new_nics = []
 
-      if row['nic[interface_type]'].present?
+      if row["nic[interface_type]"].present?
         first_nic ||= Nic.new(number: 1)
         first_data = {
-          name: row['nic[name]'],
-          interface_type: row['nic[interface_type]'],
-          network: row['nic[network]'],
-          flag: row['nic[flag]'],
-          mac_address: row['nic[mac_address]'],
-          duid: row['nic[duid]'],
-          ipv4_config: row['nic[ipv4_config]'].presence || 'disabled',
-          ipv4_address: row['nic[ipv4_address]'],
-          ipv6_config: row['nic[ipv6_config]'].presence || 'disabled',
-          ipv6_address: row['nic[ipv6_address]'],
+          name: row["nic[name]"],
+          interface_type: row["nic[interface_type]"],
+          network: row["nic[network]"],
+          flag: row["nic[flag]"],
+          mac_address: row["nic[mac_address]"],
+          duid: row["nic[duid]"],
+          ipv4_config: row["nic[ipv4_config]"].presence || "disabled",
+          ipv4_address: row["nic[ipv4_address]"],
+          ipv6_config: row["nic[ipv6_config]"].presence || "disabled",
+          ipv6_address: row["nic[ipv6_address]"],
         }
         data_to_nic(first_data, first_nic)
         new_nics << first_nic
       end
 
-      if row['nics'].present?
-        data_nics = JSON.parse(row['nics'], symbolize_names: true)
+      if row["nics"].present?
+        data_nics = JSON.parse(row["nics"], symbolize_names: true)
         data_nics.each_with_index do |data, idx|
           nic = other_nics[idx] || Nic.new(number: idx + 2)
           data_to_nic(data, nic)

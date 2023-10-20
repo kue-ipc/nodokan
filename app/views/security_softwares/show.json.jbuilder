@@ -1,1 +1,1 @@
-json.partial! 'security_softwares/security_software', security_software: @security_software
+json.partial! "security_softwares/security_software", security_software: @security_software

@@ -4,8 +4,8 @@
 
 # `authorizable?` is `authorized?` without `authenticated?`
 
-require 'devise'
-require 'devise_ldap_authenticatable'
+require "devise"
+require "devise_ldap_authenticatable"
 
 module Devise
   module LDAP

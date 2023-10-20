@@ -1,4 +1,4 @@
-require 'set'
+require "set"
 
 class RadiusCheckAllJob < ApplicationJob
   queue_as :default

@@ -3,7 +3,7 @@ def create_models(model_class)
 
   puts "model: #{model_class.name}"
 
-  seeds_path = Rails.root / 'db' / 'seeds'
+  seeds_path = Rails.root / "db" / "seeds"
   file_name = "#{model_class.name.underscore.pluralize}.yml"
   yaml_file = seeds_path / file_name
   yaml_erb_file = seeds_path / "#{file_name}.erb"

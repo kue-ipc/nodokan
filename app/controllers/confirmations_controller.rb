@@ -49,13 +49,13 @@ class ConfirmationsController < ApplicationController
     @confirmation.check_and_approve!
     if @confirmation.save
       if @confirmation.approved
-        flash[:notice] = t('messages.confirmation_approved')
+        flash[:notice] = t("messages.confirmation_approved")
       else
-        flash[:alert] = t('messages.confirmation_unapproved')
+        flash[:alert] = t("messages.confirmation_unapproved")
       end
     else
       logger.error("confirmation seve error: #{@confirmation.errors.to_json}")
-      flash[:alert] = '確認の処理に失敗しました。再度実行し直してください。'
+      flash[:alert] = "確認の処理に失敗しました。再度実行し直してください。"
     end
 
     redirect_to @node

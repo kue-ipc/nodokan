@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class OperatingSystemsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -7,7 +7,7 @@ class OperatingSystemsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:admin)
   end
 
-  test 'should get index' do
+  test "should get index" do
     get operating_systems_url
     assert_response :success
   end

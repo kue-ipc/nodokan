@@ -14,7 +14,7 @@ class Place < ApplicationRecord
   before_destroy
 
   def name
-    [area, building, floor_human, room].select(&:present?).join(' ')
+    [area, building, floor_human, room].select(&:present?).join(" ")
   end
 
   def short_name
@@ -23,7 +23,7 @@ class Place < ApplicationRecord
 
   def floor_human
     if floor.zero?
-      ''
+      ""
     elsif floor.positive?
       "#{floor}階"
     else

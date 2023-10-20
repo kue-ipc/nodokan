@@ -5,10 +5,10 @@ class UseNetworksController < ApplicationController
   def create
     respond_to do |format|
       if @user.add_use_network(@network, manage: params[:manage])
-        format.html { redirect_to @user, notice: 'ネットワークを紐付けました。' }
+        format.html { redirect_to @user, notice: "ネットワークを紐付けました。" }
         format.json { render :show, status: :ok, location: @user }
       else
-        format.html { redirect_to @user, alert: 'ネットワークの紐付けに失敗しました。。' }
+        format.html { redirect_to @user, alert: "ネットワークの紐付けに失敗しました。。" }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -17,10 +17,10 @@ class UseNetworksController < ApplicationController
   def update
     respond_to do |format|
       if @user.add_use_network(@network, manage: params[:manage])
-        format.html { redirect_to @user, notice: 'ネットワークの紐付けを更新しました。' }
+        format.html { redirect_to @user, notice: "ネットワークの紐付けを更新しました。" }
         format.json { render :show, status: :ok, location: @user }
       else
-        format.html { redirect_to @user, alert: 'ネットワークの紐付けの更新に失敗しました。。' }
+        format.html { redirect_to @user, alert: "ネットワークの紐付けの更新に失敗しました。。" }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -29,10 +29,10 @@ class UseNetworksController < ApplicationController
   def destroy
     respond_to do |format|
       if @user.remove_use_network(@network)
-        format.html { redirect_to @user, notice: 'ネットワークの紐付けを解除しました。' }
+        format.html { redirect_to @user, notice: "ネットワークの紐付けを解除しました。" }
         format.json { head :no_content }
       else
-        format.html { redirect_to @user, alert: 'ネットワークの紐付けの解除に失敗しました。。' }
+        format.html { redirect_to @user, alert: "ネットワークの紐付けの解除に失敗しました。。" }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end

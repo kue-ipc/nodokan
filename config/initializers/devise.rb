@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'devise_ldap_authenticatable_authorizable'
-require 'devise_ldap_authenticatable_check_group_policy'
-require 'devise_ldap_authenticatable_nis_group_check'
-require 'devise_ldap_authenticatable_login_list'
+require "devise_ldap_authenticatable_authorizable"
+require "devise_ldap_authenticatable_check_group_policy"
+require "devise_ldap_authenticatable_nis_group_check"
+require "devise_ldap_authenticatable_login_list"
 
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
@@ -50,7 +50,7 @@ Devise.setup do |config|
   # Load and configure the ORM. Supports :active_record (default) and
   # :mongoid (bson_ext recommended) by default. Other ORMs may be
   # available as additional gems.
-  require 'devise/orm/active_record'
+  require "devise/orm/active_record"
 
   # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is

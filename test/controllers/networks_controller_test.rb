@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class NetworksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -8,12 +8,12 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     @network = networks(:client)
   end
 
-  test 'should get index' do
+  test "should get index" do
     get networks_url
     assert_response :success
   end
 
-  test 'should get new' do
+  test "should get new" do
     get new_network_url
     assert_response :success
   end
@@ -28,12 +28,12 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   #     assert_redirected_to network_url(Network.last)
   #   end
 
-  test 'should show network' do
+  test "should show network" do
     get network_url(@network)
     assert_response :success
   end
 
-  test 'should get edit' do
+  test "should get edit" do
     get edit_network_url(@network)
     assert_response :success
   end

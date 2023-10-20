@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class HardwaresControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -12,7 +12,7 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test 'should get index' do
+    test "should get index" do
       get hardwares_url
       assert_response :success
     end
@@ -33,14 +33,14 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:user)
     end
 
-    test 'should get index' do
+    test "should get index" do
       get hardwares_url
       assert_response :success
     end
   end
 
   class Anonymous < HardwaresControllerTest
-    test 'redirect to login INSTEAD OF get index' do
+    test "redirect to login INSTEAD OF get index" do
       get hardwares_url
       assert_response 401
     end

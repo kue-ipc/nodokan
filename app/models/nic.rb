@@ -3,8 +3,8 @@ class Nic < ApplicationRecord
   include Ipv6Config
 
   FLAGS = {
-    auth: 'a',
-    locked: 'l',
+    auth: "a",
+    locked: "l",
   }.freeze
 
   belongs_to :node, counter_cache: true
@@ -31,14 +31,14 @@ class Nic < ApplicationRecord
   validates :mac_address, allow_blank: true,
     format: {
       with: /\A\h{2}(?:[-:.]?\h{2}){5}\z/,
-      message: 'MACアドレスの形式ではありません。' \
-               '通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。',
+      message: "MACアドレスの形式ではありません。" \
+               "通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。",
     }
   validates :duid, allow_blank: true,
     format: {
       with: /\A\h{2}(?:[-:]h{2})*\z/,
-      message: 'DUIDの形式ではありません。' \
-               '「-」または「:」区切りの二桁ごとの16進数でなければなりません。',
+      message: "DUIDの形式ではありません。" \
+               "「-」または「:」区切りの二桁ごとの16進数でなければなりません。",
     }
   validates :ipv4_address, allow_blank: true, ipv4: true
   validates :ipv6_address, allow_blank: true, ipv6: true
@@ -89,19 +89,19 @@ class Nic < ApplicationRecord
   end
 
   def mac_address_list
-    @mac_address_list ||= mac_address_data.presence&.unpack('C6') || []
+    @mac_address_list ||= mac_address_data.presence&.unpack("C6") || []
   end
 
   def mac_address_raw
-    mac_address(char_case: :lower, sep: '')
+    mac_address(char_case: :lower, sep: "")
   end
 
   def mac_address_win
-    mac_address(char_case: :upper, sep: '-')
+    mac_address(char_case: :upper, sep: "-")
   end
 
   def mac_address_colon
-    mac_address(char_case: :upper, sep: ':')
+    mac_address(char_case: :upper, sep: ":")
   end
 
   def mac_address(char_case: Settings.config.mac_address_style.char_case,
@@ -112,23 +112,23 @@ class Nic < ApplicationRecord
   def mac_address=(value)
     @mac_address = value
     self.mac_address_data =
-      @mac_address.presence && [@mac_address.delete('-:')].pack('H12')
+      @mac_address.presence && [@mac_address.delete("-:")].pack("H12")
   end
 
   def duid_raw
-    duid(char_case: :lower, sep: '')
+    duid(char_case: :lower, sep: "")
   end
 
   def duid_win
-    duid(char_case: :upper, sep: '-')
+    duid(char_case: :upper, sep: "-")
   end
 
   def duid_colon
-    duid(char_case: :lower, sep: ':')
+    duid(char_case: :lower, sep: ":")
   end
 
   def duid_list
-    @duid_list ||= duid_data.presence&.unpack('C*') || []
+    @duid_list ||= duid_data.presence&.unpack("C*") || []
   end
 
   def duid(char_case: Settings.config.duid_style.char_case,
@@ -138,7 +138,7 @@ class Nic < ApplicationRecord
 
   def duid=(value)
     @duid = value
-    self.duid_data = @duid.presence && [@duid.delete('-:')].pack('H*')
+    self.duid_data = @duid.presence && [@duid.delete("-:")].pack("H*")
   end
 
   # readonly
@@ -152,7 +152,7 @@ class Nic < ApplicationRecord
   end
 
   def ipv4_address
-    @ipv4_address ||= (ipv4&.to_s || '')
+    @ipv4_address ||= (ipv4&.to_s || "")
   end
 
   def ipv4_address=(value)
@@ -167,7 +167,7 @@ class Nic < ApplicationRecord
   def ipv6
     # bug? IPv6.parse_data is not prefix
     @ipv6 ||= ipv6_data.presence &&
-              IPAddress::IPv6.parse_hex(ipv6_data.unpack1('H*'), network.ipv6_prefix_length)
+              IPAddress::IPv6.parse_hex(ipv6_data.unpack1("H*"), network.ipv6_prefix_length)
   end
 
   def ipv6_global?
@@ -175,7 +175,7 @@ class Nic < ApplicationRecord
   end
 
   def ipv6_address
-    @ipv6_address ||= (ipv6&.to_s || '')
+    @ipv6_address ||= (ipv6&.to_s || "")
   end
 
   def ipv6_address=(value)
@@ -209,54 +209,54 @@ class Nic < ApplicationRecord
     end
 
     unless network.ipv4_configs.include?(ipv4_config)
-      errors[:ipv4_config] << 'このネットワークに設定することはできません。'
+      errors[:ipv4_config] << "このネットワークに設定することはできません。"
       return false
     end
 
     case ipv4_config
-    when 'dynamic', 'disabled'
+    when "dynamic", "disabled"
       self.ipv4_address = nil
-    when 'reserved'
+    when "reserved"
       if manageable && ipv4_address.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv4_config)
         self.ipv4_address = old_nic.ipv4_address
       else
-        unless (ipv4 = network.next_ipv4('reserved'))
-          errors[:ipv4_config] << '予約用アドレスの空きがありません。'
+        unless (ipv4 = network.next_ipv4("reserved"))
+          errors[:ipv4_config] << "予約用アドレスの空きがありません。"
           return false
         end
 
         self.ipv4_address = ipv4.address
       end
-    when 'static'
+    when "static"
       if manageable && ipv4_address.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv4_config)
         self.ipv4_address = old_nic.ipv4_address
       else
-        unless (ipv4 = network.next_ipv4('static'))
-          errors[:ipv4_config] << '固定用アドレスの空きがありません。'
+        unless (ipv4 = network.next_ipv4("static"))
+          errors[:ipv4_config] << "固定用アドレスの空きがありません。"
           return false
         end
 
         self.ipv4_address = ipv4.address
       end
-    when 'manual'
+    when "manual"
       pp ipv4_address
       if manageable
         if ipv4_address.blank?
-          errors[:ipv4_address] << '手動の場合はアドレスが必要です。'
+          errors[:ipv4_address] << "手動の場合はアドレスが必要です。"
           return false
         end
       elsif same_old_nic?(:network_id, :ipv4_config)
         self.ipv4_address = old_nic.ipv4_address
       else
-        errors[:ipv4_config] << '管理者以外は手動に設定できません。'
+        errors[:ipv4_config] << "管理者以外は手動に設定できません。"
         return false
       end
     else
-      errors[:ipv4_config] << '不正な設定です。'
+      errors[:ipv4_config] << "不正な設定です。"
       return false
     end
 
@@ -270,53 +270,53 @@ class Nic < ApplicationRecord
     end
 
     unless network.ipv6_configs.include?(ipv6_config)
-      errors[:ipv6_config] << 'このネットワークに設定することはできません。'
+      errors[:ipv6_config] << "このネットワークに設定することはできません。"
       return false
     end
 
     case ipv6_config
-    when 'dynamic', 'disabled'
+    when "dynamic", "disabled"
       self.ipv6_address = nil
-    when 'reserved'
+    when "reserved"
       if manageable && ipv6_address.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv6_config)
         self.ipv6_address = old_nic.ipv6_address
       else
-        unless (ipv6 = network.next_ipv6('reserved'))
-          errors[:ipv6_config] << '予約用アドレスの空きがありません。'
+        unless (ipv6 = network.next_ipv6("reserved"))
+          errors[:ipv6_config] << "予約用アドレスの空きがありません。"
           return false
         end
 
         self.ipv6_address = ipv6.address
       end
-    when 'static'
+    when "static"
       if manageable && ipv6_address.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv6_config)
         self.ipv6_address = old_nic.ipv6_address
       else
-        unless (ipv6 = network.next_ipv6('static'))
-          errors[:ipv6_config] << '固定用アドレスの空きがありません。'
+        unless (ipv6 = network.next_ipv6("static"))
+          errors[:ipv6_config] << "固定用アドレスの空きがありません。"
           return false
         end
 
         self.ipv6_address = ipv6.address
       end
-    when 'manual'
+    when "manual"
       if manageable
         if ipv6_address.blank?
-          errors[:ipv6_address] << '手動の場合はアドレスが必要です。'
+          errors[:ipv6_address] << "手動の場合はアドレスが必要です。"
           return false
         end
       elsif same_old_nic?(:network_id, :ipv6_config)
         self.ipv6_address = old_nic.ipv6_address
       else
-        errors[:ipv6_config] << '管理者以外は手動に設定できません。'
+        errors[:ipv6_config] << "管理者以外は手動に設定できません。"
         return false
       end
     else
-      errors[:ipv6_config] << '不正な設定です。'
+      errors[:ipv6_config] << "不正な設定です。"
       return false
     end
 
@@ -377,7 +377,7 @@ class Nic < ApplicationRecord
 
   def last_radpostauths
     @last_radpostauths ||= mac_address_data && Radius::Radpostauth
-      .where(username: mac_address_raw, reply: 'Access-Accept')
+      .where(username: mac_address_raw, reply: "Access-Accept")
       .order(:authdate).last
   end
 
@@ -388,13 +388,13 @@ class Nic < ApplicationRecord
   private def hex_str(list, char_case: :lower, sep: nil)
     hex = case char_case.intern
           when :upper
-            '%02X'
+            "%02X"
           when :lower
-            '%02x'
+            "%02x"
           else
             raise ArgumentError, "invalid char_case: #{char_case}"
           end
-    format_str = [[hex] * list.size].join(sep || '')
+    format_str = [[hex] * list.size].join(sep || "")
     format_str % list
   end
 

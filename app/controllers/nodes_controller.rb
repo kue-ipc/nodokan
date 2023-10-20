@@ -41,24 +41,24 @@ class NodesController < ApplicationController
 
     if @query.present?
       query_places = Place.where(
-        'area LIKE :query OR building LIKE :query OR room LIKE :query',
+        "area LIKE :query OR building LIKE :query OR room LIKE :query",
         { query: "%#{@query}%" },
       )
 
       query_hardwares = Hardware.where(
-        'maker LIKE :query OR product_name LIKE :query OR model_number LIKE :query',
+        "maker LIKE :query OR product_name LIKE :query OR model_number LIKE :query",
         { query: "%#{@query}%" },
       )
 
       query_operating_systems = OperatingSystem.where(
-        'name LIKE :query',
+        "name LIKE :query",
         { query: "%#{@query}%" },
       )
 
       nodes_repo = @nodes
       @nodes = nodes_repo
         .where(
-          'name LIKE :query OR hostname LIKE :query OR domain LIKE :query',
+          "name LIKE :query OR hostname LIKE :query OR domain LIKE :query",
           { query: "%#{@query}%" },
         )
         .or(nodes_repo.where(place_id: query_places.map(&:id)))
@@ -75,7 +75,7 @@ class NodesController < ApplicationController
         end
       rescue ArgumentError
         if @query =~ /\A\h{2}(?:[-:.]?\h{2}){5}\z/
-          query_mac = [@query.delete('-:')].pack('H12')
+          query_mac = [@query.delete("-:")].pack("H12")
           query_nics = Nic.where(mac_address_data: query_mac)
         end
       end
@@ -88,17 +88,17 @@ class NodesController < ApplicationController
       next if value.blank?
 
       case key
-      when 'specific'
+      when "specific"
         value = %w[1 yes true].include?(value)
         @condition[key] = value
         # non はなし
         @nodes = @nodes.where(specific: value) if value
-      when 'network_id'
+      when "network_id"
         # value = value.to_i
         # @condition[key] = value
         query_nics = Nic.where(network_id: value)
         @nodes = @nodes.where(nics: query_nics)
-      when 'user_id'
+      when "user_id"
         @nodes = @nodes.where(user_id: value)
       end
       # when
@@ -112,28 +112,28 @@ class NodesController < ApplicationController
     end
 
     @order&.each do |key, value|
-      value = if value.to_s.downcase == 'desc'
-                'desc'
+      value = if value.to_s.downcase == "desc"
+                "desc"
               else
-                'asc'
+                "asc"
               end
 
       case key
-      when 'user'
+      when "user"
         @nodes = @nodes.order("users.username #{value}")
-      when 'name', 'hostname', 'domain'
+      when "name", "hostname", "domain"
         @nodes = @nodes.order({ key => value })
-      when 'place'
+      when "place"
         @nodes = @nodes.order("places.room #{value}")
-      when 'hardware'
+      when "hardware"
         @nodes = @nodes.order("hardwares.product_name #{value}")
-      when 'operating_system'
+      when "operating_system"
         @nodes = @nodes.order("operating_systems.name #{value}")
-      when 'ipv4_address'
+      when "ipv4_address"
         @nodes = @nodes.order("nics.ipv4_data #{value}")
-      when 'ipv6_address'
+      when "ipv6_address"
         @nodes = @nodes.order("nics.ipv6_data #{value}")
-      when 'mac_address'
+      when "mac_address"
         @nodes = @nodes.order("nics.mac_address_data #{value}")
       end
     end
@@ -193,7 +193,7 @@ class NodesController < ApplicationController
 
     return unless current_user.usable_networks.count.zero?
 
-    redirect_to root_path, alert: 'あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。'
+    redirect_to root_path, alert: "あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。"
   end
 
   # GET /nodes/1/edit
@@ -207,7 +207,7 @@ class NodesController < ApplicationController
     @node.user = current_user unless current_user.admin?
     authorize @node
 
-    if params['add_nic']
+    if params["add_nic"]
       @node.nics << Nic.new
       render :new
       return
@@ -240,11 +240,11 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       if success
-        format.html { redirect_to @node, notice: '端末を登録しました。' }
+        format.html { redirect_to @node, notice: "端末を登録しました。" }
         format.json { render :show, status: :created, location: @node }
       else
         format.html do
-          flash.now[:alert] = '端末登録に失敗しました。'
+          flash.now[:alert] = "端末登録に失敗しました。"
           render :new
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
@@ -258,7 +258,7 @@ class NodesController < ApplicationController
     @node.assign_attributes(node_params)
     @node.user = current_user unless current_user.admin?
 
-    if params['add_nic']
+    if params["add_nic"]
       @node.nics << Nic.new
       render :edit
       return
@@ -291,11 +291,11 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       if success
-        format.html { redirect_to @node, notice: '端末を更新しました。' }
+        format.html { redirect_to @node, notice: "端末を更新しました。" }
         format.json { render :show, status: :ok, location: @node }
       else
         format.html do
-          flash.now[:alert] = '端末更新に失敗しました。'
+          flash.now[:alert] = "端末更新に失敗しました。"
           render :edit
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
@@ -308,13 +308,13 @@ class NodesController < ApplicationController
   def destroy
     respond_to do |format|
       if @node.specific
-        format.html { redirect_to @node, alert: '特定端末は削除できません。特定端末の解除を申請してください。' }
+        format.html { redirect_to @node, alert: "特定端末は削除できません。特定端末の解除を申請してください。" }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       elsif @node.destroy
-        format.html { redirect_to nodes_url, notice: '端末を削除しました。' }
+        format.html { redirect_to nodes_url, notice: "端末を削除しました。" }
         format.json { head :no_content }
       else
-        format.html { redirect_to @node, alert: '端末の削除に失敗しました。' }
+        format.html { redirect_to @node, alert: "端末の削除に失敗しました。" }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -360,17 +360,17 @@ class NodesController < ApplicationController
       end
       respond_to do |format|
         if @node.save
-          format.html { redirect_to nodes_path, notice: '端末を譲渡しました。' }
+          format.html { redirect_to nodes_path, notice: "端末を譲渡しました。" }
           format.json { render :show, status: :ok, location: @node }
         else
-          format.html { redirect_to @node, alert: '移譲に失敗しました。' }
+          format.html { redirect_to @node, alert: "移譲に失敗しました。" }
           format.json { render json: @node.errors, status: :unprocessable_entity }
         end
       end
     else
       respond_to do |format|
-        format.html { redirect_to @node, alert: '該当するユーザーがいません。' }
-        format.json { render json: { username: '該当のユーザーがいません。' }, status: :unprocessable_entity }
+        format.html { redirect_to @node, alert: "該当するユーザーがいません。" }
+        format.json { render json: { username: "該当のユーザーがいません。" }, status: :unprocessable_entity }
       end
     end
   end
@@ -415,7 +415,7 @@ class NodesController < ApplicationController
       ],
     )
 
-    if permitted_params[:virtual] == '1'
+    if permitted_params[:virtual] == "1"
       place = nil
       hardware = nil
       operating_system = nil

@@ -60,19 +60,19 @@ class Ipv4Pool < ApplicationRecord
   def identifier
     prefix =
       case ipv4_config
-      when 'dynamic'
-        'd'
-      when 'reserved'
-        'r'
-      when 'static'
-        's'
-      when 'manual'
-        'm'
-      when 'disabled'
-        '!'
+      when "dynamic"
+        "d"
+      when "reserved"
+        "r"
+      when "static"
+        "s"
+      when "manual"
+        "m"
+      when "disabled"
+        "!"
       else
         logger.error("Unknown ipv4_config: #{ipv4_config}")
-        '?'
+        "?"
       end
     "#{prefix}-#{ipv4_first_address}-#{ipv4_last_address}"
   end
@@ -82,20 +82,20 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def self.new_identifier(str)
-    prefix, first, last = str.strip.downcase.split('-')
+    prefix, first, last = str.strip.downcase.split("-")
 
     config =
       case prefix
-      when 'd'
-        'dynamic'
-      when 'r'
-        'reserved'
-      when 's'
-        'static'
-      when 'm'
-        'manual'
-      when '!'
-        'disabled'
+      when "d"
+        "dynamic"
+      when "r"
+        "reserved"
+      when "s"
+        "static"
+      when "m"
+        "manual"
+      when "!"
+        "disabled"
       else
         logger.error("Invalid Ipv4Pool idetifier: #{str}")
         raise ArgumentError, "Invalid Ipv4Pool idetifier: #{str}"

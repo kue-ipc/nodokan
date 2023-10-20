@@ -1,8 +1,8 @@
 module Kea
   class Ipv6Reservation < KeaRecord
     # ipv6_reservations_alt view in type as reservation_type
-    self.table_name = 'ipv6_reservations_alt'
-    self.primary_key = 'reservation_id'
+    self.table_name = "ipv6_reservations_alt"
+    self.primary_key = "reservation_id"
 
     # https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/host-reservation
     # type
@@ -12,6 +12,6 @@ module Kea
       prefix: 2,
     }, _prefix: :type
 
-    belongs_to :host, primary_key: 'host_id'
+    belongs_to :host, primary_key: "host_id"
   end
 end

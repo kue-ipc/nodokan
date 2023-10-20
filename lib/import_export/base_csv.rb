@@ -1,6 +1,6 @@
-require 'csv'
-require 'fileutils'
-require 'logger'
+require "csv"
+require "fileutils"
+require "logger"
 
 module ImportExport
   class BaseCSV
@@ -18,9 +18,9 @@ module ImportExport
         skip: 0,
       }
 
-      csv = CSV.read(@csv_file, encoding: 'BOM|UTF-8', headers: :first_row)
+      csv = CSV.read(@csv_file, encoding: "BOM|UTF-8", headers: :first_row)
 
-      File.open(@tmp_file, 'wb:UTF-8') do |io|
+      File.open(@tmp_file, "wb:UTF-8") do |io|
         io.write "\u{feff}"
         io.puts csv.headers.to_csv
         count = 0
@@ -28,12 +28,12 @@ module ImportExport
           count += 1
           do_action(row)
         rescue StandardError => e
-          row['result'] = :error
-          row['message'] = e.message
+          row["result"] = :error
+          row["message"] = e.message
           @logger.error(e.full_message)
         ensure
           @logger.info("#{count}: [#{row['result']}] #{row['id']}: #{row['message']}")
-          results[row['result']] += 1
+          results[row["result"]] += 1
           io.puts row.to_csv
         end
       end
@@ -54,7 +54,7 @@ module ImportExport
         skip: 0,
       }
 
-      File.open(@tmp_file, 'wb:UTF-8') do |io|
+      File.open(@tmp_file, "wb:UTF-8") do |io|
         io.write "\u{feff}"
         io.puts header.to_csv
         list.each do |row|
@@ -73,29 +73,29 @@ module ImportExport
 
     def do_action(row)
       model_class.transaction do
-        if row['action'].blank?
-          row['result'] = :skip
+        if row["action"].blank?
+          row["result"] = :skip
           return
         end
 
         success, message =
-          case row['action'].first.upcase
-          when 'C' then create(row)
-          when 'R' then read(row)
-          when 'U' then update(row)
-          when 'D' then delete(row)
+          case row["action"].first.upcase
+          when "C" then create(row)
+          when "R" then read(row)
+          when "U" then update(row)
+          when "D" then delete(row)
           else raise "unknown action: #{row['action']}"
           end
 
         unless success
-          row['result'] = :failure
-          row['message'] = message
+          row["result"] = :failure
+          row["message"] = message
           raise ActiveRecord::Rollback
         end
 
-        row['action'] = nil
-        row['result'] = :success
-        row['message'] = nil
+        row["action"] = nil
+        row["result"] = :success
+        row["message"] = nil
       end
       row
     end
@@ -114,11 +114,11 @@ module ImportExport
 
     def header
       @header ||=
-        (['action', 'id'] + attrs + ['result', 'message']).then { |fields| CSV::Row.new(fields, fields, true) }
+        (["action", "id"] + attrs + ["result", "message"]).then { |fields| CSV::Row.new(fields, fields, true) }
     end
 
     def find(row)
-      return model_class.find(row['id']) if row['id'].present?
+      return model_class.find(row["id"]) if row["id"].present?
 
       unique_attrs.find { |attr| row[attr.to_s].present? }
         &.then { |attr| model_class.find_by({ attr => row[attr.to_s] }) }
@@ -129,7 +129,7 @@ module ImportExport
     end
 
     def record_to_row_with_id(record, row = CSV::Row.new(header.headers, []))
-      row['id'] = record.id
+      row["id"] = record.id
       record_to_row(record, row)
     end
 
@@ -141,7 +141,7 @@ module ImportExport
       row_list = []
       model_class.order(:id).all.each do |record|
         row = CSV::Row.new(header.headers, [])
-        row['id'] = record.id
+        row["id"] = record.id
         record_to_row(record, row)
         row_list << row
       end
@@ -152,7 +152,7 @@ module ImportExport
       record = model_class.new
       row_to_record(row, record)
       if record.save
-        row['id'] = record.id
+        row["id"] = record.id
         [true, nil]
       else
         [false, record.errors.to_json]
@@ -161,9 +161,9 @@ module ImportExport
 
     def read(row)
       record = find(row)
-      return [false, 'Not found.'] unless record
+      return [false, "Not found."] unless record
 
-      row['id'] = record.id
+      row["id"] = record.id
       record_to_row(record, row)
       [true, nil]
     end
@@ -171,9 +171,9 @@ module ImportExport
     def update(row)
       record = find(row)
 
-      return [false, 'Not found.'] unless record
+      return [false, "Not found."] unless record
 
-      row['id'] = record.id
+      row["id"] = record.id
       row_to_record(row, record)
 
       if record.save
@@ -185,9 +185,9 @@ module ImportExport
 
     def delete(row)
       record = find(row)
-      return [false, 'Not found.'] unless record
+      return [false, "Not found."] unless record
 
-      row['id'] = record.id
+      row["id"] = record.id
 
       if record.destroy
         [true, nil]

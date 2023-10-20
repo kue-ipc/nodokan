@@ -1,19 +1,19 @@
 module ApplicationHelper
   NAME_COLORS = {
-    dynamic: 'success',
-    reserved: 'secondary',
-    static: 'primary',
-    manual: 'warning',
-    disabled: 'light',
-    locked: 'dark',
-    auth: 'primary',
-    global: 'danger',
-    virtual: 'secondary',
-    specific: 'warning',
-    public: 'primary',
-    dns: 'success',
-    dhcp: 'secondary',
-    deleted: 'danger',
+    dynamic: "success",
+    reserved: "secondary",
+    static: "primary",
+    manual: "warning",
+    disabled: "light",
+    locked: "dark",
+    auth: "primary",
+    global: "danger",
+    virtual: "secondary",
+    specific: "warning",
+    public: "primary",
+    dns: "success",
+    dhcp: "secondary",
+    deleted: "danger",
   }
 
   def site_title
@@ -41,13 +41,13 @@ module ApplicationHelper
 
   def t_floor(number)
     if number.zero?
-      t('helpers.floor.zero')
+      t("helpers.floor.zero")
     elsif number == 1
-      t('helpers.floor.one')
+      t("helpers.floor.one")
     elsif number > 1
-      t('helpers.floor.positive', number: number)
+      t("helpers.floor.positive", number: number)
     else
-      t('helpers.floor.negative', number: - number)
+      t("helpers.floor.negative", number: - number)
     end
   end
 
@@ -61,9 +61,9 @@ module ApplicationHelper
   end
 
   def dt_dd_tag(term, &block)
-    tag.div(class: 'row border-bottom mb-2 pb-2') do
+    tag.div(class: "row border-bottom mb-2 pb-2") do
       tag.dt(term, class: dt_col) +
-        tag.dd(class: dd_col + ['mb-0'], &block)
+        tag.dd(class: dd_col + ["mb-0"], &block)
     end
   end
 
@@ -82,9 +82,9 @@ module ApplicationHelper
   def span_value_for(value, **opts)
     case value
     when nil
-      tag.span(opts[:blank_alt] || t('values.none'), class: 'font-italic text-muted') unless opts[:hide_blank]
-    when '', [], {}
-      tag.span(opts[:blank_alt] || t('values.empty'), class: 'font-italic text-muted') unless opts[:hide_blank]
+      tag.span(opts[:blank_alt] || t("values.none"), class: "font-italic text-muted") unless opts[:hide_blank]
+    when "", [], {}
+      tag.span(opts[:blank_alt] || t("values.empty"), class: "font-italic text-muted") unless opts[:hide_blank]
     when String
       case opts[:format]
       when :translate
@@ -99,10 +99,10 @@ module ApplicationHelper
         i_bool_tag(value)
       end
     when Array
-      tag.ul(class: 'list-inline mb-0') do
-        list_html = sanitize('')
+      tag.ul(class: "list-inline mb-0") do
+        list_html = sanitize("")
         value.each do |v|
-          list_html += tag.li(class: 'list-inline-item border border-primary rounded px-1 mb-1') do
+          list_html += tag.li(class: "list-inline-item border border-primary rounded px-1 mb-1") do
             span_value_for(v, **opts)
           end
         end
@@ -112,9 +112,9 @@ module ApplicationHelper
       opts[:class] ||= []
       case value
       when IPAddress::IPv4
-        opts[:class] << 'text-danger' unless value.private?
+        opts[:class] << "text-danger" unless value.private?
       when IPAddress::IPv6
-        opts[:class] << 'text-danger' unless value.unique_local?
+        opts[:class] << "text-danger" unless value.unique_local?
       end
 
       if value.network?
@@ -133,15 +133,15 @@ module ApplicationHelper
 
   def span_text_tag(value = nil, around: nil, line_break: false, **opts, &block)
     if around.present?
-      tag.span(around[0], class: 'text-muted') +
+      tag.span(around[0], class: "text-muted") +
         span_text_tag(value, **opts, &block) +
-        tag.span(around[1], class: 'text-muted')
+        tag.span(around[1], class: "text-muted")
     elsif line_break
       tag_list = value.each_line.flat_map do |line|
         [tag.span(line, **opts, &block), tag.br]
       end
       tag_list.pop
-      tag_list.sum('')
+      tag_list.sum("")
     else
       tag.span(value, **opts, &block)
     end
@@ -149,33 +149,33 @@ module ApplicationHelper
 
   def i_bool_tag(value)
     if value
-      tag.i('', class: 'far fa-check-square')
+      tag.i("", class: "far fa-check-square")
     else
-      tag.i('', class: 'far fa-square')
+      tag.i("", class: "far fa-square")
     end
   end
 
   def html_month(time)
-    time.strftime('%Y-%m')
+    time.strftime("%Y-%m")
   end
 
   def html_date(time)
-    time.strftime('%Y-%m-%d')
+    time.strftime("%Y-%m-%d")
   end
 
   def html_time(time, second: true)
     if second
-      time.strftime('%H:%M:%S')
+      time.strftime("%H:%M:%S")
     else
-      time.strftime('%H:%M')
+      time.strftime("%H:%M")
     end
   end
 
   def html_datetime_local(time, second: true)
     if second
-      time.strftime('%Y-%m-%dT%H:%M:%S')
+      time.strftime("%Y-%m-%dT%H:%M:%S")
     else
-      time.strftime('%Y-%m-%dT%H:%M')
+      time.strftime("%Y-%m-%dT%H:%M")
     end
   end
 
@@ -186,11 +186,11 @@ module ApplicationHelper
   def badge(name, id: nil, level: :primary, enabled: true, hidden: false)
     return if hidden
 
-    badge_classes = ['badge']
+    badge_classes = ["badge"]
     if enabled
       badge_classes << "bg-#{level}"
     else
-      badge_classes << 'bg-light' << 'text-muted'
+      badge_classes << "bg-light" << "text-muted"
     end
     tag.span(name, class: badge_classes, id: id)
   end
@@ -200,11 +200,11 @@ module ApplicationHelper
     return if !disabled_show && !enabled
 
     name = model.class.human_attribute_name(attr)
-    badge_classes = ['badge']
+    badge_classes = ["badge"]
     if enabled
       badge_classes << "bg-#{level}"
     else
-      badge_classes << 'bg-light' << 'text-muted'
+      badge_classes << "bg-light" << "text-muted"
     end
     tag.span(name, class: badge_classes, id: id)
   end
@@ -226,22 +226,22 @@ module ApplicationHelper
       order: {},
       condition: @condition&.to_h || {},
     }
-    i_class = ['fas']
+    i_class = ["fas"]
 
     case @order&.[](attr)
-    when 'asc'
-      params[:order][attr] = 'desc'
-      i_class << 'fa-sort-down'
-    when 'desc'
-      i_class << 'fa-sort-up'
+    when "asc"
+      params[:order][attr] = "desc"
+      i_class << "fa-sort-down"
+    when "desc"
+      i_class << "fa-sort-up"
     else
-      params[:order][attr] = 'asc'
-      i_class << 'fa-sort'
+      params[:order][attr] = "asc"
+      i_class << "fa-sort"
     end
 
     path = __send__("#{controller_name}_path", params)
-    link_to path, class: 'btn btn-sm btn-light' do
-      tag.i('', class: i_class)
+    link_to path, class: "btn btn-sm btn-light" do
+      tag.i("", class: i_class)
     end
   end
 
@@ -264,26 +264,26 @@ module ApplicationHelper
     i_class = []
 
     case @condition&.[](attr)
-    when 'true'
+    when "true"
       params[:condition][attr] = false
-      i_class << 'far' << 'fa-check-square'
-    when 'false'
+      i_class << "far" << "fa-check-square"
+    when "false"
       params[:condition].delete(attr)
-      i_class << 'far' << 'fa-square'
+      i_class << "far" << "fa-square"
     else
       params[:condition][attr] = true
-      i_class << 'fas' << 'fa-filter'
+      i_class << "fas" << "fa-filter"
     end
 
     path = __send__("#{controller_name}_path", params)
-    link_to path, class: 'btn btn-sm btn-light' do
-      tag.i('', class: i_class)
+    link_to path, class: "btn btn-sm btn-light" do
+      tag.i("", class: i_class)
     end
   end
 
-  def badge_for(value, scope: '', badge_class: [])
+  def badge_for(value, scope: "", badge_class: [])
     badge_class = badge_class.to_s.split unless badge_class.is_a?(Array)
-    badge_class << 'badge'
+    badge_class << "badge"
     NAME_COLORS[value.intern]&.then { |color| badge_class << "bg-#{color}" }
     tag.span(t(value, scope: scope), class: badge_class)
   end

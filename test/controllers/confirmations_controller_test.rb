@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -12,9 +12,9 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test 'should create confirmation' do
+    test "should create confirmation" do
       other_node = nodes(:other_desktop)
-      assert_difference('Confirmation.count') do
+      assert_difference("Confirmation.count") do
         post node_confirmation_url(other_node),
           params: {
             confirmation: {
@@ -36,7 +36,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to node_url(other_node)
     end
 
-    test 'should update confirmation' do
+    test "should update confirmation" do
       patch node_confirmation_url(@confirmation.node),
         params: {
           confirmation: {
@@ -63,9 +63,9 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:user)
     end
 
-    test 'should create confirmation' do
+    test "should create confirmation" do
       other_node = nodes(:other_desktop)
-      assert_difference('Confirmation.count') do
+      assert_difference("Confirmation.count") do
         post node_confirmation_url(other_node),
           params: {
             confirmation: {
@@ -87,7 +87,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to node_url(other_node)
     end
 
-    test 'should update confirmation' do
+    test "should update confirmation" do
       patch node_confirmation_url(@confirmation.node),
         params: {
           confirmation: {
@@ -108,9 +108,9 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to node_url(@confirmation.node)
     end
 
-    test 'should NOT create confirmation for other owner' do
+    test "should NOT create confirmation for other owner" do
       other_node = nodes(:admin_desktop)
-      assert_no_difference('Confirmation.count') do
+      assert_no_difference("Confirmation.count") do
         assert_raises(Pundit::NotAuthorizedError) do
           post node_confirmation_url(other_node),
             params: {
@@ -135,9 +135,9 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   class Anonymous < ConfirmationsControllerTest
-    test 'redirect to login INSTEAD OF create confirmation' do
+    test "redirect to login INSTEAD OF create confirmation" do
       other_node = nodes(:other_desktop)
-      assert_no_difference('Confirmation.count') do
+      assert_no_difference("Confirmation.count") do
         post node_confirmation_url(other_node),
           params: {
             confirmation: {
@@ -159,7 +159,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to new_user_session_path
     end
 
-    test 'redirect to login INSTEAD OF update confirmation' do
+    test "redirect to login INSTEAD OF update confirmation" do
       patch node_confirmation_url(@confirmation.node),
         params: {
           confirmation: {

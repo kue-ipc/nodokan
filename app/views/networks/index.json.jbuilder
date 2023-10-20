@@ -1,1 +1,1 @@
-json.array! @networks, partial: 'networks/network', as: :network
+json.array! @networks, partial: "networks/network", as: :network

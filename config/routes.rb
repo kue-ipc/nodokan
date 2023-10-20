@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
-  root to: 'pages#top'
-  get 'about', to: 'pages#about'
+  root to: "pages#top"
+  get "about", to: "pages#about"
 
   resources :nodes do
     member do
-      get 'copy'
-      post 'transfer'
+      get "copy"
+      post "transfer"
     end
     resource :confirmation, only: [:create, :update]
     resource :specific_node_application, only: [:new, :create]
@@ -22,18 +22,18 @@ Rails.application.routes.draw do
     resources :os_categories, only: [:index, :show, :create, :update, :destroy]
   end
 
-  namespace 'manage' do
-    get 'places'
-    get 'hardwares'
-    get 'operating_systems'
-    get 'security_softwares'
-    get 'device_types'
-    get 'os_categories'
+  namespace "manage" do
+    get "places"
+    get "hardwares"
+    get "operating_systems"
+    get "security_softwares"
+    get "device_types"
+    get "os_categories"
   end
 
   resources :users, only: [:index, :show, :update] do
     collection do
-      put 'sync'
+      put "sync"
     end
     # resources :networks, only: [:create, :destroy], controller: 'user_networks'
 
@@ -46,11 +46,11 @@ Rails.application.routes.draw do
 
   resource :user, only: [:show]
 
-  devise_for :users, path: 'auth'
+  devise_for :users, path: "auth"
 
-  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+  mount RailsAdmin::Engine => "/admin", as: "rails_admin"
 
   authenticated :user, ->(user) { user.admin? } do
-    mount DelayedJobWeb, at: '/delayed_job'
+    mount DelayedJobWeb, at: "/delayed_job"
   end
 end

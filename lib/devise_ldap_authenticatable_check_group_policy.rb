@@ -12,8 +12,8 @@
 # * @in_groups
 #     Groups to which the user belongs with :or policy.
 
-require 'devise'
-require 'devise_ldap_authenticatable'
+require "devise"
+require "devise_ldap_authenticatable"
 
 module Devise
   # rubocop:disable Style/ClassVars
@@ -52,7 +52,7 @@ module Devise
                            @check_group_membership_without_admin
 
         case Devise.ldap_check_group_policy
-        when :and, /\Aand\z/i, '&', '&&'
+        when :and, /\Aand\z/i, "&", "&&"
           if in_required_groups_and?
             @in_groups = @required_groups.map do |group|
               if group.is_a?(Array)
@@ -65,7 +65,7 @@ module Devise
           else
             false
           end
-        when :or, /\Aor\z/i, '|', '||'
+        when :or, /\Aor\z/i, "|", "||"
           in_required_groups_or?
         else
           DeviseLdapAuthenticatable::Logger.send(

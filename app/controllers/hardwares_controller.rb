@@ -37,7 +37,7 @@ class HardwaresController < ApplicationController
       end
     end
 
-    return if permitted_params[:format] == 'csv'
+    return if permitted_params[:format] == "csv"
 
     @hardwares = @hardwares.page(@page).per(@per)
   end

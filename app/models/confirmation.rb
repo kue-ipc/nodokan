@@ -209,7 +209,7 @@ class Confirmation < ApplicationRecord
       security_update
       security_scan
       security_software
-    ].any? { |name| self[name] == 'unknown' }
+    ].any? { |name| self[name] == "unknown" }
   end
 
   def status

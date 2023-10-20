@@ -5,7 +5,7 @@ module Kea
     connects_to database: { writing: :kea }
 
     def self.no_audit
-      connection.execute('SET @disable_audit = 1;')
+      connection.execute("SET @disable_audit = 1;")
     end
 
     def self.dhcp4_audit

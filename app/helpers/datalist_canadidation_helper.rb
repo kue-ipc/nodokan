@@ -13,11 +13,11 @@ module DatalistCanadidationHelper
       parents: parents,
       **opts,
     }
-    attr_name = [*parents, name, target].join('_')
+    attr_name = [*parents, name, target].join("_")
     tag.div(
       id: "#{attr_name}-app",
-      class: ['datalist-canadidation', 'd-none'],
-      'data-params': params.to_json,
+      class: ["datalist-canadidation", "d-none"],
+      "data-params": params.to_json,
     )
   end
 end

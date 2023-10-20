@@ -9,7 +9,7 @@ class Ipv6Pool < ApplicationRecord
   delegate :ipv6_prefix_length, to: :network
 
   def ipv6_first
-    @ipv6_first ||= IPAddress::IPv6.parse_hex(ipv6_first_data.unpack1('H*'), ipv6_prefix_length)
+    @ipv6_first ||= IPAddress::IPv6.parse_hex(ipv6_first_data.unpack1("H*"), ipv6_prefix_length)
   end
 
   def ipv6_first_address
@@ -25,7 +25,7 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def ipv6_last
-    @ipv6_last ||= IPAddress::IPv6.parse_hex(ipv6_last_data.unpack1('H*'), ipv6_prefix_length)
+    @ipv6_last ||= IPAddress::IPv6.parse_hex(ipv6_last_data.unpack1("H*"), ipv6_prefix_length)
   end
 
   def ipv6_last_address
@@ -54,19 +54,19 @@ class Ipv6Pool < ApplicationRecord
   def identifier
     prefix =
       case ipv6_config
-      when 'dynamic'
-        'd'
-      when 'reserved'
-        'r'
-      when 'static'
-        's'
-      when 'manual'
-        'm'
-      when 'disabled'
-        '!'
+      when "dynamic"
+        "d"
+      when "reserved"
+        "r"
+      when "static"
+        "s"
+      when "manual"
+        "m"
+      when "disabled"
+        "!"
       else
         logger.error("Unknown ipv6_config: #{ipv6_config}")
-        '?'
+        "?"
       end
     "#{prefix}-#{ipv6_first_address}-#{ipv6_last_address}"
   end
@@ -76,20 +76,20 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def self.new_identifier(str)
-    prefix, first, last = str.strip.downcase.split('-')
+    prefix, first, last = str.strip.downcase.split("-")
 
     config =
       case prefix
-      when 'd'
-        'dynamic'
-      when 'r'
-        'reserved'
-      when 's'
-        'static'
-      when 'm'
-        'manual'
-      when '!'
-        'disabled'
+      when "d"
+        "dynamic"
+      when "r"
+        "reserved"
+      when "s"
+        "static"
+      when "m"
+        "manual"
+      when "!"
+        "disabled"
       else
         logger.error("Invalid Ipv6Pool idetifier: #{str}")
         raise ArgumentError, "Invalid Ipv6Pool idetifier: #{str}"

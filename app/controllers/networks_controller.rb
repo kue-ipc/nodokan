@@ -24,13 +24,13 @@ class NetworksController < ApplicationController
 
     @networks = policy_scope(Network).includes(:ipv4_pools, :ipv6_pools)
 
-    @networks = @networks.where('name LIKE :query', { query: "%#{@query}%" }) if @query.present?
+    @networks = @networks.where("name LIKE :query", { query: "%#{@query}%" }) if @query.present?
 
     @networks = @networks.where(@condition) if @condition
 
     if @order
       order_hash = @order.to_h.transform_keys do |key|
-        if ['ipv4_network', 'ipv6_network'].include?(key)
+        if ["ipv4_network", "ipv6_network"].include?(key)
           "#{key}_data"
         else
           key
@@ -68,15 +68,15 @@ class NetworksController < ApplicationController
     authorize @network
 
     respond_to do |format|
-      if params['commit']
+      if params["commit"]
         if @network.save
-          format.html { redirect_to @network, notice: 'Network was successfully created.' }
+          format.html { redirect_to @network, notice: "Network was successfully created." }
           format.json { render :show, status: :created, location: @network }
         else
           format.html { render :new }
           format.json { render json: @network.errors, status: :unprocessable_entity }
         end
-      elsif params['add_ipv4_pool'] && @network.ipv4_network
+      elsif params["add_ipv4_pool"] && @network.ipv4_network
         next_ipv4 = @network.next_ipv4_pool
         @network.ipv4_pools << Ipv4Pool.new(
           ipv4_config: :static,
@@ -85,7 +85,7 @@ class NetworksController < ApplicationController
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params['add_ipv6_pool'] && @network.ipv6_network
+      elsif params["add_ipv6_pool"] && @network.ipv6_network
         next_ipv6 = @network.next_ipv6_pool
         @network.ipv6_pools << Ipv6Pool.new(
           ipv6_config: :static,
@@ -105,15 +105,15 @@ class NetworksController < ApplicationController
   # PATCH/PUT /networks/1.json
   def update
     respond_to do |format|
-      if params['commit']
+      if params["commit"]
         if @network.update(network_params)
-          format.html { redirect_to @network, notice: 'Network was successfully updated.' }
+          format.html { redirect_to @network, notice: "Network was successfully updated." }
           format.json { render :show, status: :ok, location: @network }
         else
           format.html { render :edit }
           format.json { render json: @network.errors, status: :unprocessable_entity }
         end
-      elsif params['add_ipv4_pool']
+      elsif params["add_ipv4_pool"]
         @network.assign_attributes(network_params)
         next_ipv4 = @network.next_ipv4_pool
         @network.ipv4_pools << Ipv4Pool.new(
@@ -123,7 +123,7 @@ class NetworksController < ApplicationController
         )
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params['add_ipv6_pool'] && @network.ipv6_network
+      elsif params["add_ipv6_pool"] && @network.ipv6_network
         @network.assign_attributes(network_params)
         next_ipv6 = @network.next_ipv6_pool
         @network.ipv6_pools << Ipv6Pool.new(
@@ -146,7 +146,7 @@ class NetworksController < ApplicationController
   def destroy
     @network.destroy
     respond_to do |format|
-      format.html { redirect_to networks_url, notice: 'Network was successfully destroyed.' }
+      format.html { redirect_to networks_url, notice: "Network was successfully destroyed." }
       format.json { head :no_content }
     end
   end

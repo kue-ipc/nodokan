@@ -21,7 +21,7 @@ class UsersController < ApplicationController
 
     if @query.present?
       @users = @users.where(
-        'username LIKE :query OR email LIKE :query OR fullname LIKE :query',
+        "username LIKE :query OR email LIKE :query OR fullname LIKE :query",
         { query: "%#{@query}%" },
       )
     end
@@ -44,16 +44,16 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.authorizable? && @user.sync_ldap! && @user.save
-      redirect_to users_path, notice: '成功'
+      redirect_to users_path, notice: "成功"
     else
-      redirect_to users_path, alert: '失敗'
+      redirect_to users_path, alert: "失敗"
     end
   end
 
   def update
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'ユーザーを更新しました。' }
+        format.html { redirect_to @user, notice: "ユーザーを更新しました。" }
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render @user }

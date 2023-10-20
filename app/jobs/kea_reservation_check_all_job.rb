@@ -1,4 +1,4 @@
-require 'set'
+require "set"
 
 class KeaReservationCheckAllJob < ApplicationJob
   queue_as :default

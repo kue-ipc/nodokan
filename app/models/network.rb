@@ -4,10 +4,10 @@ class Network < ApplicationRecord
   end
 
   FLAGS = {
-    auth: 'a',
-    dhcp: 'd',
-    locked: 'l',
-    specific: 's',
+    auth: "a",
+    dhcp: "d",
+    locked: "l",
+    specific: "s",
   }.freeze
 
   has_many :nics, dependent: :nullify
@@ -19,9 +19,9 @@ class Network < ApplicationRecord
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: 'Assignment', inverse_of: :network
-  has_many :use_assignments, -> { where(use: true).readonly }, class_name: 'Assignment', inverse_of: :network
-  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: 'Assignment', inverse_of: :network
+  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: "Assignment", inverse_of: :network
+  has_many :use_assignments, -> { where(use: true).readonly }, class_name: "Assignment", inverse_of: :network
+  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: "Assignment", inverse_of: :network
 
   has_many :users, through: :assignments
   has_many :auth_users, through: :auth_assignments, source: :user
@@ -83,7 +83,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_network_address
-    @ipv4_network_address ||= (ipv4_network&.to_s || '')
+    @ipv4_network_address ||= (ipv4_network&.to_s || "")
   end
 
   def ipv4_network_address=(value)
@@ -95,7 +95,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_netmask
-    @ipv4_netmask ||= (ipv4_network&.netmask || '')
+    @ipv4_netmask ||= (ipv4_network&.netmask || "")
   end
 
   def ipv4_netmask=(value)
@@ -115,7 +115,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_gateway_address
-    @ipv4_gateway_address ||= (ipv4_gateway&.to_s || '')
+    @ipv4_gateway_address ||= (ipv4_gateway&.to_s || "")
   end
 
   def ipv4_gateway_address=(value)
@@ -146,7 +146,7 @@ class Network < ApplicationRecord
   end
 
   def ipv6_network_address
-    @ipv6_network_address ||= (ipv6_network&.to_s || '')
+    @ipv6_network_address ||= (ipv6_network&.to_s || "")
   end
 
   def ipv6_network_address=(value)
@@ -161,11 +161,11 @@ class Network < ApplicationRecord
   def ipv6_gateway
     @ipv6_gateway ||=
       ipv6_gateway_data.presence &&
-      IPAddress::IPv6.parse_hex(ipv6_gateway_data.unpack1('H*'), ipv6_prefix_length)
+      IPAddress::IPv6.parse_hex(ipv6_gateway_data.unpack1("H*"), ipv6_prefix_length)
   end
 
   def ipv6_gateway_address
-    @ipv6_gateway_address ||= (ipv6_gateway&.to_s || '')
+    @ipv6_gateway_address ||= (ipv6_gateway&.to_s || "")
   end
 
   def ipv6_gateway_address=(value)
@@ -264,14 +264,14 @@ class Network < ApplicationRecord
   def ipv4_configs
     @ipv4_configs ||=
       ipv4_pools.map(&:ipv4_config).then do |list|
-        (list + ['manual', 'disabled']).uniq
+        (list + ["manual", "disabled"]).uniq
       end
   end
 
   def ipv6_configs
     @ipv6_configs ||=
       ipv6_pools.map(&:ipv6_config).then do |list|
-        (list + ['manual', 'disabled']).uniq
+        (list + ["manual", "disabled"]).uniq
       end
   end
 

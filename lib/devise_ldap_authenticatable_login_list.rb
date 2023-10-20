@@ -2,8 +2,8 @@
 
 # devise_ldap_authenticatable_login_list.rb v0.3.1 2021-06-08
 
-require 'devise'
-require 'devise_ldap_authenticatable'
+require "devise"
+require "devise_ldap_authenticatable"
 
 module Devise
   module LDAP

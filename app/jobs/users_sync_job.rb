@@ -1,4 +1,4 @@
-require 'set'
+require "set"
 
 class UsersSyncJob < ApplicationJob
   queue_as :default

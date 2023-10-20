@@ -1,7 +1,7 @@
-ENV['RAILS_ENV'] ||= 'test'
-require_relative '../config/environment'
-require 'rails/test_help'
-require 'base64'
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
+require "rails/test_help"
+require "base64"
 
 module FixtureAddressHelper
   def ipv4_address(address)

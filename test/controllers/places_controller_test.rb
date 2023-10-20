@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class PlacesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -8,7 +8,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test 'should get index' do
+    test "should get index" do
       get places_url
       assert_response :success
     end
@@ -33,7 +33,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
     setup do
       sign_in users(:user)
     end
-    test 'should get index' do
+    test "should get index" do
       get places_url
       assert_response :success
     end
@@ -55,7 +55,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   end
 
   class Anonymous < PlacesControllerTest
-    test 'redirect to login INSTEAD OF get index' do
+    test "redirect to login INSTEAD OF get index" do
       get places_url
       assert_response 401
     end

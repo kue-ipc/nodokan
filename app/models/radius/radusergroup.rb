@@ -1,5 +1,5 @@
 module Radius
   class Radusergroup < RadiusRecord
-    self.table_name = 'radusergroup'
+    self.table_name = "radusergroup"
   end
 end

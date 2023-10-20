@@ -4,7 +4,7 @@ class PagesController < ApplicationController
 
   def top
     unless user_signed_in?
-      render 'devise/sessions/new'
+      render "devise/sessions/new"
       return
     end
 

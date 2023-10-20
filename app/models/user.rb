@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   FLAGS = {
-    deleted: 'd',
+    deleted: "d",
   }.freeze
 
   # Include default devise modules.
@@ -19,9 +19,9 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :restrict_with_error
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: 'Assignment', inverse_of: :user
-  has_many :use_assignments, -> { where(use: true).readonly }, class_name: 'Assignment', inverse_of: :user
-  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: 'Assignment', inverse_of: :user
+  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: "Assignment", inverse_of: :user
+  has_many :use_assignments, -> { where(use: true).readonly }, class_name: "Assignment", inverse_of: :user
+  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: "Assignment", inverse_of: :user
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network
@@ -45,7 +45,7 @@ class User < ApplicationRecord
     logger.debug "User #{username} is allocate: #{@allocate_network_config.to_json}"
 
     self.auth_network =
-      if @allocate_network_config[:auth_network] == 'free'
+      if @allocate_network_config[:auth_network] == "free"
         Network.next_free
       else
         Network.find_identifier(@allocate_network_config[:auth_network])
@@ -55,7 +55,7 @@ class User < ApplicationRecord
 
     @allocate_network_config[:networks]&.each do |net|
       network =
-        if net == 'auth'
+        if net == "auth"
           auth_network
         else
           Network.find_identifier(net)
@@ -92,17 +92,17 @@ class User < ApplicationRecord
   end
 
   def ldap_mail
-    ldap_entry&.[]('mail')&.first
+    ldap_entry&.[]("mail")&.first
   end
 
   def ldap_display_name
     ldap_entry&.[]("displayName;lang-#{I18n.default_locale}")&.first ||
-      ldap_entry&.[]('displayName')&.first
+      ldap_entry&.[]("displayName")&.first
   end
 
   def sync_ldap!
     unless ldap_entry
-      errors.add(:username, 'はLDAP上にないため、同期できません。')
+      errors.add(:username, "はLDAP上にないため、同期できません。")
       return
     end
 
@@ -156,7 +156,7 @@ class User < ApplicationRecord
     end
 
     unless network&.auth
-      errors.add(:auth_network, 'は認証ネットワークではありません。')
+      errors.add(:auth_network, "は認証ネットワークではありません。")
       return
     end
 

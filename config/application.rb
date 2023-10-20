@@ -1,13 +1,13 @@
-require_relative 'boot'
+require_relative "boot"
 
-require 'rails/all'
+require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 module Nodokan
-  VERSION = '0.4.5'.freeze
+  VERSION = "0.4.5".freeze
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -18,7 +18,7 @@ module Nodokan
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
 
-    config.time_zone = 'Tokyo'
+    config.time_zone = "Tokyo"
     config.active_record.default_timezone = :local
     # config.eager_load_paths << Rails.root.join("extras")
   end

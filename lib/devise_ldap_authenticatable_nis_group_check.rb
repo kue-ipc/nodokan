@@ -5,8 +5,8 @@
 # RFC 2307 LDAP as a NIS
 # setting: config.ldap_nis_group_check
 
-require 'devise'
-require 'devise_ldap_authenticatable'
+require "devise"
+require "devise_ldap_authenticatable"
 
 module Devise
   # rubocop:disable Style/ClassVars
@@ -17,9 +17,9 @@ module Devise
   # rubocop:enable Style/ClassVars
 
   module LDAP
-    DEFAULT_GID_NUMBER_KEY = 'gidNumber'
-    DEFAULT_MEMBER_UID_KEY = 'memberUid'
-    DEFAULT_UID_KEY = 'uid'
+    DEFAULT_GID_NUMBER_KEY = "gidNumber"
+    DEFAULT_MEMBER_UID_KEY = "memberUid"
+    DEFAULT_UID_KEY = "uid"
 
     class Connection
       # rubocop:disable Style/ClassVars

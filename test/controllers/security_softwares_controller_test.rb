@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class SecuritySoftwaresControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -7,7 +7,7 @@ class SecuritySoftwaresControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:admin)
   end
 
-  test 'should get index' do
+  test "should get index" do
     get security_softwares_url
     assert_response :success
   end

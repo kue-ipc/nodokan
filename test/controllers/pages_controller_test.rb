@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class PagesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
@@ -8,14 +8,14 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:admin)
     end
 
-    test 'should get root' do
+    test "should get root" do
       get root_url
       assert_response :success
-      assert_select 'a', 'admin'
-      assert_select 'a', '管理'
+      assert_select "a", "admin"
+      assert_select "a", "管理"
     end
 
-    test 'should get about' do
+    test "should get about" do
       get about_url
       assert_response :success
     end
@@ -26,26 +26,26 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
       sign_in users(:user)
     end
 
-    test 'should get root' do
+    test "should get root" do
       get root_url
       assert_response :success
-      assert_select 'a', 'user'
+      assert_select "a", "user"
     end
 
-    test 'should get about' do
+    test "should get about" do
       get about_url
       assert_response :success
     end
   end
 
   class Anonymous < PagesControllerTest
-    test 'get root with login' do
+    test "get root with login" do
       get root_url
       assert_response :success
-      assert_select 'form#new_user'
+      assert_select "form#new_user"
     end
 
-    test 'should get about' do
+    test "should get about" do
       get about_url
       assert_response :success
     end
