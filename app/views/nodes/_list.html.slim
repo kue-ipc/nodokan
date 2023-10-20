@@ -105,8 +105,8 @@ table.table.table-hover.table-sm
       = link_to t('actions.edit'), edit_node_path(node),
         class: list_group_item_class + ['bg-warning', 'text-white']
       - if node.confirmation&.destroyable?
-        = link_to t('actions.destroy'), node,
-          data: { confirm: t('messages.corfirm_destroy_name', name: node.name) },
+        = button_to t('actions.destroy'), node,
+          data: { turbo_confirm: t('messages.corfirm_destroy_name', name: node.name) },
           method: :delete,
           class: list_group_item_class + ['bg-danger', 'text-white']
 

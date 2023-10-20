@@ -53,8 +53,8 @@ table.table.table-hover.table-sm
         class: list_group_item_class + ['bg-dark', 'text-white']
       = link_to t('actions.edit'), edit_network_path(network),
         class: list_group_item_class + ['bg-primary', 'text-white']
-      = link_to t('actions.destroy'), network,
-        data: { confirm: t('messages.corfirm_destroy_name', name: network.name) },
+      = button_to t('actions.destroy'), network,
+        data: { turbo_confirm: t('messages.corfirm_destroy_name', name: network.name) },
         method: :delete,
         class: list_group_item_class + ['bg-danger', 'text-white']
 

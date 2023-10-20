@@ -183,8 +183,8 @@ p.text-muted
       |
         端末が存在しない、または、不明の場合は削除してください。
         削除した端末はネットワークに接続できません。
-    =<> link_to t(:destroy, scope: [:actions]), @node,
-      data: { confirm: t('messages.corfirm_destroy_name', name: @node.name) },
+    =<> button_to t(:destroy, scope: [:actions]), @node,
+      data: { turbo_confirm: t('messages.corfirm_destroy_name', name: @node.name) },
       method: :delete,
       class: 'btn btn-danger'
 

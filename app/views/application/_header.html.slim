@@ -34,6 +34,6 @@ header.mb-2
             li.nav-item
               = link_to current_user.username, '/user', class: 'nav-link'
             li.nav-item
-              = link_to destroy_user_session_path, class: 'nav-link',
+              = button_to destroy_user_session_path, class: 'nav-link',
                 method: :delete, title: t('actions.sign_out'), 'data-bs-toggle': 'tooltip' do
                 i.fas.fa-sign-out-alt
