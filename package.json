@@ -20,7 +20,10 @@
     "rails_admin/@fortawesome/fontawesome-free": "^5.15.0"
   },
   "scripts": {
-    "build": "node esbuild.build.js",
+    "build": "node esbuild.build.mjs",
     "build:css": "sass ./app/assets/stylesheets/:./app/assets/builds/ --no-source-map --load-path=node_modules"
-  }
+  },
+  "browserslist": [
+    "defaults"
+  ]
 }

@@ -32,3 +32,9 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+## 開発環境
+
+```
+bin/dev
+```
