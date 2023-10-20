@@ -1,12 +1,6 @@
-# import ujs from '@rails/ujs'
-# import turbolinks from 'turbolinks'
-# import * as activestorage from '@rails/activestorage'
-
-# ujs.start()
-# turbolinks.start()
-# activestorage.start()
-
-# import 'channels'
+# Entry point for the build script in your package.json
+import "@hotwired/turbo-rails"
+import "./controllers"
 
 import './operators/bootstrap-trigger.coffee'
 import './operators/icon-font.coffee'
