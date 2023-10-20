@@ -1,14 +1,14 @@
 noscript
   .alert.alert-danger.alert-dismissible.fade.show role="alert"
-    = t(:require_javascript, scope: :messages)
+    = t("messages.require_javascript")
 
 /[if IE]
   .alert.alert-danger.alert-dismissible.fade.show role="alert"
-    = t(:require_other_than_ie, scope: :messages)
+    = t("messages.require_other_than_ie")
 
 #require-modern-browser.d-none
   .alert.alert-danger.alert-dismissible.fade.show role="alert"
-    = t(:require_modern_browser, scope: :messages)
+    = t("messages.require_modern_browser")
 javascript:
   if (window.Promise == null) document.getElementById("require-modern-browser").classList.remove("d-none");
 

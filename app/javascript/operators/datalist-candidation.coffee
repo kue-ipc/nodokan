@@ -30,11 +30,11 @@ class DatalistCandidation
     @required = null,
   }) ->
     unless @name?
-      throw 'Name required for DatalistCandidation'
+      throw new Error('Name required for DatalistCandidation')
     unless @target?
-      throw 'Target required for DatalistCandidation'
+      throw new Error('Target required for DatalistCandidation')
     unless @url?
-      throw 'Url required for DatalistCandidation'
+      throw new Error('Url required for DatalistCandidation')
 
     if @parent?
       @parents.push(@parent)

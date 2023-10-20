@@ -27,10 +27,10 @@ header.mb-2
             - if current_user.admin?
               li.nav-item
                 = link_to t("pages.admin"), rails_admin_path, class: "btn btn-outline-danger my-2 my-md-0 me-2",
-                  target: "_blank"
+                  target: "_blank", rel: "noopener"
               li.nav-item
                 = link_to t("pages.job"), delayed_job_web_path, class: "btn btn-outline-secondary my-2 my-md-0 me-2",
-                  target: "_blank"
+                  target: "_blank", rel: "noopener"
             li.nav-item
               = link_to current_user.username, "/user", class: "nav-link"
             li.nav-item

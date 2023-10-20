@@ -8,14 +8,14 @@
         .modal-body
           - question_count = 1
           p
-            = t(:node_confirmation, scope: :messages)
+            = t("messages.node_confirmation")
           - [:existence].each do |attr_name|
             = f.form_group attr_name, \
               label: { \
-                text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                text: tag.strong(t("messages.question_with_number", count: question_count)) + \
+                tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
               }, \
-              help: t(attr_name, scope: [:messages, :node_confirm_helps], default: nil) do
+              help: t(attr_name, scope: "messages.node_confirm_helps", default: nil) do
               - t_enums(attr_name.to_s.pluralize.intern,
                         Confirmation).each do |message, value|
                 = f.radio_button attr_name, value, label: message, required: true
@@ -24,12 +24,11 @@
             - [:content].each do |attr_name|
               = f.form_group attr_name, \
                 label: { \
-                  text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                  tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                  text: tag.strong(t("messages.question_with_number", count: question_count)) + \
+                  tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
                 }, \
-                help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
-                - t_enums(attr_name.to_s.pluralize.intern,
-                          Confirmation).each do |message, value|
+                help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
+                - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                   = f.radio_button attr_name, value, label: message
               - question_count += 1
 
@@ -37,10 +36,10 @@
               - [:os_update, :app_update].each do |attr_name|
                 = f.form_group attr_name, \
                   label: { \
-                    text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                    tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                    text: tag.strong(t("messages.question_with_number", count: question_count)) + \
+                    tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
                   }, \
-                  help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
+                  help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                   - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
                     - next if value == "unnecessary"
                     = f.radio_button attr_name, value, label: message
@@ -66,10 +65,10 @@
                 - attr_name = :security_software
                 = f.form_group attr_name, \
                   label: { \
-                    text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                    tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                    text: tag.strong(t("messages.question_with_number", count: question_count)) + \
+                    tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
                   }, \
-                  help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
+                  help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                   .row
                     = f.fields_for :security_software, @confirmation.security_software do |security_software_f|
                       = security_software_f.hidden_field :os_category_id
@@ -98,10 +97,10 @@
                 - %i[security_update security_scan].each do |attr_name|
                   = f.form_group attr_name, \
                     label: { \
-                      text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                      tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                      text: tag.strong(t("messages.question_with_number", count: question_count)) + \
+                      tag.span(" " + t(attr_name, scope: "messages.node_confirm_questions")) \
                     }, \
-                    help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
+                    help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil)) do
                     - t_enums(attr_name.to_s.pluralize.intern,
                               Confirmation).each do |message, value|
                       = f.radio_button attr_name, value, label: message

@@ -86,7 +86,7 @@ h4 = User.human_attribute_name(:networks)
           - if current_user.admin?
             td
               = button_to "解除", user_use_network_path(@user, network),
-                data: { turbo_confirm: "本当に解除しますか？" },
+                data: {turbo_confirm: "本当に解除しますか？"},
                 method: :delete, class: "btn btn-danger"
   - if current_user.admin?
     p ユーザーの紐付けを解除しても、端末への紐付けは削除されません。
@@ -94,16 +94,16 @@ h4 = User.human_attribute_name(:networks)
 - if current_user.admin?
   .mb-2
     - unregistered_networks = Network.where.not(id: @user.use_network_ids)
-    - unless unregistered_networks.exists?
-      p 登録できるネットワークはありません
-    - else
-      = bootstrap_form_tag url: user_use_networks_path(@user)do |f|
+    - if unregistered_networks.exists?
+      = bootstrap_form_tag url: user_use_networks_path(@user) do |f|
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
             = f.collection_select :network_id, unregistered_networks, :id, :name_vlan,
-              { prompt: "(選択してください)", hide_label: true, wrapper: false },
-              { required: true}
+              {prompt: "(選択してください)", hide_label: true, wrapper: false},
+              {required: true}
           .col-12
             = f.check_box :manage, label: "管理"
           .col-12
             = f.submit "追加", class: "btn btn-primary"
+    - else
+      p 登録できるネットワークはありません
