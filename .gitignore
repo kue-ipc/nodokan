@@ -45,3 +45,6 @@ config/environments/*.local.yml
 # data
 /data/*
 !/data/.keep
+
+/app/assets/builds/*
+!/app/assets/builds/.keep
