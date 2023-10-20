@@ -4,15 +4,15 @@ html
     meta charset="utf-8"
     meta(name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no")
-    title = (Settings.site.title || 'Nodokan')
+    title = (Settings.site.title || "Nodokan")
     = csrf_meta_tags
     = csp_meta_tag
     = stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload"
     = javascript_include_tag "application", "data-turbo-track": "reload", defer: true
   body
-    = render 'header'
+    = render "header"
     .container-fluid
       = yield :heading
-      = render 'alert'
+      = render "alert"
       = yield
-    = render 'footer'
+    = render "footer"

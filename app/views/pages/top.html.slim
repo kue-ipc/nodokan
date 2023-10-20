@@ -5,22 +5,22 @@
 /       | 未確認または期限切れの端末が
 /       =<> @need_confirm_count
 /       | 台あります。
-/     = link_to '要確認端末一覧', nodes_path(uc: 1)
+/     = link_to "要確認端末一覧", nodes_path(uc: 1)
 /     | にアクセスし、確認を実施してください。
-/     button.btn-close type="button" data-bs-dismiss="alert" aria-label=t('do_actions.close')
+/     button.btn-close type="button" data-bs-dismiss="alert" aria-label=t("do_actions.close")
 
 h3 利用者メニュー
 
 .menu.row.mb-1
   .col-md-6.col-lg-4.my-1
-    = link_to new_node_path, class: 'card border-primary' do
+    = link_to new_node_path, class: "card border-primary" do
       .card-header.text-center
         | 端末の新規登録
       .card-body
         | 端末の新規登録を行います。
         | 端末を新しく購入した場合は、こちらで登録を行ってください。
   .col-md-6.col-lg-4.my-1
-    = link_to nodes_path, class: 'card border-secondary' do
+    = link_to nodes_path, class: "card border-secondary" do
       .card-header.text-center
         | 端末一覧
       .card-body
@@ -32,49 +32,49 @@ h3 利用者メニュー
 
   .menu.row.mb-1
     .col-md-6.col-lg-4.my-1
-      = link_to networks_path, class: 'card border-warning' do
+      = link_to networks_path, class: "card border-warning" do
         .card-header.text-center
           | ネットワーク一覧
         .card-body
           | ネットワークの操作を行います。
     .col-md-6.col-lg-4.my-1
-      = link_to users_path, class: 'card border-warning' do
+      = link_to users_path, class: "card border-warning" do
         .card-header.text-center
           | ユーザー一覧
         .card-body
           | ユーザーの操作を行います。
     .col-md-6.col-lg-4.my-1
-      = link_to manage_places_path, class: 'card border-warning' do
+      = link_to manage_places_path, class: "card border-warning" do
         .card-header.text-center
           | 設置場所管理
         .card-body
           | 設置場所の管理を行います。
     .col-md-6.col-lg-4.my-1
-      = link_to manage_hardwares_path, class: 'card border-warning' do
+      = link_to manage_hardwares_path, class: "card border-warning" do
         .card-header.text-center
           | ハードウェア管理
         .card-body
           | ハードウェアの管理を行います。
     .col-md-6.col-lg-4.my-1
-      = link_to manage_operating_systems_path, class: 'card border-warning' do
+      = link_to manage_operating_systems_path, class: "card border-warning" do
         .card-header.text-center
           | OS管理
         .card-body
           | OSの管理を行います。
     .col-md-6.col-lg-4.my-1
-      = link_to manage_os_categories_path, class: 'card border-warning' do
+      = link_to manage_os_categories_path, class: "card border-warning" do
         .card-header.text-center
           | OS種別管理
         .card-body
           | OS種別の管理を行います。
     .col-md-6.col-lg-4.my-1
-      = link_to manage_device_types_path, class: 'card border-warning' do
+      = link_to manage_device_types_path, class: "card border-warning" do
         .card-header.text-center
           | 機器形態
         .card-body
           | 機器形態の管理を行います。
     / .col-md-6.col-lg-4.my-1
-    /   = link_to manage_security_softwares_path, class: 'card border-warning' do
+    /   = link_to manage_security_softwares_path, class: "card border-warning" do
     /     .card-header.text-center
     /       | セキュリティソフト管理
     /     .card-body

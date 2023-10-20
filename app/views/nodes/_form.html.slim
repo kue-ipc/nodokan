@@ -1,19 +1,19 @@
-p = t('forms.common.required_input')
+p = t("forms.common.required_input")
 
 = bootstrap_form_for @node do |f|
   .d-none
     / ダミーでおいておかないと、NIC追加のサブミットが走る
-    = f.submit class: 'btn btn-primary'
+    = f.submit class: "btn btn-primary"
   .rounded.border.p-2.mb-2
-    h4 = t('forms.node.base.title')
-    small.text-muted = t('forms.node.base.help')
+    h4 = t("forms.node.base.title")
+    small.text-muted = t("forms.node.base.help")
     .row
       = f.text_field :name, required: true,
-        wrapper_class: 'col-md-4 mb-3'
-      = f.text_field :hostname, pattern: '[0-9A-Za-z-]*',
-        wrapper_class: 'col-md-3 mb-3'
-      = f.text_field :domain, pattern: '[.0-9A-Za-z-]*',
-        wrapper_class: 'col-md-5 mb-3'
+        wrapper_class: "col-md-4 mb-3"
+      = f.text_field :hostname, pattern: "[0-9A-Za-z-]*",
+        wrapper_class: "col-md-3 mb-3"
+      = f.text_field :domain, pattern: "[.0-9A-Za-z-]*",
+        wrapper_class: "col-md-5 mb-3"
     - if current_user.admin?
       .row
         .col
@@ -31,19 +31,19 @@ p = t('forms.common.required_input')
       - if @node.specific
         .row
           .col
-            = badge_for(:specific, scope: 'activerecord.attributes.node')
+            = badge_for(:specific, scope: "activerecord.attributes.node")
             small.text-muted<
               | この端末は特定端末として登録されています。(解除したい場合は、閲覧画面から特定端末の申請を行ってください。)
       - if @node.public
         .row
           .col
-            = badge_for(:public, scope: 'activerecord.attributes.node')
+            = badge_for(:public, scope: "activerecord.attributes.node")
             small.text-muted<
               | この端末はインターネットに公開されています。(負荷分散装置やリバースプロキシ等により間接的に公開されている場合を含みます。)
       - if @node.dns
         .row
           .col
-            = badge_for(:dns, scope: 'activerecord.attributes.node')
+            = badge_for(:dns, scope: "activerecord.attributes.node")
             small.text-muted<
               | この端末はDNSに登録されています。(DNSに登録されているIPアドレスはロックされています。)
     .row.virtual-show.d-none
@@ -54,55 +54,55 @@ p = t('forms.common.required_input')
           | 仮想マシンの場合は、「仮想」のチェックを外し、機器情報で「仮想サーバー」等を選択してください。
 
   .rounded.border.p-2.mb-2.virtual-hide
-    h4 = t('forms.node.place.title')
-    small.text-muted = t('forms.node.place.help')
+    h4 = t("forms.node.place.title")
+    small.text-muted = t("forms.node.place.help")
     .row
       = f.fields_for :place, @node.place || Place.new do |place_f|
-        = place_f.text_field :area, list: 'node_place_area-list', wrapper_class: 'col-md-3 mb-3'
+        = place_f.text_field :area, list: "node_place_area-list", wrapper_class: "col-md-3 mb-3"
         = datalist_canadidation :place, :area, places_path, parents: [:node]
 
-        = place_f.text_field :building, list: 'node_place_building-list', wrapper_class: 'col-md-3 mb-3'
+        = place_f.text_field :building, list: "node_place_building-list", wrapper_class: "col-md-3 mb-3"
         = datalist_canadidation :place, :building, places_path, parents: [:node], inputList: [:area]
 
         - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
-        = place_f.select :floor, floor_list, wrapper_class: 'col-md-2 mb-3'
+        = place_f.select :floor, floor_list, wrapper_class: "col-md-2 mb-3"
 
-        = place_f.text_field :room, list: 'node_place_room-list', wrapper_class: 'col-md-4 mb-3'
-        = datalist_canadidation :place, :room, places_path, parents: [:node],order: { nodes_count: 'desc' },
+        = place_f.text_field :room, list: "node_place_room-list", wrapper_class: "col-md-4 mb-3"
+        = datalist_canadidation :place, :room, places_path, parents: [:node],order: { nodes_count: "desc" },
           inputList: [:area, :building, :floor]
 
   .rounded.border.p-2.mb-2.virtual-hide
-    h4 = t('forms.node.hardware.title')
-    small.text-muted = t('forms.node.hardware.help')
+    h4 = t("forms.node.hardware.title")
+    small.text-muted = t("forms.node.hardware.help")
     .row
       = f.fields_for :hardware, @node.hardware || Hardware.new do |hardware_f|
         = hardware_f.collection_select :device_type_id, DeviceType.order(:order), :id, :name,
-          include_blank: '(未選択)', wrapper_class: 'col-md-3 mb-3'
+          include_blank: "(未選択)", wrapper_class: "col-md-3 mb-3"
 
-        = hardware_f.text_field :maker, list: 'node_hardware_maker-list', wrapper_class: 'col-md-2 mb-3'
+        = hardware_f.text_field :maker, list: "node_hardware_maker-list", wrapper_class: "col-md-2 mb-3"
         = datalist_canadidation :hardware, :maker, hardwares_path, parents: [:node], inputList: [:device_type_id]
 
-        = hardware_f.text_field :product_name, list: 'node_hardware_product_name-list', wrapper_class: 'col-md-4 mb-3'
+        = hardware_f.text_field :product_name, list: "node_hardware_product_name-list", wrapper_class: "col-md-4 mb-3"
         = datalist_canadidation :hardware, :product_name, hardwares_path, parents: [:node],
           inputList: [:device_type_id, :maker]
 
-        = hardware_f.text_field :model_number, list: 'node_hardware_model_number-list', wrapper_class: 'col-md-3 mb-3'
+        = hardware_f.text_field :model_number, list: "node_hardware_model_number-list", wrapper_class: "col-md-3 mb-3"
         = datalist_canadidation :hardware, :model_number, hardwares_path, parents: [:node],
           inputList: [:device_type_id, :maker, :product_name]
 
   .rounded.border.p-2.mb-2.virtual-hide
-    h4 = t('forms.node.operating_system.title')
-    small.text-muted = t('forms.node.operating_system.help')
+    h4 = t("forms.node.operating_system.title")
+    small.text-muted = t("forms.node.operating_system.help")
     .row
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
         = operating_system_f.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
-          include_blank: '(未選択)', wrapper_class: 'col-md-4 mb-3'
+          include_blank: "(未選択)", wrapper_class: "col-md-4 mb-3"
 
-        = operating_system_f.text_field :name, list: 'node_operating_system_name-list', wrapper_class: 'col-md-8 mb-3',
+        = operating_system_f.text_field :name, list: "node_operating_system_name-list", wrapper_class: "col-md-8 mb-3",
           disabled: true
         = datalist_canadidation :operating_system, :name, operating_systems_path, parents: [:node],
-          order: {nodes_count: 'desc'},
+          order: {nodes_count: "desc"},
           inputList: [:os_category_id],
           requiredInput: :os_category_id,
           description: true,
@@ -113,9 +113,9 @@ p = t('forms.common.required_input')
 
   .rounded.border.p-2.mb-2
     .float-end
-      = f.submit 'NICを追加する', class: 'btn btn-secondary', name: 'add_nic', formnovalidate: true
-    h4 = t('forms.node.nic.title')
-    small.text-muted = t('forms.node.nic.help')
+      = f.submit "NICを追加する", class: "btn btn-secondary", name: "add_nic", formnovalidate: true
+    h4 = t("forms.node.nic.title")
+    small.text-muted = t("forms.node.nic.help")
     - count = 0
     - nic_list = []
     = f.fields_for :nics do |nic_f|
@@ -133,7 +133,7 @@ p = t('forms.common.required_input')
         - else
           - if nic_f.object.locked
             - nic_ro = true
-            = badge_for(:locked, scope: 'activerecord.attributes.nic')
+            = badge_for(:locked, scope: "activerecord.attributes.nic")
             small.text-muted<
               |
                 このNICは管理者によってロックされているため、
@@ -154,59 +154,59 @@ p = t('forms.common.required_input')
             = dt_dd_for nic_f.object, :ipv6_address
             = dt_dd_for nic_f.object, :duid
         - else
-          = nic_f.check_box :_destroy, label: 'このNICを削除する'
+          = nic_f.check_box :_destroy, label: "このNICを削除する"
           .row.node-nic-form
             = nic_f.select :interface_type,
                             t_enums(:interface_types, Nic),
-                            { prompt: '(選択してください)',
-                            wrapper_class: 'col-md-4 mb-3' },
+                            { prompt: "(選択してください)",
+                            wrapper_class: "col-md-4 mb-3" },
                             required: true
-            = nic_f.text_field :name, wrapper_class: 'col-md-8 mb-3'
+            = nic_f.text_field :name, wrapper_class: "col-md-8 mb-3"
             - nic_networks = current_user.usable_networks.to_a
             - if nic_f.object.network && !nic_networks.include?(nic_f.object.network)
               - nic_networks << nic_f.object.network
             = nic_f.collection_select :network_id, nic_networks,
               :id, :name,
-              { prompt: '(選択してください。)',
-              wrapper_class: 'col-md-4 mb-3' },
+              { prompt: "(選択してください。)",
+              wrapper_class: "col-md-4 mb-3" },
               required: true
             = nic_f.text_field :mac_address,
-              pattern: '([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}',
-              wrapper_class: 'col-md-4'
-            = nic_f.form_group :auth, label: { text: '認証ネットワーク登録' }, class: 'col-md-4 mb-3' do
-              = nic_f.check_box :auth, label: 'MACアドレスを登録する'
+              pattern: "([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}",
+              wrapper_class: "col-md-4"
+            = nic_f.form_group :auth, label: { text: "認証ネットワーク登録" }, class: "col-md-4 mb-3" do
+              = nic_f.check_box :auth, label: "MACアドレスを登録する"
             = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic),
-                            { wrapper_class: 'col-md-4 mb-3' }
+                            { wrapper_class: "col-md-4 mb-3" }
             = nic_f.text_field :ipv4_address,
               pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
-              wrapper_class: 'col-md-4'
+              wrapper_class: "col-md-4"
             .col-md-4
             - if Settings.config.ipv6
               = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic),
-                              { wrapper_class: 'col-md-4 mb-3' }
+                              { wrapper_class: "col-md-4 mb-3" }
               = nic_f.text_field :ipv6_address,
                 pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
-                wrapper_class: 'col-md-4'
+                wrapper_class: "col-md-4"
               = nic_f.text_field :duid,
-                pattern: '([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}',
-                wrapper_class: 'col-md-4'
+                pattern: "([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}",
+                wrapper_class: "col-md-4"
             - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
             - [ \
-              'no_network',
-              'unconfigurable',
-              'auth_network',
-              'require_mac',
-              'require_duid',
-              'network_note',
+              "no_network",
+              "unconfigurable",
+              "auth_network",
+              "require_mac",
+              "require_duid",
+              "network_note",
             ].each do |name|
               .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
-                = t(name, scope: 'messages.node_nic')
+                = t(name, scope: "messages.node_nic")
     script#node-nic-info type="application/json"
       == { \
         list: nic_list, \
         options: { \
           ipv6: Settings.config.ipv6, \
-          address_placeholders: t('messages.address_placeholders'), \
+          address_placeholders: t("messages.address_placeholders"), \
         }}.to_json
 
   .rounded.border.p-2.mb-2
@@ -216,6 +216,6 @@ p = t('forms.common.required_input')
         = f.collection_select :user_id,
           User.order(:username).where(deleted: false),
           :id, :name,
-          { wrapper_class: 'col-md-4 mb-3' }
+          { wrapper_class: "col-md-4 mb-3" }
 
-  = f.submit class: 'btn btn-primary'
+  = f.submit class: "btn btn-primary"

@@ -1,5 +1,5 @@
 <%== "\u{feff}" -%>
-<%- require 'import_export/user_csv' -%>
+<%- require "import_export/user_csv" -%>
 <%- user_csv = ImportExport::UserCSV.new(nil, logger: logger) -%>
 <%== user_csv.header.to_csv -%>
 <%- @users.each do |user| -%>

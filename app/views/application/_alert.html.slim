@@ -10,18 +10,18 @@ noscript
   .alert.alert-danger.alert-dismissible.fade.show role="alert"
     = t(:require_modern_browser, scope: :messages)
 javascript:
-  if (window.Promise == null) document.getElementById('require-modern-browser').classList.remove('d-none');
+  if (window.Promise == null) document.getElementById("require-modern-browser").classList.remove("d-none");
 
 - if alert
   - [*alert].each do |msg|
     .alert.alert-danger.alert-dismissible.fade.show role="alert"
       i.fas.fa-exclamation-triangle>
       = msg
-      button.btn-close type="button" data-bs-dismiss="alert" aria-label=t('do_actions.close')
+      button.btn-close type="button" data-bs-dismiss="alert" aria-label=t("do_actions.close")
 
 - if notice
   - [*notice].each do |msg|
     .alert.alert-success.alert-dismissible.fade.show role="alert"
       i.fas.fa-check>
       = msg
-      button.btn-close type="button" data-bs-dismiss="alert" aria-label=t('do_actions.close')
+      button.btn-close type="button" data-bs-dismiss="alert" aria-label=t("do_actions.close")

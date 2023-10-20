@@ -1,6 +1,6 @@
-- if controller_name != 'sessions' && controller_name != 'pages'
+- if controller_name != "sessions" && controller_name != "pages"
   = link_to t(".sign_in"), new_session_path(resource_name)
   br
-- if devise_mapping.lockable? && resource.unlock_strategy_enabled?(:email) && controller_name != 'unlocks'
-  = link_to t('.didn_t_receive_unlock_instructions'), new_unlock_path(resource_name)
+- if devise_mapping.lockable? && resource.unlock_strategy_enabled?(:email) && controller_name != "unlocks"
+  = link_to t(".didn_t_receive_unlock_instructions"), new_unlock_path(resource_name)
   br

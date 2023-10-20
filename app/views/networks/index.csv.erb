@@ -1,5 +1,5 @@
 <%== "\u{feff}" -%>
-<%- require 'import_export/network_csv' -%>
+<%- require "import_export/network_csv" -%>
 <%- network_csv = ImportExport::NetworkCSV.new(nil, logger: logger) -%>
 <%== network_csv.header.to_csv -%>
 <%- @networks.each do |network| -%>

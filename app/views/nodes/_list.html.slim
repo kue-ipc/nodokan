@@ -47,7 +47,7 @@ table.table.table-hover.table-sm
           = node.name
           - %i[virtual specific global public dns].each do |attr|
             - if node.__send__(attr)
-              = badge_for(attr, scope: 'activerecord.attributes.node', badge_class: 'ms-1')
+              = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
         td = node.hostname
         td = node.place&.short_name
         td = node.hardware&.product_name
@@ -90,25 +90,25 @@ table.table.table-hover.table-sm
             i.fas.fa-check.text-success
             span.text-success = t(:approved, scope: :messages)
 - list_group_item_class = [ \
-  'list-group-item',
-  'list-group-item-action',
-  'flex-fill',
-  'text-nowrap',
+  "list-group-item",
+  "list-group-item-action",
+  "flex-fill",
+  "text-nowrap",
 ]
 - @nodes.each do |node|
   .context-menu id="contextmenu-node-#{node.id}"
     .list-group.list-group-horizontal
-      = link_to t('actions.show'), node,
-        class: list_group_item_class + ['bg-dark', 'text-white']
-      = link_to t('actions.confirm'), node_path(node, anchor: 'confirm'),
-        class: list_group_item_class + ['bg-primary', 'text-white']
-      = link_to t('actions.edit'), edit_node_path(node),
-        class: list_group_item_class + ['bg-warning', 'text-white']
+      = link_to t("actions.show"), node,
+        class: list_group_item_class + ["bg-dark", "text-white"]
+      = link_to t("actions.confirm"), node_path(node, anchor: "confirm"),
+        class: list_group_item_class + ["bg-primary", "text-white"]
+      = link_to t("actions.edit"), edit_node_path(node),
+        class: list_group_item_class + ["bg-warning", "text-white"]
       - if node.confirmation&.destroyable?
-        = button_to t('actions.destroy'), node,
-          data: { turbo_confirm: t('messages.corfirm_destroy_name', name: node.name) },
+        = button_to t("actions.destroy"), node,
+          data: { turbo_confirm: t("messages.corfirm_destroy_name", name: node.name) },
           method: :delete,
-          class: list_group_item_class + ['bg-danger', 'text-white']
+          class: list_group_item_class + ["bg-danger", "text-white"]
 
 = paginate @nodes
 p

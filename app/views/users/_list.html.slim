@@ -31,18 +31,18 @@ table.table.table-hover.table-sm
         td = user.username
         td = user.email
         td = user.fullname
-        td.text-nowrap = t(user.role, scope: 'activerecord.enums.roles')
+        td.text-nowrap = t(user.role, scope: "activerecord.enums.roles")
         td = i_bool_tag(user.deleted)
         td = user.auth_network&.identifier
-        td = user.use_networks.map(&:identifier).join(', ')
+        td = user.use_networks.map(&:identifier).join(", ")
         td = user.nodes_count
 
 - list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
 - @users.each do |user|
   .context-menu id="contextmenu-user-#{user.id}"
     .list-group.list-group-horizontal
-      = link_to t('actions.show'), user,
-        class: list_group_item_class + ['bg-dark', 'text-white']
+      = link_to t("actions.show"), user,
+        class: list_group_item_class + ["bg-dark", "text-white"]
 
 = paginate @users
 p

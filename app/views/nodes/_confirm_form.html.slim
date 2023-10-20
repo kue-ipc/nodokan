@@ -4,7 +4,7 @@
       = bootstrap_form_for @confirmation, url: node_confirmation_path(@node) do |f|
         .modal-header
           h5.modal-title 確認事項
-          button.btn-close type="button" data-bs-dismiss="modal" aria-label=t('do_actions.close')
+          button.btn-close type="button" data-bs-dismiss="modal" aria-label=t("do_actions.close")
         .modal-body
           - question_count = 1
           p
@@ -13,7 +13,7 @@
             = f.form_group attr_name, \
               label: { \
                 text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
               }, \
               help: t(attr_name, scope: [:messages, :node_confirm_helps], default: nil) do
               - t_enums(attr_name.to_s.pluralize.intern,
@@ -25,7 +25,7 @@
               = f.form_group attr_name, \
                 label: { \
                   text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                  tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                  tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
                 }, \
                 help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
                 - t_enums(attr_name.to_s.pluralize.intern,
@@ -38,11 +38,11 @@
                 = f.form_group attr_name, \
                   label: { \
                     text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                    tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                    tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
                   }, \
                   help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
                   - t_enums(attr_name.to_s.pluralize.intern, Confirmation).each do |message, value|
-                    - next if value == 'unnecessary'
+                    - next if value == "unnecessary"
                     = f.radio_button attr_name, value, label: message
                 .collapse id="node-confirm-secured-#{attr_name}"
                   .card
@@ -67,7 +67,7 @@
                 = f.form_group attr_name, \
                   label: { \
                     text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                    tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                    tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
                   }, \
                   help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
                   .row
@@ -77,13 +77,13 @@
                       = security_software_f.select :installation_method,
                         t_enums(:installation_methods, SecuritySoftware).select \
                           { |k, v| @installation_methods.include?(v) },
-                        { include_blank: '(未選択)', wrapper_class: 'col-md-4' }
+                        { include_blank: "(未選択)", wrapper_class: "col-md-4" }
 
-                      = security_software_f.text_field :name, list: 'confirmation_security_software_name-list',
-                        wrapper_class: 'col-md-8', disabled: true
+                      = security_software_f.text_field :name, list: "confirmation_security_software_name-list",
+                        wrapper_class: "col-md-8", disabled: true
                       = datalist_canadidation :security_software, :name, security_softwares_path,
                         parents: [:confirmation],
-                        order: {confirmations_count: 'desc'},
+                        order: {confirmations_count: "desc"},
                         inputList: [:os_category_id, :installation_method],
                         requiredInput: :installation_method,
                         description: true,
@@ -99,7 +99,7 @@
                   = f.form_group attr_name, \
                     label: { \
                       text: tag.strong(t(:question_with_number, scope: :messages, count: question_count)) + \
-                      tag.span(' ' + t(attr_name, scope: [:messages, :node_confirm_questions])) \
+                      tag.span(" " + t(attr_name, scope: [:messages, :node_confirm_questions])) \
                     }, \
                     help: raw(t(attr_name, scope: [:messages, :node_confirm_helps], default: nil)) do
                     - t_enums(attr_name.to_s.pluralize.intern,
@@ -115,4 +115,4 @@
           button.btn.btn-dark type="button" data-bs-dismiss="modal"
             | キャンセルして
             = t(:close, scope: [:do_actions])
-          = f.submit '確認終了', class: 'btn btn-primary'
+          = f.submit "確認終了", class: "btn btn-primary"
