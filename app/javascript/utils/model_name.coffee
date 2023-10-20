@@ -1,4 +1,4 @@
-import {snakize} from './string_utils'
+import {snakize} from './string_utils.coffee'
 
 export default class ModelName
   constructor: (@klass) ->

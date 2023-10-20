@@ -1,4 +1,4 @@
-import ModelName from 'utils/model_name'
+import ModelName from '../utils/model_name.coffee'
 
 export default class ApplicationRecord
   @model_name: ->

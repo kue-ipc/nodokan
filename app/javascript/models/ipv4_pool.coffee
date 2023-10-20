@@ -1,4 +1,4 @@
-import ApplicationRecord from './application_record'
+import ApplicationRecord from './application_record.coffee'
 import ipaddr from 'ipaddr.js'
 
 export default class Ipv4Pool extends ApplicationRecord

@@ -1,6 +1,6 @@
-import ApplicationRecord from './application_record'
-import Ipv4Pool from './ipv4_pool'
-import Ipv6Pool from './ipv6_pool'
+import ApplicationRecord from './application_record.coffee'
+import Ipv4Pool from './ipv4_pool.coffee'
+import Ipv6Pool from './ipv6_pool.coffee'
 import ipaddr from 'ipaddr.js'
 
 export default class Network extends ApplicationRecord

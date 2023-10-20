@@ -1,5 +1,5 @@
 import {app, h, text} from 'hyperapp'
-import csrf from 'utils/csrf'
+import csrf from '../utils/csrf.coffee'
 
 MASKED_ATTRIBUTES = [
   'created_at'

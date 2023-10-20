@@ -1,7 +1,7 @@
 # NodeのNICを操作するためのJavaScript
 
-import {listToSnake, listToField} from 'utils/string_utils'
-import Network from 'models/network'
+import {listToSnake, listToField} from '../utils/string_utils.coffee'
+import Network from '../models/network.coffee'
 import ipaddr from 'ipaddr.js'
 
 class NodeNic
