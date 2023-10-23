@@ -10,9 +10,9 @@ p = t("forms.common.required_input")
     .row
       = f.text_field :name, required: true,
         wrapper_class: "col-md-4 mb-3"
-      = f.text_field :hostname, pattern: "[0-9A-Za-z-]*",
+      = f.text_field :hostname, pattern: "[0-9A-Za-z\\-]*",
         wrapper_class: "col-md-3 mb-3"
-      = f.text_field :domain, pattern: "[.0-9A-Za-z-]*",
+      = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*",
         wrapper_class: "col-md-5 mb-3"
     - if current_user.admin?
       .row
@@ -170,7 +170,7 @@ p = t("forms.common.required_input")
               {prompt: "(選択してください。)", wrapper_class: "col-md-4 mb-3"},
               required: true
             = nic_f.text_field :mac_address,
-              pattern: "([0-9a-fA-F]{2}[-:]?){5}[0-9a-fA-F]{2}",
+              pattern: "([0-9A-Fa-f]{2}[\\-:]?){5}[0-9a-fA-F]{2}",
               wrapper_class: "col-md-4"
             = nic_f.form_group :auth, label: {text: "認証ネットワーク登録"}, class: "col-md-4 mb-3" do
               = nic_f.check_box :auth, label: "MACアドレスを登録する"
@@ -182,10 +182,10 @@ p = t("forms.common.required_input")
             - if Settings.config.ipv6
               = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic), {wrapper_class: "col-md-4 mb-3"}
               = nic_f.text_field :ipv6_address,
-                pattern: '([\da-fA-F](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
+                pattern: '([\dA-Fa-f](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
                 wrapper_class: "col-md-4"
               = nic_f.text_field :duid,
-                pattern: "([0-9a-fA-F]{2}[:-]?)*[0-9a-fA-F]{2}",
+                pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}",
                 wrapper_class: "col-md-4"
             - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
             - %w[no_network unconfigurable auth_network require_mac require_duid network_note].each do |name|
