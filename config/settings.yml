@@ -65,35 +65,34 @@ specific_node_application:
       dns: true
       external: none
       list: []
-    - name: Web外部公開 (外部からのHTTP/HTTPS、DNS登録)
+    - name: Web外部公開 (外部からのHTTP/HTTPS/QUCK、DNS登録)
       dns: true
       external: nat
       list:
         - in 80/tcp
         - in 443/tcp 
-    - name: 外部Web直接アクセス (外部へのHTTP/HTTPS)
+        - in 443/udp
+    - name: 外部Web直接アクセス (外部へのHTTP/HTTPS/QUIK)
       dns: false
       external: napt
       list:
         - out 80/tcp
         - out 443/tcp
+        - out 443/udp
     - name: 外部SSH直接アクセス (外部へのSSH)
       dns: false
       external: napt
       list:
         - out 22/tcp
     - name: >-
-        外部メールサービス直接アクセス
-        (外部へのSMTP Submission/SMTPS/POP3/POP3S/IMAP/IMAPS、ただしSMTP 25は除く)
+        外部メールサービス直接アクセス (外部へのSMTPS/SMTP Submission/IMAPS/POP3S)
       dns: false
       external: napt
       list:
-        - out 587/tcp
         - out 465/tcp
-        - out 110/tcp
-        - out 995/tcp
-        - out 143/tcp
+        - out 587/tcp
         - out 993/tcp
+        - out 995/tcp
     - name: テレビ会議システム用双方向フリーアクセス
       dns: false
       external: through
