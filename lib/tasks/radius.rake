@@ -49,10 +49,14 @@ namespace :radius do
       "Tunnel-Type" => "13",
       "Tunnel-Medium-Type" => "6",
     }
-    groups.each do |group_name|
-      attrs.each do |attr_name, value|
-        puts "create or update: #{attr_name} for #{group_name} group"
-        reply = Radius::Radgroupreply.find_or_initialize_by(groupname: group_name, attr: attr_name)
+    groups.each do |groupname|
+      attrs.each do |attr, value|
+        puts "create or update: #{attr} for #{groupname} group"
+        # NOTE: テーブルがVIEWであるため、作成時に `id: nil` を設定する必要がある。
+        #       find_or_initilaize_byは使用できない。
+        reply =
+          Radius::Radgroupreply.find_by(groupname: groupname, attr: attr) ||
+          Radius::Radgroupreply.new(id: nil, groupname: groupname, attr: attr)
         reply.op = ":="
         reply.value = value
         reply.save!
