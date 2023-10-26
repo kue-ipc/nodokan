@@ -19,9 +19,9 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :restrict_with_error
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: "Assignment", inverse_of: :user
-  has_many :use_assignments, -> { where(use: true).readonly }, class_name: "Assignment", inverse_of: :user
-  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: "Assignment", inverse_of: :user
+  has_many :auth_assignments, -> { where(auth: true) }, class_name: "Assignment", inverse_of: :user
+  has_many :use_assignments, -> { where(use: true) }, class_name: "Assignment", inverse_of: :user
+  has_many :manage_assignments, -> { where(manage: true) }, class_name: "Assignment", inverse_of: :user
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network
@@ -148,7 +148,7 @@ class User < ApplicationRecord
 
   def auth_network=(network)
     if network.nil?
-      auth_assignments.each do |assignment|
+      auth_assignments.find_each do |assignment|
         assignment.update(auth: false)
       end
       @auth_network = nil
