@@ -1,0 +1,27 @@
+{
+  "extends": "stylelint-config-standard",
+  "overrides": [
+    {
+      "files": [
+        "*.scss",
+        "**/*.scss"
+      ],
+      "extends": "stylelint-config-standard-scss"
+    },
+    {
+      "files": [
+        "*.sass",
+        "**/*.sass"
+      ],
+      "customSyntax": "postcss-sass",
+      "rules": {
+        "block-opening-brace-space-before": null,
+        "block-closing-brace-newline-before": null,
+        "declaration-block-trailing-semicolon": null,
+        "selector-class-pattern": null,
+        "annotation-no-unknown": null,
+        "value-keyword-case": null
+      }
+    }
+  ]
+}

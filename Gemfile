@@ -123,7 +123,6 @@ group :development do
   gem "rubocop"
   gem "rubocop-rails"
   gem "slim_lint"
-  gem "rufo"
 end
 
 group :test do

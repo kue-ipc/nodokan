@@ -322,7 +322,6 @@ GEM
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
-    rufo (0.16.2)
     sanitize (6.1.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -407,7 +406,6 @@ DEPENDENCIES
   rails_admin-i18n
   rubocop
   rubocop-rails
-  rufo
   sanitize
   selenium-webdriver
   slim-rails
