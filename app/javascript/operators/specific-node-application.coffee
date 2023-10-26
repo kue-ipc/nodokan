@@ -84,7 +84,7 @@ document.addEventListener 'turbo:load', ->
           registerDnsCheckBox.checked = false
         registerDnsCheckBox.disabled = true
 
-        unsetRequired(externalSelect, ruleListTextArea, registerDnsCheckBox)
+        unsetRequired(externalSelect, ruleListTextArea)
 
       else
         for option in externalSelect.getElementsByTagName('option')
@@ -98,7 +98,7 @@ document.addEventListener 'turbo:load', ->
         registerDnsCheckBox.checked = false
         registerDnsCheckBox.disabled = false
 
-        setRequired(externalSelect, ruleListTextArea, registerDnsCheckBox)
+        setRequired(externalSelect, ruleListTextArea)
 
       checkDns()
       break

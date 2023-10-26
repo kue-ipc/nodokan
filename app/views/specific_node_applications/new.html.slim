@@ -40,7 +40,8 @@ p
       - if @node.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
 
-= bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node) do |f|
+= bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node),
+  data: {turbo: false} do |f|
   = f.form_group :action, label: {text: "申請"} do
     - if @node.specific
       - enabled_actions = %w[change release]
@@ -73,7 +74,7 @@ p
 
   = f.check_box :register_dns, label: "DNS登録"
 
-  = f.text_field :fqdn, value: @node.fqdn, label: {text: "FQDN (DNS登録に使用)"}, required: true
+  = f.text_field :fqdn, value: @node.fqdn, label: {text: "FQDN (DNS登録に使用)"}
 
   = f.text_area :note, label: "備考"
 
