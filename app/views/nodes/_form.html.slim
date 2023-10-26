@@ -1,6 +1,6 @@
 p = t("forms.common.required_input")
 
-= bootstrap_form_for @node do |f|
+= bootstrap_form_for @node, data: {turbo: false} do |f|
   .d-none
     / ダミーでおいておかないと、NIC追加のサブミットが走る
     = f.submit class: "btn btn-primary"
