@@ -5,7 +5,7 @@ p
     一定回数以上パスワードを間違えると、アカウントが一時的にロックされ、ログインできなくなります。
     ロックされたタイミングで、ロック解除に関するメールを送信していますので、確認してください。
     ロック解除に関するメールが見つからない場合は、メールアドレスを入力して、メールを再送してください。
-= bootstrap_form_with model: resource, as: resource_name, url: unlock_path(resource_name), html: {method: :post} do |f|
+= bootstrap_form_with model: resource, as: resource_name, url: unlock_path(resource_name), data: {turbo: false} do |f|
   = f.email_field :email, autofocus: true, autocomplete: "email"
   = f.submit t(".resend_unlock_instructions")
 hr
