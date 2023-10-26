@@ -134,39 +134,45 @@ class User < ApplicationRecord
     Devise::LDAP::Adapter.authorizable?(username)
   end
 
-  def auth_network
-    @auth_network ||= auth_networks&.first
-  end
-
   def auth_network_id
     auth_network&.id
   end
 
   def auth_network_id=(id)
-    self.auth_network = id && Network.find(id)
+    self.auth_network = id.presence && Network.find(id)
+  end
+
+  def auth_network
+    unless @auth_network_acquired
+      @auth_network = auth_networks&.first
+      @auth_network_acquired = true
+    end
+
+    @auth_network
   end
 
   def auth_network=(network)
-    if network.nil?
+    if network
+      unless network&.auth
+        errors.add(:auth_network, "は認証ネットワークではありません。")
+        return
+      end
+
+      auth_assignments.where.not(network_id: network.id).find_each do |assignment|
+        assignment.update(auth: false)
+      end
+
+      @auth_network = network
+      assignment = assignments.find_or_initialize_by(network: network)
+      assignment.update(auth: true)
+    else
       auth_assignments.find_each do |assignment|
         assignment.update(auth: false)
       end
-      @auth_network = nil
-      return
     end
 
-    unless network&.auth
-      errors.add(:auth_network, "は認証ネットワークではありません。")
-      return
-    end
-
-    auth_assignments.where.not(network_id: network.id).find_each do |assignment|
-      assignment.update(auth: false)
-    end
-
+    @auth_network_acquired = true
     @auth_network = network
-    assignment = assignments.find_or_initialize_by(network: network)
-    assignment.update(auth: true)
   end
 
   def add_use_network(network, manage: false)
