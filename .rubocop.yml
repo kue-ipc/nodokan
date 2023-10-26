@@ -52,6 +52,8 @@ Metrics/AbcSize:
 
 Metrics/BlockLength:
   Max: 38
+  Exclude:
+    - 'lib/tasks/*.rake'
 
 Metrics/BlockNesting:
   Max: 5

@@ -16,7 +16,7 @@ namespace :ipv4_arp do
       csv.each do |row|
         ipv4_data = IPAddress::IPv4.new(row["ip"]).data
         mac_address_data = [row["mac"].delete("-:")].pack("H12")
-        time = Time.at(row["time"].to_i)
+        time = Time.zone.at(row["time"].to_i)
         ipv4_arp = Ipv4Arp.find_or_initialize_by(ipv4_data: ipv4_data, mac_address_data: mac_address_data)
         if ipv4_arp.resolved_at.nil? || time > ipv4_arp.resolved_at
           ipv4_arp.resolved_at = time
