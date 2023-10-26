@@ -1,7 +1,7 @@
 #node-confirm-modal.modal.fade tabindex="-1" role="dialog"
   .modal-dialog.modal-xl role="document"
     .modal-content
-      = bootstrap_form_for @confirmation, url: node_confirmation_path(@node) do |f|
+      = bootstrap_form_with model: @confirmation, url: node_confirmation_path(@node), data: {turbo: false} do |f|
         .modal-header
           h5.modal-title 確認事項
           button.btn-close type="button" data-bs-dismiss="modal" aria-label=t("do_actions.close")

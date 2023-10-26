@@ -21,7 +21,7 @@ dl
 
   = dt_dd_for @user, :role do |role|
     - if current_user.admin?
-      = bootstrap_form_for @user do |f|
+      = bootstrap_form_with model: @user, data: {turbo: false} do |f|
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
             = f.select :role, t_enums(:roles),
@@ -34,7 +34,7 @@ dl
       = t_enum(role, :roles)
   = dt_dd_for @user, :auth_network do |auth_network|
     - if current_user.admin?
-      = bootstrap_form_for @user do |f|
+      = bootstrap_form_with model: @user, data: {turbo: false} do |f|
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
             = f.collection_select :auth_network_id, Network.where(auth: true), :id, :name_vlan,

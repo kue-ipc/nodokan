@@ -194,7 +194,7 @@ p.text-muted
       端末の所有者(管理者)ではない場合は、本来の所有者に管理を譲渡してください。
       譲渡先ユーザーのユーザー名を入力してください。
 
-  = bootstrap_form_with url: transfer_node_path(@node) do |f|
+  = bootstrap_form_with url: transfer_node_path(@node), data: {turbo: false} do |f|
     = f.text_field :username, label: "ユーザー名", label_class: "me-1"
     = f.text_area :note, label: "備考 (下記のメッセージを端末の備考に追加します)", label_class: "me-1",
       value: "[#{current_user.username}から管理譲渡]"
