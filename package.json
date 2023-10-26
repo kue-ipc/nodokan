@@ -22,5 +22,12 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "devDependencies": {
+    "coffeelint": "^2.1.0",
+    "postcss-sass": "^0.5.0",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-config-standard-scss": "^11.0.0"
+  }
 }
