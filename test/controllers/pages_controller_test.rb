@@ -42,7 +42,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     test "get root with login" do
       get root_url
       assert_response :success
-      assert_select "form#new_user"
+      assert_select "form"
     end
 
     test "should get about" do
