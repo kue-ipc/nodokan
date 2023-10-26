@@ -3,9 +3,7 @@ class RadiusMacAddJob < ApplicationJob
 
   def perform(mac_address_raw, vlan)
     if mac_address_raw !~ /\A[0-9a-f]{12}\z/
-      logger.error("Cannot add a invalid mac address to RADIUS: #{mac_address_raw}")
-      # TODO: 管理者に通知を送る。
-      return
+      raise "Cannot add a invalid mac address to RADIUS: #{mac_address_raw}"
     end
 
     username = mac_address_raw
@@ -35,9 +33,5 @@ class RadiusMacAddJob < ApplicationJob
     end
 
     logger.info("Added a mac address to RADIUS: #{username} - #{vlan}")
-  rescue StandardError => e
-    logger.error("Failed to add a mac address to RADIUS: #{username} - #{e.message}")
-    logger.error(e.full_message)
-    # TODO: 管理者に通知を送る。
   end
 end
