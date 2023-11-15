@@ -1,16 +1,21 @@
 import {app, h, text} from 'hyperapp'
 import csrf from '../utils/csrf.coffee'
 
-MASKED_ATTRIBUTES = [
+HIDDEN_ATTRIBUTES = new Set([
   'created_at'
   'updated_at'
-]
+])
 
-view = ({model, entities}) ->
+view = ({model, entities, page, params}) ->
   if model? && entities?
-    h 'table', {class: ['table', 'table-sm']}, [
-      thead({model})
-      tbody({model, entities})
+    h 'div', {}, [
+      h 'table', {class: ['table', 'table-sm']}, [
+        thead({model})
+        tbody({model, entities})
+      ]
+      pageNav({page})
+      pageInfo({page})
+      pagePer({params})
     ]
   else
     h 'p', {}, text 'loading...'
@@ -18,7 +23,8 @@ view = ({model, entities}) ->
 thead = ({model}) ->
   h 'thead', {},
     h 'tr', {}, model.attributes.map (attribute) ->
-      h 'th', {}, text attribute.human_name
+      unless HIDDEN_ATTRIBUTES.has(attribute.name)
+        h 'th', {}, text attribute.human_name
 
 tbody = ({model, entities}) ->
   h 'tbody', {},
@@ -35,8 +41,9 @@ showRow = ({model, entity}) ->
   h 'tr', id: "tr-#{id}",
     model.attributes.map (attribute) ->
       attributeId = "#{id}-#{attribute.name}"
-      h 'td', id: "td-#{attributeId}",
-        text entity[attribute.name] ? ''
+      unless HIDDEN_ATTRIBUTES.has(attribute.name)
+        h 'td', id: "td-#{attributeId}",
+          text entity[attribute.name] ? ''
     .concat [
       h 'td', {},
         h 'input',
@@ -130,6 +137,51 @@ editRow = ({model, entity}) ->
           onclick: [saveEntity, {id: entity.id, model}]
     ]
 
+pageNav = ({page}) ->
+  # TODO: 押したときにアクションを起こす
+  pageLinkList = []
+  if page.current != 1
+    pageLinkList.push({page: 1, text: '« first'})
+    pageLinkList.push({page: page.current - 1, text: '‹ previous'})
+  if page.current >= 4
+    pageLinkList.push({text: '...', disabled: true})
+  if page.current >= 3
+    pageLinkList.push({page: page.current - 2, text: "#{page.current - 2}"})
+  if page.current >= 2
+    pageLinkList.push({page: page.current - 1, text: "#{page.current - 1}"})
+  pageLinkList.push({page: page.current, text: "#{page.current}", active: true})
+  if page.current <= page.total - 2
+    pageLinkList.push({page: page.current + 1, text: "#{page.current + 1}"})
+  if page.current <= page.total - 3
+    pageLinkList.push({page: page.current + 2, text: "#{page.current + 2}"})
+  if page.current <= page.total - 4
+    pageLinkList.push({text: '...', disabled: true})
+  if page.current != page.total
+    pageLinkList.push({page: page.current + 1, text: 'next ›'})
+    pageLinkList.push({page: page.total, text: 'last »'})
+
+  h 'nav', {},
+    h 'ul', {class: 'pagination'}, pageLinkList.map (pageLink) ->
+      h 'li', {
+        class: {'page-item': true, disabled: pageLink.disabled, active: pageLink.active}
+      }, h 'a', {class: 'page-link', href: '#'},
+        text pageLink.text
+
+pageInfo = ({page}) ->
+  h 'p', {}, [
+    text((page.current - 1) * page.size + 1)
+    text '-'
+    text(Math.min(page.current * page.size, page.count))
+    text '/'
+    text(page.count)
+  ]
+
+pagePer = ({params}) ->
+  list = [10, 25, 50, 100, 1000]
+
+  h 'select', {class: 'form-select'}, list.map (value) ->
+    h 'option', {value, selected: params.per == value}, text value
+
 updateEntity = (state, {id, name, value}) ->
   index = state.entities.findIndex (e) -> e.id == id
   entitiy = {
@@ -145,7 +197,6 @@ updateEntity = (state, {id, name, value}) ->
     state...
     entities
   }
-
 
 saveEntity = (state, {id, model}) ->
   index = state.entities.findIndex (e) -> e.id == id
@@ -175,7 +226,8 @@ putEntity = (dispatch, {entity, model}) ->
 
   newEntity = await response.json()
 
-  dispatch(mergeEntity, {entity, newEntity})
+  requestAnimationFrame ->
+    dispatch(mergeEntity, {entity, newEntity})
 
 mergeEntity = (state, {entity, newEntity}) ->
   index = state.entities.findIndex (e) -> e.id == entity.id
@@ -203,23 +255,22 @@ mergeEntity = (state, {entity, newEntity}) ->
     entities
   }
 
-fetchAll = (dispatch, url) ->
+fetchAll = (dispatch, {url, params}) ->
+  url = new URL(url)
+  url.search = new URLSearchParams(params).toString()
   response = await fetch(url)
   data = await response.json()
-  dispatch(margeAll, data)
+  requestAnimationFrame ->
+    dispatch(margeAll, data)
 
 margeAll = (state, data) ->
-  model = data.model
-  maskedData = {
-    data...
-    model: {
-      model...
-      attributes: (a for a in model.attributes when !MASKED_ATTRIBUTES.includes(a.name))
-    }
-  }
   {
     state...
-    maskedData...
+    data...
+    params: {
+      page: Number(data.params.page)
+      per: Number(data.params.per)
+    }
   }
 
 main = ->
@@ -227,14 +278,19 @@ main = ->
   return unless node?
 
   url = node.dataset.url
+  params = {
+    page: 1,
+    per: 10,
+  }
 
-  app
-    init: -> [
-      {url: url}
-      [fetchAll, url]
+  app {
+    init: [
+      {url, params}
+      [fetchAll, {url, params}]
     ]
-    view: view
+    view
     node: document.getElementById('manage-table')
+  }
 
 document.addEventListener 'turbo:load', ->
   main()

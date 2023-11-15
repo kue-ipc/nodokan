@@ -399,6 +399,8 @@ ja:
         name: OS名
         eol: サポート終了日
         description: 詳細
+        confirmed: 確認済
+        nodes_count: 端末数
       place:
         area: 拠点(キャンパス)
         building: 建屋

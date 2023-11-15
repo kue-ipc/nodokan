@@ -20,9 +20,7 @@ class OperatingSystemsController < ApplicationController
     @condition = permitted_params[:condition]
 
     @operating_systems = policy_scope(OperatingSystem).includes(:os_category)
-
     @operating_systems = @operating_systems.where(@condition) if @condition
-
     @operating_systems = @operating_systems.order(@order.to_h) if @order
 
     if @target
