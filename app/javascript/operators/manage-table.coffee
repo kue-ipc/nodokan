@@ -76,22 +76,23 @@ view = ({model, entities, page, params}) ->
 thead = ({model, params}) ->
   h 'thead', {},
     h 'tr', {}, model.attributes.map (attribute) ->
-      unless HIDDEN_ATTRIBUTES.has(attribute.name)
-        h 'th', {}, [
-          text attribute.human_name
-          h 'button', {
-            class: 'btn btn-link'
-            onclick: [switchSort, attribute.name]
-          }, text(
-            switch params.order?[attribute.name]
-              when 'asc', 'ASC'
-                SORT_TEXT.down
-              when 'desc', 'DESC'
-                SORT_TEXT.up
-              else
-                SORT_TEXT.sort
-          )
-        ]
+      return if HIDDEN_ATTRIBUTES.has(attribute.name)
+
+      h 'th', {}, [
+        text attribute.human_name
+        h 'button', {
+          class: 'btn btn-link'
+          onclick: [switchSort, attribute.name]
+        }, text(
+          switch params.order?[attribute.name]
+            when 'asc', 'ASC'
+              SORT_TEXT.down
+            when 'desc', 'DESC'
+              SORT_TEXT.up
+            else
+              SORT_TEXT.sort
+        )
+      ]
 
 switchSort = (state, name) ->
   url = state.url
@@ -126,12 +127,13 @@ row = ({model, entity}) ->
 
 showRow = ({model, entity}) ->
   id = "#{model.param_key}-#{entity.id}"
-  h 'tr', id: "tr-#{id}",
+  h 'tr', {key: id, id: "tr-#{id}"},
     model.attributes.map (attribute) ->
+      return if HIDDEN_ATTRIBUTES.has(attribute.name)
+
       attributeId = "#{id}-#{attribute.name}"
-      unless HIDDEN_ATTRIBUTES.has(attribute.name)
-        h 'td', id: "td-#{attributeId}",
-          text entity[attribute.name] ? ''
+      h 'td', {key: attributeId, id: "td-#{attributeId}"},
+        text entity[attribute.name] ? ''
     .concat [
       h 'td', {},
         h 'input',
@@ -143,10 +145,12 @@ showRow = ({model, entity}) ->
 
 editRow = ({model, entity}) ->
   id = "#{model.param_key}-#{entity.id}"
-  h 'tr', id: "tr-#{id}",
+  h 'tr', {key: id, id: "tr-#{id}"},
     model.attributes.map (attribute) ->
+      return if HIDDEN_ATTRIBUTES.has(attribute.name)
+
       attributeId = "#{id}-#{attribute.name}"
-      h 'td', id: "td-#{attributeId}",
+      h 'td', {key: attributeId, id: "td-#{attributeId}"},
         if attribute.readonly
           text entity[attribute.name] ? ''
         else
