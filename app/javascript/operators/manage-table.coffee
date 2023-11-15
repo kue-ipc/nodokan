@@ -6,23 +6,64 @@ HIDDEN_ATTRIBUTES = new Set([
   'updated_at'
 ])
 
+SORT_TEXT = {
+  sort: '⇅'
+  up: '↑'
+  down: '↓'
+}
+
 PAGINATION_TEXT = {
-  first: "« first"
-  last: "last »"
-  previous: "‹ prev"
-  next: "next ›"
-  truncate: "…"
+  first: '« first'
+  last: 'last »'
+  previous: '‹ prev'
+  next: 'next ›'
+  truncate: '…'
 }
 
 DEFAULT_PER_PAGE = 100
 PER_PAGES = [10, 25, 50, 100, 500, 1000]
 
+convertSearchParams = (obj, prefix = '') ->
+  convertSearchParamsList(obj, prefix)
+    .map (item) ->
+      "#{encodeURIComponent(item[0])}=#{encodeURIComponent(item[1])}"
+    .join("&")
+
+convertSearchParamsList = (obj, prefix = '') ->
+  list = []
+  for own key, value of obj
+    continue unless value
+
+    name =
+      if prefix
+        "#{prefix}[#{key}]"
+      else
+        "#{key}"
+
+    switch typeof value
+      when 'undefined'
+        console.warn "undefined type appeared"
+      when 'boolean'
+        list.push([name, if value then '1' else '0'])
+      when 'number', 'bigint', 'string', 'symbol'
+        list.push([name, String(value)])
+      when 'function'
+        console.warn "function type appeared"
+      when 'object'
+        if value instanceof Array
+          for v in value
+            list.push(["#{name}[]", v])
+        else
+          list = list.concat(convertSearchParamsList(value, name))
+      else
+        console.err "unknown type: #{typeof value}"
+  list
 
 view = ({model, entities, page, params}) ->
   if model? && entities?
     h 'div', {}, [
       h 'table', {class: ['table', 'table-sm']}, [
-        thead({model})
+        thead({model, params})
         tbody({model, entities})
       ]
       pageNav({page})
@@ -32,11 +73,46 @@ view = ({model, entities, page, params}) ->
   else
     h 'p', {}, text 'loading...'
 
-thead = ({model}) ->
+thead = ({model, params}) ->
   h 'thead', {},
     h 'tr', {}, model.attributes.map (attribute) ->
       unless HIDDEN_ATTRIBUTES.has(attribute.name)
-        h 'th', {}, text attribute.human_name
+        h 'th', {}, [
+          text attribute.human_name
+          h 'button', {
+            class: 'btn btn-link'
+            onclick: [switchSort, attribute.name]
+          }, text(
+            switch params.order?[attribute.name]
+              when 'asc', 'ASC'
+                SORT_TEXT.down
+              when 'desc', 'DESC'
+                SORT_TEXT.up
+              else
+                SORT_TEXT.sort
+          )
+        ]
+
+switchSort = (state, name) ->
+  url = state.url
+  newTargetOrder =
+    switch state.params.order?[name]
+      when 'asc', 'ASC'
+        'desc'
+      when 'desc', 'DESC'
+        undefined
+      else
+        'asc'
+  params = {
+    state.params...
+    order: {
+      [name]: newTargetOrder
+    }
+  }
+  [
+    {state..., params}
+    [fetchAll, {url, params}]
+  ]
 
 tbody = ({model, entities}) ->
   h 'tbody', {},
@@ -150,7 +226,6 @@ editRow = ({model, entity}) ->
     ]
 
 pageNav = ({page}) ->
-  # TODO: 押したときにアクションを起こす
   pageLinkList = []
   if page.current != 1
     pageLinkList.push({key: 'frist', page: 1, text: PAGINATION_TEXT.first})
@@ -292,7 +367,7 @@ mergeEntity = (state, {entity, newEntity}) ->
 
 fetchAll = (dispatch, {url, params}) ->
   url = new URL(url)
-  url.search = new URLSearchParams(params).toString()
+  url.search = convertSearchParams(params)
   response = await fetch(url)
   data = await response.json()
   requestAnimationFrame ->
@@ -305,6 +380,7 @@ margeAll = (state, data) ->
     params: {
       page: Number(data.params.page)
       per: Number(data.params.per)
+      order: data.params.order
     }
   }
 
@@ -316,6 +392,7 @@ main = ->
   params = {
     page: 1,
     per: DEFAULT_PER_PAGE,
+    order: {id: 'asc'},
   }
 
   app {

@@ -14,14 +14,12 @@ class OperatingSystemsController < ApplicationController
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
-    @order = permitted_params[:order]
 
     @target = permitted_params[:target]&.intern
-    @condition = permitted_params[:condition]
 
     @operating_systems = policy_scope(OperatingSystem).includes(:os_category)
-    @operating_systems = @operating_systems.where(@condition) if @condition
-    @operating_systems = @operating_systems.order(@order.to_h) if @order
+    @operating_systems = @operating_systems.where(permitted_params[:condition]) if permitted_params[:condition]
+    @operating_systems = @operating_systems.order(permitted_params[:order].to_h) if permitted_params[:order]
 
     if @target
       if [:name].include?(@target)
