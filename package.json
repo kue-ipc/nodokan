@@ -14,7 +14,7 @@
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.1.0",
     "rails_admin": "3.1.2",
-    "sass": "^1.69.4"
+    "sass": "^1.69.5"
   },
   "scripts": {
     "build": "node esbuild.build.mjs",
@@ -28,6 +28,6 @@
     "postcss-sass": "^0.5.0",
     "stylelint": "^15.11.0",
     "stylelint-config-standard": "^34.0.0",
-    "stylelint-config-standard-scss": "^11.0.0"
+    "stylelint-config-standard-scss": "^11.1.0"
   }
 }
