@@ -6,6 +6,18 @@ HIDDEN_ATTRIBUTES = new Set([
   'updated_at'
 ])
 
+PAGINATION_TEXT = {
+  first: "« first"
+  last: "last »"
+  previous: "‹ prev"
+  next: "next ›"
+  truncate: "…"
+}
+
+DEFAULT_PER_PAGE = 100
+PER_PAGES = [10, 25, 50, 100, 500, 1000]
+
+
 view = ({model, entities, page, params}) ->
   if model? && entities?
     h 'div', {}, [
@@ -141,10 +153,10 @@ pageNav = ({page}) ->
   # TODO: 押したときにアクションを起こす
   pageLinkList = []
   if page.current != 1
-    pageLinkList.push({page: 1, text: '« first'})
-    pageLinkList.push({page: page.current - 1, text: '‹ previous'})
+    pageLinkList.push({key: 'frist', page: 1, text: PAGINATION_TEXT.first})
+    pageLinkList.push({key: 'previous', page: page.current - 1, text: PAGINATION_TEXT.previous})
   if page.current >= 4
-    pageLinkList.push({text: '...', disabled: true})
+    pageLinkList.push({key: 'pre_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
   if page.current >= 3
     pageLinkList.push({page: page.current - 2, text: "#{page.current - 2}"})
   if page.current >= 2
@@ -155,17 +167,29 @@ pageNav = ({page}) ->
   if page.current <= page.total - 3
     pageLinkList.push({page: page.current + 2, text: "#{page.current + 2}"})
   if page.current <= page.total - 4
-    pageLinkList.push({text: '...', disabled: true})
+    pageLinkList.push({key: 'post_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
   if page.current != page.total
-    pageLinkList.push({page: page.current + 1, text: 'next ›'})
-    pageLinkList.push({page: page.total, text: 'last »'})
+    pageLinkList.push({key: 'next', page: page.current + 1, text: PAGINATION_TEXT.next})
+    pageLinkList.push({key: 'last', page: page.total, text: PAGINATION_TEXT.last})
 
   h 'nav', {},
     h 'ul', {class: 'pagination'}, pageLinkList.map (pageLink) ->
       h 'li', {
+        key: pageLink.key || pageLink.page
         class: {'page-item': true, disabled: pageLink.disabled, active: pageLink.active}
-      }, h 'a', {class: 'page-link', href: '#'},
+      }, h 'button', {
+        class: 'page-link'
+        onclick: pageLink.page && [setPage, pageLink.page]
+      },
         text pageLink.text
+
+setPage = (state, page) ->
+  url = state.url
+  params = {state.params..., page: Number(page)}
+  [
+    {state..., params}
+    [fetchAll, {url, params}]
+  ]
 
 pageInfo = ({page}) ->
   h 'p', {}, [
@@ -177,10 +201,21 @@ pageInfo = ({page}) ->
   ]
 
 pagePer = ({params}) ->
-  list = [10, 25, 50, 100, 1000]
+  h 'select', {
+    class: 'form-select'
+    onchange: setPerValue
+  }, PER_PAGES.map (value) ->
+    h 'option', {key: value, value, selected: params.per == value}, text value
 
-  h 'select', {class: 'form-select'}, list.map (value) ->
-    h 'option', {value, selected: params.per == value}, text value
+setPerValue = (state, event) -> [setPer, event.target.value]
+
+setPer = (state, per) ->
+  url = state.url
+  params = {state.params..., per: Number(per)}
+  [
+    {state..., params}
+    [fetchAll, {url, params}]
+  ]
 
 updateEntity = (state, {id, name, value}) ->
   index = state.entities.findIndex (e) -> e.id == id
@@ -280,7 +315,7 @@ main = ->
   url = node.dataset.url
   params = {
     page: 1,
-    per: 10,
+    per: DEFAULT_PER_PAGE,
   }
 
   app {

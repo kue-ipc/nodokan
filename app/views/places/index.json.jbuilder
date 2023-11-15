@@ -1,5 +1,5 @@
 json.url request.url
-json.pramas params
+json.params params
 json.page do
   json.partial! "page", entities: @places
 end
