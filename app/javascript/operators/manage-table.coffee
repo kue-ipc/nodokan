@@ -241,11 +241,11 @@ pageNav = ({page}) ->
   if page.current >= 2
     pageLinkList.push({page: page.current - 1, text: "#{page.current - 1}"})
   pageLinkList.push({page: page.current, text: "#{page.current}", active: true})
-  if page.current <= page.total - 2
+  if page.current <= page.total - 1
     pageLinkList.push({page: page.current + 1, text: "#{page.current + 1}"})
-  if page.current <= page.total - 3
+  if page.current <= page.total - 2
     pageLinkList.push({page: page.current + 2, text: "#{page.current + 2}"})
-  if page.current <= page.total - 4
+  if page.current <= page.total - 3
     pageLinkList.push({key: 'post_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
   if page.current != page.total
     pageLinkList.push({key: 'next', page: page.current + 1, text: PAGINATION_TEXT.next})
@@ -271,12 +271,18 @@ setPage = (state, page) ->
   ]
 
 pageInfo = ({page}) ->
+  if page.current == page.total
+    begin = page.count - page.size + 1
+    end = page.count
+  else
+    begin = (page.current - 1) * page.size + 1
+    end = begin + page.size - 1
   h 'p', {}, [
-    text((page.current - 1) * page.size + 1)
+    text begin
     text '-'
-    text(Math.min(page.current * page.size, page.count))
+    text end
     text '/'
-    text(page.count)
+    text page.count
   ]
 
 pagePer = ({params}) ->
