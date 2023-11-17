@@ -50,7 +50,8 @@ dl
         tbody
           - nics.each do |nic|
             tr
-              td scope="row" = nic.number
+              td scope="row"
+                = link_to nic.number, nic_path(nic)
               td
                 = t(nic.interface_type, scope: "activerecord.enums.interface_types")
               td

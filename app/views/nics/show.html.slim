@@ -1,0 +1,23 @@
+- content_for :heading
+  h1 NIC情報
+
+dl
+  = dt_dd_for @nic, :node
+  = dt_dd_for @nic, :number
+  = dt_dd_for @nic, :interface_type do |interface_type|
+    = t(interface_type, scope: "activerecord.enums.interface_types")
+  = dt_dd_for @nic, :name do |name|
+    = name
+    - [:locked, :auth, :global].each do |attr|
+      - if @nic.__send__(attr)
+        = badge_for(attr, scope: "activerecord.attributes.nic", badge_class: "ms-1")
+  = dt_dd_for @nic, :mac_address
+  = dt_dd_for @nic, :duid
+  = dt_dd_for @nic, :ipv4 do |ipv4|
+      = badge_for(@nic.ipv4_config, scope: "activerecord.enums.ipv4_configs")
+      =< span_value_for(ipv4, hide_blank: true)
+  - if Settings.config.ipv6
+    = dt_dd_for @nic, :ipv6 do |ipv6|
+      = badge_for(@nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
+      =< span_value_for(ipv6, hide_blank: true)
+  = dt_dd_for @nic, :auth_at

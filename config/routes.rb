@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     resource :specific_node_application, only: [:new, :create]
   end
 
+  resources :nics, only: [:show]
+
   resources :networks
 
   defaults format: :json do

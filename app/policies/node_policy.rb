@@ -1,10 +1,10 @@
 class NodePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      if @user.admin?
+      if user.admin?
         scope.all
       else
-        scope.where(user: @user)
+        scope.where(user: user)
       end
     end
   end
