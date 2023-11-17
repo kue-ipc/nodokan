@@ -368,6 +368,11 @@ ja:
         ip_address: IPアドレス
         ipv4: IPv4
         ipv6: IPv6
+        ipv4_resolved_at: IPv4 解決日時
+        ipv6_discovered_at: IPv6 発見日時
+        ipv4_leased_at: IPv4 DHCPリース日時
+        ipv6_leased_at: IPv6 DHCPリース日時
+        auth_at: 認証日時
       node:
         name: 端末名
         hostname: ホスト名
@@ -387,7 +392,7 @@ ja:
         global: 外部
         public: 公開
         dns: DNS
-        connected_at: 最終接続日時
+        connected_at: 接続日時
       os_category:
         name: 種別名
         icon: アイコン

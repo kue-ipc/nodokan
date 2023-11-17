@@ -1,6 +1,10 @@
 class Nic < ApplicationRecord
   include Ipv4Config
   include Ipv6Config
+  include Ipv4Data
+  include Ipv6Data
+  include MacAddressData
+  include DuidData
 
   FLAGS = {
     auth: "a",
@@ -63,128 +67,6 @@ class Nic < ApplicationRecord
     ipv4_global? || ipv6_global?
   end
   alias global global?
-
-  def mac_address_gl
-    @mac_address_gl ||= !((mac_address_list.first || 0) & 0x02).zero?
-  end
-
-  def mac_address_ig
-    @mac_address_ig ||= !((mac_address_list.first || 0) & 0x01).zero?
-  end
-
-  def mac_address_global?
-    !mac_address_gl
-  end
-
-  def mac_address_local?
-    mac_address_gl
-  end
-
-  def mac_address_unicast?
-    !mac_address_ig
-  end
-
-  def mac_address_multicast?
-    mac_address_ig
-  end
-
-  def mac_address_list
-    @mac_address_list ||= mac_address_data.presence&.unpack("C6") || []
-  end
-
-  def mac_address_raw
-    mac_address(char_case: :lower, sep: "")
-  end
-
-  def mac_address_win
-    mac_address(char_case: :upper, sep: "-")
-  end
-
-  def mac_address_colon
-    mac_address(char_case: :upper, sep: ":")
-  end
-
-  def mac_address(char_case: Settings.config.mac_address_style.char_case,
-                  sep: Settings.config.mac_address_style.sep)
-    hex_str(mac_address_list, char_case: char_case, sep: sep)
-  end
-
-  def mac_address=(value)
-    @mac_address = value
-    self.mac_address_data =
-      @mac_address.presence && [@mac_address.delete("-:")].pack("H12")
-  end
-
-  def duid_raw
-    duid(char_case: :lower, sep: "")
-  end
-
-  def duid_win
-    duid(char_case: :upper, sep: "-")
-  end
-
-  def duid_colon
-    duid(char_case: :lower, sep: ":")
-  end
-
-  def duid_list
-    @duid_list ||= duid_data.presence&.unpack("C*") || []
-  end
-
-  def duid(char_case: Settings.config.duid_style.char_case,
-           sep: Settings.config.duid_style.sep)
-    hex_str(duid_list, char_case: char_case, sep: sep)
-  end
-
-  def duid=(value)
-    @duid = value
-    self.duid_data = @duid.presence && [@duid.delete("-:")].pack("H*")
-  end
-
-  # readonly
-  def ipv4
-    @ipv4 ||= ipv4_data.presence &&
-              IPAddress::IPv4.parse_data(ipv4_data, network.ipv4_prefix_length)
-  end
-
-  def ipv4_global?
-    !(ipv4.nil? || ipv4.private?)
-  end
-
-  def ipv4_address
-    @ipv4_address ||= (ipv4&.to_s || "")
-  end
-
-  def ipv4_address=(value)
-    @ipv4_address = value
-    self.ipv4_data = @ipv4_address.presence &&
-                     IPAddress::IPv4.new(@ipv4_address).data
-  rescue ArgumentError
-    self.ipv4_data = nil
-  end
-
-  # readonly
-  def ipv6
-    # bug? IPv6.parse_data is not prefix
-    @ipv6 ||= ipv6_data.presence &&
-              IPAddress::IPv6.parse_hex(ipv6_data.unpack1("H*"), network.ipv6_prefix_length)
-  end
-
-  def ipv6_global?
-    !(ipv6.nil? || ipv6.unique_local?)
-  end
-
-  def ipv6_address
-    @ipv6_address ||= (ipv6&.to_s || "")
-  end
-
-  def ipv6_address=(value)
-    @ipv6_address = value
-    self.ipv6_data = @ipv6_address.presence &&
-                     IPAddress::IPv6.new(@ipv6_address).data
-  rescue ArgumentError
-    self.ipv6_data = nil
-  end
 
   def old_nic
     if persisted?
