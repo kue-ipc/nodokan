@@ -51,7 +51,10 @@ dl
           - nics.each do |nic|
             tr
               td scope="row"
-                = link_to nic.number, nic_path(nic)
+                - if current_user.admin?
+                  = link_to nic.number, nic_path(nic)
+                - else
+                  = nic.number
               td
                 = t(nic.interface_type, scope: "activerecord.enums.interface_types")
               td

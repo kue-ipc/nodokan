@@ -10,6 +10,23 @@ module Kea
       @ipv4 ||= IPAddress::IPv4.parse_u32(address)
     end
 
+    def ipv4_address
+      @ipv4_address ||= (ipv4&.to_s || "")
+    end
+
+    def mac_address
+      hwaddr.unpack("C6")
+        .map { |i| foramt("%02X", i) }
+        .join("-")
+    end
+
+    def duid_str
+      duid.unpack("C*")
+        .map { |i| foramt("%02X", i) }
+        .join("-")
+
+    end
+
     def name
       ipv4_address
     end

@@ -22,8 +22,35 @@ dl
       = badge_for(@nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
       =< span_value_for(ipv6, hide_blank: true)
 
-  = dt_dd_tag(Ipv4Arp) do
+  = dt_dd_tag(Ipv4Arp.model_name.human) do
     = @ipv4_arp&.ipv4_address
+    = @ipv4_arp&.mac_address
+    = @ipv4_apr&.resolved_at
+
+  - if Settings.config.ipv6
+    = dt_dd_tag(Ipv6Neighbor.model_name.human) do
+      = @ipv6_arp&.ipv6_address
+      = @ipv6_arp&.mac_address
+      = @ipv6_apr&.discovered_at
+
+  = dt_dd_tag(Kea::Lease4.model_name.human) do
+    = @lease4&.ipv4_address
+    = @lease4&.mac_address
+    = @lease4&.leased_at
+    = @lease4&.expire
+    = @lease4&.hostname
+
+  - if Settings.config.ipv6
+    = dt_dd_tag(Kea::Lease6.model_name.human) do
+      = @lease6&.ipv6_address
+      = @lease6&.mac_address
+      = @lease6&.leased_at
+      = @lease6&.expire
+      = @lease6&.hostname
+
+  = dt_dd_tag(Radius::Radpostauth.model_name.human) do
+    = @radpostauth&.pass
+    = @radpostauth&.authdata
 
   / = dt_dd_for @nic, :ipv4_resolved_at, blank_alt: "-"
   / - if Settings.config.ipv6

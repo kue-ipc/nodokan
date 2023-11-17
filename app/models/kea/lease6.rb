@@ -8,6 +8,14 @@ module Kea
     belongs_to :lease6_types, primary_key: "lease_type", foreign_key: "foreign_key"
     belongs_to :dhcp6_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
+    def ipv6
+      @ipv6 ||= IPAddress::IPv6.parse_data(address)
+    end
+
+    def ipv6_address
+      address
+    end
+
     def name
       address
     end
