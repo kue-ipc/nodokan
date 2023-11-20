@@ -39,6 +39,15 @@ RailsAdmin.config do |config|
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
 
+  paper_trail_audit_model = %w[
+    Ipv4Arp Ipv6Neighbor
+    Ipv4Pool Ipv6Pool
+    Node Confirmation
+    Nic Network Assignment
+    Place DeviceType Hardware OsCategory OperatingSystem SecuritySoftware
+    User
+  ]
+
   config.actions do
     dashboard                     # mandatory
     index                         # mandatory
@@ -51,8 +60,12 @@ RailsAdmin.config do |config|
     show_in_app
 
     ## With an audit adapter, you can add:
-    history_index
-    history_show
+    history_index do
+      only paper_trail_audit_model
+    end
+    history_show do
+      only paper_trail_audit_model
+    end
   end
 
   config.label_methods << :address
