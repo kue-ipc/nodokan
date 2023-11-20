@@ -22,35 +22,78 @@ dl
       = badge_for(@nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
       =< span_value_for(ipv6, hide_blank: true)
 
-  = dt_dd_tag(Ipv4Arp.model_name.human) do
-    = @ipv4_arp&.ipv4_address
-    = @ipv4_arp&.mac_address
-    = @ipv4_apr&.resolved_at
-
-  - if Settings.config.ipv6
-    = dt_dd_tag(Ipv6Neighbor.model_name.human) do
-      = @ipv6_arp&.ipv6_address
-      = @ipv6_arp&.mac_address
-      = @ipv6_apr&.discovered_at
-
-  = dt_dd_tag(Kea::Lease4.model_name.human) do
-    = @lease4&.ipv4_address
-    = @lease4&.mac_address
-    = @lease4&.leased_at
-    = @lease4&.expire
-    = @lease4&.hostname
-
-  - if Settings.config.ipv6
-    = dt_dd_tag(Kea::Lease6.model_name.human) do
-      = @lease6&.ipv6_address
-      = @lease6&.mac_address
-      = @lease6&.leased_at
-      = @lease6&.expire
-      = @lease6&.hostname
-
-  = dt_dd_tag(Radius::Radpostauth.model_name.human) do
-    = @radpostauth&.pass
-    = @radpostauth&.authdata
+  = dt_dd_tag(Nic.human_attribute_name(:connection_info)) do
+    table.table.table-sm.mb-0
+      thead
+        tr
+          th scope="col" = Nic.human_attribute_name(:connection_info)
+          th scope="col" = Nic.human_attribute_name(:connected_at)
+          th scope="col"
+            = Nic.human_attribute_name(:ipv4)
+            - if Settings.config.ipv6
+              | /
+              = Nic.human_attribute_name(:ipv6)
+          th scope="col"
+            = Nic.human_attribute_name(:mac_address)
+            - if Settings.config.ipv6
+              | /
+              = Nic.human_attribute_name(:duid)
+          th scope="col"
+            = Node.human_attribute_name(:hostname)
+            | /
+            = Network.human_attribute_name(:vlan)
+      tbody
+        tr
+          td scope="row" = Ipv4Arp.model_name.human
+          - if @ipv4_arp
+            td = @ipv4_arp.resolved_at
+            td = @ipv4_arp.ipv4_address
+            td = @ipv4_arp.mac_address
+            td
+          - else
+            td colspan="4" = span_value_for(nil)
+        - if Settings.config.ipv6
+          tr
+            td scope="row" = Ipv6Neighbor.model_name.human
+            - if @ipv6_neighbor
+              td = @ipv6_neighbor.discovered_at
+              td = @ipv6_neighbor.ipv6_address
+              td = @ipv6_neighbor.mac_address
+              td
+            - else
+              td colspan="4" = span_value_for(nil)
+        tr
+          td scope="row" = Nic.human_attribute_name(:ivp4_lease)
+          - if @lease4
+            td = @lease4.leased_at
+            td = @lease4.ipv4_address
+            td = @lease4.mac_address
+            td = @lease4.hostname
+          - else
+            td colspan="4" = span_value_for(nil)
+        - if Settings.config.ipv6
+          tr
+            td scope="row" = Nic.human_attribute_name(:ivp6_lease)
+            - if @lease6
+              td = @lease6.leased_at
+              td = @lease6.ipv6_address
+              td
+                = @lease6&.mac_address
+                | /
+                = @lease6&.duid_str
+              td = @lease6&.hostname
+            - else
+              td colspan="4" = span_value_for(nil)
+        tr
+          td scope="row" = Nic.human_attribute_name(:auth)
+          - if @radpostauth
+            td = @radpostauth&.authdate
+            td
+            td = @radpostauth&.username&.upcase&.each_char&.each_slice(2)&.map(&:join)&.join("-")
+            td = @radpostauth&.pass
+          - else
+            td colspan="4" = span_value_for(nil)
+          
 
   / = dt_dd_for @nic, :ipv4_resolved_at, blank_alt: "-"
   / - if Settings.config.ipv6

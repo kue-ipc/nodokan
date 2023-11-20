@@ -16,15 +16,8 @@ module Kea
 
     def mac_address
       hwaddr.unpack("C6")
-        .map { |i| foramt("%02X", i) }
+        .map { |i| format("%02X", i) }
         .join("-")
-    end
-
-    def duid_str
-      duid.unpack("C*")
-        .map { |i| foramt("%02X", i) }
-        .join("-")
-
     end
 
     def name

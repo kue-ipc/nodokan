@@ -16,6 +16,18 @@ module Kea
       address
     end
 
+    def mac_address
+      hwaddr.unpack("C6")
+        .map { |i| format("%02X", i) }
+        .join("-")
+    end
+
+    def duid_str
+      duid.unpack("C*")
+        .map { |i| format("%02X", i) }
+        .join("-")
+    end
+
     def name
       address
     end
