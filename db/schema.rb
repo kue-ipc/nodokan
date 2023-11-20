@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_19_061309) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_20_062456) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -27,17 +27,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_19_061309) do
   create_table "confirmations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "node_id", null: false
     t.bigint "security_software_id"
-    t.integer "existence", limit: 1, null: false
-    t.integer "content", limit: 1, null: false
-    t.integer "os_update", limit: 1, null: false
-    t.integer "app_update", limit: 1, null: false
-    t.integer "security_update", limit: 1, null: false
-    t.integer "security_scan", limit: 1, null: false
+    t.integer "existence", limit: 1, default: -1, null: false
+    t.integer "content", limit: 1, default: -1, null: false
+    t.integer "os_update", limit: 1, default: -1, null: false
+    t.integer "app_update", limit: 1, default: -1, null: false
+    t.integer "security_update", limit: 1, default: -1, null: false
+    t.integer "security_scan", limit: 1, default: -1, null: false
     t.timestamp "confirmed_at", default: -> { "current_timestamp()" }, null: false
     t.timestamp "expiration", null: false
     t.boolean "approved", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "software", limit: 1, default: -1, null: false
+    t.integer "security_hardware", default: -1, null: false
     t.index ["node_id"], name: "index_confirmations_on_node_id", unique: true
     t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
   end
