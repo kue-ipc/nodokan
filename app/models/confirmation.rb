@@ -57,6 +57,13 @@ class Confirmation < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
+  enum softwares: {
+    trusted: 0,
+    not_implemented: 9,
+    untrsuced: 16,
+    unknown: -1,
+  }, _prefix: true
+
   validates :existence, presence: true
   validates :content, presence: true
   validates :os_update, presence: true
@@ -74,80 +81,33 @@ class Confirmation < ApplicationRecord
     end
   end
 
-  def check_existence
-    check(Confirmation.existences[existence])
-  end
+  NUM_ATTRS = %w[
+    existence
+    content
+    os_update
+    app_update
+    security_update
+    security_scan
+  ].freeze
 
-  def check_content
-    check(Confirmation.contents[content])
-  end
+  ALL_ATTRS = (NUM_ATTRS + [:secruity_software]).freeze
 
-  def check_os_update
-    check(Confirmation.os_updates[os_update])
-  end
+  NUM_ATTRS.each do |name|
+    define_method("check_#{name}") do
+      check(Confirmation.__send__(name.pluralize)[__send__(name)])
+    end
 
-  def check_app_update
-    check(Confirmation.app_updates[app_update])
-  end
+    define_method("#{name}_ok?") do
+      __send__("check_#{name}") == :ok
+    end
 
-  def check_security_update
-    check(Confirmation.security_updates[security_update])
-  end
-
-  def check_security_scan
-    check(Confirmation.security_scans[security_scan])
-  end
-
-  def existence_ok?
-    check_existence == :ok
-  end
-
-  def content_ok?
-    check_content == :ok
-  end
-
-  def os_update_ok?
-    check_os_update == :ok
-  end
-
-  def app_update_ok?
-    check_app_update == :ok
-  end
-
-  def security_update_ok?
-    check_security_update == :ok
-  end
-
-  def security_scan_ok?
-    check_security_scan == :ok
+    define_method("#{name}_problem?") do
+      __send__("check_#{name}") == :problem
+    end
   end
 
   def security_software_ok?
     security_software&.approved
-  end
-
-  def existence_problem?
-    check_existence == :problem
-  end
-
-  def content_problem?
-    check_content == :problem
-  end
-
-  def os_update_problem?
-    check_os_update == :problem
-  end
-
-  def app_update_problem?
-    check_app_update == :problem
-  end
-
-  def security_update_problem?
-    check_security_update == :problem
-  end
-
-  def security_scan_problem?
-    check_security_scan == :problem
   end
 
   def security_software_problem?
@@ -169,15 +129,7 @@ class Confirmation < ApplicationRecord
 
   def ok?
     if node.physical?
-      %w[
-        existence
-        content
-        os_update
-        app_update
-        security_update
-        security_scan
-        security_software
-      ].all? { |name| __send__("#{name}_ok?") }
+      NUM_ATTRS.all? { |name| __send__("#{name}_ok?") }
     else
       %w[
         existence
@@ -189,27 +141,11 @@ class Confirmation < ApplicationRecord
   alias approvable? ok?
 
   def problem?
-    %w[
-      existence
-      content
-      os_update
-      app_update
-      security_update
-      security_scan
-      secruity_software
-    ].any? { |name| __send__("#{name}_problem?") }
+    NUM_ATTRS.any? { |name| __send__("#{name}_problem?") }
   end
 
   def unknown?
-    %w[
-      existence
-      content
-      os_update
-      app_update
-      security_update
-      security_scan
-      security_software
-    ].any? { |name| self[name] == "unknown" }
+    NUM_ATTRS.any? { |name| self[name] == "unknown" }
   end
 
   def status
