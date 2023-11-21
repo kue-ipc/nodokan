@@ -2,6 +2,29 @@ class Confirmation < ApplicationRecord
   belongs_to :node
   belongs_to :security_software, optional: true
 
+  NUM_ATTRS = %w[
+    existence
+    content
+    os_update
+    app_update
+    software
+    security_update
+    security_scan
+  ].freeze
+
+  ALL_ATTRS = (NUM_ATTRS + [:security_hardware, :secruity_software]).freeze
+
+  SECURITY_HARDWARES = {
+    encrypted: 0x1,
+    zero_client: 0x2,
+    remote_wipe: 0x4,
+    wired: 0x10,
+    safety_area: 0x20,
+    locked_locker: 0x40,
+    none: 0,
+    unknown: -1,
+  }.freeze
+
   enum existence: {
     existing: 0,
     abandoned: 16,
@@ -20,7 +43,7 @@ class Confirmation < ApplicationRecord
   enum os_update: {
     auto: 0,
     manual: 1,
-    # updated: 2,
+    updated: 2,
     secured: 3,
     unnecessary: 8,
     not_do: 16,
@@ -31,7 +54,7 @@ class Confirmation < ApplicationRecord
   enum app_update: {
     auto: 0,
     manual: 1,
-    # updated: 2,
+    updated: 2,
     secured: 3,
     unnecessary: 8,
     not_implemented: 9,
@@ -57,9 +80,9 @@ class Confirmation < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
-  enum softwares: {
+  enum software: {
     trusted: 0,
-    not_implemented: 9,
+    os_only: 9,
     untrsuced: 16,
     unknown: -1,
   }, _prefix: true
@@ -68,6 +91,7 @@ class Confirmation < ApplicationRecord
   validates :content, presence: true
   validates :os_update, presence: true
   validates :app_update, presence: true
+  validates :software, presence: true
   validates :security_update, presence: true
   validates :security_scan, presence: true
 
@@ -80,17 +104,6 @@ class Confirmation < ApplicationRecord
       :problem
     end
   end
-
-  NUM_ATTRS = %w[
-    existence
-    content
-    os_update
-    app_update
-    security_update
-    security_scan
-  ].freeze
-
-  ALL_ATTRS = (NUM_ATTRS + [:secruity_software]).freeze
 
   NUM_ATTRS.each do |name|
     define_method("check_#{name}") do

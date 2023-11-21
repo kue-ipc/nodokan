@@ -30,6 +30,7 @@ class ConfirmationsController < ApplicationController
       :content,
       :os_update,
       :app_update,
+      :software,
       :security_update,
       :security_scan,
       security_software: [

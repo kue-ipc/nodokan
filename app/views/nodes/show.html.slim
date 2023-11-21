@@ -130,6 +130,9 @@ dl
               .text-danger = t("messages.node_app_eol")
             - else
               .text-danger = t("messages.node_app_update_problem")
+
+          - if confirmation.software_problem?
+            .text-danger = t("messages.node_software_problem")
           - if @node.operating_system
             - if confirmation.security_software_unknown?
               .text-danger = t("messages.node_security_software_unknown")
