@@ -52,6 +52,7 @@
                         li 他の機器やソフトウェアによる保護機能等により、既知の脆弱性の影響を受けないようにしている。
                         li その他の理由で、脆弱性が無いと判断できる。
                 - question_count += 1
+
               - [:software].each do |attr_name|
                 = f.form_group attr_name, \
                   label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
@@ -66,9 +67,10 @@
                 - list = t_bitwises(attr_name.to_s.pluralize.intern, Confirmation).to_a
                 = f.collection_check_boxes pluralized_attr_name, list, :first, :second,
                   label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),
-                                        " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
+                                           " ", t(attr_name, scope: "messages.node_confirm_questions"),])},
                   help: raw(t(attr_name, scope: "messages.node_confirm_helps", default: nil))
                 - question_count += 1
+
               - if @confirmation.security_software
                 - [:security_software].each do |attr_name|
                   = f.form_group attr_name, \

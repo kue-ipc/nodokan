@@ -176,6 +176,8 @@ class NodesController < ApplicationController
     @confirmation.content = nil if @confirmation.content_unknown?
     @confirmation.os_update = nil if @confirmation.os_update_unknown?
     @confirmation.app_update = nil if @confirmation.app_update_unknown?
+    @confirmation.software = nil if @confirmation.software_unknown?
+    @confirmation.security_hardware = nil if @confirmation.security_hardware_unknown?
     @confirmation.security_update = nil if @confirmation.security_update_unknown?
     @confirmation.security_scan = nil if @confirmation.security_scan_unknown?
   end

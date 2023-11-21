@@ -17,11 +17,11 @@ class NodeConfirm
     @collapse = Collapse.getOrCreateInstance(@collapseEl, toggle: false)
 
     @collapseEl.addEventListener 'shown.bs.collapse', =>
-      for el in @collapseEl.querySelectorAll('input,select')
+      for el in @collapseEl.querySelectorAll('input,select') when el.type != 'checkbox'
         el.required = true
 
     @collapseEl.addEventListener 'hidden.bs.collapse', =>
-      for el in @collapseEl.querySelectorAll('input,select')
+      for el in @collapseEl.querySelectorAll('input,select') when el.type != 'checkbox'
         el.required = false
 
     for el in document.querySelectorAll('input[name="confirmation[existence]"]')
@@ -46,6 +46,24 @@ class NodeConfirm
         else
           el.addEventListener 'change', =>
             collapseSecured.hide()
+    ['security_hardwares'].forEach (attrName) =>
+      ["none", "unknown"]
+      checkElList = document.getElementsByName("confirmation[#{attrName}][]")
+      noneCheckEl = document.getElementById("confirmation_#{attrName}_none")
+      unknownCheckEl = document.getElementById("confirmation_#{attrName}_unknown")
+
+      noneCheckEl.addEventListener 'change', =>
+        for el in checkElList when el != noneCheckEl
+          el.checked = false
+
+      unknownCheckEl.addEventListener 'change', =>
+        for el in checkElList when el != unknownCheckEl
+          el.checked = false
+
+      for el in checkElList when ![noneCheckEl, unknownCheckEl].includes(el)
+        el.addEventListener 'change', =>
+          noneCheckEl.checked = false
+          unknownCheckEl.checked = false
 
   modalShow: ->
     @modal.show()

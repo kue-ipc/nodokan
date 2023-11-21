@@ -104,6 +104,7 @@ class Confirmation < ApplicationRecord
   validates :os_update, presence: true
   validates :app_update, presence: true
   validates :software, presence: true
+  validates :security_hardware, presence: true
   validates :security_update, presence: true
   validates :security_scan, presence: true
 

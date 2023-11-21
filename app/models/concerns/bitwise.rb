@@ -3,7 +3,7 @@ module Bitwise
   extend ActiveSupport::Concern
 
   class_methods do
-    # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
+    # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
     def bitwise(definitions)
       bitwise_prefix = definitions.delete(:_prefix)
       bitwise_suffix = definitions.delete(:_suffix)
@@ -16,7 +16,9 @@ module Bitwise
         singleton_class.send(:define_method, name.to_s.pluralize) { values }
 
         define_method(name.to_s.pluralize) do
-          if self[name].positive?
+          if self[name].nil?
+            nil
+          elsif self[name].positive?
             values.select do |_, value|
               value.positive? && (self[name] & value).positive?
             end.keys
