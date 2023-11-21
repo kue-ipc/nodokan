@@ -157,9 +157,8 @@ p = t("forms.common.required_input")
         - else
           = nic_f.check_box :_destroy, label: "このNICを削除する"
           .row.node-nic-form
-            = nic_f.select :interface_type,
-                            t_enums(:interface_types, Nic),
-                            {prompt: "(選択してください)", wrapper_class: "col-md-4 mb-3"},
+            = nic_f.collection_select :interface_type, t_enums(:interface_types, Nic), :first, :second,
+                                      {prompt: "(選択してください)", wrapper_class: "col-md-4 mb-3"},
                             required: true
             = nic_f.text_field :name, wrapper_class: "col-md-8 mb-3"
             - nic_networks = current_user.usable_networks.to_a
@@ -174,13 +173,15 @@ p = t("forms.common.required_input")
               wrapper_class: "col-md-4"
             = nic_f.form_group :auth, label: {text: "認証ネットワーク登録"}, class: "col-md-4 mb-3" do
               = nic_f.check_box :auth, label: "MACアドレスを登録する"
-            = nic_f.select :ipv4_config, t_enums(:ipv4_configs, Nic), {wrapper_class: "col-md-4 mb-3"}
+            = nic_f.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic), :first, :second,
+                                      {wrapper_class: "col-md-4 mb-3"}
             = nic_f.text_field :ipv4_address,
               pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
               wrapper_class: "col-md-4"
             .col-md-4
             - if Settings.config.ipv6
-              = nic_f.select :ipv6_config, t_enums(:ipv6_configs, Nic), {wrapper_class: "col-md-4 mb-3"}
+              = nic_f.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic), :first, :second,
+                                        {wrapper_class: "col-md-4 mb-3"}
               = nic_f.text_field :ipv6_address,
                 pattern: '([\dA-Fa-f](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
                 wrapper_class: "col-md-4"

@@ -30,7 +30,7 @@ module ApplicationHelper
       else
         model
       end
-    model_class.__send__(attr).keys.index_by do |key|
+    model_class.__send__(attr).keys.index_with do |key|
       t_enum(key, attr)
     end
   end
@@ -38,6 +38,25 @@ module ApplicationHelper
   def t_enum(value, attr)
     t(value, scope: [:activerecord, :enums, attr])
   end
+
+  def t_bitwises(attr, model = nil)
+    model_class =
+      if model.nil?
+        controller.controller_name.classify.constantize
+      elsif model.is_a?(ActiveRecord)
+        model.class
+      else
+        model
+      end
+    model_class.__send__(attr).keys.index_with do |key|
+      t_bitwise(key, attr)
+    end
+  end
+
+  def t_bitwise(value, attr)
+    t(value, scope: [:activerecord, :bitwises, attr])
+  end
+
 
   def t_floor(number)
     if number.zero?

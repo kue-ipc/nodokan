@@ -1,4 +1,6 @@
 class Confirmation < ApplicationRecord
+  include Bitwise
+
   belongs_to :node
   belongs_to :security_software, optional: true
 
@@ -14,7 +16,7 @@ class Confirmation < ApplicationRecord
 
   ALL_ATTRS = (NUM_ATTRS + [:security_hardware, :secruity_software]).freeze
 
-  SECURITY_HARDWARES = {
+  bitwise security_hardware: {
     encrypted: 0x1,
     zero_client: 0x2,
     remote_wipe: 0x4,
@@ -23,7 +25,17 @@ class Confirmation < ApplicationRecord
     locked_locker: 0x40,
     none: 0,
     unknown: -1,
-  }.freeze
+  }, _prefix: true
+  # SECURITY_HARDWARES = {
+  #   encrypted: 0x1,
+  #   zero_client: 0x2,
+  #   remote_wipe: 0x4,
+  #   wired: 0x10,
+  #   safety_area: 0x20,
+  #   locked_locker: 0x40,
+  #   none: 0,
+  #   unknown: -1,
+  # }.freeze
 
   enum existence: {
     existing: 0,

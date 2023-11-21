@@ -24,9 +24,9 @@ dl
       = bootstrap_form_with model: @user, data: {turbo: false} do |f|
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
-            = f.select :role, t_enums(:roles),
-              {hide_label: true, wrapper: false},
-              disabled: current_user == @user
+            = f.collection_select :role, t_enums(:roles), :first, :second,
+                                  {hide_label: true, wrapper: false},
+                                  disabled: current_user == @user
           .col-12
             = f.submit "変更", class: "btn btn-warning",
               disabled: current_user == @user
