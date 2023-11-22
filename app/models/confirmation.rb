@@ -123,7 +123,7 @@ class Confirmation < ApplicationRecord
   end
 
   def security_hardware_ok?
-    security_hardware.positive?
+    security_hardware&.positive?
   end
 
   def security_software_ok?
@@ -131,7 +131,7 @@ class Confirmation < ApplicationRecord
   end
 
   def security_hardware_problem?
-    security_hardware.zero?
+    security_hardware&.zero?
   end
 
   def security_software_problem?
@@ -142,7 +142,7 @@ class Confirmation < ApplicationRecord
   end
 
   def security_hardware_unknown?
-    security_hardware.negative?
+    security_hardware.nil? || security_hardware.negative?
   end
 
   def security_software_unknown?
@@ -212,14 +212,14 @@ class Confirmation < ApplicationRecord
       self.os_update = :unknown
       self.app_update = :unknown
       self.software = :unknown
-      self.secruity_hardware = Confirmation.secruity_hardwares[:unknown]
+      self.secruity_hardware = Confirmation.security_hardwares[:unknown]
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown
     elsif node.virtual?
       self.os_update = :unknown
       self.app_update = :unknown
-      self.secruity_hardware = Confirmation.secruity_hardwares[:unknown]
+      self.secruity_hardware = Confirmation.security_hardwares[:unknown]
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown
