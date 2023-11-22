@@ -9,7 +9,7 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2",
     "coffeescript": "^2.7.0",
-    "esbuild": "^0.19.5",
+    "esbuild": "^0.19.7",
     "esbuild-coffeescript": "^2.2.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.1.0",
