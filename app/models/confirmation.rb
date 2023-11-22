@@ -21,21 +21,11 @@ class Confirmation < ApplicationRecord
     zero_client: 0x2,
     remote_wipe: 0x4,
     wired: 0x10,
-    safety_area: 0x20,
-    locked_locker: 0x40,
+    locked_locker: 0x20,
+    safety_area: 0x40,
     none: 0,
     unknown: -1,
   }, _prefix: true
-  # SECURITY_HARDWARES = {
-  #   encrypted: 0x1,
-  #   zero_client: 0x2,
-  #   remote_wipe: 0x4,
-  #   wired: 0x10,
-  #   safety_area: 0x20,
-  #   locked_locker: 0x40,
-  #   none: 0,
-  #   unknown: -1,
-  # }.freeze
 
   enum existence: {
     existing: 0,

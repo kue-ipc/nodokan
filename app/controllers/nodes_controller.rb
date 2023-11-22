@@ -1,3 +1,4 @@
+# rubocop: disable Metrics
 class NodesController < ApplicationController
   before_action :set_node, only: [:show, :edit, :update, :destroy, :transfer, :apply_specific]
   before_action :authorize_node, only: [:index]
@@ -173,6 +174,7 @@ class NodesController < ApplicationController
     end
 
     # unknown -> nil
+    @confirmation.existence = nil if @confirmation.existence_unknown?
     @confirmation.content = nil if @confirmation.content_unknown?
     @confirmation.os_update = nil if @confirmation.os_update_unknown?
     @confirmation.app_update = nil if @confirmation.app_update_unknown?

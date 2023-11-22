@@ -15,16 +15,20 @@ class NodeConfirm
 
     @collapseEl = document.getElementById('node-confirm-collapse')
     @collapse = Collapse.getOrCreateInstance(@collapseEl, toggle: false)
+    @collapseShown = false
 
     @collapseEl.addEventListener 'shown.bs.collapse', =>
+      @collapseShown = true
       for el in @collapseEl.querySelectorAll('input,select') when el.type != 'checkbox'
         el.required = true
 
     @collapseEl.addEventListener 'hidden.bs.collapse', =>
+      @collapseShown = false
       for el in @collapseEl.querySelectorAll('input,select') when el.type != 'checkbox'
         el.required = false
+    
 
-    for el in document.querySelectorAll('input[name="confirmation[existence]"]')
+    for el in @modalEl.querySelectorAll('input[name="confirmation[existence]"]')
       if el.value == 'existing'
         @collapse.show() if el.checked
 
@@ -46,24 +50,28 @@ class NodeConfirm
         else
           el.addEventListener 'change', =>
             collapseSecured.hide()
+
     ['security_hardwares'].forEach (attrName) =>
-      ["none", "unknown"]
+      exclusiveValues = ['none', 'unknown']
       checkElList = document.getElementsByName("confirmation[#{attrName}][]")
-      noneCheckEl = document.getElementById("confirmation_#{attrName}_none")
-      unknownCheckEl = document.getElementById("confirmation_#{attrName}_unknown")
 
-      noneCheckEl.addEventListener 'change', =>
-        for el in checkElList when el != noneCheckEl
-          el.checked = false
+      for el in checkElList
+        el.addEventListener 'change', (event) =>
+          if event.target.checked
+            if exclusiveValues.includes(event.target.value)
+              for otherEl in checkElList when otherEl.value != event.target.value
+                otherEl.checked = false
+            else
+              for exclusiveEl in checkElList when exclusiveValues.includes(exclusiveEl.value)
+                exclusiveEl.checked = false
 
-      unknownCheckEl.addEventListener 'change', =>
-        for el in checkElList when el != unknownCheckEl
-          el.checked = false
-
-      for el in checkElList when ![noneCheckEl, unknownCheckEl].includes(el)
-        el.addEventListener 'change', =>
-          noneCheckEl.checked = false
-          unknownCheckEl.checked = false
+    for el in document.getElementsByName("commit")
+      el.addEventListener "click", (e) =>
+        ['security_hardwares'].forEach (attrName) =>
+          checkElList = document.getElementsByName("confirmation[#{attrName}][]")
+          requiredFlag = @collapseShown && (el for el in checkElList when el.checked).length == 0
+          for el in checkElList
+            el.required = requiredFlag
 
   modalShow: ->
     @modal.show()
