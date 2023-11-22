@@ -20,8 +20,8 @@ class ConfirmationsTest < ApplicationSystemTestCase
   #   fill_in "Os update", with: @confirmation.os_update
   #   fill_in "Registered content", with: @confirmation.registered_content
   #   fill_in "Security software name", with: @confirmation.security_software_name
-  #   fill_in "Securiy software", with: @confirmation.securiy_software
-  #   fill_in "Securiyt software update", with: @confirmation.securiyt_software_update
+  #   fill_in "Securiy software", with: @confirmation.security_software
+  #   fill_in "Securiyt software update", with: @confirmation.security_software_update
   #   fill_in "Soft update,", with: @confirmation.soft_update
   #   fill_in "Store update", with: @confirmation.store_update
   #   fill_in "Updated date", with: @confirmation.updated_date
@@ -42,8 +42,8 @@ class ConfirmationsTest < ApplicationSystemTestCase
   #   fill_in "Os update", with: @confirmation.os_update
   #   fill_in "Registered content", with: @confirmation.registered_content
   #   fill_in "Security software name", with: @confirmation.security_software_name
-  #   fill_in "Securiy software", with: @confirmation.securiy_software
-  #   fill_in "Securiyt software update", with: @confirmation.securiyt_software_update
+  #   fill_in "Securiy software", with: @confirmation.security_software
+  #   fill_in "Securiyt software update", with: @confirmation.security_software_update
   #   fill_in "Soft update,", with: @confirmation.soft_update
   #   fill_in "Store update", with: @confirmation.store_update
   #   fill_in "Updated date", with: @confirmation.updated_date

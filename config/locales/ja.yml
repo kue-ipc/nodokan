@@ -466,7 +466,7 @@ ja:
         manage: 管理
       confirmation:
         node: 端末
-        secrurity_software: セキュリティソフトウェア
+        security_software: セキュリティソフトウェア
         existence: 存在確認
         content: 内容確認
         os_update: OSアップデート状況
@@ -559,7 +559,7 @@ ja:
         os_only: |
           利用が認められているOSのみインストールしています。
           OS(ファームウェア)以外のアプリケーションやプラグイン等はインストールされていません。
-        untrsuced: 利用が認められていないOSまたはアプリケーションをインストールしています。
+        untrusted: 利用が認められていないOSまたはアプリケーションをインストールしています。
         unknown: わかりません。
       security_updates:
         auto: 自動更新により「最新の状態」であることを確認しました。

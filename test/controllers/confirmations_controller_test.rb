@@ -22,6 +22,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
               content: @confirmation.content,
               os_update: @confirmation.os_update,
               app_update: @confirmation.app_update,
+              software: @confirmation.software,
+              security_hardwares: @confirmation.security_hardwares,
               security_update: @confirmation.security_update,
               security_scan: @confirmation.security_scan,
               security_software: {
@@ -44,6 +46,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
             content: @confirmation.content,
             os_update: @confirmation.os_update,
             app_update: @confirmation.app_update,
+            software: @confirmation.software,
+            security_hardwares: @confirmation.security_hardwares,
             security_update: @confirmation.security_update,
             security_scan: @confirmation.security_scan,
             security_software: {
@@ -73,6 +77,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
               content: @confirmation.content,
               os_update: @confirmation.os_update,
               app_update: @confirmation.app_update,
+              software: @confirmation.software,
+              security_hardwares: @confirmation.security_hardwares,
               security_update: @confirmation.security_update,
               security_scan: @confirmation.security_scan,
               security_software: {
@@ -95,6 +101,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
             content: @confirmation.content,
             os_update: @confirmation.os_update,
             app_update: @confirmation.app_update,
+            software: @confirmation.software,
+            security_hardwares: @confirmation.security_hardwares,
             security_update: @confirmation.security_update,
             security_scan: @confirmation.security_scan,
             security_software: {
@@ -119,6 +127,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
                 content: @confirmation.content,
                 os_update: @confirmation.os_update,
                 app_update: @confirmation.app_update,
+                software: @confirmation.software,
+                security_hardwares: @confirmation.security_hardwares,
                 security_update: @confirmation.security_update,
                 security_scan: @confirmation.security_scan,
                 security_software: {
@@ -145,6 +155,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
               content: @confirmation.content,
               os_update: @confirmation.os_update,
               app_update: @confirmation.app_update,
+              software: @confirmation.software,
+              security_hardwares: @confirmation.security_hardwares,
               security_update: @confirmation.security_update,
               security_scan: @confirmation.security_scan,
               security_software: {
@@ -167,6 +179,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
             content: @confirmation.content,
             os_update: @confirmation.os_update,
             app_update: @confirmation.app_update,
+            software: @confirmation.software,
+            security_hardwares: @confirmation.security_hardwares,
             security_update: @confirmation.security_update,
             security_scan: @confirmation.security_scan,
             security_software: {

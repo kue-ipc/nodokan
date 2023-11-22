@@ -85,7 +85,7 @@ class Confirmation < ApplicationRecord
   enum software: {
     trusted: 0,
     os_only: 9,
-    untrsuced: 16,
+    untrusted: 16,
     unknown: -1,
   }, _prefix: true
 
@@ -212,14 +212,14 @@ class Confirmation < ApplicationRecord
       self.os_update = :unknown
       self.app_update = :unknown
       self.software = :unknown
-      self.secruity_hardware = Confirmation.security_hardwares[:unknown]
+      self.security_hardware = Confirmation.security_hardwares[:unknown]
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown
     elsif node.virtual?
       self.os_update = :unknown
       self.app_update = :unknown
-      self.secruity_hardware = Confirmation.security_hardwares[:unknown]
+      self.security_hardware = Confirmation.security_hardwares[:unknown]
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown

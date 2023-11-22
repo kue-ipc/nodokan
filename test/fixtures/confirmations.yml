@@ -6,6 +6,8 @@ desktop:
   content: :correct
   os_update: :auto
   app_update: :auto
+  software: :trusted
+  security_hardware: 1
   security_software: one
   security_update: :auto
   security_scan: :auto
@@ -19,6 +21,8 @@ note:
   content: incorrect
   os_update: :not_do
   app_update: :not_do
+  software: :untrusted
+  security_hardware: 0
   security_software: two
   security_update: :not_do
   security_scan: :not_do

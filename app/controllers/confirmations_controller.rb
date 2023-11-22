@@ -32,24 +32,28 @@ class ConfirmationsController < ApplicationController
       security_software: [:os_category_id, :installation_method, :name],
     )
 
-    security_hardware = 0
-    permitted_params[:security_hardwares].each do |name|
-      value = Confirmation.security_hardwares[name]
-      next if name.blank? || value.nil?
-
-      if value.positive?
-        security_hardware |= value
-      else
-        security_hardware = value
-        break
-      end
-    end
+    security_hardware = list_to_bitwise(permitted_params[:security_hardwares], Confirmation.security_hardwares)
 
     security_software = permitted_params.dig(:security_software, :installation_method).presence &&
                         SecuritySoftware.find_or_initialize_by(permitted_params[:security_software])
 
     permitted_params.except(:security_hardwares, :security_software)
       .merge(security_hardware: security_hardware, security_software: security_software)
+  end
+
+  private def list_to_bitwise(list, bitwises)
+    return if list.nil?
+
+    result = 0
+    bitwises.slice(*list).each do |_, value|
+      if value.positive?
+        result |= value
+      else
+        result = value
+        break
+      end
+    end
+    result
   end
 
   private def check_and_save
