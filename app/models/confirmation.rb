@@ -14,7 +14,7 @@ class Confirmation < ApplicationRecord
     security_scan
   ].freeze
 
-  ALL_ATTRS = (NUM_ATTRS + [:security_hardware, :secruity_software]).freeze
+  ALL_ATTRS = (NUM_ATTRS + %w[security_hardware security_software]).freeze
 
   bitwise security_hardware: {
     encrypted: 0x1,
@@ -122,8 +122,16 @@ class Confirmation < ApplicationRecord
     end
   end
 
+  def security_hardware_ok?
+    security_hardware.positive?
+  end
+
   def security_software_ok?
     security_software&.approved
+  end
+
+  def security_hardware_problem?
+    security_hardware.zero?
   end
 
   def security_software_problem?
@@ -131,6 +139,10 @@ class Confirmation < ApplicationRecord
       !security_software.installation_method.nil? &&
       !security_software.installation_method_unknown? &&
       !security_software.approved
+  end
+
+  def security_hardware_unknown?
+    security_hardware.negative?
   end
 
   def security_software_unknown?
@@ -145,23 +157,20 @@ class Confirmation < ApplicationRecord
 
   def ok?
     if node.physical?
-      NUM_ATTRS.all? { |name| __send__("#{name}_ok?") }
+      ALL_ATTRS.all? { |name| __send__("#{name}_ok?") }
     else
-      %w[
-        existence
-        content
-      ].all? { |name| __send__("#{name}_ok?") }
+      %w[existence content].all? { |name| __send__("#{name}_ok?") }
     end
   end
 
   alias approvable? ok?
 
   def problem?
-    NUM_ATTRS.any? { |name| __send__("#{name}_problem?") }
+    ALL_ATTRS.any? { |name| __send__("#{name}_problem?") }
   end
 
   def unknown?
-    NUM_ATTRS.any? { |name| self[name] == "unknown" }
+    ALL_ATTRS.any? { |name| self[name] == "unknown" }
   end
 
   def status
@@ -202,12 +211,15 @@ class Confirmation < ApplicationRecord
       self.content = :unknown
       self.os_update = :unknown
       self.app_update = :unknown
+      self.software = :unknown
+      self.secruity_hardware = Confirmation.secruity_hardwares[:unknown]
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown
     elsif node.virtual?
       self.os_update = :unknown
       self.app_update = :unknown
+      self.secruity_hardware = Confirmation.secruity_hardwares[:unknown]
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown
