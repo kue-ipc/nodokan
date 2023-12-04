@@ -20,6 +20,7 @@ class Confirmation < ApplicationRecord
     encrypted: 0x1,
     zero_client: 0x2,
     remote_wipe: 0x4,
+    no_storage: 0x8,
     wired: 0x10,
     locked_locker: 0x20,
     safety_area: 0x40,
