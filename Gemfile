@@ -104,6 +104,8 @@ gem "delayed_job_active_record"
 gem "delayed_job_web"
 gem "daemons"
 
+gem "psych", ">= 4.0.0"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: [:mri, :mingw, :x64_mingw]

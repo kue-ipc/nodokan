@@ -13,7 +13,7 @@ def create_models(model_class)
     else
       ERB.new(yaml_erb_file.read).result
     end
-  YAML.safe_load(yaml_data, [Symbol, Time, Date], [], true,
+  YAML.safe_load(yaml_data, permitted_classes: [Symbol, Time, Date], aliases: true,
     symbolize_names: false,).each do |data|
     model = model_class.new(data)
     if model.save

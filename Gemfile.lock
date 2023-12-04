@@ -397,6 +397,7 @@ DEPENDENCIES
   paper_trail
   paper_trail-association_tracking
   propshaft
+  psych (>= 4.0.0)
   puma (~> 5.0)
   pundit
   rails (~> 7.0.8)
