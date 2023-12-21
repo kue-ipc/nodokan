@@ -1,3 +1,5 @@
+# rubocop: disable Metrics
+
 class Nic < ApplicationRecord
   include Ipv4Config
   include Ipv6Config
