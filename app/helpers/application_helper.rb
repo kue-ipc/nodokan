@@ -136,7 +136,8 @@ module ApplicationHelper
         opts[:class] << "text-danger" unless value.unique_local?
       end
 
-      if value.network?
+      # BUG: IPAddress::IPv6#network? is not correct when prefix == 128
+      if value.network? && value.prefix < 128
         span_text_tag(value.to_string, **opts)
       else
         span_text_tag(value.to_s, **opts)
