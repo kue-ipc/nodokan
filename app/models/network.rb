@@ -251,18 +251,25 @@ class Network < ApplicationRecord
     end
   end
 
+  # TODO: 一つ一つ見る方法では暴走するため、修正の必要がある。
+  #       現時点では実装を見送る。
   def next_ipv6_pool
-    return unless ipv6_network
+    return nil
+    # return unless ipv6_network
 
-    # bug? first is network address
-    (ipv6_network.first..ipv6_network.last).find do |ipv6|
-      next if ipv6.network?
-      next if ipv6 == ipv6_gateway
+    # # BUG:
+    # #   * first is network address
+    # #   * prefix not set
+    # (ipv6_network.first..ipv6_network.last).find do |ipv6|
+    #   ipv6.prefix = ipv6_network.prefix
+    #   next if ipv6.network?
+    #   next if ipv6 == ipv6_gateway
 
-      ipv6_pools.all? do |ipv6_pool|
-        !ipv6_pool.include?(ipv6)
-      end
-    end
+    #   ipv6_pools.all? do |ipv6_pool|
+    #     print '.'
+    #     !ipv6_pool.include?(ipv6)
+    #   end
+    # end
   end
 
   def ipv4_configs

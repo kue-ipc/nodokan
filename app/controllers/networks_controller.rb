@@ -1,3 +1,5 @@
+# rubocop: disable Metrics
+
 class NetworksController < ApplicationController
   before_action :set_network, only: [:show, :edit, :update, :destroy]
   before_action :authorize_network, only: [:index]
@@ -116,21 +118,29 @@ class NetworksController < ApplicationController
       elsif params["add_ipv4_pool"]
         @network.assign_attributes(network_params)
         next_ipv4 = @network.next_ipv4_pool
-        @network.ipv4_pools << Ipv4Pool.new(
-          ipv4_config: :static,
-          ipv4_first_address: next_ipv4&.address,
-          ipv4_last_address: next_ipv4&.address,
-        )
+        if next_ipv4
+          @network.ipv4_pools << Ipv4Pool.new(
+            ipv4_config: :static,
+            ipv4_first_address: next_ipv4&.address,
+            ipv4_last_address: next_ipv4&.address,
+          )
+        else
+          flash.now[:alert] = "IPアドレスの空きがありません。"
+        end
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       elsif params["add_ipv6_pool"] && @network.ipv6_network
         @network.assign_attributes(network_params)
         next_ipv6 = @network.next_ipv6_pool
-        @network.ipv6_pools << Ipv6Pool.new(
-          ipv6_config: :static,
-          ipv6_first_address: next_ipv6&.address,
-          ipv6_last_address: next_ipv6&.address,
-        )
+        if next_ipv6
+          @network.ipv6_pools << Ipv6Pool.new(
+            ipv6_config: :static,
+            ipv6_first_address: next_ipv6&.address,
+            ipv6_last_address: next_ipv6&.address,
+          )
+        else
+          flash.now[:alert] = "IPアドレスの空きがありません。"
+        end
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       else
