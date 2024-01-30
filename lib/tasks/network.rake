@@ -6,7 +6,7 @@ namespace :network do
   task export: :environment do
     csv_file = Rails.root / "data" / "networks.csv"
     puts "export csv ..."
-    results = ImportExport::NetworkCSV.new(csv_file, logger: Rails.logger).export
+    results = ImportExport::NetworkCsv.new(csv_file, logger: Rails.logger).export
     puts results.to_json
   end
 
@@ -14,7 +14,7 @@ namespace :network do
   task import: :environment do
     csv_file = Rails.root / "data" / "networks.csv"
     puts "import csv ..."
-    results = ImportExport::NetworkCSV.new(csv_file, logger: Rails.logger).import
+    results = ImportExport::NetworkCsv.new(csv_file, logger: Rails.logger).import
     puts results.to_json
   end
 end

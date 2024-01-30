@@ -6,7 +6,7 @@ namespace :node do
   task export: :environment do
     csv_file = Rails.root / "data" / "nodes.csv"
     puts "export csv ..."
-    results = ImportExport::NodeCSV.new(csv_file, logger: Rails.logger).export
+    results = ImportExport::NodeCsv.new(csv_file, logger: Rails.logger).export
     puts results.to_json
   end
 
@@ -14,7 +14,7 @@ namespace :node do
   task import: :environment do
     csv_file = Rails.root / "data" / "nodes.csv"
     puts "import csv ..."
-    results = ImportExport::NodeCSV.new(csv_file, logger: Rails.logger).import
+    results = ImportExport::NodeCsv.new(csv_file, logger: Rails.logger).import
     puts results.to_json
   end
 end

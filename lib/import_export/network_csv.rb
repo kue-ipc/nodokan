@@ -3,7 +3,7 @@ require "ipaddr"
 require "json"
 
 module ImportExport
-  class NetworkCSV < BaseCSV
+  class NetworkCsv < BaseCsv
     def model_class
       Network
     end

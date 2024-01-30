@@ -3,7 +3,7 @@ require "fileutils"
 require "logger"
 
 module ImportExport
-  class BaseCSV
+  class BaseCsv
     def initialize(csv_file, logger: Logger.new($stderr))
       @csv_file = csv_file
       @tmp_file = "#{@csv_file}.tmp"

@@ -25,7 +25,7 @@ namespace :user do
   task export: :environment do
     csv_file = Rails.root / "data" / "users.csv"
     puts "export csv ..."
-    results = ImportExport::UserCSV.new(csv_file, logger: Rails.logger).export
+    results = ImportExport::UserCsv.new(csv_file, logger: Rails.logger).export
     puts results.to_json
   end
 
@@ -33,7 +33,7 @@ namespace :user do
   task import: :environment do
     csv_file = Rails.root / "data" / "users.csv"
     puts "import csv ..."
-    results = ImportExport::UserCSV.new(csv_file, logger: Rails.logger).import
+    results = ImportExport::UserCsv.new(csv_file, logger: Rails.logger).import
     puts results.to_json
   end
 end

@@ -1,7 +1,7 @@
 require "import_export/base_csv"
 
 module ImportExport
-  class NodeCSV < BaseCSV
+  class NodeCsv < BaseCsv
     def model_class
       Node
     end

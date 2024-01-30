@@ -1,7 +1,7 @@
 require "import_export/base_csv"
 
 module ImportExport
-  class UserCSV < BaseCSV
+  class UserCsv < BaseCsv
     def model_class
       User
     end
