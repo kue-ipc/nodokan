@@ -9,12 +9,12 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2",
     "coffeescript": "^2.7.0",
-    "esbuild": "^0.19.10",
+    "esbuild": "^0.20.0",
     "esbuild-coffeescript": "^2.2.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.1.0",
     "rails_admin": "3.1.2",
-    "sass": "^1.69.5"
+    "sass": "^1.70.0"
   },
   "scripts": {
     "build": "node esbuild.build.mjs",
@@ -26,8 +26,8 @@
   "devDependencies": {
     "@coffeelint/cli": "^5.2.11",
     "postcss-sass": "^0.5.0",
-    "stylelint": "^16.0.2",
-    "stylelint-config-standard": "^35.0.0",
-    "stylelint-config-standard-scss": "^12.0.0"
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-standard-scss": "^13.0.0"
   }
 }
