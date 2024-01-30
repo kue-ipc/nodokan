@@ -1,7 +1,7 @@
 module Kea
   class Dhcp6SubnetServer < KeaRecord
     self.table_name = "dhcp6_subnet_server"
-    self.primary_keys = "subnet_id", "server_id"
+    self.primary_key = [:subnet_id, :server_id]
 
     belongs_to :dhcp6_server, foreign_key: "server_id",
       inverse_of: :dhcp6_subnet_server

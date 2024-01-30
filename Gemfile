@@ -96,9 +96,6 @@ gem "bootstrap_form", "~> 5.3"
 # Sanitize
 gem "sanitize"
 
-# Composite primary keys
-# gem "composite_primary_keys", "~> 14.0"
-
 # Delayed::Job
 gem "delayed_job_active_record"
 gem "delayed_job_web"
