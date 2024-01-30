@@ -44,10 +44,10 @@ Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 Layout/SpaceInsideArrayLiteralBrackets:
-  EnforcedStyle: space
+  EnforcedStyle: no_space
 
 Layout/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: space
+  EnforcedStyle: no_space
 
 # Metrics double
 Metrics/AbcSize:
@@ -142,13 +142,13 @@ Style/SymbolArray:
   EnforcedStyle: brackets
 
 Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: no_comma
+  EnforcedStyleForMultiline: consistent_comma
 
 Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: no_comma
+  EnforcedStyleForMultiline: consistent_comma
 
 Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: no_comma
+  EnforcedStyleForMultiline: consistent_comma
 
 Style/WordArray:
   MinSize: 3
