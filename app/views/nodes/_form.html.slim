@@ -14,8 +14,6 @@ p = t("forms.common.required_input")
         wrapper_class: "col-md-3 mb-3"
       = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*",
         wrapper_class: "col-md-5 mb-3"
-      = f.text_field :duid, pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}",
-        wrapper_class: "col-md-4"
     - if current_user.admin?
       .row
         .col
@@ -118,6 +116,9 @@ p = t("forms.common.required_input")
       = f.submit "NICを追加する", class: "btn btn-secondary", name: "add_nic", formnovalidate: true
     h4 = t("forms.node.nic.title")
     small.text-muted = t("forms.node.nic.help")
+    .row
+      = f.text_field :duid, pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}",
+        wrapper_class: "col-md-4 mb-3"
     - count = 0
     - nic_list = []
     = f.fields_for :nics do |nic_f|
