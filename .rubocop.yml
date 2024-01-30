@@ -15,36 +15,39 @@ Rails:
   Enabled: true
 
 # Layout
-Layout/ExtraSpacing:
-  Exclude:
-    - 'db/migrate/*.rb'
-
-Layout/LineLength:
-  Max: 120
-
-Layout/EndOfLine:
-  EnforcedStyle: lf
-
-Layout/IndentationConsistency:
-  EnforcedStyle: indented_internal_methods
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Layout/ExtraSpacing:
+  Exclude:
+    - 'db/migrate/*.rb'
+
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
-
-Layout/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
-
-Layout/ArgumentAlignment:
-  EnforcedStyle: with_fixed_indentation
 
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods
+
+Layout/LineLength:
+  Max: 120
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  EnforcedStyle: space
+
 Layout/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: no_space
+  EnforcedStyle: space
 
 # Metrics double
 Metrics/AbcSize:
@@ -83,17 +86,26 @@ Metrics/PerceivedComplexity:
   Max: 16 # 8
 
 # Style
+Style/AccessModifierDeclarations:
+  EnforcedStyle: inline
+
 Style/AsciiComments:
   Enabled: false
 
 Style/Documentation:
   Enabled: false
 
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/SymbolArray:
-  EnforcedStyle: brackets
+Style/GlobalStdStream:
+  Enabled: false
+
+Style/GuardClause:
+  AllowConsecutiveConditionals: true
 
 Style/HashEachMethods:
   Enabled: true
@@ -104,35 +116,42 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
-Style/EmptyMethod:
-  EnforcedStyle: expanded
-
-Style/WordArray:
-  MinSize: 3
-
 Style/NumericLiterals:
   Enabled: false
 
-Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: consistent_comma
+Style/PercentLiteralDelimiters:
+  Enabled: false
+  # PreferredDelimiters:
+  #   default: '()'
+  #   '%i': '[]'
+  #   '%I': '[]' 
+  #   '%r': '{}' 
+  #   '%w': '[]' 
+  #   '%W': '[]'
 
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: consistent_comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: consistent_comma
+Style/RedundantConstantBase:
+  Enabled: false
 
 Style/SpecialGlobalVars:
   EnforcedStyle: use_perl_names
 
-Style/AccessModifierDeclarations:
-  EnforcedStyle: inline
-
-Style/GuardClause:
-  AllowConsecutiveConditionals: true
-
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: no_comma
+
+Style/WordArray:
+  MinSize: 3
 
 # Bundler
 # https://docs.rubocop.org/rubocop/cops_bundler.html
