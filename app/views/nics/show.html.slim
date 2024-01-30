@@ -12,7 +12,7 @@ dl
       - if @nic.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.nic", badge_class: "ms-1")
   = dt_dd_for @nic, :mac_address
-  = dt_dd_for @nic, :duid
+  = dt_dd_for @nic.node, :duid
   = dt_dd_for @nic, :network
   = dt_dd_for @nic, :ipv4 do |ipv4|
       = badge_for(@nic.ipv4_config, scope: "activerecord.enums.ipv4_configs")
@@ -37,7 +37,7 @@ dl
             = Nic.human_attribute_name(:mac_address)
             - if Settings.config.ipv6
               | /
-              = Nic.human_attribute_name(:duid)
+              = Node.human_attribute_name(:duid)
           th scope="col"
             = Node.human_attribute_name(:hostname)
             | /

@@ -14,6 +14,8 @@ p = t("forms.common.required_input")
         wrapper_class: "col-md-3 mb-3"
       = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*",
         wrapper_class: "col-md-5 mb-3"
+      = f.text_field :duid, pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}",
+        wrapper_class: "col-md-4"
     - if current_user.admin?
       .row
         .col
@@ -153,7 +155,6 @@ p = t("forms.common.required_input")
             = dt_dd_for nic_f.object, :ipv6_config do |value|
               = t_enum(value, :ipv6_configs)
             = dt_dd_for nic_f.object, :ipv6_address
-            = dt_dd_for nic_f.object, :duid
         - else
           = nic_f.check_box :_destroy, label: "このNICを削除する"
           .row.node-nic-form
@@ -184,9 +185,6 @@ p = t("forms.common.required_input")
                                         {wrapper_class: "col-md-4 mb-3"}
               = nic_f.text_field :ipv6_address,
                 pattern: '([\dA-Fa-f](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
-                wrapper_class: "col-md-4"
-              = nic_f.text_field :duid,
-                pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}",
                 wrapper_class: "col-md-4"
             - prefix_message_id = "node_nics_attributes_#{nic_f.index}_message_"
             - %w[no_network unconfigurable auth_network require_mac require_duid network_note].each do |name|

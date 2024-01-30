@@ -1,4 +1,6 @@
 class Node < ApplicationRecord
+  include DuidData
+
   FLAGS = {
     specific: "s",
     virtual: "v",
@@ -27,9 +29,16 @@ class Node < ApplicationRecord
     format: {
       with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
     }
+  validates :duid, allow_blank: true,
+    format: {
+      with: /\A\h{2}(?:[-:]h{2})*\z/,
+      message: "DUIDの形式ではありません。" \
+                "「-」または「:」区切りの二桁ごとの16進数でなければなりません。",
+    }
 
   normalize_attribute :hostname, with: [:strip, :blank, :downcase]
   normalize_attribute :domain, with: [:strip, :blank, :downcase]
+  normalize_attribute :duid
   normalize_attribute :note
 
   def global?

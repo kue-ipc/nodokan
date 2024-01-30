@@ -13,6 +13,7 @@ module ImportExport
         flag
         hostname
         domain
+        duid
         place[area]
         place[building]
         place[floor]
@@ -28,7 +29,6 @@ module ImportExport
         nic[network]
         nic[flag]
         nic[mac_address]
-        nic[duid]
         nic[ipv4_config]
         nic[ipv4_address]
         nic[ipv6_config]
@@ -49,7 +49,6 @@ module ImportExport
         network: nic&.network&.identifier,
         flag: nic&.flag,
         mac_address: nic&.mac_address,
-        duid: nic&.duid,
         ipv4_config: nic&.ipv4_config,
         ipv4_address: nic&.ipv4_address,
         ipv6_config: nic&.ipv6_config,
@@ -64,7 +63,6 @@ module ImportExport
         network: Network.find_identifier(data[:network]),
         flag: data[:flag],
         mac_address: data[:mac_address],
-        duid: data[:duid],
         ipv4_config: data[:ipv4_config],
         ipv4_address: data[:ipv4_address],
         ipv6_config: data[:ipv6_config],
@@ -79,6 +77,7 @@ module ImportExport
       row["flag"] = node.flag
       row["hostname"] = node.hostname
       row["domain"] = node.domain
+      row["duid"] = node.duid
       row["place[area]"] = node.place&.area
       row["place[building]"] = node.place&.building
       row["place[floor]"] = node.place&.floor
@@ -109,6 +108,7 @@ module ImportExport
         flag: row["flag"],
         hostname: row["hostname"],
         domain: row["domain"],
+        duid: row["duid"],
         note: row["note"],
         place: Place.find_or_initialize_by(
           area: row["place[area]"] || "",
@@ -144,7 +144,6 @@ module ImportExport
           network: row["nic[network]"],
           flag: row["nic[flag]"],
           mac_address: row["nic[mac_address]"],
-          duid: row["nic[duid]"],
           ipv4_config: row["nic[ipv4_config]"].presence || "disabled",
           ipv4_address: row["nic[ipv4_address]"],
           ipv6_config: row["nic[ipv6_config]"].presence || "disabled",

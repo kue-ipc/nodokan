@@ -6,7 +6,6 @@ class Nic < ApplicationRecord
   include Ipv4Data
   include Ipv6Data
   include MacAddressData
-  include DuidData
 
   FLAGS = {
     auth: "a",
@@ -40,12 +39,6 @@ class Nic < ApplicationRecord
       message: "MACアドレスの形式ではありません。" \
                "通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。",
     }
-  validates :duid, allow_blank: true,
-    format: {
-      with: /\A\h{2}(?:[-:]h{2})*\z/,
-      message: "DUIDの形式ではありません。" \
-               "「-」または「:」区切りの二桁ごとの16進数でなければなりません。",
-    }
   validates :ipv4_address, allow_blank: true, ipv4: true
   validates :ipv6_address, allow_blank: true, ipv6: true
 
@@ -55,7 +48,6 @@ class Nic < ApplicationRecord
 
   normalize_attribute :name
   normalize_attribute :mac_address
-  normalize_attribute :duid
   normalize_attribute :ipv4_address
   normalize_attribute :ipv6_address
 
@@ -238,17 +230,19 @@ class Nic < ApplicationRecord
       KeaReservation4DelJob.perform_later(old_nic.mac_address_data)
     end
 
-    if duid_data.present?
+    if node.duid_data.present?
       if !destroyed? && ipv6_reserved? && ipv6_data.present? && network&.dhcp
-        KeaReservation6AddJob.perform_later(duid_data, ipv6_address, network.id)
+        KeaReservation6AddJob.perform_later(node.duid_data, ipv6_address, network.id)
       else
-        KeaReservation6DelJob.perform_later(duid_data)
+        # FIXME: 複数のNIC登録の場合、同じDUIDがあるので、削除できない？
+        # KeaReservation6DelJob.perform_later(node.duid_data)
       end
     end
 
-    if old_nic&.duid_data.present? && old_nic.duid_data != duid_data
-      KeaReservation6DelJob.perform_later(old_nic.duid_data)
-    end
+    # FIXME: old_nicにはduid_dataはない？
+    # if old_nic&.duid_data.present? && old_nic.duid_data != duid_data
+    #   KeaReservation6DelJob.perform_later(old_nic.duid_data)
+    # end
   end
 
   def flag

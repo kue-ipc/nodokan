@@ -16,7 +16,7 @@ class NodeNic
 
   @NAMES_IP = {
     ipv4: ['ipv4_config', 'ipv4_address']
-    ipv6: ['ipv6_config', 'ipv6_address', 'duid']
+    ipv6: ['ipv6_config', 'ipv6_address']
   }
 
   @MESSAGES = [
@@ -190,11 +190,12 @@ class NodeNic
       @inputs.get('mac_address').node.required = false
 
   requireDuid: ->
+    # TODO: DUIDは端末側にあるため、工夫が必要と思われる。
     if @inputs.get('ipv6_config').node.value == 'reserved'
-      @inputs.get('duid').node.required = true
+      # @inputs.get('duid').node.required = true
       @displayMessage('require_duid')
     else
-      @inputs.get('duid').node.required = false
+      # @inputs.get('duid').node.required = false
 
   setInitInput: (name) ->
     {node, init} = @inputs.get(name)

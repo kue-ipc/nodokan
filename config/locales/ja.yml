@@ -363,7 +363,6 @@ ja:
         global: 外部
         interface_type: 接続形態
         mac_address: MACアドレス
-        duid: DUID(DHCP固有識別子)
         network: ネットワーク
         network_id: ネットワーク
         ipv4_config: IPv4設定
@@ -391,6 +390,7 @@ ja:
         hostname: ホスト名
         domain: ドメイン名
         fqdn: FQDN
+        duid: DUID(DHCP固有識別子)
         place: 設置場所
         hardware: 機器情報
         operating_system: OS

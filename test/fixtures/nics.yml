@@ -9,7 +9,6 @@ desktop:
   auth: true
   locked: false
   mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
-  duid_data:
   ipv4_config: :dynamic
   ipv4_data:
   ipv6_config: :dynamic
@@ -24,7 +23,6 @@ note:
   auth: true
   locked: false
   mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
-  duid_data:
   ipv4_config: :reserved
   ipv4_data: <%= ipv4_address('192.168.2.110') %>
   ipv6_config: :dynamic
@@ -39,7 +37,6 @@ server:
   auth: false
   locked: false
   mac_address_data:
-  duid_data:
   ipv4_config: :static
   ipv4_data: <%= ipv4_address('192.168.1.1') %>
   ipv6_config: :disabled
@@ -54,7 +51,6 @@ server_extra:
   auth: false
   locked: false
   mac_address_data:
-  duid_data:
   ipv4_config: :static
   ipv4_data: <%= ipv4_address('192.0.2.1') %>
   ipv6_config: :disabled
