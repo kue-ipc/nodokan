@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_20_062456) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_30_070957) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -161,7 +161,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_20_062456) do
     t.boolean "auth", default: false, null: false
     t.boolean "locked", default: false, null: false
     t.binary "mac_address_data", limit: 6
-    t.binary "duid_data", limit: 130
     t.integer "ipv4_config", limit: 1, default: -1, null: false
     t.binary "ipv4_data", limit: 4
     t.integer "ipv6_config", limit: 1, default: -1, null: false
@@ -173,7 +172,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_20_062456) do
     t.datetime "ipv4_leased_at", precision: nil
     t.datetime "ipv6_leased_at", precision: nil
     t.datetime "auth_at", precision: nil
-    t.index ["duid_data"], name: "index_nics_on_duid_data", unique: true
     t.index ["ipv4_data"], name: "index_nics_on_ipv4_data", unique: true
     t.index ["ipv6_data"], name: "index_nics_on_ipv6_data", unique: true
     t.index ["mac_address_data"], name: "index_nics_on_mac_address_data", unique: true
@@ -198,6 +196,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_20_062456) do
     t.boolean "virtual", default: false, null: false
     t.boolean "public", default: false, null: false
     t.boolean "dns", default: false, null: false
+    t.binary "duid_data", limit: 130
+    t.index ["duid_data"], name: "index_nodes_on_duid_data", unique: true
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["hostname", "domain"], name: "fqdn", unique: true
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
