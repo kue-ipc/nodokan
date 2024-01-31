@@ -65,9 +65,6 @@ gem "slim-rails"
 # IP Address / MAC Address
 gem "ipaddress_2"
 
-# Attribute Normalizer
-gem "attribute_normalizer"
-
 # Config
 gem "config"
 
@@ -92,9 +89,6 @@ gem "rails_admin-i18n"
 
 # Bootstrap
 gem "bootstrap_form", "~> 5.3"
-
-# Sanitize
-gem "sanitize"
 
 # Delayed::Job
 gem "delayed_job_active_record"

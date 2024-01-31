@@ -82,12 +82,11 @@ GEM
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
-    attribute_normalizer (1.2.0)
     base64 (0.2.0)
     bcrypt (3.1.20)
     bigdecimal (3.1.6)
     bindex (0.8.1)
-    bootsnap (1.17.1)
+    bootsnap (1.18.1)
       msgpack (~> 1.2)
     bootstrap_form (5.4.0)
       actionpack (>= 6.1)
@@ -339,9 +338,6 @@ GEM
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
-    sanitize (6.1.0)
-      crass (~> 1.0.2)
-      nokogiri (>= 1.12.0)
     selenium-webdriver (4.17.0)
       base64 (~> 0.2)
       rexml (~> 3.2, >= 3.2.5)
@@ -397,7 +393,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  attribute_normalizer
   bootsnap
   bootstrap_form (~> 5.3)
   capybara
@@ -426,7 +421,6 @@ DEPENDENCIES
   rails_admin-i18n
   rubocop
   rubocop-rails
-  sanitize
   selenium-webdriver
   slim-rails
   slim_lint

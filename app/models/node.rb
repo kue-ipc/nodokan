@@ -31,10 +31,8 @@ class Node < ApplicationRecord
     }
   validates :duid, allow_blank: true, duid: true
 
-  normalize_attribute :hostname, with: [:strip, :blank, :downcase]
-  normalize_attribute :domain, with: [:strip, :blank, :downcase]
-  normalize_attribute :duid
-  normalize_attribute :note
+  normalizes :hostname, with: :strip.to_proc >> :downcase.to_proc
+  normalizes :domain, with: :strip.to_proc >> :downcase.to_proc
 
   def global?
     nics.any?(&:global?)

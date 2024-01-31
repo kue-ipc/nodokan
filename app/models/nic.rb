@@ -46,10 +46,7 @@ class Nic < ApplicationRecord
   validates :ipv6_data, allow_nil: true, uniqueness: {case_sensitive: true}
   validates :mac_address_data, allow_nil: true, uniqueness: {case_sensitive: true}
 
-  normalize_attribute :name
-  normalize_attribute :mac_address
-  normalize_attribute :ipv4_address
-  normalize_attribute :ipv6_address
+  normalizes :name, with: :strip.to_proc
 
   after_validation :replace_errors
   before_update :old_nic
