@@ -62,9 +62,6 @@ gem "bootsnap", require: false
 # Use Slim for HTML
 gem "slim-rails"
 
-# IP Address / MAC Address
-gem "ipaddress_2"
-
 # Config
 gem "config"
 

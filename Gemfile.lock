@@ -177,7 +177,6 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
-    ipaddress_2 (0.14.0)
     irb (1.11.1)
       rdoc
       reline (>= 0.4.2)
@@ -405,7 +404,6 @@ DEPENDENCIES
   devise
   devise-i18n
   devise_ldap_authenticatable
-  ipaddress_2
   jbuilder
   jsbundling-rails
   mysql2 (~> 0.5)
