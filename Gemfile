@@ -92,6 +92,9 @@ gem "delayed_job_active_record"
 gem "delayed_job_web"
 gem "daemons"
 
+# Ransack
+gem "ransack"
+
 # default gem and bundled gem target Ruby 3.1
 gem "psych", ">= 4.0.4"
 gem "ipaddr", ">= 1.2.3"
