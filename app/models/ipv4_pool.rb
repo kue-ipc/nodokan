@@ -4,58 +4,39 @@ class Ipv4Pool < ApplicationRecord
 
   belongs_to :network
 
-  validates :ipv4_first_address, allow_blank: false, ipv4: true
-  validates :ipv4_last_address, allow_blank: false, ipv4: true
-
-  delegate :ipv4_prefix_length, to: :network
+  validates :ipv4_first_address, allow_blank: false, ipv4_address: true
+  validates :ipv4_last_address, allow_blank: false, ipv4_address: true
 
   def ipv4_first
-    @ipv4_first ||=
-      IPAddress::IPv4.parse_data(ipv4_first_data, ipv4_prefix_length)
+    IPAddr.new_ntoh(ipv4_first_data)
   end
 
   def ipv4_first_address
-    @ipv4_first_address ||= ipv4_first.to_s
+    ipv4_first.to_s
   end
 
   def ipv4_first_address=(value)
-    @ipv4_first_address = value
-    self.ipv4_first_data = @ipv4_first_address.presence &&
-                           IPAddress::IPv4.new(@ipv4_first_address).data
-  rescue ArgumentError
-    self.ipv4_first_data = nil
+    self.ipv4_first_data = IPAddr.new(value).hton
   end
 
   def ipv4_last
-    @ipv4_last ||=
-      IPAddress::IPv4.parse_data(ipv4_last_data, ipv4_prefix_length)
+    IPAddr.new_ntoh(ipv4_last_data)
   end
 
   def ipv4_last_address
-    @ipv4_last_address ||= ipv4_last.to_s
+    ipv4_last.to_s
   end
 
   def ipv4_last_address=(value)
-    @ipv4_last_address = value
-    self.ipv4_last_data = @ipv4_last_address.presence &&
-                          IPAddress::IPv4.new(@ipv4_last_address).data
-  rescue ArgumentError
-    self.ipv4_last_data = nil
+    self.ipv4_last_data = IPAddr.new(value).hton
   end
 
   def ipv4_range
-    @ipv4_range ||= Range.new(ipv4_first, ipv4_last)
+    (ipv4_first..ipv4_last)
   end
 
   delegate :cover?, to: :ipv4_range
-
-  def each(&block)
-    if block_given?
-      ipv4_range.each(&block)
-    else
-      ipv4_range.each
-    end
-  end
+  delegate :each, to: :ipv4_range
 
   def identifier
     prefix =

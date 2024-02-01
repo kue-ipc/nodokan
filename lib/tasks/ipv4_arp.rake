@@ -14,13 +14,14 @@ namespace :ipv4_arp do
     }
     CSV.open(csv_file, "rb:BOM|UTF-8", headers: :first_row) do |csv|
       csv.each do |row|
-        ipv4 = IPAddress::IPv4.new(row["ip"])
+        ipv4 = IPAddr.new(row["ip"])
+        raise "Not an IPv4 address: #{row['ip']}" unless ipv4.ipv4?
         next if ipv4.loopback?
         next if ipv4.link_local?
 
         mac_address_data = [row["mac"].delete("-:")].pack("H12")
         time = Time.zone.at(row["time"].to_i)
-        ipv4_arp = Ipv4Arp.find_or_initialize_by(ipv4_data: ipv4.data, mac_address_data: mac_address_data)
+        ipv4_arp = Ipv4Arp.find_or_initialize_by(ipv4_address: ipv4.hton, mac_address_data: mac_address_data)
         if ipv4_arp.resolved_at.nil? || time > ipv4_arp.resolved_at
           ipv4_arp.resolved_at = time
           if ipv4_arp.save

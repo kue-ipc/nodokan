@@ -645,8 +645,11 @@ ja:
       greater_than_or_equal_to: "%{count}以上の値にしてください"
       inclusion: 一覧にありません
       invalid: 不正な値です
-      invalid_ipv4_address: IPv4アドレスではありません
-      invalid_ipv6_address: IPv6アドレスではありません
+      invalid_ip_address: IPアドレスの形式ではありません
+      invalid_ipv4_address: IPv4アドレスの形式ではありません
+      invalid_ipv6_address: IPv6アドレスの形式ではありません
+      not_ipv4: IPv4ではありません。
+      not_ipv6: IPv6ではありません。
       not_ipv4_network: ネットワークアドレスではありません、アドレスまたはサブネットマスクが間違っています
       not_ipv6_network: ネットワークアドレスではありません、アドレスまたはプレフィックスが間違っています
       ipv4_unspecified: 未指定アドレスを設定することはできません。

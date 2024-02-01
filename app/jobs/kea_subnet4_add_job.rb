@@ -6,7 +6,7 @@ class KeaSubnet4AddJob < ApplicationJob
       Kea::Dhcp4Subnet.dhcp4_audit
 
       subnet4 = Kea::Dhcp4Subnet.find_or_initialize_by(subnet_id: network.id)
-      subnet4.subnet_prefix = network.ipv4_network_prefix
+      subnet4.subnet_prefix = network.ipv4_network_address_prefix
       subnet4.modification_ts = Time.current
       subnet4.save!
 

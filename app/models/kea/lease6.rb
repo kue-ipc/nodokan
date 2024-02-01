@@ -9,17 +9,11 @@ module Kea
     belongs_to :dhcp6_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
     def ipv6
-      @ipv6 ||= IPAddress::IPv6.parse_data(address)
+      IPAddr.new(address)
     end
 
     def ipv6_address
       address
-    end
-
-    def mac_address
-      hwaddr.unpack("C6")
-        .map { |i| format("%02X", i) }
-        .join("-")
     end
 
     def duid_str
@@ -29,7 +23,7 @@ module Kea
     end
 
     def name
-      address
+      ipv6_address
     end
 
     def leased_at

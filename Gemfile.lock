@@ -177,6 +177,7 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
+    ipaddr (1.2.6)
     irb (1.11.1)
       rdoc
       reline (>= 0.4.2)
@@ -404,13 +405,14 @@ DEPENDENCIES
   devise
   devise-i18n
   devise_ldap_authenticatable
+  ipaddr (>= 1.2.3)
   jbuilder
   jsbundling-rails
   mysql2 (~> 0.5)
   paper_trail
   paper_trail-association_tracking
   propshaft
-  psych (>= 4.0.0)
+  psych (>= 4.0.4)
   puma (>= 5.0)
   pundit
   rails (~> 7.1.3)

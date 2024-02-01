@@ -39,8 +39,8 @@ class Nic < ApplicationRecord
       message: "MACアドレスの形式ではありません。" \
                "通常は「hh:hh:hh:hh:hh:hh」または「HH-HH-HH-HH-HH-HH」です。",
     }
-  validates :ipv4_address, allow_blank: true, ipv4: true
-  validates :ipv6_address, allow_blank: true, ipv6: true
+  validates :ipv4_address, allow_blank: true, ipv4_address: true
+  validates :ipv6_address, allow_blank: true, ipv6_address: true
 
   validates :ipv4_data, allow_nil: true, uniqueness: {case_sensitive: true}
   validates :ipv6_data, allow_nil: true, uniqueness: {case_sensitive: true}
@@ -55,7 +55,8 @@ class Nic < ApplicationRecord
   attr_accessor :skip_after_job
 
   def global?
-    ipv4_global? || ipv6_global?
+    (ipv4_data.present? && !ipv4.private?) ||
+      (ipv6_data.present? && !ipv6.private?)
   end
   alias global global?
 

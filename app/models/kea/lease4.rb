@@ -7,11 +7,11 @@ module Kea
     belongs_to :dhcp4_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
     def ipv4
-      @ipv4 ||= IPAddress::IPv4.parse_u32(address)
+      IPAddr.new(address, Scoket::AF_INET)
     end
 
     def ipv4_address
-      @ipv4_address ||= (ipv4&.to_s || "")
+      ipv4.to_s
     end
 
     def mac_address

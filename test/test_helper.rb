@@ -5,11 +5,11 @@ require "base64"
 
 module FixtureAddressHelper
   def ipv4_address(address)
-    "!!binary \"#{Base64.strict_encode64(IPAddress::IPv4.new(address).data)}\""
+    "!!binary \"#{Base64.strict_encode64(IPAddr.new(address).hton)}\""
   end
 
   def ipv6_address(address)
-    "!!binary \"#{Base64.strict_encode64(IPAddress::IPv6.new(address).data)}\""
+    "!!binary \"#{Base64.strict_encode64(IPAddr.new(address).hton)}\""
   end
 
   def mac_address(address)

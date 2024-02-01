@@ -14,7 +14,7 @@ module Kea
     end
 
     def ipv4
-      @ipv4 ||= ipv4_address && IPAddress::IPv4.parse_u32(ipv4_address)
+      ipv4_address && IPAddr.new(ipv4_address, Socket::AF_INET)
     end
   end
 end

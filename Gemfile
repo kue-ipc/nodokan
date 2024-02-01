@@ -92,7 +92,9 @@ gem "delayed_job_active_record"
 gem "delayed_job_web"
 gem "daemons"
 
-gem "psych", ">= 4.0.0"
+# default gem and bundled gem target Ruby 3.1
+gem "psych", ">= 4.0.4"
+gem "ipaddr", ">= 1.2.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

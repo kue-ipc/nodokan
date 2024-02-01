@@ -1,10 +1,7 @@
 # rubocop: disable Metrics
-
-require "set"
-
 class Network < ApplicationRecord
   IP_MASKS = (0..32).map do |i|
-    IPAddress::Prefix32.new(i).to_ip
+    IPAddr.new("0.0.0.0").mask(i).netmask
   end
 
   FLAGS = {
@@ -40,10 +37,10 @@ class Network < ApplicationRecord
       less_than_or_equal_to: 4094,
     }
 
-  validates :ipv4_network_address, allow_blank: true, ipv4: true
-  validates :ipv4_gateway_address, allow_blank: true, ipv4: true
-  validates :ipv6_network_address, allow_blank: true, ipv6: true
-  validates :ipv6_gateway_address, allow_blank: true, ipv6: true
+  validates :ipv4_network_address, allow_blank: true, ipv4_address: true
+  validates :ipv4_gateway_address, allow_blank: true, ipv4_address: true
+  validates :ipv6_network_address, allow_blank: true, ipv6_address: true
+  validates :ipv6_gateway_address, allow_blank: true, ipv6_address: true
 
   validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
 
@@ -59,13 +56,11 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
-  validates :ipv4_network, allow_nil: true, ipv4_network: true
-  validates :ipv6_network, allow_nil: true, ipv6_network: true
-
   after_commit :kea_subnet4, :kea_subnet6
 
   def global?
-    ipv4_network_global? || ipv6_network_global?
+    (ipv4_network_data.present? && !ipv4_network.private?) ||
+      (ipv6_network_data.present? && !ipv6_network.private?)
   end
   alias global global?
 
@@ -73,111 +68,83 @@ class Network < ApplicationRecord
 
   # readonly
   def ipv4_network
-    @ipv4_network ||=
-      ipv4_network_data.presence &&
-      IPAddress::IPv4.parse_data(ipv4_network_data, ipv4_prefix_length)
-  end
-
-  def ipv4_network_global?
-    !(ipv4_network.nil? || ipv4_network.private?)
-  end
-
-  def ipv4_network_prefix
-    ipv4_network&.to_string
+    ipv4_network_data && IPAddr.new_ntoh(ipv4_network_data).mask(ipv4_prefix_length)
   end
 
   def ipv4_network_address
-    @ipv4_network_address ||= (ipv4_network&.to_s || "")
+    ipv4_network&.to_s
   end
 
+  # value allow blank
   def ipv4_network_address=(value)
-    @ipv4_network_address = value
-    self.ipv4_network_data = @ipv4_network_address.presence &&
-                             IPAddress::IPv4.new(@ipv4_network_address).data
-  rescue ArgumentError
-    self.ipv4_network_data = nil
+    self.ipv4_network_data = value.presence && IPAddr.new(value).hton
+  end
+
+  # address/prefix
+  def ipv4_network_address_prefix
+    ipv4_network_data && "#{ipv4_network_address}/#{ipv4_prefix_length}"
   end
 
   def ipv4_netmask
-    @ipv4_netmask ||= (ipv4_network&.netmask || "")
+    ipv4_prefix_length && IPAddr.new("0.0.0.0").mask(ipv4_prefix_length)
   end
 
+  # address/netmask
+  def ipv4_network_address_netmask
+    ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
+  end
+
+  # value allow blank
   def ipv4_netmask=(value)
-    @ipv4_netmask = value
-    self.ipv4_prefix_length =
-      @ipv4_netmask.presence &&
-      IPAddress::Prefix32.parse_netmask(@ipv4_netmask).to_i
-  rescue ArgumentError
-    self.ipv4_prefix_length = nil
+    self.ipv4_prefix_length = value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
   end
 
   # readonly
   def ipv4_gateway
-    @ipv4_gateway ||=
-      ipv4_gateway_data.presence &&
-      IPAddress::IPv4.parse_data(ipv4_gateway_data, ipv4_prefix_length)
+    ipv4_gateway_data && IPAddr.new_ntoh(ipv4_gateway_data)
   end
 
   def ipv4_gateway_address
-    @ipv4_gateway_address ||= (ipv4_gateway&.to_s || "")
+    ipv4_gateway&.to_s
   end
 
   def ipv4_gateway_address=(value)
-    @ipv4_gateway_address = value
-    self.ipv4_gateway_data = @ipv4_gateway_address.presence &&
-                             IPAddress::IPv4.new(@ipv4_gateway_address).data
-  rescue ArgumentError
-    self.ipv4_gateway_data = nil
+    self.ipv4_gateway_data = value.presence && IPAddr.new(value).hton
   end
 
   # Ipv6
 
   # readonly
   def ipv6_network
-    @ipv6_network ||=
-      ipv6_network_data.presence &&
-      IPAddress::IPv6.parse_data(ipv6_network_data).tap do |ipv6|
-        ipv6.prefix = ipv6_prefix_length
-      end
-  end
-
-  def ipv6_network_global?
-    !(ipv6_network.nil? || ipv6_network.unique_local?)
-  end
-
-  def ipv6_network_prefix
-    ipv6_network&.to_string
+    ipv6_network_data && IPAddr.new_ntoh(ipv6_network_data).mask(ipv6_prefix_length)
   end
 
   def ipv6_network_address
-    @ipv6_network_address ||= (ipv6_network&.to_s || "")
+    ipv6_network&.to_s
   end
 
+  # vaule allow blank
   def ipv6_network_address=(value)
-    @ipv6_network_address = value
-    self.ipv6_network_data = @ipv6_network_address.presence &&
-                             IPAddress::IPv6.new(@ipv6_network_address).data
-  rescue ArgumentError
-    self.ipv6_network_data = nil
+    self.ipv6_network_data = value.presence && IPAddr.new(value).hton
+  end
+
+  # address/prefix
+  def ipv6_network_address_prefix
+    ipv6_network_data && "#{ipv6_network_address}/#{ipv6_prefix_length}"
   end
 
   # readonly
   def ipv6_gateway
-    @ipv6_gateway ||=
-      ipv6_gateway_data.presence &&
-      IPAddress::IPv6.parse_hex(ipv6_gateway_data.unpack1("H*"), ipv6_prefix_length)
+    ipv6_gateway_data && IPAddr.new_ntoh(ipv6_gateway_data)
   end
 
   def ipv6_gateway_address
-    @ipv6_gateway_address ||= (ipv6_gateway&.to_s || "")
+    ipv6_gateway&.to_s
   end
 
+  # value allow blank
   def ipv6_gateway_address=(value)
-    @ipv6_gateway_address = value
-    self.ipv6_gateway_data = @ipv6_gateway_address.presence &&
-                             IPAddress::IPv6.new(@ipv6_gateway_address).data
-  rescue ArgumentError
-    self.ipv6_gateway_data = nil
+    self.ipv6_gateway_data = value.presence && IPAddr.new(value).htona
   end
 
   # string
@@ -254,7 +221,7 @@ class Network < ApplicationRecord
   # TODO: 一つ一つ見る方法では暴走するため、修正の必要がある。
   #       現時点では実装を見送る。
   def next_ipv6_pool
-    return nil
+    nil
     # return unless ipv6_network
 
     # # BUG:
@@ -341,9 +308,9 @@ class Network < ApplicationRecord
     when /^v(\d{1,4})$/
       Network.find_by(vlan: Regexp.last_match(1).to_i)
     when /^i([.\d]+)$/
-      Network.find_by(ipv4_network_data: IPAddress::IPv4.new(Regexp.last_match(1)).data)
+      Network.find_by(ipv4_network_data: IPAddr.new(Regexp.last_match(1)).hton)
     when /^k([:\h]+)$/
-      Network.find_by(ipv6_network_data: IPAddress::IPv6.new(Regexp.last_match(1)).data)
+      Network.find_by(ipv6_network_data: IPAddr.new(Regexp.last_match(1)).hton)
     when /^\#(\d+)$/
       Network.find(Regexp.last_match(1).to_i)
     else

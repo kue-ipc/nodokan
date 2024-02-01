@@ -68,7 +68,7 @@ class NodesController < ApplicationController
 
       query_nics = nil
       begin
-        query_ip = IPAddress.parse(@query)
+        query_ip = IPAddr.new(@query)
         if query_ip.ipv4?
           query_nics = Nic.where(ipv4_data: query_ip.data)
         elsif query_ip.ipv6?

@@ -1,3 +1,6 @@
+require "ipaddr"
+
+# rubocop: disable Metrics
 module ApplicationHelper
   NAME_COLORS = {
     dynamic: "success",
@@ -14,7 +17,7 @@ module ApplicationHelper
     dns: "success",
     dhcp: "secondary",
     deleted: "danger",
-  }
+  }.freeze
 
   def site_title
     Settings.site.title || t(:nodokan)
@@ -56,7 +59,6 @@ module ApplicationHelper
   def t_bitwise(value, attr)
     t(value, scope: [:activerecord, :bitwises, attr])
   end
-
 
   def t_floor(number)
     if number.zero?
@@ -127,21 +129,12 @@ module ApplicationHelper
         end
         list_html
       end
-    when IPAddress
+    when IPAddr
       opts[:class] ||= []
-      case value
-      when IPAddress::IPv4
-        opts[:class] << "text-danger" unless value.private?
-      when IPAddress::IPv6
-        opts[:class] << "text-danger" unless value.unique_local?
-      end
-
-      # BUG: IPAddress::IPv6#network? is not correct when prefix == 128
-      if value.network? && value.prefix < 128
-        span_text_tag(value.to_string, **opts)
-      else
-        span_text_tag(value.to_s, **opts)
-      end
+      opts[:class] << "text-danger" unless value.private?
+      str = value.to_s
+      str += "/#{value.prefix}" if (value.ipv4? && value.prefix < 32) || (value.ipv6? && value.prefix < 128)
+      span_text_tag(str, **opts)
     when ApplicationRecord
       link_to(value.to_s, value)
     when ActiveRecord::Associations::CollectionProxy
