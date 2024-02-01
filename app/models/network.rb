@@ -86,7 +86,7 @@ class Network < ApplicationRecord
   end
 
   def ipv4_netmask
-    ipv4_prefix_length && IPAddr.new("0.0.0.0").mask(ipv4_prefix_length)
+    ipv4_prefix_length && IPAddr.new("0.0.0.0").mask(ipv4_prefix_length).netmask
   end
 
   # address/netmask
@@ -144,7 +144,7 @@ class Network < ApplicationRecord
 
   # value allow blank
   def ipv6_gateway_address=(value)
-    self.ipv6_gateway_data = value.presence && IPAddr.new(value).htona
+    self.ipv6_gateway_data = value.presence && IPAddr.new(value).hton
   end
 
   # string
