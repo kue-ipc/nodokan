@@ -1,4 +1,3 @@
-require "csv"
 require "fileutils"
 require "logger"
 

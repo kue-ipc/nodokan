@@ -1,5 +1,3 @@
-require "csv"
-
 namespace :ipv4_arp do
   desc "register ipv4 arp"
   task register: :environment do
