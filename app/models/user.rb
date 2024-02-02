@@ -39,6 +39,14 @@ class User < ApplicationRecord
 
   after_commit :radius_user
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["username", "email", "fullname", "role", "deleted", "nodes_count"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
   def allocate_network
     return true if @allocate_network_config.blank?
 

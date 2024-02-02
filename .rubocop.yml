@@ -142,7 +142,7 @@ Style/SymbolArray:
   EnforcedStyle: brackets
 
 Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: consistent_comma
+  EnforcedStyleForMultiline: no_comma
 
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma

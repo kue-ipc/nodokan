@@ -7,28 +7,17 @@ class UsersController < ApplicationController
       :page,
       :per,
       :query,
-      order: [:username, :email, :fullname, :role, :nodes_count],
       condition: [:username, :email, :fullname, :role, :deleted],
+      order: [:username, :email, :fullname, :role, :nodes_count]
     )
-
     @page = permitted_params[:page]
     @per = permitted_params[:per]
     @query = permitted_params[:query]
-    @order = permitted_params[:order]
     @condition = permitted_params[:condition]
+    @order = permitted_params[:order]
 
-    @users = policy_scope(User).includes(:auth_networks, :use_networks, :manage_networks)
-
-    if @query.present?
-      @users = @users.where(
-        "username LIKE :query OR email LIKE :query OR fullname LIKE :query",
-        {query: "%#{@query}%"},
-      )
-    end
-
-    @users = @users.where(@condition) if @condition
-
-    @users = @users.order(@order.to_h) if @order
+    @users = search_and_sort(policy_scope(User), query: @query, condition: @condition, order: @order)
+      .includes(:auth_networks, :use_networks, :manage_networks)
 
     respond_to do |format|
       format.html { @users = @users.page(@page).per(@per) }
@@ -83,7 +72,28 @@ class UsersController < ApplicationController
   private def user_params
     params.require(:user).permit(
       :role,
-      :auth_network_id,
+      :auth_network_id
     )
+  end
+
+  private def search_and_sort(model, query: nil, condition: {}, order: {})
+    ransack_q = {}
+
+    ransack_q["username_or_email_or_fullname_cont"] = query if query.present?
+
+    if condition.present?
+      condition.each do |k, v|
+        case k
+        when "username", "email", "fullname", "role"
+          ransack_q["#{k}_eq"] = v
+        when "deleted"
+          ransack_q["#{k}_true"] = v
+        end
+      end
+    end
+
+    q = model.ransack(ransack_q)
+    q.sorts = order.to_h.map { |k, v| "#{k} #{v}" } if order.present?
+    q.result
   end
 end

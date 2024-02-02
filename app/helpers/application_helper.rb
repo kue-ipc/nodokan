@@ -1,5 +1,3 @@
-require "ipaddr"
-
 # rubocop: disable Metrics
 module ApplicationHelper
   NAME_COLORS = {
@@ -232,8 +230,8 @@ module ApplicationHelper
         model.class_name.tableize
       end
 
-    # queryは設定しない
     params = {
+      query: @query,
       page: @page,
       per: @per,
       order: {},
@@ -269,6 +267,7 @@ module ApplicationHelper
       end
 
     params = {
+      query: @query,
       page: @page,
       per: @per,
       order: @order&.to_h || {},
