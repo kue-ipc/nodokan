@@ -1,5 +1,3 @@
-# rubocop: disable Metrics
-
 class NetworksController < ApplicationController
   before_action :set_network, only: [:show, :edit, :update, :destroy]
   before_action :authorize_network, only: [:index]
@@ -15,7 +13,7 @@ class NetworksController < ApplicationController
         :id, :name, :vlan, :ipv4_network, :ipv6_network,
         :nics_count, :assignments_count,
       ],
-      condition: [:auth, :nics_count, :assignments_count],
+      condition: [:auth, :nics_count, :assignments_count]
     )
 
     @page = permitted_params[:page]
@@ -83,7 +81,7 @@ class NetworksController < ApplicationController
         @network.ipv4_pools << Ipv4Pool.new(
           ipv4_config: :static,
           ipv4_first_address: next_ipv4&.address,
-          ipv4_last_address: next_ipv4&.address,
+          ipv4_last_address: next_ipv4&.address
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -92,7 +90,7 @@ class NetworksController < ApplicationController
         @network.ipv6_pools << Ipv6Pool.new(
           ipv6_config: :static,
           ipv6_first_address: next_ipv6&.address,
-          ipv6_last_address: next_ipv6&.address,
+          ipv6_last_address: next_ipv6&.address
         )
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -122,7 +120,7 @@ class NetworksController < ApplicationController
           @network.ipv4_pools << Ipv4Pool.new(
             ipv4_config: :static,
             ipv4_first_address: next_ipv4&.address,
-            ipv4_last_address: next_ipv4&.address,
+            ipv4_last_address: next_ipv4&.address
           )
         else
           flash.now[:alert] = "IPアドレスの空きがありません。"
@@ -136,7 +134,7 @@ class NetworksController < ApplicationController
           @network.ipv6_pools << Ipv6Pool.new(
             ipv6_config: :static,
             ipv6_first_address: next_ipv6&.address,
-            ipv6_last_address: next_ipv6&.address,
+            ipv6_last_address: next_ipv6&.address
           )
         else
           flash.now[:alert] = "IPアドレスの空きがありません。"
@@ -161,48 +159,68 @@ class NetworksController < ApplicationController
     end
   end
 
-  private
+  # Use callbacks to share common setup or constraints between actions.
+  private def set_network
+    @network = policy_scope(Network).find(params[:id])
+    authorize @network
+  end
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_network
-      @network = policy_scope(Network).find(params[:id])
-      authorize @network
+  # Only allow a list of trusted parameters through.
+  private def network_params
+    params.require(:network).permit(
+      :name,
+      :vlan,
+      :auth,
+      :dhcp,
+      :locked,
+      :specific,
+      :ipv4_network_address,
+      :ipv4_prefix_length,
+      :ipv4_gateway_address,
+      :ipv6_network_address,
+      :ipv6_prefix_length,
+      :ipv6_gateway_address,
+      :note,
+      ipv4_pools_attributes: [
+        :id,
+        :_destroy,
+        :ipv4_config,
+        :ipv4_first_address,
+        :ipv4_last_address,
+      ],
+      ipv6_pools_attributes: [
+        :id,
+        :_destroy,
+        :ipv6_config,
+        :ipv6_first_address,
+        :ipv6_last_address,
+      ]
+    )
+  end
+
+  private def authorize_network
+    authorize Network
+  end
+
+  private def search_and_sort(model, query: nil, condition: {}, order: {})
+    ransack_q = {}
+
+    ransack_q["name_cont"] = query if query.present?
+
+    if condition.present?
+      condition.each do |k, v|
+        type = model.type_for_attribute(k)
+        case k.type
+        when :string, :integer, :binary, :text, :float
+          ransack_q["#{k}_eq"] = v
+        when :boolean
+          ransack_q["#{k}_true"] = v
+        end
+      end
     end
 
-    # Only allow a list of trusted parameters through.
-    def network_params
-      params.require(:network).permit(
-        :name,
-        :vlan,
-        :auth,
-        :dhcp,
-        :locked,
-        :specific,
-        :ipv4_network_address,
-        :ipv4_prefix_length,
-        :ipv4_gateway_address,
-        :ipv6_network_address,
-        :ipv6_prefix_length,
-        :ipv6_gateway_address,
-        :note,
-        ipv4_pools_attributes: [
-          :id,
-          :_destroy,
-          :ipv4_config,
-          :ipv4_first_address,
-          :ipv4_last_address,
-        ],
-        ipv6_pools_attributes: [
-          :id,
-          :_destroy,
-          :ipv6_config,
-          :ipv6_first_address,
-          :ipv6_last_address,
-        ],
-      )
-    end
-
-    def authorize_network
-      authorize Network
-    end
+    q = model.ransack(ransack_q)
+    q.sorts = order.to_h.map { |k, v| "#{k} #{v}" } if order.present?
+    q.result
+  end
 end

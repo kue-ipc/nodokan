@@ -1,58 +1,42 @@
-= paginate @networks
+= turbo_frame_tag "networks-list" do
+  = paginate @networks
 
-table.table.table-hover.table-sm
-  thead
-    tr
-      th scope="col"
+  .mb-2
+    .row.mb-2.fw-bold
+      .col-2
         = Network.human_attribute_name(:name)
         =< sort_link(:name)
-      th scope="col"
+      .col-2
         | &nbsp;
-      th scope="col"
+      .col-1
         = Network.human_attribute_name(:vlan)
         =< sort_link(:vlan)
-      th scope="col"
+      .col-2
         = Network.human_attribute_name(:ipv4_network)
         =< sort_link(:ipv4_network)
-      th scope="col"
+      .col-2
         = Network.human_attribute_name(:ipv6_network)
         =< sort_link(:ipv6_network)
-      th scope="col"
+      .col-1
         = Network.human_attribute_name(:nics_count)
         =< sort_link(:nics_count)
-      th scope="col"
+      .col-1
         = Network.human_attribute_name(:assignments_count)
         =< sort_link(:assignments_count)
 
-  tbody
     - @networks.each do |network|
-      tr.clickable-row[
-        data-href="#{network_path(network)}"
-        data-contextmenu="contextmenu-network-#{network.id}"]
-        td
-          = network.name
-        td
+      = link_to network, data: {turbo: false}, class: "row py-1 border-top" do
+        .col-2 = network.name
+        .col-2
           - [:auth, :dhcp, :locked, :specific, :global].each do |attr|
             - if network.__send__(attr)
               = badge_for(attr, scope: "activerecord.attributes.network", badge_class: "ms-1")
-        td = network.vlan
-        td = span_value_for(network.ipv4_network, hide_blank: true)
-        td = span_value_for(network.ipv6_network, hide_blank: true)
-        td = network.nics_count
-        td = network.assignments_count
-- list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
-- @networks.each do |network|
-  .context-menu id="contextmenu-network-#{network.id}"
-    .list-group.list-group-horizontal
-      = link_to t("actions.show"), network,
-        class: list_group_item_class + ["bg-dark", "text-white"]
-      = link_to t("actions.edit"), edit_network_path(network),
-        class: list_group_item_class + ["bg-primary", "text-white"]
-      = button_to t("actions.destroy"), network,
-        data: {turbo_confirm: t("messages.corfirm_destroy_name", name: network.name)},
-        method: :delete,
-        class: list_group_item_class + ["bg-danger", "text-white"]
+        .col-1 = network.vlan
+        .col-2 = span_value_for(network.ipv4_network, hide_blank: true)
+        .col-2 = span_value_for(network.ipv6_network, hide_blank: true)
+        .col-1 = network.nics_count
+        .col-1 = network.assignments_count
 
-= paginate @networks
-p
-  = page_entries_info @networks
+  = paginate @networks
+  p
+    = page_entries_info @networks

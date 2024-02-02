@@ -2,7 +2,7 @@
   = paginate @users
 
   .mb-2
-    .row.mb-2
+    .row.mb-2.fw-bold
       .col-2
         = User.human_attribute_name(:username)
         =< sort_link(:username)
