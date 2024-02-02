@@ -7,6 +7,7 @@ class UsersController < ApplicationController
       :page,
       :per,
       :query,
+      :search,
       condition: [:username, :email, :fullname, :role, :deleted],
       order: [:username, :email, :fullname, :role, :nodes_count]
     )

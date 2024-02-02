@@ -235,7 +235,7 @@ module ApplicationHelper
       page: @page,
       per: @per,
       order: {},
-      condition: @condition&.to_h || {},
+      condition: @condition.to_h,
     }
     i_class = ["fas"]
 
@@ -270,8 +270,8 @@ module ApplicationHelper
       query: @query,
       page: @page,
       per: @per,
-      order: @order&.to_h || {},
-      condition: @condition&.to_h || {},
+      order: @order.to_h,
+      condition: @condition.to_h,
     }
     i_class = []
 

@@ -1,48 +1,43 @@
-= paginate @users
+= turbo_frame_tag "users-list" do
+  = paginate @users
 
-table.table.table-hover.table-sm
-  thead
-    tr
-      th scope="col"
+  .mb-2
+    .row
+      .col-2
         = User.human_attribute_name(:username)
         =< sort_link(:username)
-      th scope="col"
+      .col-2
         = User.human_attribute_name(:email)
         =< sort_link(:email)
-      th scope="col"
+      .col-2
         = User.human_attribute_name(:fullname)
         =< sort_link(:fullname)
-      th scope="col"
+      .col-1
         = User.human_attribute_name(:role)
-      th scope="col"
+      .col-1
         = User.human_attribute_name(:deleted)
         =< filter_link(:deleted)
-      th scope="col" = User.human_attribute_name(:auth_network)
-      th scope="col" = User.human_attribute_name(:use_networks)
-      th scope="col"
+      .col-1
+        = User.human_attribute_name(:auth_network)
+      .col-2
+        = User.human_attribute_name(:use_networks)
+      .col-1
         = User.human_attribute_name(:nodes_count)
         =< sort_link(:nodes_count)
-  tbody
+
     - @users.each do |user|
-      tr.clickable-row[
-        data-href="#{user_path(user)}"
-        data-contextmenu="contextmenu-user-#{user.id}"]
-        td = user.username
-        td = user.email
-        td = user.fullname
-        td.text-nowrap = t(user.role, scope: "activerecord.enums.roles")
-        td = i_bool_tag(user.deleted)
-        td = user.auth_network&.identifier
-        td = user.use_networks.map(&:identifier).join(", ")
-        td = user.nodes_count
+      .row.py-1.border-top
+        .col-2
+          = link_to user, data: {turbo: false} do
+            = user.username
+        .col-2 = user.email
+        .col-2 = user.fullname
+        .col-1 = t(user.role, scope: "activerecord.enums.roles")
+        .col-1 = i_bool_tag(user.deleted)
+        .col-1 = user.auth_network&.identifier
+        .col-2 = user.use_networks.map(&:identifier).join(", ")
+        .col-1 = user.nodes_count
 
-- list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
-- @users.each do |user|
-  .context-menu id="contextmenu-user-#{user.id}"
-    .list-group.list-group-horizontal
-      = link_to t("actions.show"), user,
-        class: list_group_item_class + ["bg-dark", "text-white"]
-
-= paginate @users
-p
-  = page_entries_info @users
+  = paginate @users
+  p
+    = page_entries_info @users
