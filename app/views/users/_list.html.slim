@@ -2,7 +2,7 @@
   = paginate @users
 
   .mb-2
-    .row
+    .row.mb-2
       .col-2
         = User.human_attribute_name(:username)
         =< sort_link(:username)
@@ -26,10 +26,8 @@
         =< sort_link(:nodes_count)
 
     - @users.each do |user|
-      .row.py-1.border-top
-        .col-2
-          = link_to user, data: {turbo: false} do
-            = user.username
+      = link_to user, data: {turbo: false}, class: "row py-1 border-top" do
+        .col-2 = user.username
         .col-2 = user.email
         .col-2 = user.fullname
         .col-1 = t(user.role, scope: "activerecord.enums.roles")
