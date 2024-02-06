@@ -12,11 +12,13 @@ class NetworksController < ApplicationController
   end
 
   def self.search_order_attributes
-    Network.ransortable_attributes
+    Network.ransortable_attributes.map do |name|
+      name.delete_suffix("_data")
+    end
   end
 
   def self.search_condition_attributes
-    Network.ransackable_attributes
+    Network.ransackable_attributes.map
   end
 
   # GET /networks
