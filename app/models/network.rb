@@ -58,6 +58,20 @@ class Network < ApplicationRecord
 
   after_commit :kea_subnet4, :kea_subnet6
 
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w(name ipv4_network_data ipv6_network_data auth nics_count assignments_count)
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
+  def self.ransortable_attributes(auth_object = nil)
+    %w(id name vlan ipv4_network_data ipv6_network_data nics_count assignments_count)
+  end
+  # rubocop: enable Lint/UnusedMethodArgument
+
   def global?
     (ipv4_network_data.present? && !ipv4_network.private?) ||
       (ipv6_network_data.present? && !ipv6_network.private?)

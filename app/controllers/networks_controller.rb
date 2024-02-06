@@ -1,47 +1,33 @@
 class NetworksController < ApplicationController
+  include Page
+  include Search
+
   before_action :set_network, only: [:show, :edit, :update, :destroy]
   before_action :authorize_network, only: [:index]
+
+  def self.search_query_attributes
+    Network.ransackable_attributes.select do |name|
+      [:string, :text, :binary].include?(Network.type_for_attribute(name).type)
+    end
+  end
+
+  def self.search_order_attributes
+    Network.ransortable_attributes
+  end
+
+  def self.search_condition_attributes
+    Network.ransackable_attributes
+  end
 
   # GET /networks
   # GET /networks.json
   def index
-    permitted_params = params.permit(
-      :page,
-      :per,
-      :query,
-      order: [
-        :id, :name, :vlan, :ipv4_network, :ipv6_network,
-        :nics_count, :assignments_count,
-      ],
-      condition: [:auth, :nics_count, :assignments_count]
-    )
-
-    @page = permitted_params[:page]
-    @per = permitted_params[:per]
-    @query = permitted_params[:query]
-    @order = permitted_params[:order]
-    @condition = permitted_params[:condition]
-
-    @networks = policy_scope(Network).includes(:ipv4_pools, :ipv6_pools)
-
-    @networks = @networks.where("name LIKE :query", {query: "%#{@query}%"}) if @query.present?
-
-    @networks = @networks.where(@condition) if @condition
-
-    if @order
-      order_hash = @order.to_h.transform_keys do |key|
-        if ["ipv4_network", "ipv6_network"].include?(key)
-          "#{key}_data"
-        else
-          key
-        end
-      end
-      @networks = @networks.order(order_hash)
-    end
-
+    set_page
+    set_search
+    @networks = search_and_sort(policy_scope(Network)).includes(:ipv4_pools, :ipv6_pools)
     respond_to do |format|
-      format.html { @networks = @networks.page(@page).per(@per) }
-      format.json { @networks = @networks.page(@page).per(@per) }
+      format.html { @networks = paginate(@networks) }
+      format.json { @networks = paginate(@networks) }
       format.csv { @networks }
     end
   end
@@ -200,27 +186,5 @@ class NetworksController < ApplicationController
 
   private def authorize_network
     authorize Network
-  end
-
-  private def search_and_sort(model, query: nil, condition: {}, order: {})
-    ransack_q = {}
-
-    ransack_q["name_cont"] = query if query.present?
-
-    if condition.present?
-      condition.each do |k, v|
-        type = model.type_for_attribute(k)
-        case k.type
-        when :string, :integer, :binary, :text, :float
-          ransack_q["#{k}_eq"] = v
-        when :boolean
-          ransack_q["#{k}_true"] = v
-        end
-      end
-    end
-
-    q = model.ransack(ransack_q)
-    q.sorts = order.to_h.map { |k, v| "#{k} #{v}" } if order.present?
-    q.result
   end
 end
