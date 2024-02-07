@@ -1,119 +1,105 @@
-.mb-3
-  .row.row-cols-md-auto.g-3.align-items-center
-    .col-12
-      => filter_link(:specific)
-      | 特定端末
-    .col-12
-      = filter_collection_select(:nics_network_id, current_user.usable_networks.to_a, :id, :name, include_blank: "(全てのネットワーク)")
-    - if current_user.admin?
+= turbo_frame_tag "nodes-list" do
+  .mb-2
+    .row.row-cols-md-auto.g-3.align-items-center
       .col-12
-        = filter_collection_select(:user_id, User.all, :id, :username, include_blank: "(全てのユーザー)")
-
-= paginate @nodes
-
-table.table.table-hover.table-sm
-  thead
-    tr
+        => filter_link(:specific)
+        | 特定端末
+      .col-12
+        = filter_collection_select(:nics_network_id, current_user.usable_networks.to_a, :id, :name, include_blank: "(全てのネットワーク)")
       - if current_user.admin?
-        th scope="col"
-          = Node.human_attribute_name(:user)
-          =< sort_link(:user_username)
-      th scope="col"
-        = Node.human_attribute_name(:name)
-        =< sort_link(:name)
-      th scope="col"
-        = Node.human_attribute_name(:hostname)
-        =< sort_link(:hostname)
-      th scope="col"
-        = Node.human_attribute_name(:place)
-        =< sort_link(:place_room)
-      th scope="col"
-        = Hardware.model_name.human
-        =< sort_link(:hardware_product_name)
-      th scope="col"
-        = OperatingSystem.model_name.human
-        =< sort_link(:operating_system_name)
-      th scope="col"
-        = Nic.human_attribute_name(:ipv4_address)
-        =< sort_link(:nics_ipv4)
-      th scope="col"
-        = Nic.human_attribute_name(:ipv6_address)
-        =< sort_link(:nics_ipv6)
-      th scope="col"
-        = Nic.human_attribute_name(:mac_address)
-        =< sort_link(:nics_mac_address)
-      th scope="col"
-        = Node.human_attribute_name(:confirmation)
+        .col-12
+          = filter_collection_select(:user_id, User.all, :id, :username, include_blank: "(全てのユーザー)")
 
-  tbody
-    - @nodes.each do |node|
-      tr.clickable-row[
-        data-href="#{node_path(node)}"
-        data-contextmenu="contextmenu-node-#{node.id}"]
+  = paginate @nodes
+
+  table.table.table-hover.table-sm
+    thead
+      tr
         - if current_user.admin?
-          td.text-nowrap = node.user.username
-        td
-          = node.name
-          - [:virtual, :specific, :global, :public, :dns].each do |attr|
-            - if node.__send__(attr)
-              = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
-        td = node.hostname
-        td = node.place&.short_name
-        td = node.hardware&.product_name
-        td = node.operating_system&.name
-        td.text-nowrap
-          - node.nics.each do |nic|
-            - if nic.ipv4_dynamic?
-              span.text-success
-                = t_enum(:dynamic, :ipv4_configs)
-            - else
-              = span_value_for(nic.ipv4, hide_blank: true)
-            br
-        td.text-nowrap
-          - node.nics.each do |nic|
-            - if nic.ipv6_dynamic?
-              span.text-primary
-                = t_enum(:dynamic, :ipv6_configs)
-            - else
-              = span_value_for(nic.ipv6, hide_blank: true)
-            br
-        td.text-nowrap
-          - node.nics.each do |nic|
-            = nic.mac_address
-            br
-        td.text-nowrap
-          - case node.confirmation&.status
-          - when nil, :unconfirmed
-            i.fas.fa-times-circle.text-danger
-            span.text-danger = t("messages.unconfirmed")
-          - when :expired
-            i.fas.fa-times-circle.text-danger
-            span.text-danger = t("messages.expired")
-          - when :unapproved
-            i.fas.fa-exclamation-triangle.text-warning
-            span.text-warning = t("messages.unapproved")
-          - when :expire_soon
-            i.fas.fa-exclamation-triangle.text-warning
-            span.text-warning = t("messages.expire_soon")
-          - when :approved
-            i.fas.fa-check.text-success
-            span.text-success = t("messages.approved")
-- list_group_item_class = %w[list-group-item list-group-item-action flex-fill text-nowrap]
-- @nodes.each do |node|
-  .context-menu id="contextmenu-node-#{node.id}"
-    .list-group.list-group-horizontal
-      = link_to t("actions.show"), node,
-        class: list_group_item_class + ["bg-dark", "text-white"]
-      = link_to t("actions.confirm"), node_path(node, anchor: "confirm"),
-        class: list_group_item_class + ["bg-primary", "text-white"]
-      = link_to t("actions.edit"), edit_node_path(node),
-        class: list_group_item_class + ["bg-warning", "text-white"]
-      - if node.confirmation&.destroyable?
-        = button_to t("actions.destroy"), node,
-          data: {turbo_confirm: t("messages.corfirm_destroy_name", name: node.name)},
-          method: :delete,
-          class: list_group_item_class + ["bg-danger", "text-white"]
+          th scope="col"
+            = Node.human_attribute_name(:user)
+            =< sort_link(:user_username)
+        th scope="col"
+          = Node.human_attribute_name(:name)
+          =< sort_link(:name)
+        th scope="col"
+          = Node.human_attribute_name(:hostname)
+          =< sort_link(:hostname)
+        th scope="col"
+          = Node.human_attribute_name(:place)
+          =< sort_link(:place_room)
+        th scope="col"
+          = Hardware.model_name.human
+          =< sort_link(:hardware_product_name)
+        th scope="col"
+          = OperatingSystem.model_name.human
+          =< sort_link(:operating_system_name)
+        th scope="col"
+          = Nic.human_attribute_name(:ipv4_address)
+          =< sort_link(:nics_ipv4)
+        th scope="col"
+          = Nic.human_attribute_name(:ipv6_address)
+          =< sort_link(:nics_ipv6)
+        th scope="col"
+          = Nic.human_attribute_name(:mac_address)
+          =< sort_link(:nics_mac_address)
+        th scope="col"
+          = Node.human_attribute_name(:confirmation)
 
-= paginate @nodes
-p
-  = page_entries_info @nodes
+    tbody
+      - @nodes.each do |node|
+        tr.clickable-row[
+          data-href="#{node_path(node)}"
+          data-contextmenu="contextmenu-node-#{node.id}"]
+          - if current_user.admin?
+            td.text-nowrap = node.user.username
+          td
+            = node.name
+            - [:virtual, :specific, :global, :public, :dns].each do |attr|
+              - if node.__send__(attr)
+                = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
+          td = node.hostname
+          td = node.place&.short_name
+          td = node.hardware&.product_name
+          td = node.operating_system&.name
+          td.text-nowrap
+            - node.nics.each do |nic|
+              - if nic.ipv4_dynamic?
+                span.text-success
+                  = t_enum(:dynamic, :ipv4_configs)
+              - else
+                = span_value_for(nic.ipv4, hide_blank: true)
+              br
+          td.text-nowrap
+            - node.nics.each do |nic|
+              - if nic.ipv6_dynamic?
+                span.text-primary
+                  = t_enum(:dynamic, :ipv6_configs)
+              - else
+                = span_value_for(nic.ipv6, hide_blank: true)
+              br
+          td.text-nowrap
+            - node.nics.each do |nic|
+              = nic.mac_address
+              br
+          td.text-nowrap
+            - case node.confirmation&.status
+            - when nil, :unconfirmed
+              i.fas.fa-times-circle.text-danger
+              span.text-danger = t("messages.unconfirmed")
+            - when :expired
+              i.fas.fa-times-circle.text-danger
+              span.text-danger = t("messages.expired")
+            - when :unapproved
+              i.fas.fa-exclamation-triangle.text-warning
+              span.text-warning = t("messages.unapproved")
+            - when :expire_soon
+              i.fas.fa-exclamation-triangle.text-warning
+              span.text-warning = t("messages.expire_soon")
+            - when :approved
+              i.fas.fa-check.text-success
+              span.text-success = t("messages.approved")
+
+  = paginate @nodes
+  p
+    = page_entries_info @nodes
