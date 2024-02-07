@@ -8,31 +8,31 @@ table.table.table-hover.table-sm
       - if current_user.admin?
         th scope="col"
           = Node.human_attribute_name(:user)
-          =< sort_link(:user)
+          =< sort_link(:user_username)
       th scope="col"
         = Node.human_attribute_name(:name)
         =< sort_link(:name)
-      th scope="col" = Node.human_attribute_name(:hostname)
+      th scope="col"
         = Node.human_attribute_name(:hostname)
         =< sort_link(:hostname)
       th scope="col"
         = Node.human_attribute_name(:place)
-        =< sort_link(:place)
+        =< sort_link(:place_room)
       th scope="col"
         = Hardware.model_name.human
-        =< sort_link(:hardware)
+        =< sort_link(:hardware_product_name)
       th scope="col"
         = OperatingSystem.model_name.human
-        =< sort_link(:operating_system)
+        =< sort_link(:operating_system_name)
       th scope="col"
         = Nic.human_attribute_name(:ipv4_address)
-        =< sort_link(:ipv4_address)
+        =< sort_link(:nics_ipv4)
       th scope="col"
         = Nic.human_attribute_name(:ipv6_address)
-        =< sort_link(:ipv6_address)
+        =< sort_link(:nics_ipv6)
       th scope="col"
         = Nic.human_attribute_name(:mac_address)
-        =< sort_link(:mac_address)
+        =< sort_link(:nics_mac_address)
       th scope="col"
         = Node.human_attribute_name(:confirmation)
 

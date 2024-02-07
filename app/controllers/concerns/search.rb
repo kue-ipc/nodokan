@@ -4,9 +4,9 @@ module Search
 
   private def set_search
     @query = params[:query]&.to_s
-    @order = params.require(:order).permit(self.class.search_order_permitted_attributes) if params[:order].present?
+    @order = params.require(:order).permit(search_order_permitted_attributes) if params[:order].present?
     if params[:condition].present?
-      @condition = params.require(:condition).permit(self.class.search_condition_permittied_attributes)
+      @condition = params.require(:condition).permit(search_condition_permittied_attributes)
     end
   end
 
@@ -31,14 +31,14 @@ module Search
 
     if address
       if address.ipv4?
-        search_query_ipv4(self.class.search_attributes_by_type[:ipv4], address)
+        search_query_ipv4(search_attributes_by_type[:ipv4], address)
       elsif address.ipv6?
-        search_query_ipv6(self.class.search_attributes_by_type[:ipv6], address)
+        search_query_ipv6(search_attributes_by_type[:ipv6], address)
       end
     elsif query =~ /\A\h{2}(?:[-.:]?\h{2}){5,}\z/
-      search_query_binary(self.class.search_attributes_by_type[:binary], [query.delete("-.:")].pack("H*"))
+      search_query_binary(search_attributes_by_type[:binary], [query.delete("-.:")].pack("H*"))
     end.presence ||
-    search_query_string(self.class.search_attributes_by_type.slice(:string, :text).values.flatten, query,
+    search_query_string(search_attributes_by_type.slice(:string, :text).values.flatten, query,
       matcher: matcher)
   end
 
@@ -99,7 +99,60 @@ module Search
         logger.warn "spcific key or value is not valid: #{key} #{value}"
         nil
       end
-    end.comapct
+    end.compact
+  end
+
+  def search_attributes_by_type
+    @search_attributes_by_type ||= search_get_attributes_by_type
+  end
+
+  def search_get_attributes_by_type(model = self.class.search_model, exclude_association: false)
+    attributes_by_type = model.ransackable_attributes.group_by do |name|
+      type = model.type_for_attribute(name).type
+      if type == :binary && name.end_with?("_data")
+        type = [:ipv4, :ipv6].find { |special_type| name.start_with?("#{special_type}_") } || type
+      end
+      type
+    end
+
+    unless exclude_association
+      model.ransackable_associations.each do |association|
+        search_get_attributes_by_type(
+          association.classify.constantize, exclude_association: true).each do |type, attributes|
+          attributes_by_type[type] ||= []
+          attributes_by_type[type].concat(attributes.map { |name| [association, name].join("_") })
+        end
+      end
+    end
+
+    attributes_by_type
+  end
+
+  def search_order_permitted_attributes
+    search_soartable_attributes +
+      search_soartable_attributes.map { |name| name.dup.delete_suffix!("_data") }.compact
+  end
+
+  def search_soartable_attributes
+    @search_soartable_attributes ||= search_get_soartable_attributes
+  end
+
+  def search_get_soartable_attributes(model = self.class.search_model, exclude_association: false)
+    attributes = model.ransortable_attributes(current_user.role)
+
+    unless exclude_association
+      model.ransackable_associations.each do |association|
+        attributes.concat(
+          search_get_soartable_attributes(association.classify.constantize, exclude_association: true)
+          .map { |name| [association, name].join("_") })
+      end
+    end
+
+    attributes
+  end
+
+  def search_condition_permittied_attributes
+    search_attributes_by_type.values.flatten
   end
 
   class_methods do
@@ -109,60 +162,6 @@ module Search
 
     def search_model
       @search_model || (raise "No search model")
-    end
-
-    def search_attributes_by_type
-      @search_attributes_by_type ||= search_get_attributes_by_type
-    end
-
-    def search_get_attributes_by_type(model = search_model, exclude_association: false)
-      attributes_by_type = model.ransackable_attributes.group_by do |name|
-        type = model.type_for_attribute(name).type
-        if type == :binary && name.end_with?("_data")
-          type = [:ipv4, :ipv6].find { |special_type| name.start_with?("#{special_type}_") } || type
-        end
-        type
-      end
-
-      unless exclude_association
-        search_model.ransackable_associations.each do |association|
-          search_get_attributes_by_type(
-            association.classify.constantize, exclude_association: true).each do |type, attributes|
-            attributes_by_type[type] ||= []
-            attributes_by_type[type].concat(attributes.map { |name| [association, name].join("_") })
-          end
-        end
-      end
-
-      attributes_by_type
-    end
-
-    def search_order_permitted_attributes
-      [search_soartable_attributes + search_soartable_attributes.map do |name|
-                                       name.dup.delete_suffix!("_data")
-                                     end].compact
-    end
-
-    def search_soartable_attributes
-      @search_soartable_attributes ||= search_get_soartable_attributes
-    end
-
-    def search_get_soartable_attributes(model = search_model, exclude_association: false)
-      attributes = model.ransortable_attributes(current_user.role)
-
-      unless exclude_association
-        search_model.ransackable_associations.each do |association|
-          attributes.concat(
-            search_get_soartable_attributes(association.classify.constantize, exclude_association: true)
-            .map { |name| [association, name].join("_") })
-        end
-      end
-
-      attributes
-    end
-
-    def search_condition_permittied_attributes
-      search_model.ransackable_attributes(current_user.role)
     end
   end
 end
