@@ -34,6 +34,27 @@ class Node < ApplicationRecord
   normalizes :hostname, with: :strip.to_proc >> :downcase.to_proc
   normalizes :domain, with: :strip.to_proc >> :downcase.to_proc
 
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w(
+      name
+      hostname
+      domain
+      specific
+      virtual
+      pubilc
+      dns
+      duid_data
+      user_id
+    )
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w(user place hardware operating_system nics)
+  end
+
+  # rubocop: enable Lint/UnusedMethodArgument
+
   def global?
     nics.any?(&:global?)
   end

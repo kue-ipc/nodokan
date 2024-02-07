@@ -40,6 +40,9 @@ Layout/IndentationConsistency:
 Layout/LineLength:
   Max: 120
 
+Layout/MultilineMethodCallBraceLayout:
+  EnforcedStyle: same_line
+
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
@@ -49,12 +52,15 @@ Layout/SpaceInsideArrayLiteralBrackets:
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
+
 # Metrics double
 Metrics/AbcSize:
   Max: 34 # 17
 
 Metrics/BlockLength:
   Max: 50 # 25
+  AllowedMethods:
+    - class_methods
   Exclude:
     - 'lib/tasks/*.rake'
 
@@ -120,14 +126,11 @@ Style/NumericLiterals:
   Enabled: false
 
 Style/PercentLiteralDelimiters:
-  Enabled: false
-  # PreferredDelimiters:
-  #   default: '()'
-  #   '%i': '[]'
-  #   '%I': '[]' 
-  #   '%r': '{}' 
-  #   '%w': '[]' 
-  #   '%W': '[]'
+  PreferredDelimiters:
+    '%i': '()'
+    '%I': '()'
+    '%w': '()'
+    '%W': '()'
 
 Style/RedundantConstantBase:
   Enabled: false

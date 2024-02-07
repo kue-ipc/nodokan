@@ -13,6 +13,16 @@ class Place < ApplicationRecord
 
   before_destroy
 
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w(area building floor room confirmed nodes_count)
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+  # rubocop: enable Lint/UnusedMethodArgument
+
   def name
     [area, building, floor_human, room].select(&:present?).join(" ")
   end
@@ -36,7 +46,6 @@ class Place < ApplicationRecord
       area: area,
       building: building,
       floor: floor,
-      room: room,
-    )
+      room: room)
   end
 end

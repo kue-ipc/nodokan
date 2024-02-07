@@ -54,6 +54,24 @@ class Nic < ApplicationRecord
 
   attr_accessor :skip_after_job
 
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w(
+      node_id network_id
+      number name interface_type
+      auth locked
+      mac_address_data
+      ipv4_config ipv4_data
+      ipv6_config ipv6_data
+      ipv4_resolved_at ipv6_discovered_at ipv4_leased_at ipv6_leased_at auth_at
+    )
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["network", "node"]
+  end
+  # rubocop: enable Lint/UnusedMethodArgument
+
   def global?
     (ipv4_data.present? && !ipv4.private?) ||
       (ipv6_data.present? && !ipv6.private?)

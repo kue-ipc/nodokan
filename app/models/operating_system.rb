@@ -5,6 +5,16 @@ class OperatingSystem < ApplicationRecord
 
   validates :name, presence: true, length: {maximum: 255}, uniqueness: {case_sensitive: false}
 
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w(name eol confirmed nodes_count os_category_id)
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["os_category"]
+  end
+  # rubocop: enable Lint/UnusedMethodArgument
+
   def os_category_name
     @os_category_name ||= os_category&.name
   end
