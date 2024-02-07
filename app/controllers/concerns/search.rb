@@ -48,6 +48,8 @@ module Search
     {"#{keys.join('_or_')}_#{matcher}" => str}
   end
 
+  # FIXME: 最後のオクテットが\0だと切り詰められる
+  # TODO: /32以外の場合は範囲検索にしたい
   private def search_query_ipv4(keys, address)
     return {} if keys.blank?
 
