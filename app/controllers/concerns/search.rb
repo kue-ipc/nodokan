@@ -52,22 +52,22 @@ module Search
   private def search_condition(condition)
     return {} if condition.blank?
 
-    condition.to_h do |k, v|
-      next [k, nil] if v.blank?
-
-      type = model.type_for_attribute(k)
+    condition.select do |key, value|
+      value.present?
+    end.to_h do |key, value|
+      type = self.class.search_model.type_for_attribute(key)
       case type.type
       when :string, :text, :integer, :float, :decimal, :datetime, :date, :time
-        ["#{k}_eq", value]
+        ["#{key}_eq", value]
       when :binary
-        ["#{k}_eq", [value].pack("H*")]
+        ["#{key}_eq", [value].pack("H*")]
       when :boolean
-        ["#{k}_true", value]
+        ["#{key}_true", value]
       else
         logger.warn "Unknown attribute type: #{type.type}"
-        [k, nil]
+        ["#{key}_eq", value]
       end
-    end.compact
+    end
   end
 
   private def search_order(order)
@@ -75,6 +75,32 @@ module Search
       k = "#{k}_data" if k.start_with?("ipv4", "ipv6", "mac_address", "duid") && !k.end_with?("_data")
       v = v.to_s.downcase
       "#{k} #{v}" if ["asc", "desc"].include?(v)
+    end
+  end
+
+  class_methods do
+    def search_for(model)
+      @search_model = model
+    end
+
+    def search_model
+      @search_model || (raise "No search model")
+    end
+
+    def search_query_attributes
+      search_model.ransackable_attributes.select do |name|
+        [:string, :text, :binary].include?(search_model.type_for_attribute(name).type)
+      end
+    end
+
+    def search_order_attributes
+      search_model.ransortable_attributes.map do |name|
+        name.delete_suffix("_data")
+      end
+    end
+
+    def search_condition_attributes
+      search_model.ransackable_attributes
     end
   end
 end

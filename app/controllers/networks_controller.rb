@@ -5,24 +5,11 @@ class NetworksController < ApplicationController
   before_action :set_network, only: [:show, :edit, :update, :destroy]
   before_action :authorize_network, only: [:index]
 
-  def self.search_query_attributes
-    Network.ransackable_attributes.select do |name|
-      [:string, :text, :binary].include?(Network.type_for_attribute(name).type)
-    end
-  end
-
-  def self.search_order_attributes
-    Network.ransortable_attributes.map do |name|
-      name.delete_suffix("_data")
-    end
-  end
-
-  def self.search_condition_attributes
-    Network.ransackable_attributes.map
-  end
+  search_for Network
 
   # GET /networks
   # GET /networks.json
+  # GET /networks.csv
   def index
     set_page
     set_search
