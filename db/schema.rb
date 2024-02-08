@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_08_075631) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_08_234150) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -197,8 +197,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_08_075631) do
     t.boolean "public", default: false, null: false
     t.boolean "dns", default: false, null: false
     t.binary "duid_data", limit: 130
+    t.boolean "virtual_machine", default: false, null: false
+    t.bigint "host_id"
     t.index ["duid_data"], name: "index_nodes_on_duid_data", unique: true
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
+    t.index ["host_id"], name: "index_nodes_on_host_id"
     t.index ["hostname", "domain"], name: "fqdn", unique: true
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
     t.index ["place_id"], name: "index_nodes_on_place_id"
@@ -313,6 +316,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_08_075631) do
   add_foreign_key "nics", "networks"
   add_foreign_key "nics", "nodes"
   add_foreign_key "nodes", "hardwares"
+  add_foreign_key "nodes", "nodes", column: "host_id"
   add_foreign_key "nodes", "operating_systems"
   add_foreign_key "nodes", "places"
   add_foreign_key "nodes", "users"
