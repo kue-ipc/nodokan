@@ -5,7 +5,6 @@ import "./controllers"
 import './operators/bootstrap-trigger.coffee'
 import './operators/icon-font.coffee'
 
-import './operators/clickable-row.coffee'
 import './operators/datalist-candidation.coffee'
 import './operators/manage-table.coffee'
 import './operators/node-confirm.coffee'
