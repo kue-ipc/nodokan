@@ -89,7 +89,7 @@ module SearchHelper
     end
 
     path = __send__("#{controller_name}_path", params)
-    link_to path, class: "btn btn-sm btn-light" do
+    link_to path do
       tag.i("", class: i_class)
     end
   end

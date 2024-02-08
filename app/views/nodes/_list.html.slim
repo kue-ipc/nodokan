@@ -12,93 +12,80 @@
 
   = paginate @nodes
 
-  table.table.table-hover.table-sm
-    thead
-      tr
-        - if current_user.admin?
-          th scope="col"
-            = Node.human_attribute_name(:user)
-            =< sort_link(:user_username)
-        th scope="col"
-          = Node.human_attribute_name(:name)
-          =< sort_link(:name)
-        th scope="col"
-          = Node.human_attribute_name(:hostname)
-          =< sort_link(:hostname)
-        th scope="col"
-          = Node.human_attribute_name(:place)
-          =< sort_link(:place_room)
-        th scope="col"
-          = Hardware.model_name.human
-          =< sort_link(:hardware_product_name)
-        th scope="col"
-          = OperatingSystem.model_name.human
-          =< sort_link(:operating_system_name)
-        th scope="col"
-          = Nic.human_attribute_name(:ipv4_address)
-          =< sort_link(:nics_ipv4)
-        th scope="col"
-          = Nic.human_attribute_name(:ipv6_address)
-          =< sort_link(:nics_ipv6)
-        th scope="col"
-          = Nic.human_attribute_name(:mac_address)
-          =< sort_link(:nics_mac_address)
-        th scope="col"
-          = Node.human_attribute_name(:confirmation)
+  / list_col_classes
+  .mb-2
+    .row.mb-2.fw-bold
+      div class=(list_col_classes(:user))
+        = Node.human_attribute_name(:user)
+        =< sort_link(:user_username)
+      div class=(list_col_classes(:name))
+        = Node.human_attribute_name(:name)
+        =< sort_link(:name)
+      div class=(list_col_classes(:hostname))
+        = Node.human_attribute_name(:hostname)
+        =< sort_link(:hostname)
+      div class=(list_col_classes(:place))
+        = Place.model_name.human
+        =< sort_link(:place_room)
+      div class=(list_col_classes(:ipv4_address))
+        = Nic.human_attribute_name(:ipv4_address)
+        =< sort_link(:nics_ipv4)
+      div class=(list_col_classes(:ipv6_address))
+        = Nic.human_attribute_name(:ipv6_address)
+        =< sort_link(:nics_ipv6)
+      div class=(list_col_classes(:mac_address))
+        = Nic.human_attribute_name(:mac_address)
+        =< sort_link(:nics_mac_address)
+      div class=(list_col_classes(:confirmation))
+        = Node.human_attribute_name(:confirmation)
 
-    tbody
-      - @nodes.each do |node|
-        tr.clickable-row[
-          data-href="#{node_path(node)}"
-          data-contextmenu="contextmenu-node-#{node.id}"]
-          - if current_user.admin?
-            td.text-nowrap = node.user.username
-          td
-            = node.name
-            - [:virtual, :specific, :global, :public, :dns].each do |attr|
-              - if node.__send__(attr)
-                = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
-          td = node.hostname
-          td = node.place&.short_name
-          td = node.hardware&.product_name
-          td = node.operating_system&.name
-          td.text-nowrap
-            - node.nics.each do |nic|
-              - if nic.ipv4_dynamic?
-                span.text-success
-                  = t_enum(:dynamic, :ipv4_configs)
-              - else
-                = span_value_for(nic.ipv4, hide_blank: true)
-              br
-          td.text-nowrap
-            - node.nics.each do |nic|
-              - if nic.ipv6_dynamic?
-                span.text-primary
-                  = t_enum(:dynamic, :ipv6_configs)
-              - else
-                = span_value_for(nic.ipv6, hide_blank: true)
-              br
-          td.text-nowrap
-            - node.nics.each do |nic|
-              = nic.mac_address
-              br
-          td.text-nowrap
-            - case node.confirmation&.status
-            - when nil, :unconfirmed
-              i.fas.fa-times-circle.text-danger
-              span.text-danger = t("messages.unconfirmed")
-            - when :expired
-              i.fas.fa-times-circle.text-danger
-              span.text-danger = t("messages.expired")
-            - when :unapproved
-              i.fas.fa-exclamation-triangle.text-warning
-              span.text-warning = t("messages.unapproved")
-            - when :expire_soon
-              i.fas.fa-exclamation-triangle.text-warning
-              span.text-warning = t("messages.expire_soon")
-            - when :approved
-              i.fas.fa-check.text-success
-              span.text-success = t("messages.approved")
+    - @nodes.each do |node|
+      = link_to node, class: "row py-1 border-top", data: {turbo: false}
+        div class=(list_col_classes(:user)) = node.user.username
+        div class=(list_col_classes(:name))
+          = node.name
+          - [:virtual, :specific, :global, :public, :dns].each do |attr|
+            - if node.__send__(attr)
+              = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
+        div class=(list_col_classes(:hostname)) = node.hostname
+        div class=(list_col_classes(:place)) = node.place&.short_name
+        div class=(list_col_classes(:ipv4_address))
+          - node.nics.each do |nic|
+            - if nic.ipv4_dynamic?
+              span.text-success
+                = t_enum(:dynamic, :ipv4_configs)
+            - else
+              = span_value_for(nic.ipv4, hide_blank: true)
+            br
+        div class=(list_col_classes(:ipv6_address))
+          - node.nics.each do |nic|
+            - if nic.ipv6_dynamic?
+              span.text-primary
+                = t_enum(:dynamic, :ipv6_configs)
+            - else
+              = span_value_for(nic.ipv6, hide_blank: true)
+            br
+        div class=(list_col_classes(:mac_address))
+          - node.nics.each do |nic|
+            = nic.mac_address
+            br
+        div class=(list_col_classes(:confirmation))
+          - case node.confirmation&.status
+          - when nil, :unconfirmed
+            i.fas.fa-times-circle.text-danger
+            span.text-danger = t("messages.unconfirmed")
+          - when :expired
+            i.fas.fa-times-circle.text-danger
+            span.text-danger = t("messages.expired")
+          - when :unapproved
+            i.fas.fa-exclamation-triangle.text-warning
+            span.text-warning = t("messages.unapproved")
+          - when :expire_soon
+            i.fas.fa-exclamation-triangle.text-warning
+            span.text-warning = t("messages.expire_soon")
+          - when :approved
+            i.fas.fa-check.text-success
+            span.text-success = t("messages.approved")
 
   = paginate @nodes
   p
