@@ -68,8 +68,7 @@ module DeviseLdapAuthenticatableEx
             in_required_groups_or?
           else
             DeviseLdapAuthenticatable::Logger.send(
-              "Invalid check policy: #{Devise.ldap_check_group_policy}",
-            )
+              "Invalid check policy: #{Devise.ldap_check_group_policy}")
             false
           end
         end

@@ -67,7 +67,6 @@ class UsersController < ApplicationController
   private def user_params
     params.require(:user).permit(
       :role,
-      :auth_network_id
-    )
+      :auth_network_id)
   end
 end

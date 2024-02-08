@@ -10,15 +10,15 @@ class Hardware < ApplicationRecord
     case_sensitive: true,
   }
 
-    # rubocop: disable Lint/UnusedMethodArgument
-    def self.ransackable_attributes(auth_object = nil)
-      %w(device_type_id maker product_name model_number confirmed nodes_count)
-    end
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w(device_type_id maker product_name model_number confirmed nodes_count)
+  end
 
-    def self.ransackable_associations(auth_object = nil)
-      []
-    end
-    # rubocop: enable Lint/UnusedMethodArgument
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+  # rubocop: enable Lint/UnusedMethodArgument
 
   def name
     [maker, product_name].select(&:present?).join(" ")
@@ -51,7 +51,6 @@ class Hardware < ApplicationRecord
       device_type_id: device_type_id,
       maker: maker,
       product_name: product_name,
-      model_number: model_number,
-    )
+      model_number: model_number)
   end
 end

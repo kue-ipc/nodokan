@@ -32,7 +32,6 @@ class SpecificNodeApplicationsController < ApplicationController
       :external,
       :register_dns,
       :fqdn,
-      :note,
-    )
+      :note)
   end
 end

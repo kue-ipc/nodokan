@@ -14,7 +14,8 @@ class NodesController < ApplicationController
   def index
     set_page
     set_search
-    @nodes = search_and_sort(policy_scope(Node)).includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
+    @nodes = search_and_sort(policy_scope(Node)).includes(:user, :place, :hardware, :operating_system, :confirmation,
+      nics: :network)
     respond_to do |format|
       format.html { @nodes = paginate(@nodes) }
       format.json { @nodes = paginate(@nodes) }
@@ -37,8 +38,7 @@ class NodesController < ApplicationController
 
       if @confirmation.security_software&.os_category != @node.operating_system.os_category
         @confirmation.security_software = SecuritySoftware.new(
-          os_category: @node.operating_system.os_category,
-        )
+          os_category: @node.operating_system.os_category)
         @confirmation.security_update = nil
         @confirmation.security_scan = nil
       end
@@ -67,8 +67,7 @@ class NodesController < ApplicationController
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
       nics: [Nic.new],
-      user: current_user,
-    )
+      user: current_user)
     authorize @node
 
     return unless current_user.usable_networks.count.zero?
@@ -215,10 +214,8 @@ class NodesController < ApplicationController
           interface_type: nic.interface_type,
           network: nic.network,
           ipv4_config: nic.ipv4_config,
-          ipv6_config: nic.ipv6_config,
-        )
-      end,
-    )
+          ipv6_config: nic.ipv6_config)
+      end)
   end
 
   # POST /nodes/1/tranfer
@@ -292,8 +289,7 @@ class NodesController < ApplicationController
         :ipv4_address,
         :ipv6_config,
         :ipv6_address,
-      ],
-    )
+      ])
 
     if permitted_params[:virtual] == "1"
       place = nil
@@ -308,8 +304,7 @@ class NodesController < ApplicationController
         permitted_params[:hardware]&.values&.find(&:presence) &&
         Hardware.find_or_initialize_by(
           **permitted_params[:hardware],
-          device_type_id: permitted_params.dig(:hardware, :device_type_id).presence,
-        )
+          device_type_id: permitted_params.dig(:hardware, :device_type_id).presence)
 
       operating_system =
         permitted_params.dig(:operating_system, :os_category_id).presence &&
@@ -319,8 +314,7 @@ class NodesController < ApplicationController
     permitted_params.except(:place, :hardware, :operating_system).merge(
       place: place,
       hardware: hardware,
-      operating_system: operating_system,
-    )
+      operating_system: operating_system)
   end
 
   private def authorize_node

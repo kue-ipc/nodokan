@@ -9,8 +9,7 @@ class SecuritySoftwaresController < ApplicationController
       :target,
       :format,
       order: [:id, :os_category_id, :installation_method, :name, :confirmations_count],
-      condition: [:os_category_id, :installation_method, :name],
-    )
+      condition: [:os_category_id, :installation_method, :name])
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
@@ -93,7 +92,6 @@ class SecuritySoftwaresController < ApplicationController
       :building,
       :floor,
       :room,
-      :confirmed,
-    )
+      :confirmed)
   end
 end

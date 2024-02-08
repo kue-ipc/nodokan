@@ -2,9 +2,7 @@ class RadiusMacAddJob < ApplicationJob
   queue_as :default
 
   def perform(mac_address_raw, vlan)
-    if mac_address_raw !~ /\A[0-9a-f]{12}\z/
-      raise "Cannot add a invalid mac address to RADIUS: #{mac_address_raw}"
-    end
+    raise "Cannot add a invalid mac address to RADIUS: #{mac_address_raw}" if mac_address_raw !~ /\A[0-9a-f]{12}\z/
 
     username = mac_address_raw
 

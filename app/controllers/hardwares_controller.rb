@@ -12,8 +12,7 @@ class HardwaresController < ApplicationController
         :id, :device_type_id, :maker, :product_name, :model_number,
         :nodes_count,
       ],
-      condition: [:device_type_id, :maker, :product_name, :model_number],
-    )
+      condition: [:device_type_id, :maker, :product_name, :model_number])
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
@@ -98,7 +97,6 @@ class HardwaresController < ApplicationController
       :maker,
       :product_name,
       :model_number,
-      :confirmed,
-    )
+      :confirmed)
   end
 end

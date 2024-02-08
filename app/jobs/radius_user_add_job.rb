@@ -2,9 +2,7 @@ class RadiusUserAddJob < ApplicationJob
   queue_as :default
 
   def perform(username, vlan)
-    if username =~ /\A[0-9a-f]{12}\z/
-      raise "Cannot add a user name in MAC address format to RADIUS: #{username}"
-    end
+    raise "Cannot add a user name in MAC address format to RADIUS: #{username}" if username =~ /\A[0-9a-f]{12}\z/
 
     # Auth-Typeを設定
     Radius::Radcheck.transaction do

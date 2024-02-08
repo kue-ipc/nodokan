@@ -7,7 +7,7 @@ module ImportExport
     end
 
     def attrs
-      %w[
+      %w(
         username
         email
         fullname
@@ -15,14 +15,14 @@ module ImportExport
         flag
         auth_network
         networks
-      ]
+      )
     end
 
     def unique_attrs
-      %w[
+      %w(
         username
         email
-      ]
+      )
     end
 
     def record_to_row(user, row)
@@ -43,8 +43,7 @@ module ImportExport
         fullname: row["fullname"],
         role: row["role"],
         flag: row["flag"],
-        auth_network: Network.find_identifier(row["auth_network"]),
-      )
+        auth_network: Network.find_identifier(row["auth_network"]))
       user.clear_use_networks
       row["networks"]&.split&.each do |nw|
         user.add_use_network(Network.find_identifier(nw))

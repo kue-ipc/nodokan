@@ -39,14 +39,14 @@ RailsAdmin.config do |config|
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
 
-  paper_trail_audit_model = %w[
+  paper_trail_audit_model = %w(
     Ipv4Arp Ipv6Neighbor
     Ipv4Pool Ipv6Pool
     Node Confirmation
     Nic Network Assignment
     Place DeviceType Hardware OsCategory OperatingSystem SecuritySoftware
     User
-  ]
+  )
 
   config.actions do
     dashboard                     # mandatory

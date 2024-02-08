@@ -52,7 +52,6 @@ class OsCategoriesController < ApplicationController
       :icon,
       :order,
       :locked,
-      :description,
-    )
+      :description)
   end
 end

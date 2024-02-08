@@ -4,7 +4,7 @@ class Confirmation < ApplicationRecord
   belongs_to :node
   belongs_to :security_software, optional: true
 
-  NUM_ATTRS = %w[
+  NUM_ATTRS = %w(
     existence
     content
     os_update
@@ -12,9 +12,9 @@ class Confirmation < ApplicationRecord
     software
     security_update
     security_scan
-  ].freeze
+  ).freeze
 
-  ALL_ATTRS = (NUM_ATTRS + %w[security_hardware security_software]).freeze
+  ALL_ATTRS = (NUM_ATTRS + %w(security_hardware security_software)).freeze
 
   bitwise security_hardware: {
     encrypted: 0x1,
@@ -160,7 +160,7 @@ class Confirmation < ApplicationRecord
     if node.physical?
       ALL_ATTRS.all? { |name| __send__("#{name}_ok?") }
     else
-      %w[existence content].all? { |name| __send__("#{name}_ok?") }
+      %w(existence content).all? { |name| __send__("#{name}_ok?") }
     end
   end
 

@@ -85,7 +85,6 @@ class Ipv4Pool < ApplicationRecord
     Ipv4Pool.new(
       ipv4_config: config,
       ipv4_first_address: first,
-      ipv4_last_address: last,
-    )
+      ipv4_last_address: last)
   end
 end

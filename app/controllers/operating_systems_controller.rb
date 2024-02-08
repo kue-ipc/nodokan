@@ -9,8 +9,7 @@ class OperatingSystemsController < ApplicationController
       :target,
       :format,
       order: [:id, :os_category_id, :name, :nodes_count],
-      condition: [:os_category_id, :name],
-    )
+      condition: [:os_category_id, :name])
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
@@ -89,7 +88,6 @@ class OperatingSystemsController < ApplicationController
       :name,
       :eol,
       :confirmed,
-      :description,
-    )
+      :description)
   end
 end

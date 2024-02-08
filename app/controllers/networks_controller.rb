@@ -56,8 +56,7 @@ class NetworksController < ApplicationController
         @network.ipv4_pools << Ipv4Pool.new(
           ipv4_config: :static,
           ipv4_first_address: next_ipv4&.address,
-          ipv4_last_address: next_ipv4&.address
-        )
+          ipv4_last_address: next_ipv4&.address)
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       elsif params["add_ipv6_pool"] && @network.ipv6_network
@@ -65,8 +64,7 @@ class NetworksController < ApplicationController
         @network.ipv6_pools << Ipv6Pool.new(
           ipv6_config: :static,
           ipv6_first_address: next_ipv6&.address,
-          ipv6_last_address: next_ipv6&.address
-        )
+          ipv6_last_address: next_ipv6&.address)
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       else
@@ -95,8 +93,7 @@ class NetworksController < ApplicationController
           @network.ipv4_pools << Ipv4Pool.new(
             ipv4_config: :static,
             ipv4_first_address: next_ipv4&.address,
-            ipv4_last_address: next_ipv4&.address
-          )
+            ipv4_last_address: next_ipv4&.address)
         else
           flash.now[:alert] = "IPアドレスの空きがありません。"
         end
@@ -109,8 +106,7 @@ class NetworksController < ApplicationController
           @network.ipv6_pools << Ipv6Pool.new(
             ipv6_config: :static,
             ipv6_first_address: next_ipv6&.address,
-            ipv6_last_address: next_ipv6&.address
-          )
+            ipv6_last_address: next_ipv6&.address)
         else
           flash.now[:alert] = "IPアドレスの空きがありません。"
         end
@@ -169,8 +165,7 @@ class NetworksController < ApplicationController
         :ipv6_config,
         :ipv6_first_address,
         :ipv6_last_address,
-      ]
-    )
+      ])
   end
 
   private def authorize_network

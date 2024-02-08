@@ -86,7 +86,6 @@ class Ipv6Pool < ApplicationRecord
     Ipv6Pool.new(
       ipv6_config: config,
       ipv6_first_address: first,
-      ipv6_last_address: last,
-    )
+      ipv6_last_address: last)
   end
 end

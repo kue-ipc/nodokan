@@ -9,7 +9,7 @@ module ImportExport
     end
 
     def attrs
-      %w[
+      %w(
         name
         flag
         vlan
@@ -20,14 +20,14 @@ module ImportExport
         ipv6_gateway
         ipv6_pools
         note
-      ]
+      )
     end
 
     def unique_attrs
-      %w[
+      %w(
         name
         vlan
-      ]
+      )
     end
 
     def record_to_row(network, row)
@@ -48,8 +48,7 @@ module ImportExport
       network.assign_attributes(
         name: row["name"],
         flag: row["flag"],
-        vlan: row["vlan"].presence&.to_i,
-      )
+        vlan: row["vlan"].presence&.to_i)
 
       if row["ipv4_network"].present?
         address, mask = row["ipv4_network"].split("/")

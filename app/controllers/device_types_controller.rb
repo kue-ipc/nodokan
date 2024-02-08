@@ -52,7 +52,6 @@ class DeviceTypesController < ApplicationController
       :icon,
       :order,
       :locked,
-      :description,
-    )
+      :description)
   end
 end

@@ -9,8 +9,7 @@ class PlacesController < ApplicationController
       :target,
       :format,
       order: [:id, :area, :building, :floor, :room, :nodes_count],
-      condition: [:area, :building, :floor, :room],
-    )
+      condition: [:area, :building, :floor, :room])
 
     @page = permitted_params[:page]
     @per = permitted_params[:per]
@@ -93,7 +92,6 @@ class PlacesController < ApplicationController
       :building,
       :floor,
       :room,
-      :confirmed,
-    )
+      :confirmed)
   end
 end

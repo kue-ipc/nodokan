@@ -3,13 +3,13 @@ class SpecificNodeApplication
   include ActiveModel::Attributes
   include ActiveModel::Serialization
 
-  EXTERNAL_LIST = %w[
+  EXTERNAL_LIST = %w(
     none
     nat
     napt
     through
     direct
-  ].freeze
+  ).freeze
 
   attribute :node_id, :integer
   attribute :user_id, :integer
@@ -32,8 +32,9 @@ class SpecificNodeApplication
 
   validates :reason, presence: true, if: -> { action != "release" }
   validates :rule_set, presence: true, if: -> { action != "release" }
-  validates :rule_list, presence: true, if: -> {
-    action != "release"  && rule_set == -1 && ["none", "direct"].exclude?(external) }
+  validates :rule_list, presence: true, if: lambda {
+                                              action != "release" && rule_set == -1 && ["none", "direct"].exclude?(external)
+                                            }
   validates :external, presence: true, if: -> { action != "release" }
   validates :register_dns, inclusion: {in: [true, false]}, if: -> { action != "release" }
   validates :fqdn, presence: true, if: -> { action != "release" && register_dns }

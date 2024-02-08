@@ -17,7 +17,6 @@ module DatalistCanadidationHelper
     tag.div(
       id: "#{attr_name}-app",
       class: ["datalist-canadidation", "d-none"],
-      "data-params": params.to_json,
-    )
+      "data-params": params.to_json)
   end
 end

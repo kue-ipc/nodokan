@@ -52,8 +52,7 @@ module ImportExport
         ipv4_config: nic&.ipv4_config,
         ipv4_address: nic&.ipv4_address,
         ipv6_config: nic&.ipv6_config,
-        ipv6_address: nic&.ipv6_address,
-      )
+        ipv6_address: nic&.ipv6_address)
     end
 
     def data_to_nic(data, nic = Nic.new)
@@ -66,8 +65,7 @@ module ImportExport
         ipv4_config: data[:ipv4_config],
         ipv4_address: data[:ipv4_address],
         ipv6_config: data[:ipv6_config],
-        ipv6_address: data[:ipv6_address],
-      )
+        ipv6_address: data[:ipv6_address])
       nic
     end
 
@@ -114,23 +112,19 @@ module ImportExport
           area: row["place[area]"] || "",
           building: row["place[building]"] || "",
           floor: row["place[floor]"].presence || 0,
-          room: row["place[room]"] || "",
-        ),
+          room: row["place[room]"] || ""),
         hardware: Hardware.find_or_initialize_by(
           device_type:
             row["hardware[device_type]"].presence &&
             DeviceType.find_by!(name: row["hardware[device_type]"]),
           maker: row["hardware[maker]"] || "",
           product_name: row["hardware[product_name]"] || "",
-          model_number: row["hardware[model_number]"] || "",
-        ),
+          model_number: row["hardware[model_number]"] || ""),
         operating_system:
           row["operating_system[os_category]"].presence &&
             OperatingSystem.find_or_initialize_by(
               os_category: OsCategory.find_by!(name: row["operating_system[os_category]"]),
-              name: row["operating_system[name]"] || "",
-            ),
-      )
+              name: row["operating_system[name]"] || ""))
 
       first_nic = node.nics.first
       other_nics = node.nics - [first_nic]

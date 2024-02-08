@@ -29,8 +29,7 @@ class ConfirmationsController < ApplicationController
       :existence, :content, :os_update, :app_update, :software,
       :security_update, :security_scan,
       security_hardwares: [],
-      security_software: [:os_category_id, :installation_method, :name],
-    )
+      security_software: [:os_category_id, :installation_method, :name])
 
     security_hardware = list_to_bitwise(permitted_params[:security_hardwares], Confirmation.security_hardwares)
 

@@ -5,8 +5,7 @@ class KeaReservation4AddJob < ApplicationJob
     Kea::Host.transaction do
       host = Kea::Host.find_or_initialize_by(
         dhcp_identifier: mac_address_binary,
-        host_identifier_type: Kea::HostIdentifierType.hw_address,
-      )
+        host_identifier_type: Kea::HostIdentifierType.hw_address)
       return if host.ipv4_address == ipv4_u32 && host.dhcp4_subnet_id == network_id
 
       host.ipv4_address = ipv4_u32
