@@ -74,6 +74,8 @@ ja:
   messages:
     comment: コメント
     comment_of_action: "%{action}時のコメント"
+    all: 全て
+    all_of_model: "全ての%{model}"
     not_entered: 未入力
     confirmed: 確認済み
     unconfirmed: 未確認

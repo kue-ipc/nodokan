@@ -5,10 +5,10 @@
         => filter_link(:specific)
         | 特定端末
       .col-12
-        = filter_collection_select(:nics_network_id, current_user.usable_networks.to_a, :id, :name, include_blank: "(全てのネットワーク)")
+        = filter_collection_select(:nics_network_id, current_user.usable_networks.to_a, :id, :name)
       - if current_user.admin?
         .col-12
-          = filter_collection_select(:user_id, User.all, :id, :username, include_blank: "(全てのユーザー)")
+          = filter_collection_select(:user_id, User.all, :id, :username)
 
   = paginate @nodes
 

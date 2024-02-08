@@ -44,12 +44,12 @@ p
   data: {turbo: false} do |f|
   = f.form_group :action, label: {text: "申請"} do
     - if @node.specific
-      - enabled_actions = %w[change release]
+      - enabled_actions = ["change", "release"]
       - checked_action = "change"
     - else
-      - enabled_actions = %w[register]
+      - enabled_actions = ["register"]
       - checked_action = "register"
-    - %w[register change release].each do |action|
+    - ["register", "change", "release"].each do |action|
       - enabled = enabled_actions.include?(action)
       = f.radio_button :action, action, label: t(action, scope: "actions"), inline: true,
         disabled: !enabled, required: enabled,

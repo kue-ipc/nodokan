@@ -49,8 +49,16 @@ module SearchHelper
 
         content += f.hidden_field("condition[#{name}]", value: value)
       end
+      model_name = collection.first&.model_name&.human
+      all_text =
+        if model_name
+          t("messages.all_of_model", model: model_name)
+        else
+          t("messages.all")
+        end
+
       content += f.collection_select(
-        "condition[#{attr}]", collection, value_method, text_method, include_blank: "(全て)",
+        "condition[#{attr}]", collection, value_method, text_method, include_blank: "(#{all_text})",
         selected: @condition&.fetch(attr, nil), hide_label: true, wrapper_class: "col-12 mb-3",
         append: f.primary('<i class="fas fa-filter"></i>'.html_safe, name: :filter, render_as_button: true),
         **options)

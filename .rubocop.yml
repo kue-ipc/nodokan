@@ -135,6 +135,9 @@ Style/PercentLiteralDelimiters:
 Style/RedundantConstantBase:
   Enabled: false
 
+Style/RedundantLineContinuation:
+  Enabled: false
+
 Style/SpecialGlobalVars:
   EnforcedStyle: use_perl_names
 
@@ -154,7 +157,7 @@ Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
 Style/WordArray:
-  MinSize: 3
+  MinSize: 6
 
 # Bundler
 # https://docs.rubocop.org/rubocop/cops_bundler.html

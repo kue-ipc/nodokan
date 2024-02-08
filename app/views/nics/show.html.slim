@@ -93,12 +93,3 @@ dl
             td = @radpostauth&.pass
           - else
             td colspan="4" = span_value_for(nil)
-          
-
-  / = dt_dd_for @nic, :ipv4_resolved_at, blank_alt: "-"
-  / - if Settings.config.ipv6
-  /   = dt_dd_for @nic, :ipv6_discovered_at, blank_alt: "-"
-  / = dt_dd_for @nic, :ipv4_leased_at, blank_alt: "-"
-  / - if Settings.config.ipv6
-  /   = dt_dd_for @nic, :ipv6_leased_at, blank_alt: "-"
-  / = dt_dd_for @nic, :auth_at, blank_alt: "-"

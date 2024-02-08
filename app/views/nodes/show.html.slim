@@ -279,8 +279,7 @@ p.text-muted
               - ip_data = { \
                 setting: "手動",
                 address: nic.ipv6_address.presence || sp,
-                prefix_length: nic.network&.ipv6_prefix_length.presence || \
-                              sp,
+                prefix_length: nic.network&.ipv6_prefix_length.presence || sp,
                 gateway: nic.network&.ipv6_gateway.presence || sp,
               }
             - when "disabled"
