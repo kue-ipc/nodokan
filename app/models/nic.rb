@@ -101,7 +101,7 @@ class Nic < ApplicationRecord
     end
 
     unless network.ipv4_configs.include?(ipv4_config)
-      errors[:ipv4_config] << "このネットワークに設定することはできません。"
+      errors.add(:ipv4_config, t("errors.messages.invalid_config"))
       return false
     end
 
@@ -115,7 +115,8 @@ class Nic < ApplicationRecord
         self.ipv4_address = old_nic.ipv4_address
       else
         unless (ipv4 = network.next_ipv4("reserved"))
-          errors[:ipv4_config] << "予約用アドレスの空きがありません。"
+          errors.add(:ipv4_config, t("errors.messages.no_free",
+            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.reserved"))))
           return false
         end
 
@@ -128,27 +129,27 @@ class Nic < ApplicationRecord
         self.ipv4_address = old_nic.ipv4_address
       else
         unless (ipv4 = network.next_ipv4("static"))
-          errors[:ipv4_config] << "固定用アドレスの空きがありません。"
+          errors.add(:ipv4_config, t("errors.messages.no_free",
+            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.static"))))
           return false
         end
 
         self.ipv4_address = ipv4.address
       end
     when "manual"
-      pp ipv4_address
       if manageable
         if ipv4_address.blank?
-          errors[:ipv4_address] << "手動の場合はアドレスが必要です。"
+          errors(:ipv4_address, t("errors.messages.blank"))
           return false
         end
       elsif same_old_nic?(:network_id, :ipv4_config)
         self.ipv4_address = old_nic.ipv4_address
       else
-        errors[:ipv4_config] << "管理者以外は手動に設定できません。"
+        errors(:ipv4_config, t("errors.messages.invalid_config"))
         return false
       end
     else
-      errors[:ipv4_config] << "不正な設定です。"
+      errors(:ipv4_config, t("errors.messages.invalid_config"))
       return false
     end
 
@@ -162,7 +163,7 @@ class Nic < ApplicationRecord
     end
 
     unless network.ipv6_configs.include?(ipv6_config)
-      errors[:ipv6_config] << "このネットワークに設定することはできません。"
+      errors(:ipv6_config, t("errors.messages.invalid_config"))
       return false
     end
 
@@ -176,7 +177,8 @@ class Nic < ApplicationRecord
         self.ipv6_address = old_nic.ipv6_address
       else
         unless (ipv6 = network.next_ipv6("reserved"))
-          errors[:ipv6_config] << "予約用アドレスの空きがありません。"
+          errors.add(:ipv6_config, t("errors.messages.no_free",
+            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.reserved"))))
           return false
         end
 
@@ -189,7 +191,8 @@ class Nic < ApplicationRecord
         self.ipv6_address = old_nic.ipv6_address
       else
         unless (ipv6 = network.next_ipv6("static"))
-          errors[:ipv6_config] << "固定用アドレスの空きがありません。"
+          errors.add(:ipv6_config, t("errors.messages.no_free",
+            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.static"))))
           return false
         end
 
@@ -198,17 +201,17 @@ class Nic < ApplicationRecord
     when "manual"
       if manageable
         if ipv6_address.blank?
-          errors[:ipv6_address] << "手動の場合はアドレスが必要です。"
+          errors(:ipv6_address, t("errors.messages.blank"))
           return false
         end
       elsif same_old_nic?(:network_id, :ipv6_config)
         self.ipv6_address = old_nic.ipv6_address
       else
-        errors[:ipv6_config] << "管理者以外は手動に設定できません。"
+        errors(:ipv6_config, t("errors.messages.invalid_config"))
         return false
       end
     else
-      errors[:ipv6_config] << "不正な設定です。"
+      errors(:ipv6_config, t("errors.messages.invalid_config"))
       return false
     end
 

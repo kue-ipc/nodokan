@@ -42,7 +42,7 @@ class HexDataTest < ActiveSupport::TestCase
       @class.hex_str_to_data(@str, igonre_chars: "")
     end
     assert_raises(ArgumentError) do
-      @class.hex_str_to_data(@str + "X")
+      @class.hex_str_to_data("#{@str}X")
     end
     assert_raises(ArgumentError) do
       @class.hex_str_to_data(@str[1..])

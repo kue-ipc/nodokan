@@ -85,6 +85,9 @@ ja:
     unapproved: 未承認
     content: 内容
     content_of_action: "%{action}内容"
+    address: アドレス
+    address_for_config: "%{name}用アドレス"
+
     corfirm_destroy: "本当に削除してもよろしいですか？"
     corfirm_destroy_name: "「%{name}」を本当に削除してもよろしいですか？"
     corfirm_reset: "本当にリセットしてもよろしいですか？"
@@ -96,6 +99,7 @@ ja:
     failure_action: "%{model}を%{action}することができません。"
     dispaly_detail: "詳細を確認するには%{name}をクリックしてください。"
     cannot_modify_own: "自分自身の情報は変更できません。"
+
     failure_send_notification_mail: |
       通知メールを送信できませんでした。
       システム管理者に問い合わせてください。
@@ -266,6 +270,7 @@ ja:
       【OS未登録】OSの登録を行わないとセキュリティソフトの確認ができため、確認を完了・承認することができません。
       「編集」ボタンを押して、編集画面でOSを登録してください。
     last_status: 前回のステータス
+
   date:
     formats:
       default: "%Y年%m月%d日(%a)"
@@ -603,6 +608,7 @@ ja:
           保護された安全な場所とは、入退出記録・24時間監視・出入口常時施錠等を実施し、入場者を厳しく制限している場所のことで、サーバー室等が該当します。
         none: 何も対策をしていません。
         unknown: わかりません。
+
   helpers:
     page_entries_info:
       one_page:
@@ -619,7 +625,6 @@ ja:
       one: "1階(地上階)"
       positive: "%{number}階"
       negative: "地下%{number}階"
-
 
   views:
     pagination:
@@ -665,7 +670,6 @@ ja:
       ipv6_mapped: IPv4射影IPv6アドレスを設定することはできません
       invalid_duid: DUIDの形式ではありません、「-」または「:」区切りの二桁ごとの16進数でなければなりません
 
-
       less_than: "%{count}より小さい値にしてください"
       less_than_or_equal_to: "%{count}以下の値にしてください"
       model_invalid: "バリデーションに失敗しました: %{errors}"
@@ -679,6 +683,9 @@ ja:
       too_long: "%{count}文字以内で入力してください"
       too_short: "%{count}文字以上で入力してください"
       wrong_length: "%{count}文字で入力してください"
+
+      no_free: "%{name}の空きがありません。"
+      invalid_config: "設定値が間違っている、または、制限により設定できません。"
 
   forms:
     common:
