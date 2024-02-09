@@ -4,11 +4,11 @@
 dl
   = dt_dd_for @node, :name do |name|
     = name
-    - [:virtual, :specific, :global, :public, :dns].each do |attr|
+    - [:logical, :specific, :global, :public, :dns].each do |attr|
       - if @node.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
   = dt_dd_for @node, :fqdn
-  - unless @node.virtual
+  - unless @node.logical?
     = dt_dd_for @node, :place do |place|
       - if place&.name.present?
         = place.name
@@ -116,7 +116,7 @@ dl
         .text-warning = t("messages.node_confirmation_unapproved")
         - if confirmation.content_problem?
           .text-danger = t("messages.node_content_problem")
-        - if @node.physical?
+        - unless @node.logical?
           - if @node.operating_system.nil?
             .text-danger = t("messages.node_no_operating_system")
           - if confirmation.unknown?

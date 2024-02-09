@@ -268,11 +268,13 @@ class NodesController < ApplicationController
       :domain,
       :duid,
       :specific,
-      :virtual,
+      :logical,
       :public,
       :dns,
       :note,
       :user_id,
+      :virtual_machine,
+      :host_id,
       place: [:area, :building, :floor, :room],
       hardware: [:device_type_id, :maker, :product_name, :model_number],
       operating_system: [:os_category_id, :name],
@@ -291,14 +293,21 @@ class NodesController < ApplicationController
         :ipv6_address,
       ])
 
-    if permitted_params[:virtual] == "1"
+    if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
+      host_id = nil
       place = nil
       hardware = nil
       operating_system = nil
     else
-      place =
-        permitted_params[:place]&.values_at(:area, :building, :room)&.find(&:presence) &&
-        Place.find_or_initialize_by(**permitted_params[:place])
+      if ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
+        host_id = permitted_params[:host_id]
+        place = nil
+      else
+        host_id = nil
+        place =
+          permitted_params[:place]&.values_at(:area, :building, :room)&.find(&:presence) &&
+          Place.find_or_initialize_by(**permitted_params[:place])
+      end
 
       hardware =
         permitted_params[:hardware]&.values&.find(&:presence) &&
@@ -311,7 +320,8 @@ class NodesController < ApplicationController
         OperatingSystem.find_or_initialize_by(**permitted_params[:operating_system])
     end
 
-    permitted_params.except(:place, :hardware, :operating_system).merge(
+    permitted_params.merge(
+      host_id: host_id,
       place: place,
       hardware: hardware,
       operating_system: operating_system)

@@ -9,7 +9,7 @@ module ApplicationHelper
     locked: "dark",
     auth: "primary",
     global: "danger",
-    virtual: "secondary",
+    logical: "secondary",
     specific: "warning",
     public: "primary",
     dns: "success",

@@ -157,10 +157,10 @@ class Confirmation < ApplicationRecord
   end
 
   def ok?
-    if node.physical?
-      ALL_ATTRS.all? { |name| __send__("#{name}_ok?") }
+    if node.logical?
+      ["existence", "content"].all? { |name| __send__("#{name}_ok?") }
     else
-      %w(existence content).all? { |name| __send__("#{name}_ok?") }
+      ALL_ATTRS.all? { |name| __send__("#{name}_ok?") }
     end
   end
 
@@ -217,7 +217,7 @@ class Confirmation < ApplicationRecord
       self.security_software = nil
       self.security_update = :unknown
       self.security_scan = :unknown
-    elsif node.virtual?
+    elsif node.logical?
       self.os_update = :unknown
       self.app_update = :unknown
       self.security_hardware = Confirmation.security_hardwares[:unknown]

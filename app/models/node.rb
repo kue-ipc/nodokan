@@ -3,7 +3,7 @@ class Node < ApplicationRecord
 
   FLAGS = {
     specific: "s",
-    virtual: "v",
+    logical: "l",
     public: "p",
     dns: "d",
   }.freeze
@@ -52,11 +52,12 @@ class Node < ApplicationRecord
       hostname
       domain
       specific
-      virtual
+      logical
       pubilc
       dns
       duid_data
       user_id
+      virtual_machine
     )
   end
 
@@ -79,12 +80,8 @@ class Node < ApplicationRecord
     "#{hostname}.#{domain}"
   end
 
-  def virutal?
-    virtual
-  end
-
-  def physical?
-    !virtual
+  def logical?
+    logical
   end
 
   def flag

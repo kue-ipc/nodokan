@@ -7,45 +7,45 @@ class NodeTest < ActiveSupport::TestCase
 
   test "flag" do
     @node.specific = false
-    @node.virtual = false
+    @node.logical = false
     assert_nil @node.flag
 
     @node.specific = true
-    @node.virtual = false
+    @node.logical = false
     assert_equal "s", @node.flag
 
     @node.specific = false
-    @node.virtual = true
+    @node.logical = true
     assert_equal "v", @node.flag
 
     @node.specific = true
-    @node.virtual = true
+    @node.logical = true
     assert_equal "sv", @node.flag
   end
 
   test "flag assign" do
     @node.flag = "vs"
     assert @node.specific
-    assert @node.virtual
+    assert @node.logical
 
     @node.flag = nil
     assert_not @node.specific
-    assert_not @node.virtual
+    assert_not @node.logical
 
     @node.flag = ""
     assert_not @node.specific
-    assert_not @node.virtual
+    assert_not @node.logical
 
     @node.flag = "s"
     assert @node.specific
-    assert_not @node.virtual
+    assert_not @node.logical
 
     @node.flag = "v"
     assert_not @node.specific
-    assert @node.virtual
+    assert @node.logical
 
     @node.flag = "sv"
     assert @node.specific
-    assert @node.virtual
+    assert @node.logical
   end
 end

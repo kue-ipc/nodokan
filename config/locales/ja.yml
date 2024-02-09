@@ -408,10 +408,11 @@ ja:
         user: 所有者
         user_id: 所有者
         specific: 特定
-        virtual: 仮想
+        logical: 論理
         global: 外部
         public: 公開
         dns: DNS
+        virtual_machien: 仮想マシン
         connected_at: 接続日時
       os_category:
         name: 種別名

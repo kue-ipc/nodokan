@@ -27,7 +27,7 @@
                   = f.radio_button attr_name, key, label: message, required: false
               - question_count += 1
 
-            - if @node.physical?
+            - unless @node.logical?
               - [:os_update, :app_update].each do |attr_name|
                 = f.form_group attr_name, \
                   label: {text: safe_join([tag.strong(t("messages.question_with_number", count: question_count)),

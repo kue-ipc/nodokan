@@ -17,17 +17,21 @@ p = t("forms.common.required_input")
     - if current_user.admin?
       .row
         .col
-          = f.check_box :virtual
+          = f.check_box :logical
         .col
           = f.check_box :specific
         .col
           = f.check_box :public
         .col
           = f.check_box :dns
+        .col
+          = f.check_box :virtual_machine
     - else
       .row
           .col
-            = f.check_box :virtual
+            = f.check_box :logical
+          .col
+            = f.check_box :virtual_machine
       - if @node.specific
         .row
           .col
@@ -46,14 +50,12 @@ p = t("forms.common.required_input")
             = badge_for(:dns, scope: "activerecord.attributes.node")
             small.text-muted<
               | この端末はDNSに登録されています。(DNSに登録されているIPアドレスはロックされています。)
-    .row.virtual-show.d-none
+    .row.logical-show.d-none
       .col
         small.text-secondary<
-          | 「仮想」フラグが選択されています。この端末は実際には存在せず、HAクラスタや予約等の目的で登録されます。
-          strong 仮想化システム上の仮想マシンのことではありません。
-          | 仮想マシンの場合は、「仮想」のチェックを外し、機器情報で「仮想サーバー」等を選択してください。
+          | 「論理」フラグが選択されています。この端末は実際には存在せず、クラスタや予約等の目的で登録されます。
 
-  .rounded.border.p-2.mb-2.virtual-hide
+  .rounded.border.p-2.mb-2.logical-hide
     h4 = t("forms.node.place.title")
     small.text-muted = t("forms.node.place.help")
     .row
@@ -71,7 +73,7 @@ p = t("forms.common.required_input")
         = datalist_canadidation :place, :room, places_path, parents: [:node], order: {nodes_count: "desc"},
           inputList: [:area, :building, :floor]
 
-  .rounded.border.p-2.mb-2.virtual-hide
+  .rounded.border.p-2.mb-2.logical-hide
     h4 = t("forms.node.hardware.title")
     small.text-muted = t("forms.node.hardware.help")
     .row
@@ -90,7 +92,7 @@ p = t("forms.common.required_input")
         = datalist_canadidation :hardware, :model_number, hardwares_path, parents: [:node],
           inputList: [:device_type_id, :maker, :product_name]
 
-  .rounded.border.p-2.mb-2.virtual-hide
+  .rounded.border.p-2.mb-2.logical-hide
     h4 = t("forms.node.operating_system.title")
     small.text-muted = t("forms.node.operating_system.help")
     .row
