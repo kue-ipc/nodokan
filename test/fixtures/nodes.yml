@@ -39,3 +39,7 @@ admin_desktop:
   place: one
   hardware: desktop
   operating_system: win7
+
+cluster:
+  name: クラスター
+  logical: true

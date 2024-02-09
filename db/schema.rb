@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_08_234150) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_09_001156) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -126,6 +126,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_08_234150) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["network_id"], name: "index_ipv6_pools_on_network_id"
+  end
+
+  create_table "logical_compositions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "node_id", null: false
+    t.bigint "component_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["component_id"], name: "index_logical_compositions_on_component_id"
+    t.index ["node_id"], name: "index_logical_compositions_on_node_id"
   end
 
   create_table "networks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -313,6 +322,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_08_234150) do
   add_foreign_key "hardwares", "device_types"
   add_foreign_key "ipv4_pools", "networks"
   add_foreign_key "ipv6_pools", "networks"
+  add_foreign_key "logical_compositions", "nodes"
+  add_foreign_key "logical_compositions", "nodes", column: "component_id"
   add_foreign_key "nics", "networks"
   add_foreign_key "nics", "nodes"
   add_foreign_key "nodes", "hardwares"
