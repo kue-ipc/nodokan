@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-cluster_desktop:
+cluster1:
   node: cluster
   component_id: 1
 
-cluster_server:
+cluster2:
   node: cluster
-  component_id: 3
+  component_id: 2

@@ -16,15 +16,15 @@ class NodeTest < ActiveSupport::TestCase
 
     @node.specific = false
     @node.logical = true
-    assert_equal "v", @node.flag
+    assert_equal "l", @node.flag
 
     @node.specific = true
     @node.logical = true
-    assert_equal "sv", @node.flag
+    assert_includes ["ls", "sl"], @node.flag
   end
 
   test "flag assign" do
-    @node.flag = "vs"
+    @node.flag = "ls"
     assert @node.specific
     assert @node.logical
 
@@ -40,11 +40,11 @@ class NodeTest < ActiveSupport::TestCase
     assert @node.specific
     assert_not @node.logical
 
-    @node.flag = "v"
+    @node.flag = "l"
     assert_not @node.specific
     assert @node.logical
 
-    @node.flag = "sv"
+    @node.flag = "sl"
     assert @node.specific
     assert @node.logical
   end
