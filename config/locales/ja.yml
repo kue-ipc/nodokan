@@ -656,6 +656,8 @@ ja:
       invalid_ip_address: IPアドレスの形式ではありません
       invalid_ipv4_address: IPv4アドレスの形式ではありません
       invalid_ipv6_address: IPv6アドレスの形式ではありません
+      invalid_mac_address: MACアドレスの形式ではありません、MACアドレスは「-」または「:」区切りの二桁ごとの16進数が6個です
+      invalid_duid: DUIDの形式ではありません、DUIDは「-」区切りの二桁ごとの16進数す
       not_ipv4: IPv4ではありません。
       not_ipv6: IPv6ではありません。
       not_ipv4_network: ネットワークアドレスではありません、アドレスまたはサブネットマスクが間違っています
@@ -669,7 +671,6 @@ ja:
       ipv6_link_local: リンクローカルアドレスを設定することはできません
       ipv6_multicast: マルチキャストアドレスを設定することはできません
       ipv6_mapped: IPv4射影IPv6アドレスを設定することはできません
-      invalid_duid: DUIDの形式ではありません、「-」または「:」区切りの二桁ごとの16進数でなければなりません
 
       less_than: "%{count}より小さい値にしてください"
       less_than_or_equal_to: "%{count}以下の値にしてください"

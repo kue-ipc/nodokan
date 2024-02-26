@@ -2,6 +2,11 @@ module DuidData
   extend ActiveSupport::Concern
   include HexData
 
+  included do
+    validates :duid, allow_blank: true, duid: true
+    validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: {case_sensitive: true}
+  end
+
   def duid_raw
     duid(char_case: :lower, sep: "")
   end
@@ -16,7 +21,7 @@ module DuidData
 
   def duid=(value)
     @duid_list = nil
-    self.duid_data = self.class.hex_str_to_data(value)
+    self.duid_data = self.class.hex_str_to_data(value.presence)
   rescue ArgumentError
     @duid_list = nil
     self.duid_data = nil

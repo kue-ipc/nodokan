@@ -41,7 +41,7 @@
 
     - @nodes.each do |node|
       = link_to node, class: "row py-1 border-top", data: {turbo: false}
-        div class=(list_col_classes(:user)) = node.user.username
+        div class=(list_col_classes(:user)) = node.user&.username
         div class=(list_col_classes(:name))
           = node.name
           - [:logical, :specific, :global, :public, :dns].each do |attr|

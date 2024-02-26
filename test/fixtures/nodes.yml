@@ -1,6 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 desktop:
+  id: 1
   name: デスクトップパソコン
   user: user
   note: デスクトップパソコン
@@ -9,6 +10,7 @@ desktop:
   operating_system: win7
 
 note:
+  id: 2
   name: クライアント
   user: user
   note: クライアントの端末
@@ -17,6 +19,7 @@ note:
   operating_system: winme
 
 server:
+  id: 3
   name: サーバー
   user: user
   note: サーバー

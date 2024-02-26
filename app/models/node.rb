@@ -14,7 +14,7 @@ class Node < ApplicationRecord
   belongs_to :hardware, optional: true, counter_cache: true
   belongs_to :operating_system, optional: true, counter_cache: true
 
-  belongs_to :host, class_name: "Node", foreign_key: "node_id", inverse_of: :guests
+  belongs_to :host, optional: true, class_name: "Node", foreign_key: "node_id", inverse_of: :guests
   has_many :guests, class_name: "Node", foreign_key: "host_id", dependent: :restrict_with_error, inverse_of: :host
 
   has_many :logical_compositions, dependent: :restrict_with_error
@@ -31,16 +31,12 @@ class Node < ApplicationRecord
   has_one :confirmation, dependent: :destroy
 
   validates :name, presence: true
-  validates :hostname, allow_nil: true,
-    format: {
-      with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
-    }
-  validates :domain,
-    allow_nil: true,
-    format: {
-      with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
-    }
-  validates :duid, allow_blank: true, duid: true
+  validates :hostname, allow_blank: true, format: {
+    with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
+  }
+  validates :domain, allow_blank: true, format: {
+    with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
+  }
 
   normalizes :hostname, with: :strip.to_proc >> :downcase.to_proc
   normalizes :domain, with: :strip.to_proc >> :downcase.to_proc

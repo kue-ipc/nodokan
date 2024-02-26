@@ -124,6 +124,7 @@ class NodesController < ApplicationController
       else
         format.html do
           flash.now[:alert] = "端末登録に失敗しました。"
+          pp @node.errors
           render :new
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
