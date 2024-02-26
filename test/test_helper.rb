@@ -34,3 +34,21 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
   end
 end
+
+module SignInAdmin
+  def self.included(klass)
+    klass.include Devise::Test::IntegrationHelpers
+    klass.setup do
+      sign_in users(:admin)
+    end
+  end
+end
+
+module SignInUser
+  def self.included(klass)
+    klass.include Devise::Test::IntegrationHelpers
+    klass.setup do
+      sign_in users(:user)
+    end
+  end
+end
