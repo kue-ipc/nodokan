@@ -31,15 +31,17 @@ class Node < ApplicationRecord
   has_one :confirmation, dependent: :destroy
 
   validates :name, presence: true
-  validates :hostname, allow_blank: true, format: {
+  validates :hostname, allow_nil: true, format: {
     with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
   }
-  validates :domain, allow_blank: true, format: {
+  validates :domain, allow_nil: true, format: {
     with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
   }
+  validates :hostname, uniqueness: {scope: :domain, case_sensitive: true}, if: ->(node) { node.domain.present? }
+  validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: true
 
-  normalizes :hostname, with: :strip.to_proc >> :downcase.to_proc
-  normalizes :domain, with: :strip.to_proc >> :downcase.to_proc
+  normalizes :hostname, with: ->(str) { str.presence&.strip&.downcase }
+  normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)

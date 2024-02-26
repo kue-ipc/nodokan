@@ -7,7 +7,6 @@ module MacAddressData
 
   included do
     validates :mac_address, allow_blank: true, mac_address: true
-    validates :mac_address_data, allow_nil: true, length: {is: 6}, uniqueness: {case_sensitive: true}
   end
 
   def mac_address_gl
@@ -49,9 +48,6 @@ module MacAddressData
   def mac_address=(value)
     @mac_address_list = nil
     self.mac_address_data = self.class.hex_str_to_data(value.presence)
-  rescue ArgumentError
-    @mac_address_list = nil
-    self.mac_address_data = nil
   end
 
   def modified_eui64_list

@@ -33,11 +33,10 @@ class Nic < ApplicationRecord
     numericality: {only_integer: true, greater_than: 0, less_than_or_equal_to: 64},
     uniqueness: {scope: :node}
   validates :name, length: {maximum: 255}
-  validates :ipv4_address, allow_blank: true, ipv4_address: true
-  validates :ipv6_address, allow_blank: true, ipv6_address: true
 
-  validates :ipv4_data, allow_nil: true, uniqueness: {case_sensitive: true}
-  validates :ipv6_data, allow_nil: true, uniqueness: {case_sensitive: true}
+  validates :ipv4_data, allow_nil: true, uniqueness: true
+  validates :ipv6_data, allow_nil: true, uniqueness: true
+  validates :mac_address_data, allow_nil: true, length: {is: 6}, uniqueness: true
 
   normalizes :name, with: :strip.to_proc
 
