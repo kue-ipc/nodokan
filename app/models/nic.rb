@@ -32,13 +32,13 @@ class Nic < ApplicationRecord
   validates :number,
     numericality: {only_integer: true, greater_than: 0, less_than_or_equal_to: 64},
     uniqueness: {scope: :node}
-  validates :name, length: {maximum: 255}
+  validates :name, allow_blank: true, length: {maximum: 255}
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
   validates :ipv6_data, allow_nil: true, uniqueness: true
   validates :mac_address_data, allow_nil: true, length: {is: 6}, uniqueness: true
 
-  normalizes :name, with: :strip.to_proc
+  normalizes :name, with: ->(str) { str.presence&.strip }
 
   after_validation :replace_errors
   before_update :old_nic
