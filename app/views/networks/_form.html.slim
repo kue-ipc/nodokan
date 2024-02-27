@@ -1,7 +1,8 @@
 - if @network.errors.any?
-  #error_explanation
-    h2 = t("errors.messages.not_saved", resource: @network, count: @network.errors.count)
-    ul
+  .alert.alert-danger#error_explanation role="alert"
+    h4 = t("errors.messages.not_saved", resource: @network, count: @network.errors.count)
+    hr
+    ul.mb-0
       - @network.errors.full_messages.each do |message|
         li = message
 

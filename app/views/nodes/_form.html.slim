@@ -1,7 +1,7 @@
 - if @node.errors.any?
-  #error_explanation
-    h2 = t("errors.messages.not_saved", resource: @node, count: @node.errors.count)
-    ul
+  .alert.alert-danger#error_explanation role="alert"
+    h4 = t("errors.messages.not_saved", resource: @node, count: @node.errors.count)
+    ul.mb-0
       - @node.errors.full_messages.each do |message|
         li = message
 
