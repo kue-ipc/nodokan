@@ -24,15 +24,15 @@ p = t("forms.common.required_input")
     - if current_user.admin?
       .row
         .col = f.check_box :logical
+        .col = f.check_box :virtual_machine
         .col = f.check_box :specific
         .col = f.check_box :public
         .col = f.check_box :dns
-        .col = f.check_box :virtual_machine
     - else
       .row
           .col = f.check_box :logical
           .col = f.check_box :virtual_machine
-      - [:specific, :publi, :dns].each do |name|
+      - [:specific, :public, :dns].each do |name|
         - if @node.send(name)
           .row
             .col
