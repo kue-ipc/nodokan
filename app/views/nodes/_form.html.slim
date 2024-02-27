@@ -106,10 +106,9 @@ p = t("forms.common.required_input")
       = f.fields_for :operating_system,
         @node.operating_system || OperatingSystem.new do |operating_system_f|
         = operating_system_f.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
-          include_blank: "(未選択)", wrapper_class: "col-md-4 mb-3"
-
+          include_blank: "(未選択)", wrapper_class: "col-md-4 mb-3", required: false
         = operating_system_f.text_field :name, list: "node_operating_system_name-list", wrapper_class: "col-md-8 mb-3",
-          disabled: true
+          disabled: true, required: false
         = datalist_canadidation :operating_system, :name, operating_systems_path, parents: [:node],
           order: {nodes_count: "desc"},
           inputList: [:os_category_id],
