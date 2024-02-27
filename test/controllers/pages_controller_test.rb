@@ -3,51 +3,45 @@ require "test_helper"
 class PagesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
-  class SignInAdmin < PagesControllerTest
-    setup do
-      sign_in users(:admin)
-    end
+  # root
 
-    test "should get root" do
-      get root_url
-      assert_response :success
-      assert_select "a", "admin"
-      assert_select "a", "管理"
-    end
-
-    test "should get about" do
-      get about_url
-      assert_response :success
-    end
+  test "admin should get root" do
+    sign_in users(:admin)
+    get root_url
+    assert_response :success
+    assert_select "a", "admin"
+    assert_select "a", "管理"
   end
 
-  class SignInUser < PagesControllerTest
-    setup do
-      sign_in users(:user)
-    end
-
-    test "should get root" do
-      get root_url
-      assert_response :success
-      assert_select "a", "user"
-    end
-
-    test "should get about" do
-      get about_url
-      assert_response :success
-    end
+  test "user should get root" do
+    sign_in users(:user)
+    get root_url
+    assert_response :success
+    assert_select "a", "user"
   end
 
-  class Anonymous < PagesControllerTest
-    test "get root with login" do
-      get root_url
-      assert_response :success
-      assert_select "form"
-    end
+  test "get root with login" do
+    get root_url
+    assert_response :success
+    assert_select "form"
+  end
 
-    test "should get about" do
-      get about_url
-      assert_response :success
-    end
+  # about
+
+  test "admin should get about" do
+    sign_in users(:admin)
+    get about_url
+    assert_response :success
+  end
+
+  test "user should get about" do
+    sign_in users(:user)
+    get about_url
+    assert_response :success
+  end
+
+  test "should get about" do
+    get about_url
+    assert_response :success
   end
 end

@@ -83,6 +83,4 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
     assert_redirected_to new_user_session_path
   end
-
-
 end

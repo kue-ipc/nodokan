@@ -7,42 +7,36 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
     @hardware = hardwares(:desktop)
   end
 
-  class SignInAdmin < HardwaresControllerTest
-    setup do
-      sign_in users(:admin)
-    end
+  # admin
 
-    test "should get index" do
-      get hardwares_url
-      assert_response :success
-    end
-
-    # test 'should get edit' do
-    #   get hardwares_edit_url
-    #   assert_response :success
-    # end
-
-    # test 'should get update' do
-    #   get hardwares_update_url
-    #   assert_response :success
-    # end
+  test "admin should get index" do
+    sign_in users(:admin)
+    get hardwares_url
+    assert_response :success
   end
 
-  class SignInUser < HardwaresControllerTest
-    setup do
-      sign_in users(:user)
-    end
+  # test 'should get edit' do
+  #   get hardwares_edit_url
+  #   assert_response :success
+  # end
 
-    test "should get index" do
-      get hardwares_url
-      assert_response :success
-    end
+  # test 'should get update' do
+  #   get hardwares_update_url
+  #   assert_response :success
+  # end
+
+  # user
+
+  test "user should get index" do
+    sign_in users(:user)
+    get hardwares_url
+    assert_response :success
   end
 
-  class Anonymous < HardwaresControllerTest
-    test "redirect to login INSTEAD OF get index" do
-      get hardwares_url
-      assert_response 401
-    end
+  # no login
+
+  test "redirect to login INSTEAD OF get index" do
+    get hardwares_url
+    assert_response 401
   end
 end

@@ -4,7 +4,6 @@ class UseNetworksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in users(:admin)
     @assignment = assignments(:user_client)
   end
 
@@ -18,7 +17,8 @@ class UseNetworksControllerTest < ActionDispatch::IntegrationTest
   #   assert_response :success
   # end
 
-  test "should get destroy" do
+  test "admin should get destroy" do
+    sign_in users(:admin)
     delete user_use_network_url(@assignment.user, @assignment.network)
     assert_redirected_to user_url(@assignment.user)
   end

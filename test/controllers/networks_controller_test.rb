@@ -4,16 +4,19 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    sign_in users(:admin)
     @network = networks(:client)
   end
 
-  test "should get index" do
+  # admin
+
+  test "admin should get index" do
+    sign_in users(:admin)
     get networks_url
     assert_response :success
   end
 
-  test "should get new" do
+  test "admin should get new" do
+    sign_in users(:admin)
     get new_network_url
     assert_response :success
   end
@@ -32,12 +35,14 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   #   assert_redirected_to network_url(Network.last)
   # end
 
-  test "should show network" do
+  test "admin should show network" do
+    sign_in users(:admin)
     get network_url(@network)
     assert_response :success
   end
 
-  test "should get edit" do
+  test "admin should get edit" do
+    sign_in users(:admin)
     get edit_network_url(@network)
     assert_response :success
   end
@@ -61,4 +66,8 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
 
   #   assert_redirected_to networks_url
   # end
+
+  # user
+
+  # no login
 end
