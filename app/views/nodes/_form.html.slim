@@ -1,3 +1,10 @@
+- if @node.errors.any?
+  #error_explanation
+    h2 = t("errors.messages.not_saved", resource: @node, count: @node.errors.count)
+    ul
+      - @node.errors.full_messages.each do |message|
+        li = message
+
 p = t("forms.common.required_input")
 
 = bootstrap_form_with model: @node, data: {turbo: false} do |f|
