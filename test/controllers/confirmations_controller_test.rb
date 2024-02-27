@@ -25,7 +25,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     @confirmation = confirmations(:desktop)
   end
 
-  # admin
+  # create
 
   test "admin should create confirmation" do
     sign_in users(:admin)
@@ -36,32 +36,18 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to node_url(other_node)
   end
 
-  test "admin should update confirmation" do
-    sign_in users(:admin)
-    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
-    assert_redirected_to node_url(@confirmation.node)
-  end
-
-  # user
-
   test "user should create confirmation" do
     sign_in users(:user)
-    other_node = nodes(:other_desktop)
+    other_node = nodes(:server)
     assert_difference("Confirmation.count") do
       post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
     end
     assert_redirected_to node_url(other_node)
   end
 
-  test "user should update confirmation" do
+  test "user should NOT create confirmation for other's node" do
     sign_in users(:user)
-    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
-    assert_redirected_to node_url(@confirmation.node)
-  end
-
-  test "user should NOT create confirmation for other owner" do
-    sign_in users(:user)
-    other_node = nodes(:admin_desktop)
+    other_node = nodes(:other_desktop)
     assert_no_difference("Confirmation.count") do
       assert_raises(Pundit::NotAuthorizedError) do
         post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
@@ -69,14 +55,26 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # no login
-
   test "redirect to login INSTEAD OF create confirmation" do
     other_node = nodes(:other_desktop)
     assert_no_difference("Confirmation.count") do
       post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
     end
     assert_redirected_to new_user_session_path
+  end
+
+  # update
+
+  test "admin should update confirmation" do
+    sign_in users(:admin)
+    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
+    assert_redirected_to node_url(@confirmation.node)
+  end
+
+  test "user should update confirmation" do
+    sign_in users(:user)
+    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
+    assert_redirected_to node_url(@confirmation.node)
   end
 
   test "redirect to login INSTEAD OF update confirmation" do

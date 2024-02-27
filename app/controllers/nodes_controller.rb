@@ -62,17 +62,20 @@ class NodesController < ApplicationController
 
   # GET /nodes/new
   def new
+    nics =
+      if current_user.usable_networks.count.zero?
+        []
+      else
+        [Nic.new]
+      end
+
     @node = Node.new(
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      nics: [Nic.new],
+      nics: nics,
       user: current_user)
     authorize @node
-
-    return unless current_user.usable_networks.count.zero?
-
-    redirect_to root_path, alert: "あなたのアカウントには選択可能なネットワークがないため、端末の新規登録はできません。"
   end
 
   # GET /nodes/1/edit

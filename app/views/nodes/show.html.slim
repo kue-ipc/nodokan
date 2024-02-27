@@ -31,7 +31,7 @@ dl
         .text-danger = t("messages.node_unregistered_operating_system")
   = dt_dd_for @node, :nics do |nics|
     - if nics.count.zero?
-      .text-danger = t("messages.node_unregistered_nics")
+      .text-muted = t("messages.node_no_nics")
     - else
       table.table.table-sm.mb-0
         thead

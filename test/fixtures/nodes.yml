@@ -3,15 +3,14 @@
 desktop:
   name: デスクトップパソコン
   user: user
-  note: デスクトップパソコン
+  note: 備考
   place: one
   hardware: desktop
   operating_system: win7
 
 note:
-  name: クライアント
+  name: ノートパソコン
   user: user
-  note: クライアントの端末
   place: two
   hardware: note
   operating_system: winme
@@ -19,15 +18,14 @@ note:
 server:
   name: サーバー
   user: user
-  note: サーバー
   place: three
   hardware: server
   operating_system: less
 
 other_desktop:
-  name: 別のデスクトップパソコン
-  user: user
-  note: 別のデスクトップパソコン
+  name: 別の人のパソコン
+  user: other
+  note: 別の人が所有
   place: one
   hardware: desktop
   operating_system: win7
@@ -35,7 +33,7 @@ other_desktop:
 admin_desktop:
   name: 管理者のデスクトップパソコン
   user: admin
-  note: 管理者のデスクトップパソコン
+  note: 管理者が所有
   place: one
   hardware: desktop
   operating_system: win7

@@ -188,13 +188,15 @@ ja:
     node_nic_setting: |
       下記のように端末のネットワークを設定してください。
     node_unregistered_place: |
-      設置場所が未登録です。「編集」を押して設置場所を登録してください。
+      (未登録) 「編集」を押して設置場所を登録してください。
     node_unregistered_hardware: |
-      機器情報が未登録です。「編集」を押して機器情報を登録してください。
+      (未登録) 「編集」を押して機器情報を登録してください。
     node_unregistered_operating_system: |
-      【未登録】「編集」を押してOSを登録してください。
+      (未登録) 「編集」を押してOSを登録してください。
     node_unregistered_nics: |
-      【未登録】「編集」を押してNICを登録してください。
+      (未登録) この端末はネットワークに接続できません。
+    node_no_nics: |
+      (無し) この端末は管理されたネットワークに接続しません。
     node_confirmation_unconfirmed: |
       端末が未確認です。「確認」を押して、端末の現状について確認を行ってください。
     node_confirmation_expired: |
@@ -412,7 +414,7 @@ ja:
         global: 外部
         public: 公開
         dns: DNS
-        virtual_machien: 仮想マシン
+        virtual_machine: 仮想マシン
         connected_at: 接続日時
       os_category:
         name: 種別名
