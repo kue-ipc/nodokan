@@ -3,6 +3,13 @@ require "test_helper"
 class NodesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
+  def node_to_params(node)
+    {
+      name: node.name,
+      note: node.note,
+    }
+  end
+
   setup do
     @node = nodes(:desktop)
     @other_node = nodes(:other_desktop)
