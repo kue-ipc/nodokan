@@ -21,28 +21,26 @@ p = t("forms.common.required_input")
         wrapper_class: "col-md-3 mb-3"
       = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*",
         wrapper_class: "col-md-5 mb-3"
-    - if current_user.admin?
-      .row
-        .col = f.check_box :logical
-        .col = f.check_box :virtual_machine
+    .row
+      .col = f.check_box :logical
+      .col = f.check_box :virtual_machine
+      - if current_user.admin?
         .col = f.check_box :specific
         .col = f.check_box :public
         .col = f.check_box :dns
-    - else
-      .row
-          .col = f.check_box :logical
-          .col = f.check_box :virtual_machine
-      - [:specific, :public, :dns].each do |name|
-        - if @node.send(name)
-          .row
-            .col
-              = badge_for(name, scope: "activerecord.attributes.node")
-              small.text-secondary< = t("enabled", scope: ["forms", "node", name])
-    - [:logical, :virtual_machine].each do |name|
+    - [:logical, :virtual_machine, :specific, :public, :dns].each do |name|
       = tag.div class: {collapse: true, "#{name}-show": true, show: @node.send(name)}
-        div class="row"
+        .row
           .col
+            = badge_for(name, scope: "activerecord.attributes.node")
             small.text-secondary< = t("enabled", scope: ["forms", "node", name])
+
+  / show if logical is enabled
+  = tag.div class: {collapse: true, "logical-show": true, show: @node.logical}
+    .rounded.border.p-2.mb-2
+      h4 = t("forms.node.components.title")
+      small.text-muted = t("forms.node.components.help")
+
 
   / hide if logical is enabled
   = tag.div class: {collapse: true, "logical-hide": true, show: !@node.logical}
@@ -97,7 +95,8 @@ p = t("forms.common.required_input")
           @node.operating_system || OperatingSystem.new do |operating_system_f|
           = operating_system_f.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
             include_blank: "(未選択)", wrapper_class: "col-md-4 mb-3", required: false
-          = operating_system_f.text_field :name, list: "node_operating_system_name-list", wrapper_class: "col-md-8 mb-3",
+          = operating_system_f.text_field :name, list: "node_operating_system_name-list",
+            wrapper_class: "col-md-8 mb-3",
             disabled: true, required: false
           = datalist_canadidation :operating_system, :name, operating_systems_path, parents: [:node],
             order: {nodes_count: "desc"},

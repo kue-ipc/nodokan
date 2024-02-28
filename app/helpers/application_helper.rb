@@ -15,6 +15,7 @@ module ApplicationHelper
     dns: "success",
     dhcp: "secondary",
     deleted: "danger",
+    virtual_machine: "info",
   }.freeze
 
   def site_title

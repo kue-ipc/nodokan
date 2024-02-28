@@ -44,7 +44,7 @@
         div class=(list_col_classes(:user)) = node.user&.username
         div class=(list_col_classes(:name))
           = node.name
-          - [:logical, :specific, :global, :public, :dns].each do |attr|
+          - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
             - if node.__send__(attr)
               = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
         div class=(list_col_classes(:hostname)) = node.hostname

@@ -4,7 +4,7 @@
 dl
   = dt_dd_for @node, :name do |name|
     = name
-    - [:logical, :specific, :global, :public, :dns].each do |attr|
+    - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
       - if @node.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
   = dt_dd_for @node, :fqdn

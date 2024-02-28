@@ -36,7 +36,7 @@ p
     = @node.nics.find(&:ipv4_data)&.ipv4_address || @node.nics.find(&:ipv6_data)&.ipv6_address
     | )
 
-    - [:virtual, :specific, :global, :public, :dns].each do |attr|
+    - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
       - if @node.__send__(attr)
         = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
 
