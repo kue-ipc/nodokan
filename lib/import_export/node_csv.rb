@@ -69,7 +69,7 @@ module ImportExport
       nic
     end
 
-    def record_to_row(node, row = CSV::Row.new(header.headers, []))
+    def record_to_row(node, row = empty_row)
       row["user"] = node.user.username
       row["name"] = node.name
       row["flag"] = node.flag

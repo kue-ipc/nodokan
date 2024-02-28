@@ -30,20 +30,6 @@ module ImportExport
       )
     end
 
-    def record_to_row(network, row)
-      row["name"] = network.name
-      row["flag"] = network.flag
-      row["vlan"] = network.vlan
-      row["ipv4_network"] = network.ipv4_network&.to_string
-      row["ipv4_gateway"] = network.ipv4_gateway
-      row["ipv4_pools"] = network.ipv4_pools.map(&:identifier).join(" ")
-      row["ipv6_network"] = network.ipv6_network&.to_string
-      row["ipv6_gateway"] = network.ipv6_gateway
-      row["ipv6_pools"] = network.ipv6_pools.map.map(&:identifier).join(" ")
-      row["note"] = network.note
-      row
-    end
-
     def row_to_record(row, network)
       network.assign_attributes(
         name: row["name"],

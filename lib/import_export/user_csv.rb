@@ -25,17 +25,6 @@ module ImportExport
       )
     end
 
-    def record_to_row(user, row)
-      row["username"] = user.username
-      row["email"] = user.email
-      row["fullname"] = user.fullname
-      row["role"] = user.role
-      row["flag"] = user.flag
-      row["auth_network"] = user.auth_network&.identifier
-      row["networks"] = user.use_networks.map(&:identifier).sort.join(" ").presence
-      row
-    end
-
     def row_to_record(row, user)
       user.assign_attributes(
         username: row["username"],

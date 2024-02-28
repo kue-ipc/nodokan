@@ -2,7 +2,15 @@ require "fileutils"
 require "logger"
 
 module ImportExport
+  # BascCsv is abstract class for CSV management
   class BaseCsv
+    # abstract methods
+    # * model_class()
+    # * attrs()
+    # * row_to_record(row, record = model_class.new)
+    # override methods
+    # * record_to_row(record, row = empty_row)
+
     def initialize(csv_file, logger: Logger.new($stderr))
       @csv_file = csv_file
       @tmp_file = "#{@csv_file}.tmp"
@@ -99,21 +107,16 @@ module ImportExport
       row
     end
 
-    def model_class
-      raise NotImplementedError
-    end
-
-    def attrs
-      raise NotImplementedError
-    end
-
     def unique_attrs
       []
     end
 
+    def headers
+      @headers ||= ["action", "id", *attrs, "result", "message"]
+    end
+
     def header
-      @header ||=
-        (["action", "id"] + attrs + ["result", "message"]).then { |fields| CSV::Row.new(fields, fields, true) }
+      @header ||= CSV::Row.new(headers, headers, true)
     end
 
     def find(row)
@@ -123,28 +126,64 @@ module ImportExport
         &.then { |attr| model_class.find_by({attr => row[attr.to_s]}) }
     end
 
-    def record_to_row(record, row = CSV::Row.new(header.headers, []))
-      raise NotImplementedError
+    def empty_row(headers_or_row = headers)
+      headers_or_row = headers_or_row.headers unless headers_or_row.is_a?(Array)
+      CSV::Row.new(headers_or_row, [])
     end
 
-    def record_to_row_with_id(record, row = CSV::Row.new(header.headers, []))
-      row["id"] = record.id
-      record_to_row(record, row)
+    def delimiter
+      " "
     end
 
-    def row_to_record(row, record = model_class.new)
-      raise NotImplementedError
+    # "abc[def][ghi]" -> ["abc", "def", "ghi"]
+    # only \w(0-9a-zA-Z_)
+    def key_to_list(key)
+      str = key.dup
+      list = []
+      list << -Regexp.last_match(1) while str.sub!(/\[(\w+)\]\z/, "")
+      raise "Invalid key: #{key}" unless str =~ /\A\w+\z/
+
+      [-str, *list.reverse]
+    end
+
+    def value_to_csv(value)
+      if value.is_a?(Enumerable)
+        value.map { |item| value_to_identifier(item) }.join(delimiter)
+      else
+        value_to_identifier(value)
+      end
+    end
+
+    def value_to_identifier(value)
+      if value.respond_to?(:identifier)
+        value.identifier
+      elsif value.respond_to?(:to_str)
+        value.to_str
+      else
+        value.to_s
+      end
+    end
+
+    def record_to_row(record, row = empty_row, keys = attrs)
+      keys.each do |key|
+        value = record
+        key_to_list(key).each do |attr|
+          value = value.__send__(attr)
+          break if value.nil?
+        end
+        row[key] = value_to_csv(value)
+      end
+      row
+    end
+
+    def record_to_row_with_id(record, row = empty_row)
+      row = record_to_row(record, row)
+      row["id"] = value_to_csv(record.id)
+      row
     end
 
     def list
-      row_list = []
-      model_class.order(:id).all.each do |record|
-        row = CSV::Row.new(header.headers, [])
-        row["id"] = record.id
-        record_to_row(record, row)
-        row_list << row
-      end
-      row_list
+      model_class.order(:id).all.map { |record| record_to_row_with_id(record) }
     end
 
     def create(row)
