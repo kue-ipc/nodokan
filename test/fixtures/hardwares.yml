@@ -12,6 +12,12 @@ note:
   product_name: ノートパソコン
   model_number: NPC-01
 
+tablet:
+  device_type: tablet
+  maker: B社
+  product_name: ノートパソコン
+  model_number: TBL-01
+
 server:
   device_type: server
   maker: A社

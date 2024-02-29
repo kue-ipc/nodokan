@@ -1,6 +1,6 @@
 - if @node.errors.any?
   .alert.alert-danger#error_explanation role="alert"
-    h4 = t("errors.messages.not_saved", resource: @node, count: @node.errors.count)
+    h4 = t("errors.messages.not_saved", resource: @node.name || @node.model_name.human, count: @node.errors.count)
     ul.mb-0
       - @node.errors.full_messages.each do |message|
         li = message

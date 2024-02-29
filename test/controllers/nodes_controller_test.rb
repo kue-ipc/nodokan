@@ -21,7 +21,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       place: place_to_params(node.place),
       hardware: hardware_to_params(node.hardware),
       operating_system: operating_system_to_params(node.operating_system),
-      nics_attributes: node.nics.map { |nic| nic_to_params(nic) },
+      nics_attributes: node.nics&.map { |nic| nic_to_params(nic) }&.each_with_index.to_a.to_h(&:reverse),
     }
   end
 
@@ -187,9 +187,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should create node" do
     sign_in users(:admin)
     new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
     new_node[:duid] = "00-04-#{SecureRandom.uuid}"
     new_node[:nics_attributes][0][:id] = nil
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
@@ -201,9 +204,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "user should create node" do
     sign_in users(:user)
     new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
     new_node[:duid] = "00-04-#{SecureRandom.uuid}"
     new_node[:nics_attributes][0][:id] = nil
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
@@ -215,9 +221,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node" do
     sign_in users(:other)
     new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
     new_node[:duid] = "00-04-#{SecureRandom.uuid}"
     new_node[:nics_attributes][0][:id] = nil
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
@@ -228,9 +237,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "redirect to login INSTEAD OF create node" do
     new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
     new_node[:duid] = "00-04-#{SecureRandom.uuid}"
     new_node[:nics_attributes][0][:id] = nil
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
@@ -241,14 +253,67 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "user should NOT create node with same duid" do
     sign_in users(:user)
     new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
     # new_node[:duid] = "00-04-#{SecureRandom.uuid}"
     new_node[:nics_attributes][0][:id] = nil
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
+  end
+
+  test "user should create node with nic id (ignore)" do
+    sign_in users(:user)
+    new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
+    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
+    # new_node[:nics_attributes][0][:id] = nil
+    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: new_node}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:user).id, Node.last.user_id
+  end
+
+  test "user should NOT create node with same nic mac_address" do
+    sign_in users(:user)
+    new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
+    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
+    new_node[:nics_attributes][0][:id] = nil
+    # new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: new_node}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "user should create node with nic ipv4 address (ignore)" do
+    sign_in users(:user)
+    new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
+    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
+    new_node[:nics_attributes][0][:id] = nil
+    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    # new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: new_node}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:user).id, Node.last.user_id
   end
 
   # update

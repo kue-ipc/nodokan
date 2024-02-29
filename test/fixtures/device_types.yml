@@ -14,9 +14,16 @@ server:
   locked: false
   description: サーバーの説明
 
+tablet:
+  name: タブレット
+  icon: <i class="tablet"></i>
+  order: 3
+  locked: false
+  description: タブレットの説明
+
 virtual:
   name: 仮想
   icon: <i class="vm"></i>
-  order: 3
+  order: 4
   locked: true
   description: 仮想の説明

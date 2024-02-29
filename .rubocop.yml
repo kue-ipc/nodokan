@@ -122,6 +122,9 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
+Style/OneLineConditional:
+  AlwaysCorrectToMultiline: true
+
 Style/NumericLiterals:
   Enabled: false
 

@@ -112,7 +112,7 @@ class Nic < ApplicationRecord
           return false
         end
 
-        self.ipv4_address = ipv4.address
+        self.ipv4_address = ipv4.to_s
       end
     when "static"
       if manageable && ipv4_address.present?
@@ -126,7 +126,7 @@ class Nic < ApplicationRecord
           return false
         end
 
-        self.ipv4_address = ipv4.address
+        self.ipv4_address = ipv4.to_s
       end
     when "manual"
       if manageable
@@ -174,7 +174,7 @@ class Nic < ApplicationRecord
           return false
         end
 
-        self.ipv6_address = ipv6.address
+        self.ipv6_address = ipv6.to_s
       end
     when "static"
       if manageable && ipv6_address.present?
@@ -188,7 +188,7 @@ class Nic < ApplicationRecord
           return false
         end
 
-        self.ipv6_address = ipv6.address
+        self.ipv6_address = ipv6.to_s
       end
     when "manual"
       if manageable

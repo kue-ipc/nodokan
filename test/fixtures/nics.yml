@@ -9,10 +9,10 @@ desktop:
   auth: true
   locked: false
   mac_address_data: <%= mac_address("00-11-22-33-44-55") %>
-  ipv4_config: :dynamic
-  ipv4_data:
-  ipv4_config: dynamic
-  ipv6_data:
+  ipv4_config: :static
+  ipv4_data: <%= ipv4_address("192.168.2.1") %>
+  ipv4_config: :static
+  ipv6_data: <%= ipv6_address("fd00:2::1001") %>
 
 note:
   node: note
@@ -28,6 +28,20 @@ note:
   ipv4_config: :reserved
   ipv6_data: <%= ipv6_address("fd00:2::2002") %>
 
+android:
+  node: android
+  number: 1
+  network: client
+  name: 無線
+  interface_type: :wireless
+  auth: true
+  locked: false
+  mac_address_data: <%= mac_address("00-11-22-33-44-77") %>
+  ipv4_config: :dynamic
+  ipv4_data:
+  ipv4_config: dynamic
+  ipv6_data:
+
 server:
   node: server
   number: 1
@@ -37,10 +51,10 @@ server:
   auth: false
   locked: false
   mac_address_data:
-  ipv4_config: :static
+  ipv4_config: :manual
   ipv4_data: <%= ipv4_address("192.168.1.1") %>
-  ipv6_config: :disabled
-  ipv6_data:
+  ipv6_config: :manual
+  ipv6_data: <%= ipv6_address("fd00:1::1001") %>
 
 server_extra:
   node: server
@@ -49,9 +63,29 @@ server_extra:
   name: 外部ネットワーク
   interface_type: :wired
   auth: false
-  locked: false
+  locked: true
   mac_address_data:
-  ipv4_config: :static
+  ipv4_config: :manual
   ipv4_data: <%= ipv4_address("192.0.2.1") %>
-  ipv6_config: :disabled
-  ipv6_data:
+  ipv6_config: :manual
+  ipv6_data: <%= ipv6_address('2001:db8:1::1001') %>
+
+router1:
+  node: router
+  number: 1
+  network: server
+  interface_type: :wired
+  ipv4_config: :manual
+  ipv4_data: <%= ipv4_address("192.168.1.254") %>
+  ipv6_config: :manual
+  ipv6_data: <%= ipv6_address('fd00:1::1') %>
+
+router2:
+  node: router
+  number: 2
+  network: client
+  interface_type: :wired
+  ipv4_config: :manual
+  ipv4_data: <%= ipv4_address("192.168.2.254") %>
+  ipv6_config: :manual
+  ipv6_data: <%= ipv6_address('fd00:2::1') %>

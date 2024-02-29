@@ -494,6 +494,38 @@ ja:
         security_scan: セキュリティスキャン実施状況
         expiriation: 有効期限
         approved: 承認
+      node/nics:
+        id: NICのID
+        number: No.
+        name: インターフェース名
+        flags: フラグ
+        locked: ロック
+        auth: 認証
+        global: 外部
+        interface_type: 接続形態
+        mac_address: NICのMACアドレス
+        network: ネットワーク
+        network_id: ネットワーク
+        ipv4_config: NICのIPv4設定
+        ipv4_address: NICのIPv4アドレス
+        ipv6_config: NICのIPv6設定
+        ipv6_address: NICのIPv6アドレス
+        ip_setting: 構成
+        ip_config: IP設定
+        ip_address: IPアドレス
+        ipv4: IPv4
+        ipv6: IPv6
+        ipv4_resolved_at: IPv4 解決日時
+        ipv6_discovered_at: IPv6 発見日時
+        ipv4_leased_at: IPv4 DHCPリース日時
+        ipv6_leased_at: IPv6 DHCPリース日時
+        auth_at: 認証日時
+        ipv4_arp: IPv4 ARP
+        ipv6_neighbor: IPv6 近接
+        ipv4_lease: IPv4 DHCPリース
+        ipv6_lease: IPv6 DHCPリース
+        connection_info: 接続情報
+        connected_at: 接続日時
     full_name_attributes:
       node:
         name: 端末名

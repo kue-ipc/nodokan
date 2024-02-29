@@ -68,7 +68,6 @@ class NodesController < ApplicationController
       else
         [Nic.new]
       end
-
     @node = Node.new(
       place: Place.new,
       hardware: Hardware.new,
@@ -85,7 +84,10 @@ class NodesController < ApplicationController
   # POST /nodes
   # POST /nodes.json
   def create
-    @node = Node.new(node_params)
+    create_node_params = node_params
+    create_node_params[:nics_attributes]&.each_value { |nic| nic.delete(:id) }
+
+    @node = Node.new(create_node_params)
     @node.user = current_user unless current_user.admin?
     authorize @node
 
@@ -110,9 +112,9 @@ class NodesController < ApplicationController
     Node.transaction do
       if !@node.save ||
          @node.errors.present? ||
-         @node.place&.errors&.present? ||
-         @node.hardware&.errors&.present? ||
-         @node.operating_system&.errors&.present? ||
+         @node.place&.errors.present? ||
+         @node.hardware&.errors.present? ||
+         @node.operating_system&.errors.present? ||
          @node.nics.any? { |nic| nic.errors.present? }
         raise ActiveRecord::Rollback
       end
@@ -124,13 +126,12 @@ class NodesController < ApplicationController
       if success
         format.html do
           redirect_to @node,
-            notice: I18n.t("messages.success_action", model: Node.model_name.human, action: I18n.t("actions.register"))
+            notice: t("messages.success_action", model: @node.model_name.human, action: t("actions.register"))
         end
         format.json { render :show, status: :created, location: @node }
       else
         format.html do
-          flash.now[:alert] =
-            I18n.t("messages.failure_action", model: Node.model_name.human, action: I18n.t("actions.register"))
+          flash.now[:alert] = t("messages.failure_action", model: @node.model_name.human, action: t("actions.register"))
           render :new
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }

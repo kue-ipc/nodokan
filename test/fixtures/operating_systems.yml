@@ -1,23 +1,29 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-win10:
+win:
   os_category: win
-  name: Windows 10
-  description: Windows 10
-
-winme:
-  os_category: win
-  name: Windows Me
-  eol: 2006-07-11
+  name: Windows
   confirmed: true
-  description: Microsoftの黒歴史
+  description: Windows
 
 macos:
   os_category: mac
   name: macOS
+  confirmed: true
   description: Mac
+
+android:
+  os_category: linux
+  name: Android
+  description: Android
+
+linux:
+  os_category: linux
+  name: Linux
+  description: Linux
 
 less:
   os_category: less
   name: OS無し
+  confirmed: true
   description: OS無し

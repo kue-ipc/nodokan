@@ -4,19 +4,22 @@ win:
   name: Windows
   icon: <i class="win"></i>
   order: 1
-  locked: false
   description: Windows
 
 mac:
   name: Mac
   icon: <i class="mac"></i>
   order: 2
-  locked: false
   description: Mac
+
+linux:
+  name: Linux
+  icon: <i class="linux"></i>
+  order: 3
+  description: Linux
 
 less:
   name: OS無し
   icon: <i class="less"></i>
-  order: 3
-  locked: true
+  order: 4
   description: OS無し

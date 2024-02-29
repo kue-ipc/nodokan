@@ -3,45 +3,65 @@
 desktop:
   name: デスクトップパソコン
   hostname: desktop
-  user: user
+  domain: example.jp
   note: 備考
   place: one
   hardware: desktop
-  operating_system: win7
+  operating_system: win
   duid_data: <%= duid("00-04-3b6e47ff-4e2a-4e2e-9243-af3f80452d96") %>
+  user: user
 
 note:
   name: ノートパソコン
-  user: user
+  hostname: note
   place: two
   hardware: note
-  operating_system: winme
+  operating_system: macos
   duid_data: <%= duid("00-04-5ae25b1e-b7be-463c-a1a6-a45795dd289a") %>
+  user: user
+
+tablet:
+  name: タブレット
+  hostname: tablet
+  place: two
+  hardware: tablet
+  operating_system: android
+  duid_data: <%= duid("00-04-06dec5d2-c8ea-4fc7-ab8d-16d9fbbe43ba") %>
+  user: user
 
 server:
   name: サーバー
   hostname: sever
   domain: example.jp
-  user: user
   place: three
   hardware: server
-  operating_system: less
+  operating_system: linux
+  user: user
 
 other_desktop:
   name: 別の人のパソコン
-  user: other
-  note: 別の人が所有
   place: one
   hardware: desktop
-  operating_system: win7
+  operating_system: win
+  note: 別の人が所有
+  user: other
 
 admin_desktop:
   name: 管理者のデスクトップパソコン
-  user: admin
-  note: 管理者が所有
   place: one
   hardware: desktop
-  operating_system: win7
+  operating_system: win
+  note: 管理者が所有
+  user: admin
+
+router:
+  name: ルーター
+  hostname: router
+  domain: net.example.jp
+  user: admin
+  place: three
+  hardware: router
+  operating_system: less
 
 cluster:
   name: クラスター
