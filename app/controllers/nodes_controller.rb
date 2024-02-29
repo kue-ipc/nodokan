@@ -122,11 +122,15 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       if success
-        format.html { redirect_to @node, notice: "端末を登録しました。" }
+        format.html do
+          redirect_to @node,
+            notice: I18n.t("messages.success_action", model: Node.model_name.human, action: I18n.t("actions.register"))
+        end
         format.json { render :show, status: :created, location: @node }
       else
         format.html do
-          flash.now[:alert] = "端末登録に失敗しました。"
+          flash.now[:alert] =
+            I18n.t("messages.failure_action", model: Node.model_name.human, action: I18n.t("actions.register"))
           render :new
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
@@ -270,13 +274,13 @@ class NodesController < ApplicationController
       :hostname,
       :domain,
       :duid,
-      :specific,
       :logical,
+      :virtual_machine,
+      :specific,
       :public,
       :dns,
       :note,
       :user_id,
-      :virtual_machine,
       :host_id,
       place: [:area, :building, :floor, :room],
       hardware: [:device_type_id, :maker, :product_name, :model_number],

@@ -8,10 +8,10 @@ desktop:
   interface_type: :wired
   auth: true
   locked: false
-  mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
+  mac_address_data: <%= mac_address("00-11-22-33-44-55") %>
   ipv4_config: :dynamic
   ipv4_data:
-  ipv6_config: :dynamic
+  ipv4_config: dynamic
   ipv6_data:
 
 note:
@@ -22,11 +22,11 @@ note:
   interface_type: :wireless
   auth: true
   locked: false
-  mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
+  mac_address_data: <%= mac_address("00-11-22-33-44-66") %>
   ipv4_config: :reserved
-  ipv4_data: <%= ipv4_address('192.168.2.110') %>
-  ipv6_config: :dynamic
-  ipv6_data:
+  ipv4_data: <%= ipv4_address("192.168.2.102") %>
+  ipv4_config: :reserved
+  ipv6_data: <%= ipv6_address("fd00:2::2002") %>
 
 server:
   node: server
@@ -38,7 +38,7 @@ server:
   locked: false
   mac_address_data:
   ipv4_config: :static
-  ipv4_data: <%= ipv4_address('192.168.1.1') %>
+  ipv4_data: <%= ipv4_address("192.168.1.1") %>
   ipv6_config: :disabled
   ipv6_data:
 
@@ -52,6 +52,6 @@ server_extra:
   locked: false
   mac_address_data:
   ipv4_config: :static
-  ipv4_data: <%= ipv4_address('192.0.2.1') %>
+  ipv4_data: <%= ipv4_address("192.0.2.1") %>
   ipv6_config: :disabled
   ipv6_data:

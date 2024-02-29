@@ -2,11 +2,13 @@
 
 desktop:
   name: デスクトップパソコン
+  hostname: desktop
   user: user
   note: 備考
   place: one
   hardware: desktop
   operating_system: win7
+  duid_data: <%= duid("00-04-3b6e47ff-4e2a-4e2e-9243-af3f80452d96") %>
 
 note:
   name: ノートパソコン
@@ -14,9 +16,12 @@ note:
   place: two
   hardware: note
   operating_system: winme
+  duid_data: <%= duid("00-04-5ae25b1e-b7be-463c-a1a6-a45795dd289a") %>
 
 server:
   name: サーバー
+  hostname: sever
+  domain: example.jp
   user: user
   place: three
   hardware: server

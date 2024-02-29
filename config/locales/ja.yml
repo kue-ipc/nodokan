@@ -651,17 +651,31 @@ ja:
   errors:
     format: "%{attribute}は%{message}"
     messages:
-      accepted: 受諾してください
-      blank: 入力してください
-      confirmation: "%{attribute}との入力が一致しません"
-      empty: 空にしないでください
-      equal_to: "%{count}にしてください"
-      even: 偶数にしてください
-      exclusion: 予約されています
-      greater_than: "%{count}より大きい値にしてください"
+      accepted: 受諾してください。
+      blank: 入力してください。
+      confirmation: "%{attribute}との入力が一致しません。"
+      empty: 空にしないでください。
+      equal_to: "%{count}にしてください。"
+      even: 偶数にしてください。
+      greater_than: "%{count}より大きい値にしてください。"
       greater_than_or_equal_to: "%{count}以上の値にしてください"
-      inclusion: 一覧にありません
-      invalid: 不正な値です
+      less_than: "%{count}より小さい値にしてください"
+      less_than_or_equal_to: "%{count}以下の値にしてください"
+      model_invalid: "バリデーションに失敗しました: %{errors}"
+      not_a_number: 数値で入力してください
+      not_an_integer: 整数で入力してください
+      odd: 奇数にしてください
+      other_than: "%{count}以外の値にしてください"
+      present: 入力しないでください
+      required: 入力してください
+      taken: すでに存在します
+      too_long: "%{count}文字以内で入力してください"
+      too_short: "%{count}文字以上で入力してください"
+      wrong_length: "%{count}文字で入力してください"
+      exclusion: 予約されています。
+      inclusion: 一覧にありません。
+      invalid: 不正な値です。
+      no_free: "%{name}の空きがありません。"
       invalid_ip_address: IPアドレスの形式ではありません
       invalid_ipv4_address: IPv4アドレスの形式ではありません
       invalid_ipv6_address: IPv6アドレスの形式ではありません
@@ -680,22 +694,6 @@ ja:
       ipv6_link_local: リンクローカルアドレスを設定することはできません
       ipv6_multicast: マルチキャストアドレスを設定することはできません
       ipv6_mapped: IPv4射影IPv6アドレスを設定することはできません
-
-      less_than: "%{count}より小さい値にしてください"
-      less_than_or_equal_to: "%{count}以下の値にしてください"
-      model_invalid: "バリデーションに失敗しました: %{errors}"
-      not_a_number: 数値で入力してください
-      not_an_integer: 整数で入力してください
-      odd: 奇数にしてください
-      other_than: "%{count}以外の値にしてください"
-      present: 入力しないでください
-      required: 入力してください
-      taken: すでに存在します
-      too_long: "%{count}文字以内で入力してください"
-      too_short: "%{count}文字以上で入力してください"
-      wrong_length: "%{count}文字で入力してください"
-
-      no_free: "%{name}の空きがありません。"
       invalid_config: "設定値が間違っている、または、制限により設定できません。"
 
   forms:
