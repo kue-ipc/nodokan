@@ -4,15 +4,7 @@ class Confirmation < ApplicationRecord
   belongs_to :node
   belongs_to :security_software, optional: true
 
-  NUM_ATTRS = %w(
-    existence
-    content
-    os_update
-    app_update
-    software
-    security_update
-    security_scan
-  ).freeze
+  NUM_ATTRS = %w(existence content os_update app_update software security_update security_scan).freeze
 
   ALL_ATTRS = (NUM_ATTRS + %w(security_hardware security_software)).freeze
 
