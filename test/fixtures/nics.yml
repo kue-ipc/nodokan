@@ -11,7 +11,7 @@ desktop:
   mac_address_data: <%= mac_address("00-11-22-33-44-55") %>
   ipv4_config: :static
   ipv4_data: <%= ipv4_address("192.168.2.1") %>
-  ipv4_config: :static
+  ipv6_config: :static
   ipv6_data: <%= ipv6_address("fd00:2::1001") %>
 
 note:
@@ -25,7 +25,7 @@ note:
   mac_address_data: <%= mac_address("00-11-22-33-44-66") %>
   ipv4_config: :reserved
   ipv4_data: <%= ipv4_address("192.168.2.102") %>
-  ipv4_config: :reserved
+  ipv6_config: :reserved
   ipv6_data: <%= ipv6_address("fd00:2::2002") %>
 
 android:
@@ -39,7 +39,7 @@ android:
   mac_address_data: <%= mac_address("00-11-22-33-44-77") %>
   ipv4_config: :dynamic
   ipv4_data:
-  ipv4_config: dynamic
+  ipv6_config: dynamic
   ipv6_data:
 
 server:

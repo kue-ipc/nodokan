@@ -182,15 +182,15 @@ class Network < ApplicationRecord
   def next_ipv4(ipv4_config)
     return unless ipv4_network
 
-    selected_ip_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
-    return if selected_ip_pools.empty?
+    selected_ipv4_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
+    return if selected_ipv4_pools.empty?
 
-    # prefixが異なるため、文字列として比較する
-    nics_ipv4s = nics.map(&:ipv4).compact.to_set(&:to_s)
+    nics_ipv4_set = nics.map(&:ipv4).compact.to_set
+    ipv4_gateway = self.ipv4_gateway
 
-    selected_ip_pools.each do |ipv4_pool|
+    selected_ipv4_pools.each do |ipv4_pool|
       ipv4_pool.each do |ipv4|
-        return ipv4 if ipv4 != ipv4_gateway && nics_ipv4s.exclude?(ipv4.to_s)
+        return ipv4 if ipv4 != ipv4_gateway && nics_ipv4_set.exclude?(ipv4)
       end
     end
 
@@ -203,12 +203,12 @@ class Network < ApplicationRecord
     selected_ipv6_pools = ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
     return if selected_ipv6_pools.empty?
 
-    # prefixが異なるため、文字列として比較する
-    nics_ipv6s = nics.map(:ipv6).compact.compact.to_set(&:to_s)
+    nics_ipv6_set = nics.map(&:ipv6).compact.to_set
+    ipv6_gateway = self.ipv6_gateway
 
     selected_ipv6_pools.each do |ipv6_pool|
       ipv6_pool.each do |ipv6|
-        return ipv6 if ipv6 != ipv6_gateway && nics_ipv6s.exclude?(ipv6.to_s)
+        return ipv6 if ipv6 != ipv6_gateway && nics_ipv6_set.exclude?(ipv6)
       end
     end
 

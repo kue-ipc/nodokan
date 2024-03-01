@@ -100,29 +100,15 @@ class Nic < ApplicationRecord
     case ipv4_config
     when "dynamic", "disabled"
       self.ipv4_address = nil
-    when "reserved"
+    when "reserved", "static"
       if manageable && ipv4_address.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv4_config)
         self.ipv4_address = old_nic.ipv4_address
       else
-        unless (ipv4 = network.next_ipv4("reserved"))
+        unless (ipv4 = network.next_ipv4(ipv4_config))
           errors.add(:ipv4_config, t("errors.messages.no_free",
-            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.reserved"))))
-          return false
-        end
-
-        self.ipv4_address = ipv4.to_s
-      end
-    when "static"
-      if manageable && ipv4_address.present?
-        # nothing
-      elsif same_old_nic?(:network_id, :ipv4_config)
-        self.ipv4_address = old_nic.ipv4_address
-      else
-        unless (ipv4 = network.next_ipv4("static"))
-          errors.add(:ipv4_config, t("errors.messages.no_free",
-            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.static"))))
+            name: t("messages.address_for_config", config: t(ipv4_config, scope: "activerecord.enums.ipv4_configs"))))
           return false
         end
 
@@ -162,29 +148,15 @@ class Nic < ApplicationRecord
     case ipv6_config
     when "dynamic", "disabled"
       self.ipv6_address = nil
-    when "reserved"
+    when "reserved", "static"
       if manageable && ipv6_address.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv6_config)
         self.ipv6_address = old_nic.ipv6_address
       else
-        unless (ipv6 = network.next_ipv6("reserved"))
+        unless (ipv6 = network.next_ipv6(ipv6_config))
           errors.add(:ipv6_config, t("errors.messages.no_free",
-            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.reserved"))))
-          return false
-        end
-
-        self.ipv6_address = ipv6.to_s
-      end
-    when "static"
-      if manageable && ipv6_address.present?
-        # nothing
-      elsif same_old_nic?(:network_id, :ipv6_config)
-        self.ipv6_address = old_nic.ipv6_address
-      else
-        unless (ipv6 = network.next_ipv6("static"))
-          errors.add(:ipv6_config, t("errors.messages.no_free",
-            name: t("messages.address_for_config", config: t("activerecord.enums.ipv4_configs.static"))))
+            name: t("messages.address_for_config", config: t(ipv6_config, scope: "activerecord.enums.ipv4_configs"))))
           return false
         end
 
