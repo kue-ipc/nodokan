@@ -83,6 +83,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   # index
 
+  test "should get index" do
+    sign_in users(:user)
+    get nodes_url
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]"
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+  end
+
   test "admin should get index" do
     sign_in users(:admin)
     get nodes_url
@@ -91,29 +99,29 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]"
   end
 
-  test "user should get index" do
-    sign_in users(:user)
+  test "other should get index" do
+    sign_in users(:other)
     get nodes_url
     assert_response :success
-    assert_select "a[href=\"#{node_path(@node)}\"]"
-    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+    assert_select "a[href=\"#{node_path(@node)}\"]", false
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]"
   end
 
-  test "redirect to login INSTEAD OF get index" do
+  test "guest redirect to login INSTEAD OF get index" do
     get nodes_url
     assert_redirected_to new_user_session_path
   end
 
   # show
 
-  test "admin should show node" do
-    sign_in users(:admin)
+  test "should show node" do
+    sign_in users(:user)
     get node_url(@node)
     assert_response :success
   end
 
-  test "user should show node" do
-    sign_in users(:user)
+  test "admin should show node" do
+    sign_in users(:admin)
     get node_url(@node)
     assert_response :success
   end
@@ -124,12 +132,19 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "redirect to login INSTEAD OF show node" do
+  test "guest redirect to login INSTEAD OF show node" do
     get node_url(@node)
     assert_redirected_to new_user_session_path
   end
 
   # new
+
+  test "should get new" do
+    sign_in users(:user)
+    get new_node_url
+    assert_response :success
+    assert_select "div#node_nics_attributes_0"
+  end
 
   test "admin should get new" do
     sign_in users(:admin)
@@ -138,35 +153,21 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_select "div#node_nics_attributes_0"
   end
 
-  test "user should get new" do
-    sign_in users(:user)
-    get new_node_url
-    assert_response :success
-    assert_select "div#node_nics_attributes_0"
-  end
-
-  test "other should get new" do
-    sign_in users(:other)
-    get new_node_url
-    assert_response :success
-    assert_select "div#node_nics_attributes_0", false
-  end
-
-  test "redirect to login INSTEAD OF get new" do
+  test "guest redirect to login INSTEAD OF get new" do
     get new_node_url
     assert_redirected_to new_user_session_path
   end
 
   # edit
 
-  test "admin should get edit" do
-    sign_in users(:admin)
+  test "should get edit" do
+    sign_in users(:user)
     get edit_node_url(@node)
     assert_response :success
   end
 
-  test "user should get edit" do
-    sign_in users(:user)
+  test "admin should get edit" do
+    sign_in users(:admin)
     get edit_node_url(@node)
     assert_response :success
   end
@@ -177,96 +178,167 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "redirect to login INSTEAD OF get edit" do
+  test "guest redirect to login INSTEAD OF get edit" do
     get edit_node_url(@node)
     assert_redirected_to new_user_session_path
   end
 
   # create
 
+  test "should create node" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name"}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:user).id, Node.last.user_id
+  end
+
   test "admin should create node" do
     sign_in users(:admin)
-    new_node = node_to_params(@node)
-    new_node[:hostname] = "new"
-    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
-    new_node[:nics_attributes][0][:id] = nil
-    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
-    new_node[:nics_attributes][0][:ipv4_address] = nil
-    new_node[:nics_attributes][0][:ipv6_address] = nil
     assert_difference("Node.count") do
-      post nodes_url, params: {node: new_node}
+      post nodes_url, params: {node: {name: "name"}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
-    assert_equal users(:user).id, Node.last.user_id
+    assert_nil Node.last.user_id
   end
 
-  test "user should create node" do
-    sign_in users(:user)
-    new_node = node_to_params(@node)
-    new_node[:hostname] = "new"
-    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
-    new_node[:nics_attributes][0][:id] = nil
-    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
-    new_node[:nics_attributes][0][:ipv4_address] = nil
-    new_node[:nics_attributes][0][:ipv6_address] = nil
-    assert_difference("Node.count") do
-      post nodes_url, params: {node: new_node}
-    end
-    assert_equal @messages[:create_success], flash[:notice]
-    assert_redirected_to node_url(Node.last)
-    assert_equal users(:user).id, Node.last.user_id
-  end
-
-  test "other should create node" do
-    sign_in users(:other)
-    new_node = node_to_params(@node)
-    new_node[:hostname] = "new"
-    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
-    new_node[:nics_attributes][0][:id] = nil
-    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
-    new_node[:nics_attributes][0][:ipv4_address] = nil
-    new_node[:nics_attributes][0][:ipv6_address] = nil
-    assert_difference("Node.count") do
-      post nodes_url, params: {node: new_node}
-    end
-    assert_equal @messages[:create_success], flash[:notice]
-    assert_redirected_to node_url(Node.last)
-    assert_equal users(:other).id, Node.last.user_id
-  end
-
-  test "redirect to login INSTEAD OF create node" do
-    new_node = node_to_params(@node)
-    new_node[:hostname] = "new"
-    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
-    new_node[:nics_attributes][0][:id] = nil
-    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
-    new_node[:nics_attributes][0][:ipv4_address] = nil
-    new_node[:nics_attributes][0][:ipv6_address] = nil
+  test "guest redirect to login INSTEAD OF create node" do
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: new_node}
+      post nodes_url, params: {node: {name: "name"}}
     end
     assert_equal @messages[:unauthenticated], flash[:alert]
     assert_redirected_to new_user_session_path
   end
 
-  test "user should NOT create node with same duid" do
+  test "should create node all attributes" do
     sign_in users(:user)
     new_node = node_to_params(@node)
     new_node[:hostname] = "new"
-    # new_node[:duid] = "00-04-#{SecureRandom.uuid}"
+    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
     new_node[:nics_attributes][0][:id] = nil
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
     new_node[:nics_attributes][0][:ipv4_address] = nil
     new_node[:nics_attributes][0][:ipv6_address] = nil
-    assert_no_difference("Node.count") do
+    assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:user).id, Node.last.user_id
+  end
+
+  test "should NOT create node without name" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {hostname: "hostname"}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
   end
 
-  test "user should create node with nic id (ignore)" do
+  test "should NOT create node with same hostname and same domain" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", hostname: @node.hostname, domain: @node.domain}}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "should create node with different hostname and different domain" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", hostname: "hostname", domain: "domain.example.jp"}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal "hostname", Node.last.hostname
+    assert_equal "domain.example.jp", Node.last.domain
+  end
+
+
+  test "should create node with different hostname and same domain" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", hostname: "hostname", domain: @node.domain}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal "hostname", Node.last.hostname
+    assert_equal @node.domain, Node.last.domain
+  end
+
+  test "should create node with same hostname and different domain" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", hostname: @node.hostname, domain: "domain.example.jp"}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal @node.hostname, Node.last.hostname
+    assert_equal "domain.example.jp", Node.last.domain
+  end
+
+  test "should create node with same hostname and without domain" do
+    sign_in users(:user)
+    no_domain_node = nodes(:note)
+    assert_nil no_domain_node.domain
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", hostname: no_domain_node.hostname, domain: no_domain_node.domain}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal no_domain_node.hostname, Node.last.hostname
+    assert_nil Node.last.domain
+  end
+
+  test "should NOT create node without hostname and with domain" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", hostname: nil, domain: "test.example.jp"}}
+    end
+  end
+
+  test "should NOT create node with same duid" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", duid: @node.duid}}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "should create node with logical" do
+    sign_in users(:user)
+    new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
+    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
+    new_node[:nics_attributes][0][:id] = nil
+    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
+
+    new_node[:logical] = true
+    new_node[:virtual_machine] = true # ignore
+    new_node[:host_id] = nodes(:server).id
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: new_node}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert Node.last.logical
+    # ignore attributes
+    assert_not Node.last.virtual_machine
+    assert_nil Node.last.host_id
+    assert_nil Node.last.place
+    assert_nil Node.last.hardware
+    assert_nil Node.last.operating_system
+  end
+
+  test "should create node with nic id (ignore)" do
     sign_in users(:user)
     new_node = node_to_params(@node)
     new_node[:hostname] = "new"
@@ -283,7 +355,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal users(:user).id, Node.last.user_id
   end
 
-  test "user should NOT create node with same nic mac_address" do
+  test "should NOT create node with same nic mac_address" do
     sign_in users(:user)
     new_node = node_to_params(@node)
     new_node[:hostname] = "new"
@@ -299,7 +371,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "user should create node with nic ipv4 address (ignore)" do
+  test "should create node with nic ipv4 address (ignore)" do
     sign_in users(:user)
     new_node = node_to_params(@node)
     new_node[:hostname] = "new"
@@ -324,7 +396,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to node_url(@node)
   end
 
-  test "user should update node" do
+  test "should update node" do
     sign_in users(:user)
     patch node_url(@node), params: {node: {name: @node.name, note: @node.note}}
     assert_redirected_to node_url(@node)
@@ -336,7 +408,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "redirect to login INSTEAD OF update node" do
+  test "guest redirect to login INSTEAD OF update node" do
     patch node_url(@node), params: {node: {name: @node.name, note: @node.note}}
     assert_redirected_to new_user_session_path
   end
@@ -351,7 +423,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to nodes_url
   end
 
-  test "user should destroy node" do
+  test "should destroy node" do
     sign_in users(:user)
     assert_difference("Node.count", -1) do
       delete node_url(@node)
@@ -367,7 +439,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "redirect to login INSTEAD OF destroy node" do
+  test "guest redirect to login INSTEAD OF destroy node" do
     assert_no_difference("Node.count") do
       delete node_url(@node)
     end

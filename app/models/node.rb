@@ -8,7 +8,7 @@ class Node < ApplicationRecord
     dns: "d",
   }.freeze
 
-  belongs_to :user, counter_cache: true
+  belongs_to :user, optional: true, counter_cache: true
 
   belongs_to :place, optional: true, counter_cache: true
   belongs_to :hardware, optional: true, counter_cache: true
@@ -37,7 +37,8 @@ class Node < ApplicationRecord
   validates :domain, allow_nil: true, format: {
     with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
   }
-  validates :hostname, uniqueness: {scope: :domain, case_sensitive: true}, if: ->(node) { node.domain.present? }
+  validates :hostname, presence: true, uniqueness: {scope: :domain, case_sensitive: true},
+    if: ->(node) { node.domain.present? }
   validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: true
 
   normalizes :hostname, with: ->(str) { str.presence&.strip&.downcase }
