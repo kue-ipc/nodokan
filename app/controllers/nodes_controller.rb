@@ -96,33 +96,18 @@ class NodesController < ApplicationController
       return
     end
 
-    number_count = 1
-    @node.nics.each do |nic|
-      nic.number = number_count
+    @node.nics.each_with_index do |nic, idx|
+      nic.number = idx + 1
       manageable = nic.network.manageable?(current_user)
       nic.set_ipv4!(manageable)
       nic.set_ipv6!(manageable)
-
-      number_count += 1
-    end
-
-    success = false
-
-    Node.transaction do
-      if !@node.save ||
-         @node.errors.present? ||
-         @node.place&.errors.present? ||
-         @node.hardware&.errors.present? ||
-         @node.operating_system&.errors.present? ||
-         @node.nics.any? { |nic| nic.errors.present? }
-        raise ActiveRecord::Rollback
+      nic.errors.each do |error|
+        @node.errors.import(error, attribute: "nics.#{error}")
       end
-
-      success = true
     end
 
     respond_to do |format|
-      if success
+      if @node.save
         format.html do
           redirect_to @node,
             notice: t("messages.success_action", model: @node.model_name.human, action: t("actions.register"))

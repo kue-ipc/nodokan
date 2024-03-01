@@ -35,8 +35,17 @@ class Nic < ApplicationRecord
   validates :name, allow_blank: true, length: {maximum: 255}
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
+  validates :ipv4_data, presence: true, if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
   validates :ipv6_data, allow_nil: true, uniqueness: true
+  validates :ipv6_data, presence: true, if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
+
   validates :mac_address_data, allow_nil: true, length: {is: 6}, uniqueness: true
+  validates :mac_address_data, presence: true, if: -> { auth }
+  validates :ipv4_config, ip_config: true
+  validates :ipv4_config, exclusion: ["reserved"], if: -> { mac_address_data.blank? }
+  # TODO: MACアドレスによる予約も許可するなら、その想定も必要かも。
+  validates :ipv6_config, ip_config: true
+  validates :ipv6_config, exclusion: ["reserved"], if: -> { node.duid_data.blank? }
 
   normalizes :name, with: ->(str) { str.presence&.strip }
 
@@ -87,51 +96,33 @@ class Nic < ApplicationRecord
   end
 
   def set_ipv4!(manageable = false)
-    if network.nil?
-      self.ipv4_address = nil
-      return true
-    end
-
-    unless network.ipv4_configs.include?(ipv4_config)
-      errors.add(:ipv4_config, t("errors.messages.invalid_config"))
-      return false
-    end
+    return if network.nil?
 
     case ipv4_config
     when "dynamic", "disabled"
-      self.ipv4_address = nil
+      self.ipv4_data = nil
     when "reserved", "static"
-      if manageable && ipv4_address.present?
+      if manageable && ipv4_data.present?
         # nothing
       elsif same_old_nic?(:network_id, :ipv4_config)
-        self.ipv4_address = old_nic.ipv4_address
+        self.ipv4_data = old_nic.ipv4_data
       else
-        unless (ipv4 = network.next_ipv4(ipv4_config))
-          errors.add(:ipv4_config, t("errors.messages.no_free",
-            name: t("messages.address_for_config", config: t(ipv4_config, scope: "activerecord.enums.ipv4_configs"))))
-          return false
-        end
-
-        self.ipv4_address = ipv4.to_s
+        next_ipv4 = network.next_ipv4(ipv4_config)
+        self.ipv4 = next_ipv4
+        errors.add(:ipv4_config, :no_free) unless next_ipv4
       end
     when "manual"
       if manageable
-        if ipv4_address.blank?
-          errors(:ipv4_address, t("errors.messages.blank"))
-          return false
-        end
+        # nothing
       elsif same_old_nic?(:network_id, :ipv4_config)
-        self.ipv4_address = old_nic.ipv4_address
+        self.ipv4_data = old_nic.ipv4_data
       else
-        errors(:ipv4_config, t("errors.messages.invalid_config"))
-        return false
+        self.ipv4 = nil
+        errors.add(:ipv4_config, :invalid_config)
       end
     else
-      errors(:ipv4_config, t("errors.messages.invalid_config"))
-      return false
+      self.ipv4 = nil
     end
-
-    true
   end
 
   def set_ipv6!(manageable = false)
