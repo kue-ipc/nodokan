@@ -45,9 +45,10 @@ config/settings.local.yml
 config/settings/*.local.yml
 config/environments/*.local.yml
 
-# no rbenv, nodenv
+# no rbenv, nodenv vscode
 /.ruby-version
 /.node-version
+/.vscode
 
 # data
 /data/*
