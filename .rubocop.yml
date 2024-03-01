@@ -71,6 +71,7 @@ Metrics/ClassLength:
   Max: 200 # 100
   Exclude:
     - 'test/**/*.rb'
+    - 'app/controllers/*.rb'
 
 Metrics/CyclomaticComplexity:
   Max: 14 # 7

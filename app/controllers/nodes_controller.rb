@@ -1,4 +1,3 @@
-# rubocop: disable Metrics
 class NodesController < ApplicationController
   include Page
   include Search
@@ -283,6 +282,7 @@ class NodesController < ApplicationController
       :note,
       :user_id,
       :host_id,
+      :component_ids,
       place: [:area, :building, :floor, :room],
       hardware: [:device_type_id, :maker, :product_name, :model_number],
       operating_system: [:os_category_id, :name],
@@ -301,38 +301,53 @@ class NodesController < ApplicationController
         :ipv6_address,
       ])
 
-    if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
-      host_id = nil
-      place = nil
-      hardware = nil
-      operating_system = nil
-    else
-      if ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
-        host_id = permitted_params[:host_id]
-        place = nil
+    normalize_params(permitted_params)
+  end
+
+  private def normalize_params(permitted_params)
+    corrected_params =
+      if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
+        {
+          virtual_machine: false,
+          host_id: nil,
+          place: nil,
+          hardware: nil,
+          operating_system: nil,
+        }
+      elsif ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
+        {
+          place: nil,
+          hardware: find_or_new_hardware(permitted_params[:hardware]),
+          operating_system: find_or_new_operating_system(permitted_params[:operating_system]),
+        }
       else
-        host_id = nil
-        place =
-          permitted_params[:place]&.values_at(:area, :building, :room)&.find(&:presence) &&
-          Place.find_or_initialize_by(**permitted_params[:place])
+        {
+          host_id: nil,
+          place: find_or_new_place(permitted_params[:place]),
+          hardware: find_or_new_hardware(permitted_params[:hardware]),
+          operating_system: find_or_new_operating_system(permitted_params[:operating_system]),
+        }
       end
 
-      hardware =
-        permitted_params[:hardware]&.values&.find(&:presence) &&
-        Hardware.find_or_initialize_by(
-          **permitted_params[:hardware],
-          device_type_id: permitted_params.dig(:hardware, :device_type_id).presence)
+    permitted_params.merge(corrected_params)
+  end
 
-      operating_system =
-        permitted_params.dig(:operating_system, :os_category_id).presence &&
-        OperatingSystem.find_or_initialize_by(**permitted_params[:operating_system])
-    end
+  private def find_or_new_place(place_params)
+    return unless place_params&.values_at(:area, :building, :room)&.any?(&:present?)
 
-    permitted_params.merge(
-      host_id: host_id,
-      place: place,
-      hardware: hardware,
-      operating_system: operating_system)
+    Place.find_or_initialize_by(place_params)
+  end
+
+  private def find_or_new_hardware(hardware_params)
+    return unless hardware_params&.values&.any?(&:present?)
+
+    Hardware.find_or_initialize_by(hardware_params)
+  end
+
+  private def find_or_new_operating_system(operating_system_params)
+    return unless operating_system_params&.[](:os_category_id)&.present?
+
+    OperatingSystem.find_or_initialize_by(operating_system_params)
   end
 
   private def authorize_node

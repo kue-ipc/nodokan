@@ -4,6 +4,10 @@ require "securerandom"
 class NodesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
+  def hex_to_binary(str)
+    [str.delete("-:")].pack("H*")
+  end
+
   def node_to_params(node)
     {
       name: node.name,
@@ -227,7 +231,33 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
+    assert_equal @node.name, Node.last.name
+    assert_equal new_node[:hostname], Node.last.hostname
+    assert_equal @node.domain, Node.last.domain
+    assert_equal hex_to_binary(new_node[:duid]), Node.last.duid_data
+    assert_equal @node.logical, Node.last.logical
+    assert_equal @node.virtual_machine, Node.last.virtual_machine
+    assert_not Node.last.specific
+    assert_not Node.last.public
+    assert_not Node.last.dns
     assert_equal users(:user).id, Node.last.user_id
+    assert_equal @node.host_id, Node.last.host_id
+    assert_equal @node.component_ids&.sort, Node.last.component_ids&.sort
+    assert_equal @node.place_id, Node.last.place_id
+    assert_equal @node.hardware_id, Node.last.hardware_id
+    assert_equal @node.operating_system_id, Node.last.operating_system_id
+    assert_equal @node.nics.count, Node.last.nics.count
+    assert_not_equal @node.nics.first.id, Node.last.nics.first.id
+    assert_equal @node.nics.first.name, Node.last.nics.first.name
+    assert_not Node.last.nics.first.locked
+    assert_equal @node.nics.first.interface_type, Node.last.nics.first.interface_type
+    assert_equal @node.nics.first.auth, Node.last.nics.first.auth
+    assert_equal hex_to_binary(new_node[:nics_attributes][0][:mac_address]), Node.last.nics.first.mac_address_data
+    assert_equal @node.nics.first.network_id, Node.last.nics.first.network_id
+    assert_equal @node.nics.first.ipv4_config, Node.last.nics.first.ipv4_config
+    assert_not_equal @node.nics.first.ipv4_data, Node.last.nics.first.ipv4_data
+    assert_equal @node.nics.first.ipv6_config, Node.last.nics.first.ipv6_config
+    assert_not_equal @node.nics.first.ipv6_data, Node.last.nics.first.ipv6_data
   end
 
   test "should NOT create node without name" do
@@ -258,7 +288,6 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "hostname", Node.last.hostname
     assert_equal "domain.example.jp", Node.last.domain
   end
-
 
   test "should create node with different hostname and same domain" do
     sign_in users(:user)
