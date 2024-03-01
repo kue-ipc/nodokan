@@ -226,6 +226,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
     new_node[:nics_attributes][0][:ipv4_address] = nil
     new_node[:nics_attributes][0][:ipv6_address] = nil
+
     new_node[:logical] = false
     new_node[:virtual_machine] = false
     assert_difference("Node.count") do
@@ -355,13 +356,15 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
     new_node[:logical] = true
     new_node[:virtual_machine] = true # ignore
-    new_node[:host_id] = nodes(:server).id
+    new_node[:component_ids] = [@node.id]
+    new_node[:host_id] = @node.id # ignore
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.logical
+    assert_equal [@node.id], Node.last.component_ids
     # ignore attributes
     assert_not Node.last.virtual_machine
     assert_nil Node.last.host_id
@@ -370,7 +373,61 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Node.last.operating_system
   end
 
-  test "should create node with nic id (ignore)" do
+  test "should create node with virtual_machine" do
+    sign_in users(:user)
+    new_node = node_to_params(@node)
+    new_node[:hostname] = "new"
+    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
+    new_node[:nics_attributes][0][:id] = nil
+    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    new_node[:nics_attributes][0][:ipv4_address] = nil
+    new_node[:nics_attributes][0][:ipv6_address] = nil
+
+    new_node[:logical] = false
+    new_node[:virtual_machine] = true
+    new_node[:component_ids] = [@node.id] # ignore
+    new_node[:host_id] = @node.id
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: new_node}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_not Node.last.logical
+    assert Node.last.virtual_machine
+    assert_equal @node.id, Node.last.host_id
+    assert_equal @node.hardware_id, Node.last.hardware_id
+    assert_equal @node.operating_system_id, Node.last.operating_system_id
+    # ignore attributes
+    assert_nil Node.last.place
+    assert_empty Node.last.component_ids
+  end
+
+  test "should create node with flags, but ignored" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", specific: true, public: true, dns: true}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    # ignore attributes
+    assert_not Node.last.specific
+    assert_not Node.last.public
+    assert_not Node.last.dns
+  end
+
+  test "admin should create node with flags" do
+    sign_in users(:admin)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", specific: true, public: true, dns: true}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert Node.last.specific
+    assert Node.last.public
+    assert Node.last.dns
+  end
+
+  test "should create node with nic id, but ignored" do
     sign_in users(:user)
     new_node = node_to_params(@node)
     new_node[:hostname] = "new"
@@ -385,6 +442,26 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal users(:user).id, Node.last.user_id
+  end
+
+  test "should create node with user_id, but ignored" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", user_id: users(:other).id}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:user).id, Node.last.user_id
+  end
+
+  test "admin should create node with user_id" do
+    sign_in users(:admin)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", user_id: users(:other).id}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:other).id, Node.last.user_id
   end
 
   test "should NOT create node with same nic mac_address" do

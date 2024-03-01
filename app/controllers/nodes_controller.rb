@@ -83,10 +83,10 @@ class NodesController < ApplicationController
   # POST /nodes
   # POST /nodes.json
   def create
-    create_node_params = node_params
-    create_node_params[:nics_attributes]&.each_value { |nic| nic.delete(:id) }
+    permitted_params = node_params
+    permitted_params[:nics_attributes]&.each_value { |nic| nic.delete(:id) }
 
-    @node = Node.new(create_node_params)
+    @node = Node.new(permitted_params)
     @node.user = current_user unless current_user.admin?
     authorize @node
 
@@ -282,7 +282,7 @@ class NodesController < ApplicationController
       :note,
       :user_id,
       :host_id,
-      :component_ids,
+      component_ids: [],
       place: [:area, :building, :floor, :room],
       hardware: [:device_type_id, :maker, :product_name, :model_number],
       operating_system: [:os_category_id, :name],
@@ -305,30 +305,37 @@ class NodesController < ApplicationController
   end
 
   private def normalize_params(permitted_params)
-    corrected_params =
-      if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
-        {
-          virtual_machine: false,
-          host_id: nil,
-          place: nil,
-          hardware: nil,
-          operating_system: nil,
-        }
-      elsif ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
-        {
-          place: nil,
-        }
-      else
-        {
-          host_id: nil,
-        }
-      end
-    permitted_params.merge!(corrected_params)
+    permitted_params = delete_unchangable_params(permitted_params) unless current_user.admin?
+
+    if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
+      permitted_params.merge!({
+        virtual_machine: false,
+        host_id: nil,
+        place: nil,
+        hardware: nil,
+        operating_system: nil,
+      })
+    elsif ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
+      permitted_params[:component_ids] = []
+      permitted_params[:place] = nil
+    else
+      permitted_params[:component_ids] = []
+      permitted_params[:host_id] = nil
+    end
     permitted_params[:place] = find_or_new_place(permitted_params[:place]) if permitted_params.key?(:place)
     permitted_params[:hardware] = find_or_new_hardware(permitted_params[:hardware]) if permitted_params.key?(:hardware)
     if permitted_params.key?(:operating_system)
       permitted_params[:operating_system] = find_or_new_operating_system(permitted_params[:operating_system])
     end
+    permitted_params
+  end
+
+  private def delete_unchangable_params(permitted_params)
+    permitted_params.delete(:specific)
+    permitted_params.delete(:public)
+    permitted_params.delete(:dns)
+    permitted_params.delete(:user_id)
+    permitted_params[:nics_attributes]&.each_value { |nic| nic.delete(:locked) }
     permitted_params
   end
 

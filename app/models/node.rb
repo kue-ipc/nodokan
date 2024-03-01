@@ -15,14 +15,13 @@ class Node < ApplicationRecord
   belongs_to :operating_system, optional: true, counter_cache: true
 
   belongs_to :host, optional: true, class_name: "Node", foreign_key: "node_id", inverse_of: :guests
-  has_many :guests, class_name: "Node", foreign_key: "host_id", dependent: :restrict_with_error, inverse_of: :host
+  has_many :guests, dependent: :restrict_with_error, class_name: "Node", foreign_key: "host_id", inverse_of: :host
 
-  has_many :logical_compositions, dependent: :restrict_with_error
+  has_many :logical_compositions, dependent: :destroy
   has_many :components, through: :logical_compositions
-  # , source_type: "Node"
 
-  has_many :composed_compositions, class_name: "LogicalComposition", foreign_key: "component_id",
-    dependent: :restrict_with_error, inverse_of: :component
+  has_many :composed_compositions, dependent: :destroy, class_name: "LogicalComposition", foreign_key: "component_id",
+    inverse_of: :component
   has_many :logical_nodes, through: :composed_compositions
 
   has_many :nics, -> { order(:number) }, dependent: :destroy, inverse_of: :node
