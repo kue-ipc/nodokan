@@ -226,6 +226,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
     new_node[:nics_attributes][0][:ipv4_address] = nil
     new_node[:nics_attributes][0][:ipv6_address] = nil
+    new_node[:logical] = false
+    new_node[:virtual_machine] = false
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
@@ -235,14 +237,15 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal new_node[:hostname], Node.last.hostname
     assert_equal @node.domain, Node.last.domain
     assert_equal hex_to_binary(new_node[:duid]), Node.last.duid_data
-    assert_equal @node.logical, Node.last.logical
-    assert_equal @node.virtual_machine, Node.last.virtual_machine
+    # @node not logical and virtual_machine
+    assert_not Node.last.logical
+    assert_not Node.last.virtual_machine
     assert_not Node.last.specific
     assert_not Node.last.public
     assert_not Node.last.dns
     assert_equal users(:user).id, Node.last.user_id
-    assert_equal @node.host_id, Node.last.host_id
-    assert_equal @node.component_ids&.sort, Node.last.component_ids&.sort
+    assert_nil Node.last.host_id
+    assert_equal [], Node.last.component_ids
     assert_equal @node.place_id, Node.last.place_id
     assert_equal @node.hardware_id, Node.last.hardware_id
     assert_equal @node.operating_system_id, Node.last.operating_system_id

@@ -317,19 +317,19 @@ class NodesController < ApplicationController
       elsif ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
         {
           place: nil,
-          hardware: find_or_new_hardware(permitted_params[:hardware]),
-          operating_system: find_or_new_operating_system(permitted_params[:operating_system]),
         }
       else
         {
           host_id: nil,
-          place: find_or_new_place(permitted_params[:place]),
-          hardware: find_or_new_hardware(permitted_params[:hardware]),
-          operating_system: find_or_new_operating_system(permitted_params[:operating_system]),
         }
       end
-
-    permitted_params.merge(corrected_params)
+    permitted_params.merge!(corrected_params)
+    permitted_params[:place] = find_or_new_place(permitted_params[:place]) if permitted_params.key?(:place)
+    permitted_params[:hardware] = find_or_new_hardware(permitted_params[:hardware]) if permitted_params.key?(:hardware)
+    if permitted_params.key?(:operating_system)
+      permitted_params[:operating_system] = find_or_new_operating_system(permitted_params[:operating_system])
+    end
+    permitted_params
   end
 
   private def find_or_new_place(place_params)
