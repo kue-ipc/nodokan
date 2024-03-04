@@ -1559,6 +1559,48 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Node.find(@node.id).nics.first.ipv6_data
   end
 
+  ## ip config and address
+
+  ### unmanageable
+
+  #### dynamic
+
+  test "should update node with nic to dynamic" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "dynamic",
+      ipv6_config: "dynamic",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv6_config
+    assert_nil Node.find(@node.id).nics.first.ipv4_data
+    assert_nil Node.find(@node.id).nics.first.ipv6_data
+  end
+
+  #### reserved
+
+  test "should update node with nic to reserved" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "reserved",
+      ipv6_config: "reserved",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "reserved", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "reserved", Node.find(@node.id).nics.first.ipv6_config
+    assert_not_equal "192.168.2.1", Node.find(@node.id).nics.first.ipv4_address
+    assert_not_equal "fd00:2::1001", Node.find(@node.id).nics.first.ipv6_address
+  end
+
+  #### static
+  #### manual
+  #### disabled
+
   # destroy
 
   test "should destroy node" do
