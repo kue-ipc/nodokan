@@ -1018,27 +1018,6 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert Node.last.nics.first.ipv6_data
   end
 
-  test "other should NOT create node with reserved ipv4/ipv6, mac_address, duid, same addresses, but ignore" do
-    sign_in users(:other)
-    assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv4_config: "reserved",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "reserved",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
-    end
-    assert_equal @messages[:create_failure], flash[:alert]
-    assert_response :success
-  end
-
   test "other should create node with reserved ipv4/ipv6, mac_address, duid, different addresses, but ignore" do
     sign_in users(:other)
     assert_difference("Node.count") do
@@ -1060,6 +1039,44 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to node_url(Node.last)
     assert_equal @node.nics.first.ipv4.succ.hton, Node.last.nics.first.ipv4_data
     assert_equal @node.nics.first.ipv6.succ.hton, Node.last.nics.first.ipv6_data
+  end
+
+  test "other should NOT create node with reserved ipv4, mac_address, duid, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        duid: "00-04-#{SecureRandom.uuid}",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: "00-11-22-33-44-FF",
+          ipv4_config: "reserved",
+          ipv4_address: @node.nics.first.ipv4_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "other should NOT create node with reserved ipv6, mac_address, duid, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        duid: "00-04-#{SecureRandom.uuid}",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: "00-11-22-33-44-FF",
+          ipv6_config: "reserved",
+          ipv6_address: @node.nics.first.ipv6_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
   end
 
   #### static
