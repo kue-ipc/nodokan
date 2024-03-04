@@ -835,10 +835,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4_data
-    assert_not_equal @node.nics.first.ipv4_data, Node.last.nics.first.ipv4_data
     assert Node.last.nics.first.ipv6_data
+    assert_not_equal @node.nics.first.ipv4_data, Node.last.nics.first.ipv4_data
     assert_not_equal @node.nics.first.ipv6_data, Node.last.nics.first.ipv6_data
   end
+
+  #### manual
 
   test "should NOT create node with manual ipv4" do
     sign_in users(:user)
@@ -904,6 +906,333 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
+  end
+
+  #### disabled
+
+  test "should create node with disabled ipv4/ipv6" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "disabled",
+          ipv6_config: "disabled",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_nil Node.last.nics.first.ipv4_data
+    assert_nil Node.last.nics.first.ipv6_data
+  end
+
+  test "should create node with disabled ipv4/ipv6, same addresses, but ignore" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "disabled",
+          ipv4_address: @node.nics.first.ipv4_address,
+          ipv6_config: "disabled",
+          ipv6_address: @node.nics.first.ipv6_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_nil Node.last.nics.first.ipv4_data
+    assert_nil Node.last.nics.first.ipv6_data
+  end
+
+  ### manageable
+  # other manage client network
+
+  #### dynamic
+
+  test "other should create node with dynamic ipv4/ipv6" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "dynamic",
+          ipv6_config: "dynamic",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_nil Node.last.nics.first.ipv4_data
+    assert_nil Node.last.nics.first.ipv6_data
+  end
+
+  test "other should create node with dynamic ipv4/ipv6, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "dynamic",
+          ipv4_address: @node.nics.first.ipv4_address,
+          ipv6_config: "dynamic",
+          ipv6_address: @node.nics.first.ipv6_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_nil Node.last.nics.first.ipv4_data
+    assert_nil Node.last.nics.first.ipv6_data
+  end
+
+  #### reserved
+
+  test "other should create node with reserved ipv4/ipv6, mac_address, duid" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        duid: "00-04-#{SecureRandom.uuid}",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: "00-11-22-33-44-FF",
+          ipv4_config: "reserved",
+          ipv6_config: "reserved",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert Node.last.nics.first.ipv4_data
+    assert Node.last.nics.first.ipv6_data
+  end
+
+  test "other should NOT create node with reserved ipv4/ipv6, mac_address, duid, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        duid: "00-04-#{SecureRandom.uuid}",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: "00-11-22-33-44-FF",
+          ipv4_config: "reserved",
+          ipv4_address: @node.nics.first.ipv4_address,
+          ipv6_config: "reserved",
+          ipv6_address: @node.nics.first.ipv6_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "other should create node with reserved ipv4/ipv6, mac_address, duid, different addresses, but ignore" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        duid: "00-04-#{SecureRandom.uuid}",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: "00-11-22-33-44-FF",
+          ipv4_config: "reserved",
+          ipv4_address: @node.nics.first.ipv4.succ.to_s,
+          ipv6_config: "reserved",
+          ipv6_address: @node.nics.first.ipv6.succ.to_s,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal @node.nics.first.ipv4.succ.hton, Node.last.nics.first.ipv4_data
+    assert_equal @node.nics.first.ipv6.succ.hton, Node.last.nics.first.ipv6_data
+  end
+
+  #### static
+
+  test "other should create node with static ipv4/ipv6" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "static",
+          ipv6_config: "static",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert Node.last.nics.first.ipv4_data
+    assert Node.last.nics.first.ipv6_data
+  end
+
+  test "other should create node with static ipv4/ipv6, different addresses, but ignore" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "static",
+          ipv4_address: @node.nics.first.ipv4.succ.to_s,
+          ipv6_config: "static",
+          ipv6_address: @node.nics.first.ipv6.succ.to_s,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal @node.nics.first.ipv4.succ.hton, Node.last.nics.first.ipv4_data
+    assert_equal @node.nics.first.ipv6.succ.hton, Node.last.nics.first.ipv6_data
+  end
+
+  test "other should NOT create node with static ipv4, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "static",
+          ipv4_address: @node.nics.first.ipv4_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "other should NOT create node with static ipv6, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv6_config: "static",
+          ipv6_address: @node.nics.first.ipv6_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  #### manual
+
+  test "other should create node with manual ipv4/ipv6, address" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "manual",
+          ipv4_address: "192.168.2.241",
+          ipv6_config: "manual",
+          ipv6_address: "fd00:2::4001",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal "192.168.2.241", Node.last.nics.first.ipv4_address
+    assert_equal "fd00:2::4001", Node.last.nics.first.ipv6_address
+  end
+
+  test "other should NOT create node with manual ipv4 without address" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "manual",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  test "other should create node with manual ipv6 without address" do
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv6_config: "manual",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_failure], flash[:alert]
+    assert_response :success
+  end
+
+  #### disabled
+
+  test "other should create node with disabled ipv4/ipv6" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "disabled",
+          ipv6_config: "disabled",
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_nil Node.last.nics.first.ipv4_data
+    assert_nil Node.last.nics.first.ipv6_data
+  end
+
+  test "other should create node with disabled ipv4/ipv6, same addresses, but ignore" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        nics_attributes: {0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          ipv4_config: "disabled",
+          ipv4_address: @node.nics.first.ipv4_address,
+          ipv6_config: "disabled",
+          ipv6_address: @node.nics.first.ipv6_address,
+        }},
+      }}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_nil Node.last.nics.first.ipv4_data
+    assert_nil Node.last.nics.first.ipv6_data
   end
 
   # update
