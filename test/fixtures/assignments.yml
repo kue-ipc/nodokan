@@ -43,3 +43,12 @@ guest_client:
   auth: true
   use: false
   manage: false
+
+# mangeが可能
+other_client:
+  user: other
+  network: client
+  auth: true
+  use: true
+  manage: true
+

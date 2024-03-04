@@ -5,6 +5,9 @@ module Ipv6Data
     validates :ipv6_address, allow_blank: true, ipv6_address: true
   end
 
+  # ipv6 ... IPAddr allow nil
+  # ipv6_address ... String allow blank
+
   def ipv6
     ipv6_data && IPAddr.new_ntoh(ipv6_data)
   end
@@ -13,8 +16,11 @@ module Ipv6Data
     ipv6&.to_s
   end
 
-  # value allow blank
+  def ipv6=(value)
+    self.ipv6_data = value&.hton
+  end
+
   def ipv6_address=(value)
-    self.ipv6_data = value.presence && IPAddr.new(value).hton
+    self.ipv6 = value.presence && IPAddr.new(value)
   end
 end

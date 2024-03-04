@@ -33,6 +33,7 @@ class Nic < ApplicationRecord
     numericality: {only_integer: true, greater_than: 0, less_than_or_equal_to: 64},
     uniqueness: {scope: :node}
   validates :name, allow_blank: true, length: {maximum: 255}
+  validates :interface_type, presence: true
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
   validates :ipv4_data, presence: true, if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
@@ -95,82 +96,42 @@ class Nic < ApplicationRecord
     end
   end
 
-  def set_ipv4!(manageable = false)
+  private def adjust_ip!(version, user)
     return if network.nil?
 
-    case ipv4_config
+    manageable = network.manageable?(user)
+    ip_config_key = :"#{version}_config"
+    ip_config = send(ip_config_key)
+
+    case ip_config
     when "dynamic", "disabled"
-      self.ipv4_data = nil
-    when "reserved", "static"
-      if manageable && ipv4_data.present?
+      # ignore ip address
+      send(:"#{version}=", nil)
+    when "reserved", "static", "manual"
+      if manageable && send(version).present?
         # nothing
-      elsif same_old_nic?(:network_id, :ipv4_config)
-        self.ipv4_data = old_nic.ipv4_data
+      elsif same_old_nic?(:network_id, ip_config_key)
+        send(:"#{version}=", old_nic.send(version))
+      elsif ip_config != "manual"
+        next_ip = network.send(:"next_#{version}", ip_config)
+        send(:"#{version}=", next_ip)
+        errors.add(ip_config_key, :no_free) unless next_ip
       else
-        next_ipv4 = network.next_ipv4(ipv4_config)
-        self.ipv4 = next_ipv4
-        errors.add(:ipv4_config, :no_free) unless next_ipv4
-      end
-    when "manual"
-      if manageable
-        # nothing
-      elsif same_old_nic?(:network_id, :ipv4_config)
-        self.ipv4_data = old_nic.ipv4_data
-      else
-        self.ipv4 = nil
-        errors.add(:ipv4_config, :invalid_config)
+        send(:"#{version}=", nil)
+        errors.add(ip_config_key, :invalid_config)
       end
     else
-      self.ipv4 = nil
+      send(:"#{version}=", nil)
+      errors.add(ip_config_key, :invalid_config)
     end
   end
 
-  def set_ipv6!(manageable = false)
-    if network.nil?
-      self.ipv6_address = nil
-      return true
-    end
+  def adjust_ipv4!(user)
+    adjust_ip!("ipv4", user)
+  end
 
-    unless network.ipv6_configs.include?(ipv6_config)
-      errors(:ipv6_config, t("errors.messages.invalid_config"))
-      return false
-    end
-
-    case ipv6_config
-    when "dynamic", "disabled"
-      self.ipv6_address = nil
-    when "reserved", "static"
-      if manageable && ipv6_address.present?
-        # nothing
-      elsif same_old_nic?(:network_id, :ipv6_config)
-        self.ipv6_address = old_nic.ipv6_address
-      else
-        unless (ipv6 = network.next_ipv6(ipv6_config))
-          errors.add(:ipv6_config, t("errors.messages.no_free",
-            name: t("messages.address_for_config", config: t(ipv6_config, scope: "activerecord.enums.ipv4_configs"))))
-          return false
-        end
-
-        self.ipv6_address = ipv6.to_s
-      end
-    when "manual"
-      if manageable
-        if ipv6_address.blank?
-          errors(:ipv6_address, t("errors.messages.blank"))
-          return false
-        end
-      elsif same_old_nic?(:network_id, :ipv6_config)
-        self.ipv6_address = old_nic.ipv6_address
-      else
-        errors(:ipv6_config, t("errors.messages.invalid_config"))
-        return false
-      end
-    else
-      errors(:ipv6_config, t("errors.messages.invalid_config"))
-      return false
-    end
-
-    true
+  def adjust_ipv6!(user)
+    adjust_ip!("ipv6", user)
   end
 
   def radius_mac

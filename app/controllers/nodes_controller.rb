@@ -98,9 +98,8 @@ class NodesController < ApplicationController
 
     @node.nics.each_with_index do |nic, idx|
       nic.number = idx + 1
-      manageable = nic.network.manageable?(current_user)
-      nic.set_ipv4!(manageable)
-      nic.set_ipv6!(manageable)
+      nic.adjust_ipv4!(current_user)
+      nic.adjust_ipv6!(current_user)
       nic.errors.each do |error|
         @node.errors.import(error, attribute: "nics.#{error}")
       end
@@ -138,9 +137,8 @@ class NodesController < ApplicationController
     number_count = 1
     @node.nics.each do |nic|
       nic.number = number_count
-      manageable = nic.network.manageable?(current_user)
-      nic.set_ipv4!(manageable)
-      nic.set_ipv6!(manageable)
+      nic.adjust_ipv4!(current_user)
+      nic.adjust_ipv6!(current_user)
 
       number_count += 1
     end
