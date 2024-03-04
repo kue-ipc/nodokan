@@ -284,6 +284,11 @@ class NodesController < ApplicationController
     permitted_params.delete(:user_id)
     permitted_params[:nics_attributes]&.each_value do |nic|
       nic.delete(:locked)
+      # TODO: 中途半端に情報があるときに備えること
+      if nic[:network_id] && !Network.find(nic[:network_id]).manageable?(current_user)
+        nic.delete(:ipv4_address)
+        nic.delete(:ipv6_address)
+      end
       nic.slice!(:id) if nic[:id] && Nic.find(nic[:id]).locked
     end
     permitted_params
