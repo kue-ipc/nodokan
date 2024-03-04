@@ -23,3 +23,8 @@ server:
   maker: A社
   product_name: サーバー
   model_number: SV-01
+
+virtual:
+  device_type: virtual
+  maker: V社
+  product_name: 仮想v1

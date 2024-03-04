@@ -3,7 +3,7 @@
 desktop:
   name: デスクトップパソコン
   hostname: desktop
-  domain: example.jp
+  domain: clients.example.jp
   note: 備考
   place: one
   hardware: desktop
@@ -33,6 +33,9 @@ server:
   name: サーバー
   hostname: sever
   domain: example.jp
+  specific: true
+  public: true
+  dns: true
   place: three
   hardware: server
   operating_system: linux
@@ -54,6 +57,15 @@ admin_desktop:
   note: 管理者が所有
   user: admin
 
+virtual_desktop:
+  name: 仮想のデスクトップパソコン
+  virtual_machine: true
+  host_id: 42
+  hardware: virtual
+  operating_system: win
+  note: 仮想マシン
+  user: user
+
 router:
   name: ルーター
   hostname: router
@@ -65,17 +77,22 @@ router:
 
 cluster:
   name: クラスター
+  id: 42
   logical: true
+  user: user
 
 child1:
   id: 1
   name: チャイルド1
+  user: user
 
 child2:
   id: 2
   name: チャイルド2
+  user: user
 
 child3:
   id: 3
   name: チャイルド3
+  user: user
 

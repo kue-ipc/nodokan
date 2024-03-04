@@ -49,11 +49,11 @@ server:
   name: 物理ネットワーク
   interface_type: :wired
   auth: false
-  locked: false
+  locked: true
   mac_address_data:
-  ipv4_config: :manual
+  ipv4_config: :static
   ipv4_data: <%= ipv4_address("192.168.1.1") %>
-  ipv6_config: :manual
+  ipv6_config: :static
   ipv6_data: <%= ipv6_address("fd00:1::1001") %>
 
 server_extra:

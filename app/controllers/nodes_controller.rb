@@ -83,10 +83,7 @@ class NodesController < ApplicationController
   # POST /nodes
   # POST /nodes.json
   def create
-    permitted_params = node_params
-    permitted_params[:nics_attributes]&.each_value { |nic| nic.delete(:id) }
-
-    @node = Node.new(permitted_params)
+    @node = Node.new(node_params)
     @node.user = current_user unless current_user.admin?
     authorize @node
 
@@ -96,25 +93,15 @@ class NodesController < ApplicationController
       return
     end
 
-    @node.nics.each_with_index do |nic, idx|
-      nic.number = idx + 1
-      nic.adjust_ipv4!(current_user)
-      nic.adjust_ipv6!(current_user)
-      nic.errors.each do |error|
-        @node.errors.import(error, attribute: "nics.#{error}")
-      end
-    end
+    adjust_nics_ip(@node)
 
     respond_to do |format|
       if @node.save
-        format.html do
-          redirect_to @node,
-            notice: t("messages.success_action", model: @node.model_name.human, action: t("actions.register"))
-        end
+        format.html { redirect_to @node, notice: t_success(@node, :register) }
         format.json { render :show, status: :created, location: @node }
       else
         format.html do
-          flash.now[:alert] = t("messages.failure_action", model: @node.model_name.human, action: t("actions.register"))
+          flash.now[:alert] = t_failure(@node, :register)
           render :new
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
@@ -126,7 +113,6 @@ class NodesController < ApplicationController
   # PATCH/PUT /nodes/1.json
   def update
     @node.assign_attributes(node_params)
-    @node.user = current_user unless current_user.admin?
 
     if params["add_nic"]
       @node.nics << Nic.new
@@ -134,37 +120,15 @@ class NodesController < ApplicationController
       return
     end
 
-    number_count = 1
-    @node.nics.each do |nic|
-      nic.number = number_count
-      nic.adjust_ipv4!(current_user)
-      nic.adjust_ipv6!(current_user)
-
-      number_count += 1
-    end
-
-    success = false
-
-    Node.transaction do
-      if !@node.save ||
-         @node.errors.present? ||
-         @node.place&.errors&.present? ||
-         @node.hardware&.errors&.present? ||
-         @node.operating_system&.errors&.present? ||
-         @node.nics.any? { |nic| nic.errors.present? }
-        raise ActiveRecord::Rollback
-      end
-
-      success = true
-    end
+    adjust_nics_ip(@node)
 
     respond_to do |format|
-      if success
-        format.html { redirect_to @node, notice: "端末を更新しました。" }
+      if @node.save
+        format.html { redirect_to @node, notice: t_success(@node, :update) }
         format.json { render :show, status: :ok, location: @node }
       else
         format.html do
-          flash.now[:alert] = "端末更新に失敗しました。"
+          flash.now[:alert] = t_failure(@node, :update)
           render :edit
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
@@ -318,7 +282,10 @@ class NodesController < ApplicationController
     permitted_params.delete(:public)
     permitted_params.delete(:dns)
     permitted_params.delete(:user_id)
-    permitted_params[:nics_attributes]&.each_value { |nic| nic.delete(:locked) }
+    permitted_params[:nics_attributes]&.each_value do |nic|
+      nic.delete(:locked)
+      nic.slice!(:id) if nic[:id] && Nic.find(nic[:id]).locked
+    end
     permitted_params
   end
 
@@ -342,5 +309,17 @@ class NodesController < ApplicationController
 
   private def authorize_node
     authorize Node
+  end
+
+  private def adjust_nics_ip(node)
+    node.nics.each_with_index do |nic, idx|
+      nic.number = idx + 1
+      nic.adjust_ipv4!(current_user)
+      nic.adjust_ipv6!(current_user)
+      nic.errors.each do |error|
+        node.errors.import(error, attribute: "nics.#{error}")
+      end
+    end
+    node
   end
 end

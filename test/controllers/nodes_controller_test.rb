@@ -285,12 +285,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with different hostname and different domain" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: "hostname", domain: "domain.example.jp"}}
+      post nodes_url, params: {node: {name: "name", hostname: "hostname", domain: "test.example.jp"}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal "hostname", Node.last.hostname
-    assert_equal "domain.example.jp", Node.last.domain
+    assert_equal "test.example.jp", Node.last.domain
   end
 
   test "should create node with different hostname and same domain" do
@@ -307,24 +307,23 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with same hostname and different domain" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: @node.hostname, domain: "domain.example.jp"}}
+      post nodes_url, params: {node: {name: "name", hostname: @node.hostname, domain: "test.example.jp"}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal @node.hostname, Node.last.hostname
-    assert_equal "domain.example.jp", Node.last.domain
+    assert_equal "test.example.jp", Node.last.domain
   end
 
   test "should create node with same hostname and without domain" do
     sign_in users(:user)
-    no_domain_node = nodes(:note)
-    assert_nil no_domain_node.domain
+    assert_nil nodes(:note).domain
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: no_domain_node.hostname, domain: no_domain_node.domain}}
+      post nodes_url, params: {node: {name: "name", hostname: nodes(:note).hostname, domain: nil}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
-    assert_equal no_domain_node.hostname, Node.last.hostname
+    assert_equal nodes(:note).hostname, Node.last.hostname
     assert_nil Node.last.domain
   end
 
@@ -457,8 +456,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     assert_difference("Hardware.count") do
       assert_difference("Node.count") do
-        post nodes_url,
-          params: {node: {name: "name", hardware: {**hardware_to_params(@node.hardware), product_name: "other"}}}
+        post nodes_url, params: {node: {
+          name: "name",
+          hardware: {**hardware_to_params(@node.hardware), product_name: "other"},
+        }}
       end
     end
     assert_equal @messages[:create_success], flash[:notice]
@@ -484,13 +485,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with nic" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -500,13 +498,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with nic without interface_type" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          # interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        # interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -515,13 +510,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with nic without nework_id" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          # network_id: @node.nics.first.network_id,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        # network_id: @node.nics.first.network_id,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -530,19 +522,16 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with two nics " do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {
-          0 => {
-            interface_type: @node.nics.first.interface_type,
-            network_id: @node.nics.first.network_id,
-          },
-          1 => {
-            interface_type: @node.nics.first.interface_type,
-            network_id: @node.nics.first.network_id,
-          },
+      post nodes_url, params: {node: {name: "name", nics_attributes: {
+        0 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
         },
-      }}
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+        },
+      },}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -552,48 +541,49 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with deleted nic " do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          _destroy: true,
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        _destroy: true,
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal 0, Node.last.nics.count
   end
 
-  test "should create node with nic id, but ignored" do
+  test "should NOT create node with nic other id" do
     sign_in users(:user)
-    assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          id: @node.nics.first.id,
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-        }},
-      }}
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        id: @node.nics.first.id,
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+      }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
-    assert_redirected_to node_url(Node.last)
-    assert_not_equal @node.nic_ids.first, Node.last.nic_ids.first
+    assert_response :not_found
+  end
+
+  test "should NOT create node with nic dummy id" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        id: 42,
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+      }},}}
+    end
+    assert_response :not_found
   end
 
   test "should NOT create node with same mac_address" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: @node.nics.first.mac_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: @node.nics.first.mac_address,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -602,15 +592,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with auth and mac_address" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          auth: true,
-          mac_address: "00-11-22-33-44-FF",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        auth: true,
+        mac_address: "00-11-22-33-44-FF",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -621,14 +608,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node without mac_address and with auth" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          auth: true,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        auth: true,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -637,14 +621,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with nic locked, but ingore" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          locked: true,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        locked: true,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -654,14 +635,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should create node with nic locked" do
     sign_in users(:admin)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          locked: true,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        locked: true,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -677,15 +655,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with dynamic ipv4/ipv6" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "dynamic",
-          ipv6_config: "dynamic",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "dynamic",
+        ipv6_config: "dynamic",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -696,17 +671,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with dynamic ipv4/ipv6, same addresses, but ignore" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "dynamic",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "dynamic",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "dynamic",
+        ipv4_address: @node.nics.first.ipv4_address,
+        ipv6_config: "dynamic",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -719,17 +691,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with reserved ipv4/ipv6, mac_address, duid" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv4_config: "reserved",
-          ipv6_config: "reserved",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv4_config: "reserved",
+        ipv6_config: "reserved",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -740,19 +708,15 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with reserved ipv4/ipv6, mac_address, duid, same addresses, but ignore" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv4_config: "reserved",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "reserved",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv4_config: "reserved",
+        ipv4_address: @node.nics.first.ipv4_address,
+        ipv6_config: "reserved",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -765,15 +729,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with resrved ipv4, without mac_address" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "reserved",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "reserved",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -782,15 +742,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with reserved ipv6 and without duid" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv6_config: "reserved",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv6_config: "reserved",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -801,15 +758,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with static ipv4/ipv6" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "static",
-          ipv6_config: "static",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "static",
+        ipv6_config: "static",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -820,17 +774,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with static ipv4/ipv6, same addresses, but ignore" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "static",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "static",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "static",
+        ipv4_address: @node.nics.first.ipv4_address,
+        ipv6_config: "static",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -845,14 +796,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with manual ipv4" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "manual",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "manual",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -861,15 +809,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with manual ipv4, address" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "manual",
-          ipv4_address: "192.168.2.241",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "manual",
+        ipv4_address: "192.168.2.241",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -878,14 +823,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with manual ipv6" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv6_config: "manual",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv6_config: "manual",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -894,15 +836,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with manual ipv6, address" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv6_config: "manual",
-          ipv6_address: "fd00:2::4001",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv6_config: "manual",
+        ipv6_address: "fd00:2::4001",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -913,15 +852,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with disabled ipv4/ipv6" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "disabled",
-          ipv6_config: "disabled",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "disabled",
+        ipv6_config: "disabled",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -932,17 +868,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with disabled ipv4/ipv6, same addresses, but ignore" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "disabled",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "disabled",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "disabled",
+        ipv4_address: @node.nics.first.ipv4_address,
+        ipv6_config: "disabled",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -958,15 +891,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with dynamic ipv4/ipv6" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "dynamic",
-          ipv6_config: "dynamic",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "dynamic",
+        ipv6_config: "dynamic",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -977,17 +907,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with dynamic ipv4/ipv6, same addresses, but ignore" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "dynamic",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "dynamic",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "dynamic",
+        ipv4_address: @node.nics.first.ipv4_address,
+        ipv6_config: "dynamic",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1000,17 +927,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with reserved ipv4/ipv6, mac_address, duid" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv4_config: "reserved",
-          ipv6_config: "reserved",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv4_config: "reserved",
+        ipv6_config: "reserved",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1021,19 +944,15 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with reserved ipv4/ipv6, mac_address, duid, different addresses, but ignore" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv4_config: "reserved",
-          ipv4_address: @node.nics.first.ipv4.succ.to_s,
-          ipv6_config: "reserved",
-          ipv6_address: @node.nics.first.ipv6.succ.to_s,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv4_config: "reserved",
+        ipv4_address: @node.nics.first.ipv4.succ.to_s,
+        ipv6_config: "reserved",
+        ipv6_address: @node.nics.first.ipv6.succ.to_s,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1044,17 +963,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should NOT create node with reserved ipv4, mac_address, duid, same addresses, but ignore" do
     sign_in users(:other)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv4_config: "reserved",
-          ipv4_address: @node.nics.first.ipv4_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv4_config: "reserved",
+        ipv4_address: @node.nics.first.ipv4_address,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -1063,17 +978,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should NOT create node with reserved ipv6, mac_address, duid, same addresses, but ignore" do
     sign_in users(:other)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        duid: "00-04-#{SecureRandom.uuid}",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          mac_address: "00-11-22-33-44-FF",
-          ipv6_config: "reserved",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", duid: "00-04-#{SecureRandom.uuid}", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        mac_address: "00-11-22-33-44-FF",
+        ipv6_config: "reserved",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -1084,15 +995,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with static ipv4/ipv6" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "static",
-          ipv6_config: "static",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "static",
+        ipv6_config: "static",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1103,17 +1011,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with static ipv4/ipv6, different addresses, but ignore" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "static",
-          ipv4_address: @node.nics.first.ipv4.succ.to_s,
-          ipv6_config: "static",
-          ipv6_address: @node.nics.first.ipv6.succ.to_s,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "static",
+        ipv4_address: @node.nics.first.ipv4.succ.to_s,
+        ipv6_config: "static",
+        ipv6_address: @node.nics.first.ipv6.succ.to_s,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1124,15 +1029,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should NOT create node with static ipv4, same addresses, but ignore" do
     sign_in users(:other)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "static",
-          ipv4_address: @node.nics.first.ipv4_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "static",
+        ipv4_address: @node.nics.first.ipv4_address,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -1141,15 +1043,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should NOT create node with static ipv6, same addresses, but ignore" do
     sign_in users(:other)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv6_config: "static",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv6_config: "static",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -1160,17 +1059,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with manual ipv4/ipv6, address" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "manual",
-          ipv4_address: "192.168.2.241",
-          ipv6_config: "manual",
-          ipv6_address: "fd00:2::4001",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "manual",
+        ipv4_address: "192.168.2.241",
+        ipv6_config: "manual",
+        ipv6_address: "fd00:2::4001",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1181,14 +1077,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should NOT create node with manual ipv4 without address" do
     sign_in users(:other)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "manual",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "manual",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -1197,14 +1090,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with manual ipv6 without address" do
     sign_in users(:other)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv6_config: "manual",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv6_config: "manual",
+      }},}}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -1215,15 +1105,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with disabled ipv4/ipv6" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "disabled",
-          ipv6_config: "disabled",
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "disabled",
+        ipv6_config: "disabled",
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1234,17 +1121,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should create node with disabled ipv4/ipv6, same addresses, but ignore" do
     sign_in users(:other)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {
-        name: "name",
-        nics_attributes: {0 => {
-          interface_type: @node.nics.first.interface_type,
-          network_id: @node.nics.first.network_id,
-          ipv4_config: "disabled",
-          ipv4_address: @node.nics.first.ipv4_address,
-          ipv6_config: "disabled",
-          ipv6_address: @node.nics.first.ipv6_address,
-        }},
-      }}
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: @node.nics.first.network_id,
+        ipv4_config: "disabled",
+        ipv4_address: @node.nics.first.ipv4_address,
+        ipv6_config: "disabled",
+        ipv6_address: @node.nics.first.ipv6_address,
+      }},}}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -1254,41 +1138,439 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   # update
 
-  test "admin should update node" do
-    sign_in users(:admin)
-    patch node_url(@node), params: {node: {name: @node.name, note: @node.note}}
-    assert_redirected_to node_url(@node)
-  end
-
   test "should update node" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {name: @node.name, note: @node.note}}
+    patch node_url(@node), params: {node: {name: "name"}}
     assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+  end
+
+  test "admin should update node" do
+    sign_in users(:admin)
+    patch node_url(@node), params: {node: {name: "name"}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
   end
 
   test "other should NOT update node" do
     sign_in users(:other)
-    patch node_url(@node), params: {node: {name: @node.name, note: @node.note}}
+    patch node_url(@node), params: {node: {name: "name"}}
     assert_response :not_found
   end
 
   test "guest redirect to login INSTEAD OF update node" do
-    patch node_url(@node), params: {node: {name: @node.name, note: @node.note}}
+    patch node_url(@node), params: {node: {name: "name"}}
     assert_redirected_to new_user_session_path
+    assert_equal @messages[:unauthenticated], flash[:alert]
+  end
+
+  test "should update node all attributes" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: node_to_params(@node)}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+  end
+
+  test "should update node without name" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: "hostname"}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+  end
+
+  test "should NOT update node with same hostname and same domain" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: nodes(:server).hostname, domain: nodes(:server).domain}}
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal @node.hostname, Node.find(@node.id).hostname
+    assert_equal @node.domain, Node.find(@node.id).domain
+  end
+
+  test "should update node with different hostname and same domain" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: "hostname", domain: nodes(:server).domain}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "hostname", Node.find(@node.id).hostname
+    assert_equal nodes(:server).domain, Node.find(@node.id).domain
+  end
+
+  test "should update node with same hostname and differen domain" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: nodes(:server).hostname, domain: "test.example.jp"}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal nodes(:server).hostname, Node.find(@node.id).hostname
+    assert_equal "test.example.jp", Node.find(@node.id).domain
+  end
+
+  test "should update node with same hostname and without domain" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: nodes(:note).hostname, domain: nil}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal nodes(:note).hostname, Node.find(@node.id).hostname
+    assert_nil Node.find(@node.id).domain
+  end
+
+  test "should NOT update node with hostname without domain" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: nil, domain: @node.domain}}
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal @node.hostname, Node.find(@node.id).hostname
+    assert_equal @node.domain, Node.find(@node.id).domain
+  end
+
+  test "should update node without hostname, domain" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {hostname: nil, domain: nil}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_nil Node.find(@node.id).hostname
+    assert_nil Node.find(@node.id).domain
+  end
+
+  test "should NOT update node with same duid" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {duid: nodes(:note).duid}}
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal @node.duid, Node.find(@node.id).duid
+  end
+
+  test "should update node set logical" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {logical: true, component_ids: [nodes(:note).id]}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).logical
+    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
+    # reset attributes
+    assert_not Node.find(@node.id).virtual_machine
+    assert_nil Node.find(@node.id).host_id
+    assert_nil Node.find(@node.id).place
+    assert_nil Node.find(@node.id).hardware
+    assert_nil Node.find(@node.id).operating_system
+  end
+
+  test "should update virtual node set logical" do
+    sign_in users(:user)
+    @node = nodes(:virtual_desktop)
+    patch node_url(@node), params: {node: {logical: true, component_ids: [nodes(:note).id]}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).logical
+    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
+    # reset attributes
+    assert_not Node.find(@node.id).virtual_machine
+    assert_nil Node.find(@node.id).host_id
+    assert_nil Node.find(@node.id).place
+    assert_nil Node.find(@node.id).hardware
+    assert_nil Node.find(@node.id).operating_system
+  end
+
+  test "should update logical node unset logical" do
+    sign_in users(:user)
+    @node = nodes(:cluster)
+    patch node_url(@node), params: {node: {logical: false}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_not Node.find(@node.id).logical
+    # reset attributes
+    assert_empty Node.find(@node.id).component_ids
+  end
+
+  test "should update node set virtual_machine" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {virtual_machine: true, host_id: nodes(:server).id}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).virtual_machine
+    assert_equal nodes(:server).id, Node.find(@node.id).host_id
+    # reset attributes
+    assert_nil Node.find(@node.id).place
+  end
+
+  test "should update virtual node unset virtual_machine" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {virtual_machine: false}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_not Node.find(@node.id).virtual_machine
+    # reset attributes
+    assert_nil Node.find(@node.id).host_id
+  end
+
+  test "should update node set flags, but ignore" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {specific: true, public: true, dns: true}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    # unchaneg attributes
+    assert_not Node.find(@node.id).specific
+    assert_not Node.find(@node.id).public
+    assert_not Node.find(@node.id).dns
+  end
+
+  test "should update node unset flags, but ignore" do
+    sign_in users(:user)
+    @node = nodes(:server)
+    patch node_url(@node), params: {node: {specific: false, public: false, dns: false}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    # unchaneg attributes
+    assert Node.find(@node.id).specific
+    assert Node.find(@node.id).public
+    assert Node.find(@node.id).dns
+  end
+
+  test "admin should update node set flags" do
+    sign_in users(:admin)
+    patch node_url(@node), params: {node: {specific: true, public: true, dns: true}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    # unchaneg attributes
+    assert Node.find(@node.id).specific
+    assert Node.find(@node.id).public
+    assert Node.find(@node.id).dns
+  end
+
+  test "admin should update node unset flags" do
+    sign_in users(:admin)
+    @node = nodes(:server)
+    patch node_url(@node), params: {node: {specific: false, public: false, dns: false}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    # unchaneg attributes
+    assert_not Node.find(@node.id).specific
+    assert_not Node.find(@node.id).public
+    assert_not Node.find(@node.id).dns
+  end
+
+  test "should update node set user_id, but ignore flags" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {user_id: users(:other).id}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    # unchaneg attributes
+    assert_equal @node.user_id, Node.find(@node.id).user_id
+  end
+
+  test "admin should update node set user_id" do
+    sign_in users(:admin)
+    patch node_url(@node), params: {node: {user_id: users(:other).id}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    # unchaneg attributes
+    assert_equal users(:other).id, Node.find(@node.id).user_id
+  end
+
+  test "should update node with new place, hardware, operating_system" do
+    sign_in users(:user)
+    assert_difference("Place.count") do
+      assert_difference("Hardware.count") do
+        assert_difference("OperatingSystem.count") do
+          patch node_url(@node), params: {node: {
+            place: {**place_to_params(@node.place), room: "other"},
+            hardware: {**hardware_to_params(@node.hardware), product_name: "other"},
+            operating_system: {**operating_system_to_params(@node.operating_system), name: "other"},
+          }}
+        end
+      end
+    end
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_not_equal @node.place_id, Node.find(@node.id).place_id
+    assert_not_equal @node.hardware_id, Node.find(@node.id).hardware_id
+    assert_not_equal @node.operating_system_id, Node.find(@node.id).operating_system_id
+  end
+
+  test "should update node with new nic" do
+    sign_in users(:user)
+    assert_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+        },
+      }}}
+    end
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal 2, Node.find(@node.id).nics.count
+  end
+
+  test "should NOT update node with new nic without interface_type" do
+    sign_in users(:user)
+    assert_no_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          # interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+        },
+      }}}
+    end
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal 1, Node.find(@node.id).nics.count
+  end
+
+  test "should NOT update node with new nic without network_id" do
+    sign_in users(:user)
+    assert_no_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          # network_id: @node.nics.first.network_id,
+        },
+      }}}
+    end
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal 1, Node.find(@node.id).nics.count
+  end
+
+  test "should update node with deleted nic" do
+    sign_in users(:user)
+    assert_difference("Nic.count", -1) do
+      patch node_url(@node), params: {node: {nics_attributes: {0 => {
+          id: @node.nic_ids.first,
+          _destroy: true,
+      }}}}
+    end
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal 0, Node.find(@node.id).nics.count
+  end
+
+  test "should NOT update node with nic other id" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      id: nodes(:note).nic_ids.first,
+    }}}}
+    assert_response :not_found
+  end
+
+  test "should NOT update node with nic dummy id" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      id: 42,
+    }}}}
+    assert_response :not_found
+  end
+
+  test "should NOT update node with same mac_address" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      mac_address: nodes(:note).nics.first.mac_address,
+    }}}}
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal @node.nics.first.mac_address_data, Node.find(@node.id).nics.first.mac_address_data
+  end
+
+  test "should update node with nic set locked, but ignore" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      locked: true,
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_not Node.find(@node.id).nics.first.locked
+  end
+
+  test "should update node with nic unset locked, but ignore" do
+    sign_in users(:user)
+    @node = nodes(:server)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      locked: false,
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).nics.first.locked
+  end
+
+  test "admin should update node with nic set locked" do
+    sign_in users(:admin)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      locked: true,
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).nics.first.locked
+  end
+
+  test "admin should update node with nic unset locked" do
+    sign_in users(:admin)
+    @node = nodes(:server)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      locked: false,
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_not Node.find(@node.id).nics.first.locked
+  end
+
+  test "should update node with locked nic, ignore all" do
+    sign_in users(:user)
+    @node = nodes(:server)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      network_id: networks(:client).id,
+      ipv4_config: "dynamic",
+      ipv6_config: "dynamic",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).nics.first.locked
+    assert_equal @node.nics.first.network_id, Node.find(@node.id).nics.first.network_id
+    assert_equal @node.nics.first.ipv4_config, Node.find(@node.id).nics.first.ipv4_config
+    assert_equal @node.nics.first.ipv4_data, Node.find(@node.id).nics.first.ipv4_data
+    assert_equal @node.nics.first.ipv6_config, Node.find(@node.id).nics.first.ipv6_config
+    assert_equal @node.nics.first.ipv6_data, Node.find(@node.id).nics.first.ipv6_data
+  end
+
+  test "admin should update node with locked nic" do
+    sign_in users(:admin)
+    @node = nodes(:server)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      network_id: networks(:client).id,
+      ipv4_config: "dynamic",
+      ipv6_config: "dynamic",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert Node.find(@node.id).nics.first.locked
+    assert_equal networks(:client).id, Node.find(@node.id).nics.first.network_id
+    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv4_config
+    assert_nil Node.find(@node.id).nics.first.ipv4_data
+    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv6_config
+    assert_nil Node.find(@node.id).nics.first.ipv6_data
   end
 
   # destroy
 
-  test "admin should destroy node" do
-    sign_in users(:admin)
+  test "should destroy node" do
+    sign_in users(:user)
     assert_difference("Node.count", -1) do
       delete node_url(@node)
     end
     assert_redirected_to nodes_url
   end
 
-  test "should destroy node" do
-    sign_in users(:user)
+  test "admin should destroy node" do
+    sign_in users(:admin)
     assert_difference("Node.count", -1) do
       delete node_url(@node)
     end
