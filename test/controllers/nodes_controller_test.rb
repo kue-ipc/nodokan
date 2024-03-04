@@ -1439,8 +1439,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     assert_difference("Nic.count", -1) do
       patch node_url(@node), params: {node: {nics_attributes: {0 => {
-          id: @node.nic_ids.first,
-          _destroy: true,
+        id: @node.nic_ids.first,
+        _destroy: true,
       }}}}
     end
     assert_redirected_to node_url(@node)
@@ -1593,12 +1593,119 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal "reserved", Node.find(@node.id).nics.first.ipv4_config
     assert_equal "reserved", Node.find(@node.id).nics.first.ipv6_config
-    assert_not_equal "192.168.2.1", Node.find(@node.id).nics.first.ipv4_address
-    assert_not_equal "fd00:2::1001", Node.find(@node.id).nics.first.ipv6_address
+    assert_equal "192.168.2.100", Node.find(@node.id).nics.first.ipv4_address
+    assert_equal "fd00:2::2000", Node.find(@node.id).nics.first.ipv6_address
   end
 
   #### static
+
+  test "should update node with nic to static" do
+    sign_in users(:user)
+    @node = nodes(:note)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "static",
+      ipv6_config: "static",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "static", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "static", Node.find(@node.id).nics.first.ipv6_config
+    assert_equal "192.168.2.200", Node.find(@node.id).nics.first.ipv4_address
+    assert_equal "fd00:2::3000", Node.find(@node.id).nics.first.ipv6_address
+  end
+
   #### manual
+
+  test "should NOT update node with nic to manual" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "manual",
+      ipv6_config: "manual",
+    }}}}
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
+  end
+
+  #### disabled
+
+  test "should update node with nic to disabled" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "disabled",
+      ipv6_config: "disabled",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "disabled", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "disabled", Node.find(@node.id).nics.first.ipv6_config
+    assert_nil Node.find(@node.id).nics.first.ipv4_data
+    assert_nil Node.find(@node.id).nics.first.ipv6_data
+  end
+
+  ### manageable
+  # other manage client network
+
+  #### dynamic
+
+  #### reserved
+
+  test "other should update node with nic to reserved" do
+    sign_in users(:other)
+    @node = nodes(:other_desktop)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "reserved",
+      ipv6_config: "reserved",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "reserved", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "reserved", Node.find(@node.id).nics.first.ipv6_config
+    # same ip
+    assert_equal "192.168.2.8", Node.find(@node.id).nics.first.ipv4_address
+    assert_equal "fd00:2::1008", Node.find(@node.id).nics.first.ipv6_address
+  end
+
+  #### static
+
+  test "other should update node with nic to static" do
+    sign_in users(:other)
+    @node = nodes(:other_desktop)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_address: "192.168.2.10",
+      ipv6_address: "fd00:2::1010",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "static", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "static", Node.find(@node.id).nics.first.ipv6_config
+    assert_equal "192.168.2.10", Node.find(@node.id).nics.first.ipv4_address
+    assert_equal "fd00:2::1010", Node.find(@node.id).nics.first.ipv6_address
+  end
+
+  #### manual
+
+  test "other should update node with nic to manual" do
+    sign_in users(:other)
+    @node = nodes(:other_desktop)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "manual",
+      ipv6_config: "manual",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal "manual", Node.find(@node.id).nics.first.ipv4_config
+    assert_equal "manual", Node.find(@node.id).nics.first.ipv6_config
+    # same ip
+    assert_equal "192.168.2.8", Node.find(@node.id).nics.first.ipv4_address
+    assert_equal "fd00:2::1008", Node.find(@node.id).nics.first.ipv6_address
+  end
+
   #### disabled
 
   # destroy

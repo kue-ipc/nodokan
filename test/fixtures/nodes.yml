@@ -47,6 +47,7 @@ other_desktop:
   hardware: desktop
   operating_system: win
   note: 別の人が所有
+  duid_data: <%= duid("00-04-5cd53a2a-7b38-4a72-84b7-ffd92448b4db") %>
   user: other
 
 admin_desktop:

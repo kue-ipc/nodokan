@@ -70,6 +70,20 @@ server_extra:
   ipv6_config: :manual
   ipv6_data: <%= ipv6_address('2001:db8:1::1001') %>
 
+other_desktop:
+  node: other_desktop
+  number: 1
+  network: client
+  name: イーサネット
+  interface_type: :wired
+  auth: true
+  locked: false
+  mac_address_data: <%= mac_address("00-11-22-33-44-88") %>
+  ipv4_config: :static
+  ipv4_data: <%= ipv4_address("192.168.2.8") %>
+  ipv6_config: :static
+  ipv6_data: <%= ipv6_address("fd00:2::1008") %>
+
 router1:
   node: router
   number: 1
