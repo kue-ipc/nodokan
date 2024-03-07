@@ -1472,7 +1472,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_response :success
     assert_equal @messages[:update_failure], flash[:alert]
-    assert_equal @node.nics.first.mac_address_data, Node.find(@node.id).nics.first.mac_address_data
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal @node.nics.first.mac_address_data, new_nic.mac_address_data
   end
 
   test "should update node with nic set locked, but ignore" do
@@ -1483,7 +1484,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_not Node.find(@node.id).nics.first.locked
+    new_nic = Node.find(@node.id).nics.first
+    assert_not new_nic.locked
   end
 
   test "should update node with nic unset locked, but ignore" do
@@ -1495,7 +1497,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert Node.find(@node.id).nics.first.locked
+    new_nic = Node.find(@node.id).nics.first
+    assert new_nic.locked
   end
 
   test "admin should update node with nic set locked" do
@@ -1506,7 +1509,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert Node.find(@node.id).nics.first.locked
+    new_nic = Node.find(@node.id).nics.first
+    assert new_nic.locked
   end
 
   test "admin should update node with nic unset locked" do
@@ -1518,12 +1522,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_not Node.find(@node.id).nics.first.locked
+    new_nic = Node.find(@node.id).nics.first
+    assert_not new_nic.locked
   end
 
   test "should update node with locked nic, ignore all" do
     sign_in users(:user)
     @node = nodes(:server)
+    old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
       network_id: networks(:client).id,
@@ -1532,12 +1538,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert Node.find(@node.id).nics.first.locked
-    assert_equal @node.nics.first.network_id, Node.find(@node.id).nics.first.network_id
-    assert_equal @node.nics.first.ipv4_config, Node.find(@node.id).nics.first.ipv4_config
-    assert_equal @node.nics.first.ipv4_data, Node.find(@node.id).nics.first.ipv4_data
-    assert_equal @node.nics.first.ipv6_config, Node.find(@node.id).nics.first.ipv6_config
-    assert_equal @node.nics.first.ipv6_data, Node.find(@node.id).nics.first.ipv6_data
+    new_nic = Node.find(@node.id).nics.first
+    assert new_nic.locked
+    assert_equal old_nic.network_id, new_nic.network_id
+    assert_equal old_nic.ipv4_config, new_nic.ipv4_config
+    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_equal old_nic.ipv6_config, new_nic.ipv6_config
+    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
   end
 
   test "admin should update node with locked nic" do
@@ -1551,21 +1558,42 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert Node.find(@node.id).nics.first.locked
-    assert_equal networks(:client).id, Node.find(@node.id).nics.first.network_id
-    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv4_config
-    assert_nil Node.find(@node.id).nics.first.ipv4_data
-    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv6_config
-    assert_nil Node.find(@node.id).nics.first.ipv6_data
+    new_nic = Node.find(@node.id).nics.first
+    assert new_nic.locked
+    assert_equal networks(:client).id, new_nic.network_id
+    assert_equal "dynamic", new_nic.ipv4_config
+    assert_equal "dynamic", new_nic.ipv6_config
+    assert_nil new_nic.ipv4_data
+    assert_nil new_nic.ipv6_data
   end
 
   ## ip config and address
+
+  ### change network
+
+  test "should update node with nic change network" do
+    sign_in users(:user)
+    old_nic = @node.nics.first
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      network_id: networks(:client).id,
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "static", new_nic.ipv4_config
+    assert_equal "static", new_nic.ipv6_config
+    assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_equal "192.168.1.10", new_nic.ipv4_data
+    assert_equal "fd00:1::1001", new_nic.ipv6_data
+  end
 
   ### unmanageable
 
   #### dynamic
 
-  test "should update node with nic to dynamic" do
+  test "should update node with nic from static to dynamic" do
     sign_in users(:user)
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
@@ -1574,16 +1602,18 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "dynamic", Node.find(@node.id).nics.first.ipv6_config
-    assert_nil Node.find(@node.id).nics.first.ipv4_data
-    assert_nil Node.find(@node.id).nics.first.ipv6_data
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "dynamic", new_nic.ipv4_config
+    assert_equal "dynamic", new_nic.ipv6_config
+    assert_nil new_nic.ipv4_data
+    assert_nil new_nic.ipv6_data
   end
 
   #### reserved
 
-  test "should update node with nic to reserved" do
+  test "should update node with nic from static to reserved, but ip unchange" do
     sign_in users(:user)
+    old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
       ipv4_config: "reserved",
@@ -1591,17 +1621,40 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "reserved", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "reserved", Node.find(@node.id).nics.first.ipv6_config
-    assert_equal "192.168.2.100", Node.find(@node.id).nics.first.ipv4_address
-    assert_equal "fd00:2::2000", Node.find(@node.id).nics.first.ipv6_address
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "reserved", new_nic.ipv4_config
+    assert_equal "reserved", new_nic.ipv6_config
+    # unchange
+    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
+  end
+
+  test "should update node with nic from dynamic to reserved" do
+    sign_in users(:user)
+    @node = nodes(:tablet)
+    old_nic = @node.nics.first
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "reserved",
+      ipv6_config: "reserved",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "reserved", new_nic.ipv4_config
+    assert_equal "reserved", new_nic.ipv6_config
+    assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_equal "192.168.2.20", new_nic.ipv4_address
+    assert_equal "fd00:2::2000", new_nic.ipv6_address
   end
 
   #### static
 
-  test "should update node with nic to static" do
+  test "should update node with nic reserved to static, but ip unchange" do
     sign_in users(:user)
     @node = nodes(:note)
+    old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
       ipv4_config: "static",
@@ -1609,23 +1662,49 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "static", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "static", Node.find(@node.id).nics.first.ipv6_config
-    assert_equal "192.168.2.200", Node.find(@node.id).nics.first.ipv4_address
-    assert_equal "fd00:2::3000", Node.find(@node.id).nics.first.ipv6_address
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "static", new_nic.ipv4_config
+    assert_equal "static", new_nic.ipv6_config
+    # unchange
+    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
+  end
+
+  test "should update node with nic from dynamic to static" do
+    sign_in users(:user)
+    @node = nodes(:tablet)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      ipv4_config: "static",
+      ipv6_config: "static",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "static", new_nic.ipv4_config
+    assert_equal "static", new_nic.ipv6_config
+    assert_equal "192.168.2.30", new_nic.ipv4_address
+    assert_equal "fd00:2::3000", new_nic.ipv6_address
   end
 
   #### manual
 
-  test "should NOT update node with nic to manual" do
+  test "should update node with nic static to manual, but ip unchange" do
     sign_in users(:user)
+    old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
       ipv4_config: "manual",
       ipv6_config: "manual",
     }}}}
-    assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_redirected_to node_url(@node)
+    assert_equal @messages[:update_success], flash[:notice]
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "manual", new_nic.ipv4_config
+    assert_equal "manual", new_nic.ipv6_config
+    # unchange
+    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
   end
 
   #### disabled
@@ -1639,10 +1718,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "disabled", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "disabled", Node.find(@node.id).nics.first.ipv6_config
-    assert_nil Node.find(@node.id).nics.first.ipv4_data
-    assert_nil Node.find(@node.id).nics.first.ipv6_data
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "disabled", new_nic.ipv4_config
+    assert_equal "disabled", new_nic.ipv6_config
+    assert_nil new_nic.ipv4_data
+    assert_nil new_nic.ipv6_data
   end
 
   ### manageable
@@ -1662,11 +1742,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "reserved", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "reserved", Node.find(@node.id).nics.first.ipv6_config
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "reserved", new_nic.ipv4_config
+    assert_equal "reserved", new_nic.ipv6_config
     # same ip
-    assert_equal "192.168.2.8", Node.find(@node.id).nics.first.ipv4_address
-    assert_equal "fd00:2::1008", Node.find(@node.id).nics.first.ipv6_address
+    assert_equal "192.168.2.18", new_nic.ipv4_address
+    assert_equal "fd00:2::1008", new_nic.ipv6_address
   end
 
   #### static
@@ -1681,10 +1762,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "static", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "static", Node.find(@node.id).nics.first.ipv6_config
-    assert_equal "192.168.2.10", Node.find(@node.id).nics.first.ipv4_address
-    assert_equal "fd00:2::1010", Node.find(@node.id).nics.first.ipv6_address
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "static", new_nic.ipv4_config
+    assert_equal "static", new_nic.ipv6_config
+    assert_equal "192.168.2.10", new_nic.ipv4_address
+    assert_equal "fd00:2::1010", new_nic.ipv6_address
   end
 
   #### manual
@@ -1699,11 +1781,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
-    assert_equal "manual", Node.find(@node.id).nics.first.ipv4_config
-    assert_equal "manual", Node.find(@node.id).nics.first.ipv6_config
+    new_nic = Node.find(@node.id).nics.first
+    assert_equal "manual", new_nic.ipv4_config
+    assert_equal "manual", new_nic.ipv6_config
     # same ip
-    assert_equal "192.168.2.8", Node.find(@node.id).nics.first.ipv4_address
-    assert_equal "fd00:2::1008", Node.find(@node.id).nics.first.ipv6_address
+    assert_equal "192.168.2.18", new_nic.ipv4_address
+    assert_equal "fd00:2::1008", new_nic.ipv6_address
   end
 
   #### disabled

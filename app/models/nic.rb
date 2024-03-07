@@ -50,6 +50,7 @@ class Nic < ApplicationRecord
 
   normalizes :name, with: ->(str) { str.presence&.strip }
 
+  before_validation :auto_assign_ipv4, :auto_assign_ipv6
   after_validation :replace_errors
   before_update :old_nic
   after_commit :radius_mac, :kea_reservation
@@ -196,6 +197,42 @@ class Nic < ApplicationRecord
 
   def lease4
     @lease4 ||= mac_address_data && Kea::Lease4.find(hwaddr: mac_address_data)
+  end
+
+  private def auto_assign_ipv4
+    return if network.nil?
+
+    case ipv4_config
+    when "dynamic", "disabled"
+      self.ipv4 = nil
+    when "reserved", "static"
+      unless self.ipv4
+        next_ip = network.next_ipv4(ipv4_config)
+        if next_ip.nil?
+          errors.add(:ipv4_config, :no_free)
+          throw :abort
+        end
+        self.ipv4 = next_ip
+      end
+    end
+  end
+
+  private def auto_assign_ipv6
+    return if network.nil?
+
+    case ipv6_config
+    when "dynamic", "disabled"
+      self.ipv6 = nil
+    when "reserved", "static"
+      unless self.ipv6
+        next_ip = network.next_ipv6(ipv6_config)
+        if next_ip.nil?
+          errors.add(:ipv6_config, :no_free)
+          throw :abort
+        end
+        self.ipv6 = next_ip
+      end
+    end
   end
 
   private def hex_str(list, char_case: :lower, sep: nil)

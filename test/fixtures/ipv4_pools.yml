@@ -3,65 +3,65 @@
 server1:
   network: server
   ipv4_config: :static
-  ipv4_first_data: <%= ipv4_address('192.168.1.1') %>
-  ipv4_last_data: <%= ipv4_address('192.168.1.99') %>
+  ipv4_first_data: <%= ipv4_address('192.168.1.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.1.19') %>
 
 client1:
   network: client
   ipv4_config: :dynamic
-  ipv4_first_data: <%= ipv4_address('192.168.2.1') %>
-  ipv4_last_data: <%= ipv4_address('192.168.2.99') %>
+  ipv4_first_data: <%= ipv4_address('192.168.2.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.2.19') %>
 
 client2:
   network: client
   ipv4_config: :reserved
-  ipv4_first_data: <%= ipv4_address('192.168.2.100') %>
-  ipv4_last_data: <%= ipv4_address('192.168.2.199') %>
+  ipv4_first_data: <%= ipv4_address('192.168.2.20') %>
+  ipv4_last_data: <%= ipv4_address('192.168.2.29') %>
 
 client3:
   network: client
   ipv4_config: :static
-  ipv4_first_data: <%= ipv4_address('192.168.2.200') %>
-  ipv4_last_data: <%= ipv4_address('192.168.2.240') %>
+  ipv4_first_data: <%= ipv4_address('192.168.2.30') %>
+  ipv4_last_data: <%= ipv4_address('192.168.2.39') %>
 
 free1:
   network: free
   ipv4_config: :dynamic
-  ipv4_first_data: <%= ipv4_address('192.168.3.1') %>
-  ipv4_last_data: <%= ipv4_address('192.168.3.99') %>
+  ipv4_first_data: <%= ipv4_address('192.168.3.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.3.19') %>
 
 free2:
   network: free
   ipv4_config: :reserved
-  ipv4_first_data: <%= ipv4_address('192.168.3.100') %>
-  ipv4_last_data: <%= ipv4_address('192.168.3.199') %>
+  ipv4_first_data: <%= ipv4_address('192.168.3.20') %>
+  ipv4_last_data: <%= ipv4_address('192.168.3.29') %>
 
 free3:
   network: free
   ipv4_config: :static
-  ipv4_first_data: <%= ipv4_address('192.168.3.200') %>
-  ipv4_last_data: <%= ipv4_address('192.168.3.240') %>
+  ipv4_first_data: <%= ipv4_address('192.168.3.30') %>
+  ipv4_last_data: <%= ipv4_address('192.168.3.39') %>
 
 ipv4only1:
   network: ipv4only
   ipv4_config: :static
-  ipv4_first_data: <%= ipv4_address('192.168.10.200') %>
-  ipv4_last_data: <%= ipv4_address('192.168.10.240') %>
+  ipv4_first_data: <%= ipv4_address('192.168.10.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.10.19') %>
 
 last1:
   network: last
   ipv4_config: :dynamic
-  ipv4_first_data: <%= ipv4_address('192.168.100.1') %>
-  ipv4_last_data: <%= ipv4_address('192.168.100.99') %>
+  ipv4_first_data: <%= ipv4_address('192.168.100.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.100.19') %>
 
 last2:
   network: last
   ipv4_config: :reserved
-  ipv4_first_data: <%= ipv4_address('192.168.100.100') %>
-  ipv4_last_data: <%= ipv4_address('192.168.100.199') %>
+  ipv4_first_data: <%= ipv4_address('192.168.100.20') %>
+  ipv4_last_data: <%= ipv4_address('192.168.100.29') %>
 
 last3:
   network: last
   ipv4_config: :static
-  ipv4_first_data: <%= ipv4_address('192.168.100.200') %>
-  ipv4_last_data: <%= ipv4_address('192.168.100.240') %>
+  ipv4_first_data: <%= ipv4_address('192.168.100.30') %>
+  ipv4_last_data: <%= ipv4_address('192.168.100.39') %>

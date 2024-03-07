@@ -10,9 +10,9 @@ desktop:
   locked: false
   mac_address_data: <%= mac_address("00-11-22-33-44-55") %>
   ipv4_config: :static
-  ipv4_data: <%= ipv4_address("192.168.2.1") %>
+  ipv4_data: <%= ipv4_address("192.168.2.31") %>
   ipv6_config: :static
-  ipv6_data: <%= ipv6_address("fd00:2::1001") %>
+  ipv6_data: <%= ipv6_address("fd00:2::3001") %>
 
 note:
   node: note
@@ -24,12 +24,12 @@ note:
   locked: false
   mac_address_data: <%= mac_address("00-11-22-33-44-66") %>
   ipv4_config: :reserved
-  ipv4_data: <%= ipv4_address("192.168.2.102") %>
+  ipv4_data: <%= ipv4_address("192.168.2.22") %>
   ipv6_config: :reserved
   ipv6_data: <%= ipv6_address("fd00:2::2002") %>
 
-android:
-  node: android
+tablet:
+  node: tablet
   number: 1
   network: client
   name: 無線
@@ -52,7 +52,7 @@ server:
   locked: true
   mac_address_data:
   ipv4_config: :static
-  ipv4_data: <%= ipv4_address("192.168.1.1") %>
+  ipv4_data: <%= ipv4_address("192.168.1.11") %>
   ipv6_config: :static
   ipv6_data: <%= ipv6_address("fd00:1::1001") %>
 
@@ -80,7 +80,7 @@ other_desktop:
   locked: false
   mac_address_data: <%= mac_address("00-11-22-33-44-88") %>
   ipv4_config: :static
-  ipv4_data: <%= ipv4_address("192.168.2.8") %>
+  ipv4_data: <%= ipv4_address("192.168.2.18") %>
   ipv6_config: :static
   ipv6_data: <%= ipv6_address("fd00:2::1008") %>
 
