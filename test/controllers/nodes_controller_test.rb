@@ -1542,8 +1542,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert new_nic.locked
     assert_equal old_nic.network_id, new_nic.network_id
     assert_equal old_nic.ipv4_config, new_nic.ipv4_config
-    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_equal old_nic.ipv6_config, new_nic.ipv6_config
+    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_equal old_nic.ipv6_data, new_nic.ipv6_data
   end
 
@@ -1576,7 +1576,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
-      network_id: networks(:client).id,
+      network_id: networks(:server).id,
     }}}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
@@ -1585,8 +1585,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "static", new_nic.ipv6_config
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
-    assert_equal "192.168.1.10", new_nic.ipv4_data
-    assert_equal "fd00:1::1001", new_nic.ipv6_data
+    assert_equal "192.168.1.10", new_nic.ipv4_address
+    assert_equal "fd00:1::1000", new_nic.ipv6_address
   end
 
   ### unmanageable
@@ -1611,7 +1611,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   #### reserved
 
-  test "should update node with nic from static to reserved, but ip unchange" do
+  test "should update node with nic from static to reserved" do
     sign_in users(:user)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
@@ -1624,9 +1624,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     new_nic = Node.find(@node.id).nics.first
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
-    # unchange
-    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
-    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_equal "192.168.2.20", new_nic.ipv4_address
+    assert_equal "fd00:2::2000", new_nic.ipv6_address
   end
 
   test "should update node with nic from dynamic to reserved" do
@@ -1651,7 +1652,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   #### static
 
-  test "should update node with nic reserved to static, but ip unchange" do
+  test "should update node with nic reserved to static" do
     sign_in users(:user)
     @node = nodes(:note)
     old_nic = @node.nics.first
@@ -1665,14 +1666,16 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     new_nic = Node.find(@node.id).nics.first
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
-    # unchange
-    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
-    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_equal "192.168.2.30", new_nic.ipv4_address
+    assert_equal "fd00:2::3000", new_nic.ipv6_address
   end
 
   test "should update node with nic from dynamic to static" do
     sign_in users(:user)
     @node = nodes(:tablet)
+    old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
       ipv4_config: "static",
@@ -1683,28 +1686,23 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     new_nic = Node.find(@node.id).nics.first
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
+    assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
+    assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
     assert_equal "192.168.2.30", new_nic.ipv4_address
     assert_equal "fd00:2::3000", new_nic.ipv6_address
   end
 
   #### manual
 
-  test "should update node with nic static to manual, but ip unchange" do
+  test "should NOT update node with nic static to manual" do
     sign_in users(:user)
-    old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
       ipv4_config: "manual",
       ipv6_config: "manual",
     }}}}
-    assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
-    new_nic = Node.find(@node.id).nics.first
-    assert_equal "manual", new_nic.ipv4_config
-    assert_equal "manual", new_nic.ipv6_config
-    # unchange
-    assert_equal old_nic.ipv4_data, new_nic.ipv4_data
-    assert_equal old_nic.ipv6_data, new_nic.ipv6_data
+    assert_response :success
+    assert_equal @messages[:update_failure], flash[:alert]
   end
 
   #### disabled

@@ -252,7 +252,7 @@ class NodesController < ApplicationController
   end
 
   private def normalize_params(permitted_params)
-    permitted_params = delete_unchangable_params(permitted_params) unless current_user.admin?
+    delete_unchangable_params(permitted_params) unless current_user.admin?
     permitted_params[:nics_attributes]&.each do |key, nic_params|
       nic_params[:number] = key.to_i + 1
     end
@@ -286,54 +286,59 @@ class NodesController < ApplicationController
     permitted_params.delete(:dns)
     permitted_params.delete(:user_id)
     permitted_params[:nics_attributes]&.each_value do |nic_params|
-      nic_params.delete(:locked)
+      delete_nic_params(nic_params)
+    end
+    permitted_params
+  end
 
-      if nic_params[:id].blank?
-        # new nic
-        if nic_params[:network_id].present? && !Network.find(nic_params[:network_id]).manageable?(current_user)
-          # unmanageable
-          nic_params[:ipv4_address] = nil
-          nic_params[:ipv6_address] = nil
-        end
-        next
-      end
+  private def delete_nic_params(nic_params)
+    nic_params.delete(:locked)
 
-      nic = Nic.find(nic_params[:id])
-
-      if nic.locked?
-        # delete all except of :id for locked nic
-        nic_params.slice!(:id)
-        next
-      end
-
-      network =
-        if nic_params.key?(:network_id)
-          nic_params[:network_id].presence && Network.find(nic_params[:network_id])
-        else
-          nic.network
-        end
-
-      next if network.nil?
-      next if network.manageable?(current_user)
-
-      if network.id == nic.network_id
-        if !nic_params.key?(:ipv4_config) || nic_params[:ipv4_config].to_s == nic.ipv4_config
-          nic_params.delete(:ipv4_address) # use same ip
-        else
-          nic_params[:ipv4_address] = nil # reset ip address
-        end
-        if !nic_params.key?(:ipv6_config) || nic_params[:ipv6_config].to_s == nic.ipv6_config
-          nic_params.delete(:ipv6_address) # use same ip
-        else
-          nic_params[:ipv6_address] = nil # reset ip address
-        end
-      else
-        # reset ip address
+    if nic_params[:id].blank?
+      # new nic
+      if nic_params[:network_id].present? && !Network.find(nic_params[:network_id]).manageable?(current_user)
+        # unmanageable
         nic_params[:ipv4_address] = nil
         nic_params[:ipv6_address] = nil
       end
+      return
     end
-    permitted_params
+
+    nic = Nic.find(nic_params[:id])
+
+    if nic.locked?
+      # delete all except of :id for locked nic
+      nic_params.slice!(:id)
+      return
+    end
+
+    network =
+      if nic_params.key?(:network_id)
+        nic_params[:network_id].presence && Network.find(nic_params[:network_id])
+      else
+        nic.network
+      end
+
+    return if network.nil?
+    return if network.manageable?(current_user)
+
+    if network.id == nic.network_id
+      if !nic_params.key?(:ipv4_config) || nic_params[:ipv4_config].to_s == nic.ipv4_config
+        nic_params.delete(:ipv4_address) # use same ip
+      else
+        nic_params[:ipv4_address] = nil # reset ip address
+      end
+      if !nic_params.key?(:ipv6_config) || nic_params[:ipv6_config].to_s == nic.ipv6_config
+        nic_params.delete(:ipv6_address) # use same ip
+      else
+        nic_params[:ipv6_address] = nil # reset ip address
+      end
+    else
+      # reset ip address
+      nic_params[:ipv4_address] = nil
+      nic_params[:ipv6_address] = nil
+    end
+    nic_params
   end
 
   private def find_or_new_place(place_params)
