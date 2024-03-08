@@ -1,0 +1,5 @@
+= bootstrap_form_with(model: Network.new, id: "dummy_new_network_form") do |f|
+  = turbo_stream.append "ipv6_pools"
+    = f.fields_for :ipv6_pools, @ipv6_pool, child_index: Time.now.to_i do |field_f|
+      = render "form", form: field_f
+= turbo_stream.remove "dummy_new_network_form"

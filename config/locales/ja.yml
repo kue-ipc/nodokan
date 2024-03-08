@@ -822,6 +822,19 @@ ja:
           端末に備わっているネットワーク接続のインターフェースです。
           複数のネットワークに接続する場合はNICを追加してください。
           不要なNICは削除してください。
+    network:
+      base:
+        title: ネットワーク基本情報
+      ipv4_network:
+        title: IPv4ネットワーク情報
+        help: IPv4ネットワークアドレスが空欄の場合、IPv4ネットワークは設定されていません。
+      ipv4_pools:
+        title: IPv4プール
+      ipv6_network:
+        title: IPv6ネットワーク情報
+        help: IPv6ネットワークアドレスが空欄の場合、IPv4ネットワークは設定されていません。
+      ipv6_pools:
+        title: IPv6プール
 
   # mailer
   admin_mailer:
