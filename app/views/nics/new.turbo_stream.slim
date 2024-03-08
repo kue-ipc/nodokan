@@ -1,0 +1,5 @@
+= bootstrap_form_with(model: Node.new, id: "dummy_new_node_form") do |f|
+  = turbo_stream.append "nics"
+    = f.fields_for :nics, @nic, child_index: Time.now.to_i do |field_f|
+      = render "form", form: field_f
+= turbo_stream.remove "dummy_new_node_form"

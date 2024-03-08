@@ -1,0 +1,63 @@
+.rounded.border.p-2.mb-2.node-nic-root(id="node_nics_attributes_#{form.index}")
+  = form.hidden_field :id
+  - nic_ro = false
+
+  - if current_user.admin?
+    = form.check_box :locked
+  - elsif form.object.locked
+    - nic_ro = true
+    = badge_for(:locked, scope: "activerecord.attributes.nic")
+    small.text-muted<
+      |
+        このNICは管理者によってロックされているため、
+        編集や削除はできません。
+
+  - if nic_ro
+    dl
+      = dt_dd_for form.object, :interface_type do |value|
+        = t_enum(value, :interface_types)
+      = dt_dd_for form.object, :name
+      = dt_dd_for form.object, :mac_address
+      = dt_dd_for form.object, :auth
+      = dt_dd_for form.object, :network, &:name
+      = dt_dd_for form.object, :ipv4_config do |value|
+        = t_enum(value, :ipv4_configs)
+      = dt_dd_for form.object, :ipv4_address
+      = dt_dd_for form.object, :ipv6_config do |value|
+        = t_enum(value, :ipv6_configs)
+      = dt_dd_for form.object, :ipv6_address
+  - else
+    = form.check_box :_destroy, label: "このNICを削除する"
+    .row.node-nic-form
+      = form.collection_select :interface_type, t_enums(:interface_types, Nic), :first, :second,
+                                {prompt: "(選択してください)", wrapper_class: "col-md-4 mb-3"},
+                      required: true
+      = form.text_field :name, wrapper_class: "col-md-8 mb-3"
+      - nic_networks = current_user.usable_networks.to_a
+      - if form.object.network && nic_networks.exclude?(form.object.network)
+        - nic_networks << form.object.network
+      = form.collection_select :network_id, nic_networks,
+        :id, :name,
+        {prompt: "(選択してください。)", wrapper_class: "col-md-4 mb-3"},
+        required: true
+      = form.text_field :mac_address,
+        pattern: "([0-9A-Fa-f]{2}[\\-:]?){5}[0-9a-fA-F]{2}",
+        wrapper_class: "col-md-4"
+      = form.form_group :auth, label: {text: "認証ネットワーク登録"}, class: "col-md-4 mb-3" do
+        = form.check_box :auth, label: "MACアドレスを登録する"
+      = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic), :first, :second,
+                                {wrapper_class: "col-md-4 mb-3"}
+      = form.text_field :ipv4_address,
+        pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
+        wrapper_class: "col-md-4"
+      .col-md-4
+      - if Settings.config.ipv6
+        = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic), :first, :second,
+                                  {wrapper_class: "col-md-4 mb-3"}
+        = form.text_field :ipv6_address,
+          pattern: '([\dA-Fa-f](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
+          wrapper_class: "col-md-4"
+      - prefix_message_id = "node_nics_attributes_#{form.index}_message_"
+      - %w(no_network unconfigurable auth_network require_mac require_duid network_note).each do |name|
+        .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
+          = t(name, scope: "messages.node_nic")

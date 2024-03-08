@@ -9,7 +9,11 @@ class NicPolicy < ApplicationPolicy
     end
   end
 
-  # def show?
-  #   user.admin? || record.node.user == user
-  # end
+  def show?
+    user.admin? || record.node.user == user
+  end
+
+  def create?
+    true
+  end
 end

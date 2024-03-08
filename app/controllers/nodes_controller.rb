@@ -87,14 +87,6 @@ class NodesController < ApplicationController
     @node.user = current_user unless current_user.admin?
     authorize @node
 
-    if params["add_nic"]
-      @node.nics << Nic.new
-      render :new
-      return
-    end
-
-    # adjust_nics_ip(@node)
-
     respond_to do |format|
       if @node.save
         format.turbo_stream { flash.now.notice = t_success(@node, :register) }
@@ -110,18 +102,8 @@ class NodesController < ApplicationController
   # PATCH/PUT /nodes/1
   # PATCH/PUT /nodes/1.json
   def update
-    @node.assign_attributes(node_params)
-
-    if params["add_nic"]
-      @node.nics << Nic.new
-      render :edit
-      return
-    end
-
-    # adjust_nics_ip(@node)
-
     respond_to do |format|
-      if @node.save
+      if @node.update(node_params)
         format.turbo_stream { flash.now.notice = t_success(@node, :update) }
         format.html { redirect_to @node, notice: t_success(@node, :update) }
         format.json { render :show, status: :ok, location: @node }
@@ -351,7 +333,7 @@ class NodesController < ApplicationController
   end
 
   private def find_or_new_operating_system(operating_system_params)
-    return unless operating_system_params&.[](:os_category_id)&.present?
+    return unless operating_system_params&.[](:os_category_id).present?
 
     OperatingSystem.find_or_initialize_by(operating_system_params)
   end

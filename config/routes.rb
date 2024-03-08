@@ -10,13 +10,11 @@ Rails.application.routes.draw do
     resource :confirmation, only: [:create, :update]
     resource :specific_node_application, only: [:new, :create]
   end
-  resources :nics, only: [:show]
+  resources :nics, only: [:show, :new]
 
   resources :networks
-  defaults format: :turbo_stream do
-    resources :ipv4_pools, only: [:new]
-    resources :ipv6_pools, only: [:new]
-  end
+  resources :ipv4_pools, only: [:new]
+  resources :ipv6_pools, only: [:new]
 
   defaults format: :json do
     resources :places, only: [:index, :show, :create, :update, :destroy]
