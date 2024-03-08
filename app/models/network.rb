@@ -215,40 +215,6 @@ class Network < ApplicationRecord
     nil
   end
 
-  # 空いている次のプールのIPアドレス
-  def next_ipv4_pool
-    return unless ipv4_network
-
-    (ipv4_network.first..ipv4_network.last).find do |ipv4|
-      next if ipv4 == ipv4_gateway
-
-      ipv4_pools.all? do |ipv4_pool|
-        !ipv4_pool.include?(ipv4)
-      end
-    end
-  end
-
-  # TODO: 一つ一つ見る方法では暴走するため、修正の必要がある。
-  #       現時点では実装を見送る。
-  def next_ipv6_pool
-    nil
-    # return unless ipv6_network
-
-    # # BUG:
-    # #   * first is network address
-    # #   * prefix not set
-    # (ipv6_network.first..ipv6_network.last).find do |ipv6|
-    #   ipv6.prefix = ipv6_network.prefix
-    #   next if ipv6.network?
-    #   next if ipv6 == ipv6_gateway
-
-    #   ipv6_pools.all? do |ipv6_pool|
-    #     print '.'
-    #     !ipv6_pool.include?(ipv6)
-    #   end
-    # end
-  end
-
   def ipv4_configs
     @ipv4_configs ||=
       ipv4_pools.map(&:ipv4_config).then do |list|

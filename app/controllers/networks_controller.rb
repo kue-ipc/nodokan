@@ -43,31 +43,10 @@ class NetworksController < ApplicationController
     authorize @network
 
     respond_to do |format|
-      if params["commit"]
-        if @network.save
-          format.html { redirect_to @network, notice: t_success(@network, :create) }
-          format.turbo_stream { flash.now.notice = t_success(@network, :create) }
-          format.json { render :show, status: :created, location: @network }
-        else
-          format.html { render :new }
-          format.json { render json: @network.errors, status: :unprocessable_entity }
-        end
-      elsif params["add_ipv4_pool"] && @network.ipv4_network
-        next_ipv4 = @network.next_ipv4_pool
-        @network.ipv4_pools << Ipv4Pool.new(
-          ipv4_config: :static,
-          ipv4_first_address: next_ipv4&.address,
-          ipv4_last_address: next_ipv4&.address)
-        format.html { render :new }
-        format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params["add_ipv6_pool"] && @network.ipv6_network
-        next_ipv6 = @network.next_ipv6_pool
-        @network.ipv6_pools << Ipv6Pool.new(
-          ipv6_config: :static,
-          ipv6_first_address: next_ipv6&.address,
-          ipv6_last_address: next_ipv6&.address)
-        format.html { render :new }
-        format.json { render json: @network.errors, status: :unprocessable_entity }
+      if @network.save
+        format.html { redirect_to @network, notice: t_success(@network, :create) }
+        format.turbo_stream { flash.now.notice = t_success(@network, :create) }
+        format.json { render :show, status: :created, location: @network }
       else
         format.html { render :new }
         format.json { render json: @network.errors, status: :unprocessable_entity }
@@ -79,43 +58,11 @@ class NetworksController < ApplicationController
   # PATCH/PUT /networks/1.json
   def update
     respond_to do |format|
-      if params["commit"]
-        if @network.update(network_params)
-          format.turbo_stream { flash.now.notice = t_success(@network, :update) }
-          format.html { redirect_to @network, notice: t_success(@network, :update) }
-          format.json { render :show, status: :ok, location: @network }
-        else
-          format.html { render :edit }
-          format.json { render json: @network.errors, status: :unprocessable_entity }
-        end
-      elsif params["add_ipv4_pool"]
-        @network.assign_attributes(network_params)
-        next_ipv4 = @network.next_ipv4_pool
-        if next_ipv4
-          @network.ipv4_pools << Ipv4Pool.new(
-            ipv4_config: :static,
-            ipv4_first_address: next_ipv4&.address,
-            ipv4_last_address: next_ipv4&.address)
-        else
-          flash.now[:alert] = "IPアドレスの空きがありません。"
-        end
-        format.html { render :edit }
-        format.json { render json: @network.errors, status: :unprocessable_entity }
-      elsif params["add_ipv6_pool"] && @network.ipv6_network
-        @network.assign_attributes(network_params)
-        next_ipv6 = @network.next_ipv6_pool
-        if next_ipv6
-          @network.ipv6_pools << Ipv6Pool.new(
-            ipv6_config: :static,
-            ipv6_first_address: next_ipv6&.address,
-            ipv6_last_address: next_ipv6&.address)
-        else
-          flash.now[:alert] = "IPアドレスの空きがありません。"
-        end
-        format.html { render :edit }
-        format.json { render json: @network.errors, status: :unprocessable_entity }
+      if @network.update(network_params)
+        format.turbo_stream { flash.now.notice = t_success(@network, :update) }
+        format.html { redirect_to @network, notice: t_success(@network, :update) }
+        format.json { render :show, status: :ok, location: @network }
       else
-        @network.assign_attributes(network_params)
         format.html { render :edit }
         format.json { render json: @network.errors, status: :unprocessable_entity }
       end
