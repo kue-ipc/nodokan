@@ -1,7 +1,9 @@
-h1 Editing network
+- content_for :heading
+  h2
+    = Network.model_name.human
 
-== render "form"
+== render "form", network: @network
 
-=> link_to "Show", @network
-'|
-=< link_to "Back", networks_path
+hr
+
+=<> link_to t("actions.index"), networks_path, class: "btn btn-secondary", data: {turbo: false}

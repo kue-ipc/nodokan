@@ -45,7 +45,8 @@ class NetworksController < ApplicationController
     respond_to do |format|
       if params["commit"]
         if @network.save
-          format.html { redirect_to @network, notice: "Network was successfully created." }
+          format.html { redirect_to @network, notice: t_success(@network, :create) }
+          format.turbo_stream { flash.now.notice = t_success(@network, :create) }
           format.json { render :show, status: :created, location: @network }
         else
           format.html { render :new }
@@ -80,7 +81,8 @@ class NetworksController < ApplicationController
     respond_to do |format|
       if params["commit"]
         if @network.update(network_params)
-          format.html { redirect_to @network, notice: "Network was successfully updated." }
+          format.turbo_stream { flash.now.notice = t_success(@network, :update) }
+          format.html { redirect_to @network, notice: t_success(@network, :update) }
           format.json { render :show, status: :ok, location: @network }
         else
           format.html { render :edit }
@@ -125,7 +127,8 @@ class NetworksController < ApplicationController
   def destroy
     @network.destroy
     respond_to do |format|
-      format.html { redirect_to networks_url, notice: "Network was successfully destroyed." }
+      format.turbo_stream { flash.now.notice = t_success(@network, :delete) }
+      format.html { redirect_to networks_url, notice: t_success(@network, :delete) }
       format.json { head :no_content }
     end
   end

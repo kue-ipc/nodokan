@@ -1,70 +1,66 @@
-- if @network.errors.any?
-  .alert.alert-danger#error_explanation role="alert"
-    h4 = t("errors.messages.not_saved", resource: @network, count: @network.errors.count)
-    hr
-    ul.mb-0
-      - @network.errors.full_messages.each do |message|
-        li = message
+= turbo_frame_tag network, autoscroll: true, data: {autoscroll_block: "start"}
+  = render "model_errors", model: network
 
-= bootstrap_form_with model: @network, data: {turbo: false} do |f|
-  .rounded.border.p-2.mb-2
-    h4 ネットワーク基本情報
-    .row
-      = f.text_field :name, required: true, wrapper: {class: "col-md-4"}
-      = f.number_field :vlan, min: 1, max: 4094, wrapper: {class: "col-md-4"}
-    .row
-      .col-md-2
-        = f.check_box :auth
-      .col-md-2
-        = f.check_box :dhcp
-      .col-md-2
-        = f.check_box :locked
-      .col-md-2
-        = f.check_box :specific
-  .rounded.border.p-2.mb-2
-    h4 IPv4ネットワーク情報
-    small.form-text.text-muted
-      | 空欄の場合、IPv4は設定されていません。
-    .row
-      = f.text_field :ipv4_network_address, wrapper: {class: "col-md-4"}
-      = f.number_field :ipv4_prefix_length, min: 0, max: 32, prepend: "/", wrapper: {class: "col-md-4"}
-      = f.text_field :ipv4_gateway_address, wrapper: {class: "col-md-4"}
-    .row
-      = f.fields_for :ipv4_pools do |ipv4_pool_f|
-        = ipv4_pool_f.hidden_field :id
-        .col-md-1.mt-1
-          = ipv4_pool_f.check_box :_destroy
-        = ipv4_pool_f.collection_select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool), :first, :second,
-                                        hide_label: true, wrapper: {class: "col-md-3"}
-        = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: "col-md-4"}
-        = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: "col-md-4"}
-    .row
-      .col
-        = f.submit "IPv4プールを追加", class: "btn btn-secondary", name: "add_ipv4_pool"
+  = bootstrap_form_with model: network do |f|
+    .rounded.border.p-2.mb-2
+      h4 ネットワーク基本情報
+      .row
+        = f.text_field :name, required: true, wrapper: {class: "col-md-4"}
+        = f.number_field :vlan, min: 1, max: 4094, wrapper: {class: "col-md-4"}
+      .row
+        .col-md-2
+          = f.check_box :auth
+        .col-md-2
+          = f.check_box :dhcp
+        .col-md-2
+          = f.check_box :locked
+        .col-md-2
+          = f.check_box :specific
+    .rounded.border.p-2.mb-2
+      h4 IPv4ネットワーク情報
+      small.form-text.text-muted
+        | 空欄の場合、IPv4は設定されていません。
+      .row
+        = f.text_field :ipv4_network_address, wrapper: {class: "col-md-4"}
+        = f.number_field :ipv4_prefix_length, min: 0, max: 32, prepend: "/", wrapper: {class: "col-md-4"}
+        = f.text_field :ipv4_gateway_address, wrapper: {class: "col-md-4"}
+      .row
+        = f.fields_for :ipv4_pools do |ipv4_pool_f|
+          = ipv4_pool_f.hidden_field :id
+          .col-md-1.mt-1
+            = ipv4_pool_f.check_box :_destroy
+          = ipv4_pool_f.collection_select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool), :first, :second,
+                                          hide_label: true, wrapper: {class: "col-md-3"}
+          = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: "col-md-4"}
+          = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: "col-md-4"}
+      .row
+        .col
+          = f.submit "IPv4プールを追加", class: "btn btn-secondary", name: "add_ipv4_pool"
 
-  .rounded.border.p-2.mb-2
-    h4 IPv6ネットワーク情報
-    small.form-text.text-muted
-      | 空欄の場合、IPv6は設定されていません。
-    .row
-      = f.text_field :ipv6_network_address, wrapper: {class: "col-md-4"}
-      = f.number_field :ipv6_prefix_length, min: 0, max: 128, prepend: "/", wrapper: {class: "col-md-4"}
-      = f.text_field :ipv6_gateway_address, wrapper: {class: "col-md-4"}
-    .row
-      = f.fields_for :ipv6_pools do |ipv6_pool_f|
-        = ipv6_pool_f.hidden_field :id
-        .col-md-1.mt-1
-          = ipv6_pool_f.check_box :_destroy
-        = ipv6_pool_f.collection_select :ipv6_config, t_enums(:ipv6_configs, Ipv6Pool), :first, :second,
-                                        hide_label: true, wrapper: {class: "col-md-3"}
-        = ipv6_pool_f.text_field :ipv6_first_address, hide_label: true, wrapper: {class: "col-md-4"}
-        = ipv6_pool_f.text_field :ipv6_last_address, hide_label: true, wrapper: {class: "col-md-4"}
-    .row
-      .col
-        = f.submit "IPv6プールを追加", class: "btn btn-secondary", name: "add_ipv6_pool"
+    .rounded.border.p-2.mb-2
+      h4 IPv6ネットワーク情報
+      small.form-text.text-muted
+        | 空欄の場合、IPv6は設定されていません。
+      .row
+        = f.text_field :ipv6_network_address, wrapper: {class: "col-md-4"}
+        = f.number_field :ipv6_prefix_length, min: 0, max: 128, prepend: "/", wrapper: {class: "col-md-4"}
+        = f.text_field :ipv6_gateway_address, wrapper: {class: "col-md-4"}
+      .row
+        = f.fields_for :ipv6_pools do |ipv6_pool_f|
+          = ipv6_pool_f.hidden_field :id
+          .col-md-1.mt-1
+            = ipv6_pool_f.check_box :_destroy
+          = ipv6_pool_f.collection_select :ipv6_config, t_enums(:ipv6_configs, Ipv6Pool), :first, :second,
+                                          hide_label: true, wrapper: {class: "col-md-3"}
+          = ipv6_pool_f.text_field :ipv6_first_address, hide_label: true, wrapper: {class: "col-md-4"}
+          = ipv6_pool_f.text_field :ipv6_last_address, hide_label: true, wrapper: {class: "col-md-4"}
+      .row
+        .col
+          = f.submit "IPv6プールを追加", class: "btn btn-secondary", name: "add_ipv6_pool"
 
-  .rounded.border.p-2.mb-2
-    .row
-      = f.text_area :note, wrapper: {class: "col-md-12"}
+    .rounded.border.p-2.mb-2
+      .row
+        = f.text_area :note, wrapper: {class: "col-md-12"}
 
-  = f.submit class: "btn btn-primary"
+    = f.submit class: "btn btn-primary"
+    =< link_to t("actions.cancel"), network , class: "btn btn-dark", data: {turbo: network.id.present?}

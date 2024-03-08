@@ -1,0 +1,69 @@
+= turbo_frame_tag network
+  dl
+    = dt_dd_for network, :name do |value|
+      = value
+      - [:auth, :dhcp, :locked, :specific, :global].each do |attr|
+        - if network.__send__(attr)
+          = badge_for(attr, scope: "activerecord.attributes.network", badge_class: "ms-1")
+    = dt_dd_for network, :vlan
+    = dt_dd_for network, :ipv4_network
+    = dt_dd_for network, :ipv4_gateway
+    = dt_dd_for network, :ipv6_network
+    = dt_dd_for network, :ipv6_gateway
+    = dt_dd_for network, :note, line_break: true
+
+    - if current_user.admin?
+      = dt_dd_for network, :auth_users
+      = dt_dd_for network, :use_users
+      = dt_dd_for network, :manage_users
+
+    = dt_dd_for network, :nodes do |value|
+      = link_to nodes_path(condition: {network_id: network.id}) do
+        span.badge.bg-primary
+          = value.count
+
+  - if current_user.admin?
+    =<> link_to t("actions.edit"), edit_network_path(network),
+      class: "btn btn-primary"
+    =<> button_to t("actions.destroy"), network,
+      data: {turbo_confirm: t("messages.corfirm_destroy")}, method: :delete,
+        class: "btn btn-danger"
+    hr
+
+  h3 = Ipv4Pool.model_name.human
+
+  - if network.ipv4_pools.empty?
+    p
+      | IPv4アドレスのプールが設定されていません。
+  - else
+    table.table.table-sm
+      thead
+        tr
+          th = Ipv4Pool.human_attribute_name(:ipv4_config)
+          th = Ipv4Pool.human_attribute_name(:ipv4_first_address)
+          th = Ipv4Pool.human_attribute_name(:ipv4_last_address)
+      tbody
+        - network.ipv4_pools.sort_by(&:ipv4_first_data).each do |ipv4_pool|
+          tr
+            td = t_enum(ipv4_pool.ipv4_config, :ipv4_configs)
+            td = ipv4_pool.ipv4_first_address
+            td = ipv4_pool.ipv4_last_address
+
+  h3 = Ipv6Pool.model_name.human
+
+  - if network.ipv6_pools.empty?
+    p
+      | IPv6アドレスのプールが設定されていません。
+  - else
+    table.table.table-sm
+      thead
+        tr
+          th = Ipv6Pool.human_attribute_name(:ipv6_config)
+          th = Ipv6Pool.human_attribute_name(:ipv6_first_address)
+          th = Ipv6Pool.human_attribute_name(:ipv6_last_address)
+      tbody
+        - network.ipv6_pools.sort_by(&:ipv6_first_data).each do |ipv6_pool|
+          tr
+            td = t_enum(ipv6_pool.ipv6_config, :ipv6_configs)
+            td = ipv6_pool.ipv6_first_address
+            td = ipv6_pool.ipv6_last_address
