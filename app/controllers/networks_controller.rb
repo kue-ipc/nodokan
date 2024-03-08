@@ -48,7 +48,10 @@ class NetworksController < ApplicationController
         format.html { redirect_to @network, notice: t_success(@network, :create) }
         format.json { render :show, status: :created, location: @network }
       else
-        format.html { render :new }
+        format.html do
+          flash.now.alert = t_failure(@network, :create)
+          render :new
+        end
         format.json { render json: @network.errors, status: :unprocessable_entity }
       end
     end
@@ -63,7 +66,10 @@ class NetworksController < ApplicationController
         format.html { redirect_to @network, notice: t_success(@network, :update) }
         format.json { render :show, status: :ok, location: @network }
       else
-        format.html { render :edit }
+        format.html do
+          flash.now.alert = t_failure(@network, :update)
+          render :edit
+        end
         format.json { render json: @network.errors, status: :unprocessable_entity }
       end
     end

@@ -22,7 +22,7 @@
         - else
           .text-warning = t("messages.node_unregistered_hardware")
       = dt_dd_for node, :operating_system do |operating_system|
-        - if operating_system
+        - if operating_system&.os_category
           == operating_system.os_category.icon.presence
           =< operating_system.name
         - else

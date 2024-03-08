@@ -25,38 +25,8 @@ class NodesController < ApplicationController
   # GET /nodes/1
   # GET /nodes/1.json
   def show
-    @confirmation = @node.confirmation || @node.build_confirmation
-
-    # check os
-    if @node.operating_system
-      @installation_methods = policy_scope(SecuritySoftware)
-        .where(os_category: @node.operating_system.os_category)
-        .select(:installation_method)
-        .distinct
-        .map(&:installation_method)
-
-      if @confirmation.security_software&.os_category != @node.operating_system.os_category
-        @confirmation.security_software = SecuritySoftware.new(
-          os_category: @node.operating_system.os_category)
-        @confirmation.security_update = nil
-        @confirmation.security_scan = nil
-      end
-    else
-      @installtaion_methods = []
-      @confirmation.security_software = nil
-      @confirmation.security_update = nil
-      @confirmation.security_scan = nil
-    end
-
-    # unknown -> nil
-    @confirmation.existence = nil if @confirmation.existence_unknown?
-    @confirmation.content = nil if @confirmation.content_unknown?
-    @confirmation.os_update = nil if @confirmation.os_update_unknown?
-    @confirmation.app_update = nil if @confirmation.app_update_unknown?
-    @confirmation.software = nil if @confirmation.software_unknown?
-    @confirmation.security_hardware = nil if @confirmation.security_hardware_unknown?
-    @confirmation.security_update = nil if @confirmation.security_update_unknown?
-    @confirmation.security_scan = nil if @confirmation.security_scan_unknown?
+    @installation_methods = installation_methods_for_node(@node)
+    @confirmation = init_confirmation_for_node(@node)
   end
 
   # GET /nodes/new
@@ -89,11 +59,18 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       if @node.save
-        format.turbo_stream { flash.now.notice = t_success(@node, :register) }
+        format.turbo_stream do
+          @installation_methods = installation_methods_for_node(@node)
+          @confirmation = init_confirmation_for_node(@node)
+          flash.now.notice = t_success(@node, :register)
+        end
         format.html { redirect_to @node, notice: t_success(@node, :register) }
         format.json { render :show, status: :created, location: @node }
       else
-        format.html { render :new }
+        format.html do
+          flash.now.alert = t_failure(@node, :register)
+          render :new
+        end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -104,11 +81,18 @@ class NodesController < ApplicationController
   def update
     respond_to do |format|
       if @node.update(node_params)
-        format.turbo_stream { flash.now.notice = t_success(@node, :update) }
+        format.turbo_stream do
+          @installation_methods = installation_methods_for_node(@node)
+          @confirmation = init_confirmation_for_node(@node)
+          flash.now.notice = t_success(@node, :update)
+        end
         format.html { redirect_to @node, notice: t_success(@node, :update) }
         format.json { render :show, status: :ok, location: @node }
       else
-        format.html { render :edid }
+        format.html do
+          flash.now.alert = t_failure(@node, :update)
+          render :edit
+        end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -123,7 +107,7 @@ class NodesController < ApplicationController
         format.json { render json: @node.errors, status: :unprocessable_entity }
       elsif @node.destroy
         format.turbo_stream { flash.now.notice = t_success(@node, :delete) }
-        format.html { redirect_to nodes_url, notice: t_success(@network, :delete) }
+        format.html { redirect_to nodes_url, notice: t_success(@node, :delete) }
         format.json { head :no_content }
       else
         format.html { redirect_to @node, alert: "端末の削除に失敗しました。" }
@@ -333,7 +317,7 @@ class NodesController < ApplicationController
   end
 
   private def find_or_new_operating_system(operating_system_params)
-    return unless operating_system_params&.[](:os_category_id).present?
+    return if operating_system_params&.[](:os_category_id).blank?
 
     OperatingSystem.find_or_initialize_by(operating_system_params)
   end
@@ -352,5 +336,47 @@ class NodesController < ApplicationController
       end
     end
     node
+  end
+
+  private def installation_methods_for_node(node)
+    if node.operating_system
+      policy_scope(SecuritySoftware)
+        .where(os_category: node.operating_system.os_category)
+        .distinct
+        .pluck(:installation_method)
+    else
+      []
+    end
+  end
+
+  private def init_confirmation_for_node(node)
+    confirmation = node.confirmation || node.build_confirmation
+
+    # check os
+    if node.operating_system.nil?
+      confirmation.security_software = nil
+      confirmation.security_update = nil
+      confirmation.security_scan = nil
+    elsif confirmation.security_software&.os_category != node.operating_system.os_category
+      confirmation.security_software = SecuritySoftware.new(
+        os_category: node.operating_system.os_category)
+      confirmation.security_update = nil
+      confirmation.security_scan = nil
+    end
+
+    reset_confirmation_unknown(confirmation)
+  end
+
+  # confirmation unknown value to nil
+  private def reset_confirmation_unknown(confirmation)
+    confirmation.existence = nil if confirmation.existence_unknown?
+    confirmation.content = nil if confirmation.content_unknown?
+    confirmation.os_update = nil if confirmation.os_update_unknown?
+    confirmation.app_update = nil if confirmation.app_update_unknown?
+    confirmation.software = nil if confirmation.software_unknown?
+    confirmation.security_hardware = nil if confirmation.security_hardware_unknown?
+    confirmation.security_update = nil if confirmation.security_update_unknown?
+    confirmation.security_scan = nil if confirmation.security_scan_unknown?
+    confirmation
   end
 end
