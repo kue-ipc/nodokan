@@ -4,7 +4,7 @@
   = bootstrap_form_with model: network do |f|
     .rounded.border.p-2.mb-2
       h4 ネットワーク基本情報
-      .row
+      .row.mb-2
         = f.text_field :name, required: true, wrapper: {class: "col-md-4"}
         = f.number_field :vlan, min: 1, max: 4094, wrapper: {class: "col-md-4"}
       .row
@@ -20,22 +20,26 @@
       h4 IPv4ネットワーク情報
       small.form-text.text-muted
         | 空欄の場合、IPv4は設定されていません。
-      .row
+      .row.mb-3
         = f.text_field :ipv4_network_address, wrapper: {class: "col-md-4"}
         = f.number_field :ipv4_prefix_length, min: 0, max: 32, prepend: "/", wrapper: {class: "col-md-4"}
         = f.text_field :ipv4_gateway_address, wrapper: {class: "col-md-4"}
-      .row
-        = f.fields_for :ipv4_pools do |ipv4_pool_f|
-          = ipv4_pool_f.hidden_field :id
-          .col-md-1.mt-1
-            = ipv4_pool_f.check_box :_destroy
-          = ipv4_pool_f.collection_select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool), :first, :second,
-                                          hide_label: true, wrapper: {class: "col-md-3"}
-          = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: "col-md-4"}
-          = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: "col-md-4"}
+      = turbo_frame_tag "ipv4_pools"
+        = f.fields_for :ipv4_pools do |subform|
+          = render "ipv4_pools/form", form: subform
+        / = f.fields_for :ipv4_pools do |ipv4_pool_f|
+        /   .row
+        /     = ipv4_pool_f.hidden_field :id
+        /     .col-md-1.mt-1
+        /       = ipv4_pool_f.check_box :_destroy
+        /     = ipv4_pool_f.collection_select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool), :first, :second,
+        /                                     hide_label: true, wrapper: {class: "col-md-3"}
+        /     = ipv4_pool_f.text_field :ipv4_first_address, hide_label: true, wrapper: {class: "col-md-4"}
+        /     = ipv4_pool_f.text_field :ipv4_last_address, hide_label: true, wrapper: {class: "col-md-4"}
       .row
         .col
-          = f.submit "IPv4プールを追加", class: "btn btn-secondary", name: "add_ipv4_pool"
+          = link_to t("actions.new"), new_ipv4_pool_path, class: "btn btn-secondary", data: {turbo_stream: true}
+          / = f.submit "IPv4プールを追加", class: "btn btn-secondary", name: "add_ipv4_pool"
 
     .rounded.border.p-2.mb-2
       h4 IPv6ネットワーク情報

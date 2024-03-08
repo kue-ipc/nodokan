@@ -8,7 +8,7 @@ class Ipv4Pool < ApplicationRecord
   validates :ipv4_last_address, allow_blank: false, ipv4_address: true
 
   def ipv4_first
-    IPAddr.new_ntoh(ipv4_first_data)
+    ipv4_first_data && IPAddr.new_ntoh(ipv4_first_data)
   end
 
   def ipv4_first_address
@@ -20,7 +20,7 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def ipv4_last
-    IPAddr.new_ntoh(ipv4_last_data)
+    ipv4_last_data && IPAddr.new_ntoh(ipv4_last_data)
   end
 
   def ipv4_last_address

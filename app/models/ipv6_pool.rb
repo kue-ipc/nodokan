@@ -9,7 +9,7 @@ class Ipv6Pool < ApplicationRecord
   validates :ipv6_last_address, allow_blank: false, ipv6_address: true
 
   def ipv6_first
-    IPAddr.new_ntoh(ipv6_first_data)
+    ipv6_first_data && IPAddr.new_ntoh(ipv6_first_data)
   end
 
   def ipv6_first_address
@@ -21,7 +21,7 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def ipv6_last
-    IPAddr.new_ntoh(ipv6_last_data)
+    ipv6_last_data && IPAddr.new_ntoh(ipv6_last_data)
   end
 
   def ipv6_last_address

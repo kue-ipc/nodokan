@@ -15,6 +15,8 @@ Rails.application.routes.draw do
 
   resources :networks
 
+  resources :ipv4_pools, only: [:new]
+
   defaults format: :json do
     resources :places, only: [:index, :show, :create, :update, :destroy]
     resources :hardwares, only: [:index, :show, :create, :update, :destroy]
