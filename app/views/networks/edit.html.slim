@@ -1,8 +1,7 @@
 - content_for :heading
-  h2
-    = Network.model_name.human
+  h2 = Network.model_name.human
 
-== render "form", network: @network
+= render "form", network: @network
 
 hr
 

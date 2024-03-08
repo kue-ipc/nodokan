@@ -44,8 +44,8 @@ class NetworksController < ApplicationController
 
     respond_to do |format|
       if @network.save
-        format.html { redirect_to @network, notice: t_success(@network, :create) }
         format.turbo_stream { flash.now.notice = t_success(@network, :create) }
+        format.html { redirect_to @network, notice: t_success(@network, :create) }
         format.json { render :show, status: :created, location: @network }
       else
         format.html { render :new }

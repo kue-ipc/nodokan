@@ -97,13 +97,11 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       if @node.save
+        format.turbo_stream { flash.now.notice = t_success(@node, :register) }
         format.html { redirect_to @node, notice: t_success(@node, :register) }
         format.json { render :show, status: :created, location: @node }
       else
-        format.html do
-          flash.now[:alert] = t_failure(@node, :register)
-          render :new
-        end
+        format.html { render :new }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -124,13 +122,11 @@ class NodesController < ApplicationController
 
     respond_to do |format|
       if @node.save
+        format.turbo_stream { flash.now.notice = t_success(@node, :update) }
         format.html { redirect_to @node, notice: t_success(@node, :update) }
         format.json { render :show, status: :ok, location: @node }
       else
-        format.html do
-          flash.now[:alert] = t_failure(@node, :update)
-          render :edit
-        end
+        format.html { render :edid }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -144,7 +140,8 @@ class NodesController < ApplicationController
         format.html { redirect_to @node, alert: "特定端末は削除できません。特定端末の解除を申請してください。" }
         format.json { render json: @node.errors, status: :unprocessable_entity }
       elsif @node.destroy
-        format.html { redirect_to nodes_url, notice: "端末を削除しました。" }
+        format.turbo_stream { flash.now.notice = t_success(@node, :delete) }
+        format.html { redirect_to nodes_url, notice: t_success(@network, :delete) }
         format.json { head :no_content }
       else
         format.html { redirect_to @node, alert: "端末の削除に失敗しました。" }

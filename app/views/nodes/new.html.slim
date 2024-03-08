@@ -1,12 +1,8 @@
 - content_for :heading
-  h1 端末の新規登録
+  h2 = Node.model_name.human
 
-== render "form"
-
-hr
-
-= link_to "端末一覧に戻る", nodes_path
+= render "form", node: @node
 
 hr
 
-== render "help"
+=<> link_to t("actions.index"), nodes_path, class: "btn btn-secondary", data: {turbo: false}
