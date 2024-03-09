@@ -13,11 +13,18 @@ class NetworksController < ApplicationController
   def index
     set_page
     set_search
-    @networks = search_and_sort(policy_scope(Network)).includes(:ipv4_pools, :ipv6_pools)
+    @networks = search_and_sort(policy_scope(Network))
+      .includes(:ipv4_pools, :ipv6_pools)
     respond_to do |format|
-      format.html { @networks = paginate(@networks) }
-      format.json { @networks = paginate(@networks) }
-      format.csv { @networks }
+      format.html do
+        @networks = paginate(@networks)
+      end
+      format.json do
+        @networks = paginate(@networks)
+      end
+      format.csv do
+        @networks
+      end
     end
   end
 
@@ -44,15 +51,23 @@ class NetworksController < ApplicationController
 
     respond_to do |format|
       if @network.save
-        format.turbo_stream { flash.now.notice = t_success(@network, :create) }
-        format.html { redirect_to @network, notice: t_success(@network, :create) }
-        format.json { render :show, status: :created, location: @network }
+        format.turbo_stream do
+          flash.now.notice = t_success(@network, :create)
+        end
+        format.html do
+          redirect_to @network, notice: t_success(@network, :create)
+        end
+        format.json do
+          render :show, status: :created, location: @network
+        end
       else
         format.html do
           flash.now.alert = t_failure(@network, :create)
           render :new
         end
-        format.json { render json: @network.errors, status: :unprocessable_entity }
+        format.json do
+          render json: @network.errors, status: :unprocessable_entity
+        end
       end
     end
   end
@@ -62,15 +77,21 @@ class NetworksController < ApplicationController
   def update
     respond_to do |format|
       if @network.update(network_params)
-        format.turbo_stream { flash.now.notice = t_success(@network, :update) }
-        format.html { redirect_to @network, notice: t_success(@network, :update) }
+        format.turbo_stream do
+          flash.now.notice = t_success(@network, :update)
+        end
+        format.html do
+          redirect_to @network, notice: t_success(@network, :update)
+        end
         format.json { render :show, status: :ok, location: @network }
       else
         format.html do
           flash.now.alert = t_failure(@network, :update)
           render :edit
         end
-        format.json { render json: @network.errors, status: :unprocessable_entity }
+        format.json do
+          render json: @network.errors, status: :unprocessable_entity
+        end
       end
     end
   end
@@ -80,8 +101,12 @@ class NetworksController < ApplicationController
   def destroy
     @network.destroy
     respond_to do |format|
-      format.turbo_stream { flash.now.notice = t_success(@network, :delete) }
-      format.html { redirect_to networks_url, notice: t_success(@network, :delete) }
+      format.turbo_stream do
+        flash.now.notice = t_success(@network, :delete)
+      end
+      format.html do
+        redirect_to networks_url, notice: t_success(@network, :delete)
+      end
       format.json { head :no_content }
     end
   end

@@ -30,23 +30,32 @@ class Nic < ApplicationRecord
   }
 
   validates :number,
-    numericality: {only_integer: true, greater_than: 0, less_than_or_equal_to: 64},
+    numericality: {
+      only_integer: true,
+      greater_than: 0,
+      less_than_or_equal_to: 64,
+    },
     uniqueness: {scope: :node}
   validates :name, allow_blank: true, length: {maximum: 255}
   validates :interface_type, presence: true
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
-  validates :ipv4_data, presence: true, if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
+  validates :ipv4_data, presence: true,
+    if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
   validates :ipv6_data, allow_nil: true, uniqueness: true
-  validates :ipv6_data, presence: true, if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
+  validates :ipv6_data, presence: true,
+    if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
 
-  validates :mac_address_data, allow_nil: true, length: {is: 6}, uniqueness: true
+  validates :mac_address_data, allow_nil: true, length: {is: 6},
+    uniqueness: true
   validates :mac_address_data, presence: true, if: -> { auth }
   validates :ipv4_config, ip_config: true
-  validates :ipv4_config, exclusion: ["reserved"], if: -> { mac_address_data.blank? }
+  validates :ipv4_config, exclusion: ["reserved"],
+    if: -> { mac_address_data.blank? }
   # TODO: MACアドレスによる予約も許可するなら、その想定も必要かも。
   validates :ipv6_config, ip_config: true
-  validates :ipv6_config, exclusion: ["reserved"], if: -> { node.duid_data.blank? }
+  validates :ipv6_config, exclusion: ["reserved"],
+    if: -> { node.duid_data.blank? }
 
   normalizes :name, with: ->(str) { str.presence&.strip }
 
@@ -156,19 +165,22 @@ class Nic < ApplicationRecord
 
     if mac_address_data.present?
       if !destroyed? && ipv4_reserved? && ipv4_data.present? && network&.dhcp
-        KeaReservation4AddJob.perform_later(mac_address_data, ipv4.to_i, network.id)
+        KeaReservation4AddJob.perform_later(mac_address_data, ipv4.to_i,
+          network.id)
       else
         KeaReservation4DelJob.perform_later(mac_address_data)
       end
     end
 
-    if old_nic&.mac_address_data.present? && old_nic.mac_address_data != mac_address_data
+    if old_nic&.mac_address_data.present? &&
+        old_nic.mac_address_data != mac_address_data
       KeaReservation4DelJob.perform_later(old_nic.mac_address_data)
     end
 
     if node.duid_data.present?
       if !destroyed? && ipv6_reserved? && ipv6_data.present? && network&.dhcp
-        KeaReservation6AddJob.perform_later(node.duid_data, ipv6_address, network.id)
+        KeaReservation6AddJob.perform_later(node.duid_data, ipv6_address,
+          network.id)
       else
         # FIXME: 複数のNIC登録の場合、同じDUIDがあるので、削除できない？
         # KeaReservation6DelJob.perform_later(node.duid_data)
@@ -206,7 +218,7 @@ class Nic < ApplicationRecord
     when "dynamic", "disabled"
       self.ipv4 = nil
     when "reserved", "static"
-      unless self.ipv4
+      unless ipv4
         next_ip = network.next_ipv4(ipv4_config)
         if next_ip.nil?
           errors.add(:ipv4_config, :no_free)
@@ -224,7 +236,7 @@ class Nic < ApplicationRecord
     when "dynamic", "disabled"
       self.ipv6 = nil
     when "reserved", "static"
-      unless self.ipv6
+      unless ipv6
         next_ip = network.next_ipv6(ipv6_config)
         if next_ip.nil?
           errors.add(:ipv6_config, :no_free)

@@ -12,6 +12,7 @@ if @target
   end
 else
   json.entities do
-    json.array! @operating_systems, partial: "operating_systems/operating_system", as: :operating_system
+    json.array! @operating_systems,
+      partial: "operating_systems/operating_system", as: :operating_system
   end
 end

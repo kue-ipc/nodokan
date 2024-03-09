@@ -40,7 +40,9 @@ class UsersSyncJob < ApplicationJob
 
     # 新規ユーザーの確認
     Devise::LDAP::Adapter.get_login_list.each do |username|
-      next if list[:update].include?(username) || list[:delete].include?(username)
+      if list[:update].include?(username) || list[:delete].include?(username)
+        next
+      end
 
       unless Devise::LDAP::Adapter.authorizable?(username)
         # 対象外

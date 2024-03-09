@@ -21,11 +21,12 @@ class KeaSubnet4AddJob < ApplicationJob
         formatted_value: network.ipv4_gateway_address,
         space: "dhcp4")]
 
-      subnet4.dhcp4_pools = network.ipv4_pools.map do |pool|
+      subnet4.dhcp4_pools = network.ipv4_pools.map { |pool|
         if pool.ipv4_dynamic?
-          subnet4.dhcp4_pools.build(start_address: pool.ipv4_first.to_i, end_address: pool.ipv4_last.to_i)
+          subnet4.dhcp4_pools.build(start_address: pool.ipv4_first.to_i,
+            end_address: pool.ipv4_last.to_i)
         end
-      end.compact
+      }.compact
 
       subnet4.modification_ts = Time.current
       subnet4.save!

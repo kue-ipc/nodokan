@@ -102,9 +102,15 @@ module ApplicationHelper
   def span_value_for(value, **opts)
     case value
     when nil
-      tag.span(opts[:blank_alt] || t("values.none"), class: "font-italic text-muted") unless opts[:hide_blank]
+      unless opts[:hide_blank]
+        tag.span(opts[:blank_alt] || t("values.none"),
+          class: "font-italic text-muted")
+      end
     when "", [], {}
-      tag.span(opts[:blank_alt] || t("values.empty"), class: "font-italic text-muted") unless opts[:hide_blank]
+      unless opts[:hide_blank]
+        tag.span(opts[:blank_alt] || t("values.empty"),
+          class: "font-italic text-muted")
+      end
     when String
       case opts[:format]
       when :translate
@@ -121,10 +127,9 @@ module ApplicationHelper
     when Array
       tag.ul(class: "list-inline mb-0") do
         list_html = sanitize("")
+        li_class = "list-inline-item border border-primary rounded px-1 mb-1"
         value.each do |v|
-          list_html += tag.li(class: "list-inline-item border border-primary rounded px-1 mb-1") do
-            span_value_for(v, **opts)
-          end
+          list_html += tag.li(class: li_class) { span_value_for(v, **opts) }
         end
         list_html
       end
@@ -132,7 +137,10 @@ module ApplicationHelper
       opts[:class] ||= []
       opts[:class] << "text-danger" unless value.private?
       str = value.to_s
-      str += "/#{value.prefix}" if (value.ipv4? && value.prefix < 32) || (value.ipv6? && value.prefix < 128)
+      if (value.ipv4? && value.prefix < 32) ||
+          (value.ipv6? && value.prefix < 128)
+        str += "/#{value.prefix}"
+      end
       span_text_tag(str, **opts)
     when ApplicationRecord
       link_to(value.to_s, value)
@@ -149,9 +157,8 @@ module ApplicationHelper
         span_text_tag(value, **opts, &block) +
         tag.span(around[1], class: "text-muted")
     elsif line_break
-      tag_list = value.each_line.flat_map do |line|
-        [tag.span(line, **opts, &block), tag.br]
-      end
+      tag_list = value.each_line
+        .flat_map { |line| [tag.span(line, **opts, &block), tag.br] }
       tag_list.pop
       tag_list.inject { |result, item| result + item }
     else
@@ -224,7 +231,9 @@ module ApplicationHelper
   def badge_for(value, scope: "", badge_class: [])
     badge_class = badge_class.to_s.split unless badge_class.is_a?(Array)
     badge_class << "badge"
-    NAME_COLORS[value.intern]&.then { |color| badge_class << "bg-#{color}" }
+    NAME_COLORS[value.intern]&.then do |color|
+      badge_class << "bg-#{color}"
+    end
     tag.span(t(value, scope: scope), class: badge_class)
   end
 

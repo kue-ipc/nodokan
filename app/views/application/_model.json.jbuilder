@@ -6,6 +6,7 @@ json.attributes do
     json.name name
     json.human_name model.human_attribute_name(name)
     json.type model.type_for_attribute(name).type
-    json.readonly %w(id created_at updated_at).include?(name) || name.end_with?("_count")
+    json.readonly %w(id created_at updated_at).include?(name) ||
+      name.end_with?("_count")
   end
 end

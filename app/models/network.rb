@@ -1,8 +1,6 @@
 # rubocop: disable Metrics
 class Network < ApplicationRecord
-  IP_MASKS = (0..32).map do |i|
-    IPAddr.new("0.0.0.0").mask(i).netmask
-  end
+  IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
   FLAGS = {
     auth: "a",
@@ -20,9 +18,12 @@ class Network < ApplicationRecord
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments, -> { where(auth: true).readonly }, class_name: "Assignment", inverse_of: :network
-  has_many :use_assignments, -> { where(use: true).readonly }, class_name: "Assignment", inverse_of: :network
-  has_many :manage_assignments, -> { where(manage: true).readonly }, class_name: "Assignment", inverse_of: :network
+  has_many :auth_assignments, -> { where(auth: true).readonly },
+    class_name: "Assignment", inverse_of: :network
+  has_many :use_assignments, -> { where(use: true).readonly },
+    class_name: "Assignment", inverse_of: :network
+  has_many :manage_assignments, -> { where(manage: true).readonly },
+    class_name: "Assignment", inverse_of: :network
 
   has_many :users, through: :assignments
   has_many :auth_users, through: :auth_assignments, source: :user
@@ -60,7 +61,8 @@ class Network < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(name vlan ipv4_network_data ipv6_network_data auth nics_count assignments_count)
+    %w(name vlan ipv4_network_data ipv6_network_data auth nics_count
+      assignments_count)
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -217,16 +219,14 @@ class Network < ApplicationRecord
 
   def ipv4_configs
     @ipv4_configs ||=
-      ipv4_pools.map(&:ipv4_config).then do |list|
-        (list + ["manual", "disabled"]).uniq
-      end
+      ipv4_pools.map(&:ipv4_config)
+        .then { |list| (list + ["manual", "disabled"]).uniq }
   end
 
   def ipv6_configs
     @ipv6_configs ||=
-      ipv6_pools.map(&:ipv6_config).then do |list|
-        (list + ["manual", "disabled"]).uniq
-      end
+      ipv6_pools.map(&:ipv6_config)
+        .then { |list| (list + ["manual", "disabled"]).uniq }
   end
 
   def ipv4_include?(ipv4)

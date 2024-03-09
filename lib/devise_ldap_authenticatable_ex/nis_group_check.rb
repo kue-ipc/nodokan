@@ -30,7 +30,7 @@ module DeviseLdapAuthenticatableEx
         def nis_group(group_name)
           group = Devise::LDAP::Connection.nis_groups[group_name] || {}
           if group[:expired_time] && Devise.ldap_nis_group_cache_age &&
-             group[:expired_time] >= Devise.ldap_nis_group_cache_age
+              group[:expired_time] >= Devise.ldap_nis_group_cache_age
             return group
           end
 
@@ -41,16 +41,25 @@ module DeviseLdapAuthenticatableEx
               Devise::LDAP::Connection.admin
             end
 
-          group[:expired_time] = Time.current + Devise.ldap_nis_group_cache_age if Devise.ldap_nis_group_cache_age
+          if Devise.ldap_nis_group_cache_age
+            group[:expired_time] = Time.current +
+              Devise.ldap_nis_group_cache_age
+          end
           group[:gid_number] = nil
           group[:members] = []
 
-          group_checking_ldap.search(base: group_name, scope: Net::LDAP::SearchScope_BaseObject) do |entry|
-            group[:gid_number] = entry[Devise::LDAP::DEFAULT_GID_NUMBER_KEY][0].to_i
-            group[:members] = entry[Devise::LDAP::DEFAULT_MEMBER_UID_KEY]&.to_a || []
+          group_checking_ldap.search(base: group_name,
+            scope: Net::LDAP::SearchScope_BaseObject) do |entry|
+            group[:gid_number] =
+              entry[Devise::LDAP::DEFAULT_GID_NUMBER_KEY][0].to_i
+            group[:members] =
+              entry[Devise::LDAP::DEFAULT_MEMBER_UID_KEY]&.to_a || []
           end
 
-          DeviseLdapAuthenticatable::Logger.send("Not entry group: #{group_name}") if group[:gid_number].nil?
+          if group[:gid_number].nil?
+            DeviseLdapAuthenticatable::Logger.send(
+              "Not entry group: #{group_name}")
+          end
 
           Devise::LDAP::Connection.nis_groups[group_name] = group
           group
@@ -88,7 +97,8 @@ module DeviseLdapAuthenticatableEx
         end
 
         # overwrite in_group?
-        def in_group?(group_name, group_attribute = Devise::LDAP::DEFAULT_GROUP_UNIQUE_MEMBER_LIST_KEY)
+        def in_group?(group_name,
+          group_attribute = Devise::LDAP::DEFAULT_GROUP_UNIQUE_MEMBER_LIST_KEY)
           if Devise.ldap_nis_group_check
             in_group_nis?(group_name)
           else

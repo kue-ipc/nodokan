@@ -19,8 +19,10 @@ Rails.application.routes.draw do
   defaults format: :json do
     resources :places, only: [:index, :show, :create, :update, :destroy]
     resources :hardwares, only: [:index, :show, :create, :update, :destroy]
-    resources :operating_systems, only: [:index, :show, :create, :update, :destroy]
-    resources :security_softwares, only: [:index, :show, :create, :update, :destroy]
+    resources :operating_systems,
+      only: [:index, :show, :create, :update, :destroy]
+    resources :security_softwares,
+      only: [:index, :show, :create, :update, :destroy]
     resources :device_types, only: [:index, :show, :create, :update, :destroy]
     resources :os_categories, only: [:index, :show, :create, :update, :destroy]
   end

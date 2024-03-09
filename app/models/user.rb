@@ -19,9 +19,12 @@ class User < ApplicationRecord
   has_many :nodes, dependent: :restrict_with_error
 
   has_many :assignments, dependent: :destroy
-  has_many :auth_assignments, -> { where(auth: true) }, class_name: "Assignment", inverse_of: :user
-  has_many :use_assignments, -> { where(use: true) }, class_name: "Assignment", inverse_of: :user
-  has_many :manage_assignments, -> { where(manage: true) }, class_name: "Assignment", inverse_of: :user
+  has_many :auth_assignments, -> { where(auth: true) },
+    class_name: "Assignment", inverse_of: :user
+  has_many :use_assignments, -> { where(use: true) },
+    class_name: "Assignment", inverse_of: :user
+  has_many :manage_assignments, -> { where(manage: true) },
+    class_name: "Assignment", inverse_of: :user
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network
@@ -61,7 +64,9 @@ class User < ApplicationRecord
         Network.find_identifier(@allocate_network_config[:auth_network])
       end
 
-    logger.debug "User #{username} is allocated auth network: #{auth_network}" if auth_network
+    if auth_network
+      logger.debug "User #{username} is allocated auth network: #{auth_network}"
+    end
 
     @allocate_network_config[:networks]&.each do |net|
       network =

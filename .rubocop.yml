@@ -18,6 +18,9 @@ Rails:
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
+Layout/ArrayAlignment:
+  EnforcedStyle: with_fixed_indentation
+
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 
@@ -45,6 +48,12 @@ Layout/MultilineMethodCallBraceLayout:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
 
 Layout/SpaceInsideArrayLiteralBrackets:
   EnforcedStyle: no_space
@@ -98,6 +107,9 @@ Style/AccessModifierDeclarations:
 
 Style/AsciiComments:
   Enabled: false
+
+Style/BlockDelimiters:
+  EnforcedStyle: semantic
 
 Style/Documentation:
   Enabled: false

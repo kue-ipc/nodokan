@@ -3,7 +3,8 @@ class OperatingSystem < ApplicationRecord
 
   has_many :nodes, dependent: :restrict_with_error
 
-  validates :name, presence: true, length: {maximum: 255}, uniqueness: {case_sensitive: false}
+  validates :name, presence: true, length: {maximum: 255},
+    uniqueness: {case_sensitive: false}
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)

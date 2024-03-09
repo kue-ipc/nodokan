@@ -22,7 +22,9 @@ module HexData
       return if str.nil?
 
       deleted_str = str.delete(ignore_chars)
-      raise ArgumentError, "must be pair hex chars: #{str}" if deleted_str !~ /\A(?:\h{2})*\z/
+      if deleted_str !~ /\A(?:\h{2})*\z/
+        raise ArgumentError, "must be pair hex chars: #{str}"
+      end
 
       [str.delete(ignore_chars)].pack("H*")
     end

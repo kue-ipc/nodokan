@@ -16,8 +16,12 @@ class NodesController < ApplicationController
     @nodes = search_and_sort(policy_scope(Node)).includes(:user, :place, :hardware, :operating_system, :confirmation,
       nics: :network)
     respond_to do |format|
-      format.html { @nodes = paginate(@nodes) }
-      format.json { @nodes = paginate(@nodes) }
+      format.html do
+        @nodes = paginate(@nodes)
+      end
+      format.json do
+        @nodes = paginate(@nodes)
+      end
       format.csv { @nodes }
     end
   end
@@ -64,7 +68,9 @@ class NodesController < ApplicationController
           @confirmation = init_confirmation_for_node(@node)
           flash.now.notice = t_success(@node, :register)
         end
-        format.html { redirect_to @node, notice: t_success(@node, :register) }
+        format.html do
+          redirect_to @node, notice: t_success(@node, :register)
+        end
         format.json { render :show, status: :created, location: @node }
       else
         format.html do
@@ -86,7 +92,9 @@ class NodesController < ApplicationController
           @confirmation = init_confirmation_for_node(@node)
           flash.now.notice = t_success(@node, :update)
         end
-        format.html { redirect_to @node, notice: t_success(@node, :update) }
+        format.html do
+          redirect_to @node, notice: t_success(@node, :update)
+        end
         format.json { render :show, status: :ok, location: @node }
       else
         format.html do
@@ -103,14 +111,22 @@ class NodesController < ApplicationController
   def destroy
     respond_to do |format|
       if @node.specific
-        format.html { redirect_to @node, alert: "特定端末は削除できません。特定端末の解除を申請してください。" }
+        format.html do
+          redirect_to @node, alert: "特定端末は削除できません。特定端末の解除を申請してください。"
+        end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       elsif @node.destroy
-        format.turbo_stream { flash.now.notice = t_success(@node, :delete) }
-        format.html { redirect_to nodes_url, notice: t_success(@node, :delete) }
+        format.turbo_stream do
+          flash.now.notice = t_success(@node, :delete)
+        end
+        format.html do
+          redirect_to nodes_url, notice: t_success(@node, :delete)
+        end
         format.json { head :no_content }
       else
-        format.html { redirect_to @node, alert: "端末の削除に失敗しました。" }
+        format.html do
+          redirect_to @node, alert: "端末の削除に失敗しました。"
+        end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
     end
@@ -154,17 +170,28 @@ class NodesController < ApplicationController
       end
       respond_to do |format|
         if @node.save
-          format.html { redirect_to nodes_path, notice: "端末を譲渡しました。" }
+          format.html do
+            redirect_to nodes_path, notice: "端末を譲渡しました。"
+          end
           format.json { render :show, status: :ok, location: @node }
         else
-          format.html { redirect_to @node, alert: "移譲に失敗しました。" }
-          format.json { render json: @node.errors, status: :unprocessable_entity }
+          format.html do
+            redirect_to @node, alert: "移譲に失敗しました。"
+          end
+          format.json do
+            render json: @node.errors, status: :unprocessable_entity
+          end
         end
       end
     else
       respond_to do |format|
-        format.html { redirect_to @node, alert: "該当するユーザーがいません。" }
-        format.json { render json: {username: "該当のユーザーがいません。"}, status: :unprocessable_entity }
+        format.html do
+          redirect_to @node, alert: "該当するユーザーがいません。"
+        end
+        format.json do
+          render json: {username: "該当のユーザーがいません。"},
+            status: :unprocessable_entity
+        end
       end
     end
   end
@@ -235,10 +262,16 @@ class NodesController < ApplicationController
       permitted_params[:component_ids] = []
       permitted_params[:host_id] = nil
     end
-    permitted_params[:place] = find_or_new_place(permitted_params[:place]) if permitted_params.key?(:place)
-    permitted_params[:hardware] = find_or_new_hardware(permitted_params[:hardware]) if permitted_params.key?(:hardware)
+    if permitted_params.key?(:place)
+      permitted_params[:place] = find_or_new_place(permitted_params[:place])
+    end
+    if permitted_params.key?(:hardware)
+      permitted_params[:hardware] = find_or_new_hardware(
+        permitted_params[:hardware])
+    end
     if permitted_params.key?(:operating_system)
-      permitted_params[:operating_system] = find_or_new_operating_system(permitted_params[:operating_system])
+      permitted_params[:operating_system] = find_or_new_operating_system(
+        permitted_params[:operating_system])
     end
     permitted_params
   end
@@ -259,7 +292,8 @@ class NodesController < ApplicationController
 
     if nic_params[:id].blank?
       # new nic
-      if nic_params[:network_id].present? && !Network.find(nic_params[:network_id]).manageable?(current_user)
+      if nic_params[:network_id].present? &&
+          !Network.find(nic_params[:network_id]).manageable?(current_user)
         # unmanageable
         nic_params[:ipv4_address] = nil
         nic_params[:ipv6_address] = nil
@@ -286,12 +320,14 @@ class NodesController < ApplicationController
     return if network.manageable?(current_user)
 
     if network.id == nic.network_id
-      if !nic_params.key?(:ipv4_config) || nic_params[:ipv4_config].to_s == nic.ipv4_config
+      if !nic_params.key?(:ipv4_config) ||
+          nic_params[:ipv4_config].to_s == nic.ipv4_config
         nic_params.delete(:ipv4_address) # use same ip
       else
         nic_params[:ipv4_address] = nil # reset ip address
       end
-      if !nic_params.key?(:ipv6_config) || nic_params[:ipv6_config].to_s == nic.ipv6_config
+      if !nic_params.key?(:ipv6_config) ||
+          nic_params[:ipv6_config].to_s == nic.ipv6_config
         nic_params.delete(:ipv6_address) # use same ip
       else
         nic_params[:ipv6_address] = nil # reset ip address
@@ -305,7 +341,9 @@ class NodesController < ApplicationController
   end
 
   private def find_or_new_place(place_params)
-    return unless place_params&.values_at(:area, :building, :room)&.any?(&:present?)
+    unless place_params&.values_at(:area, :building, :room)&.any?(&:present?)
+      return
+    end
 
     Place.find_or_initialize_by(place_params)
   end
@@ -374,7 +412,9 @@ class NodesController < ApplicationController
     confirmation.os_update = nil if confirmation.os_update_unknown?
     confirmation.app_update = nil if confirmation.app_update_unknown?
     confirmation.software = nil if confirmation.software_unknown?
-    confirmation.security_hardware = nil if confirmation.security_hardware_unknown?
+    if confirmation.security_hardware_unknown?
+      confirmation.security_hardware = nil
+    end
     confirmation.security_update = nil if confirmation.security_update_unknown?
     confirmation.security_scan = nil if confirmation.security_scan_unknown?
     confirmation

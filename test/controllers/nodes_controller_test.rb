@@ -25,7 +25,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       place: place_to_params(node.place),
       hardware: hardware_to_params(node.hardware),
       operating_system: operating_system_to_params(node.operating_system),
-      nics_attributes: node.nics&.map { |nic| nic_to_params(nic) }&.each_with_index.to_a.to_h(&:reverse),
+      nics_attributes: node.nics&.map { |nic| nic_to_params(nic) }
+        &.each_with_index.to_a.to_h(&:reverse),
     }
   end
 
@@ -75,12 +76,18 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     @node = nodes(:desktop)
     model_name = Node.model_name.human
     @messages = {
-      create_success: I18n.t("messages.success_action", model: model_name, action: I18n.t("actions.register")),
-      create_failure: I18n.t("messages.failure_action", model: model_name, action: I18n.t("actions.register")),
-      update_success: I18n.t("messages.success_action", model: model_name, action: I18n.t("actions.update")),
-      update_failure: I18n.t("messages.failure_action", model: model_name, action: I18n.t("actions.update")),
-      destroy_success: I18n.t("messages.success_action", model: model_name, action: I18n.t("actions.delete")),
-      destroy_failure: I18n.t("messages.failure_action", model: model_name, action: I18n.t("actions.delete")),
+      create_success: I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.register")),
+      create_failure: I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.register")),
+      update_success: I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.update")),
+      update_failure: I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.update")),
+      destroy_success: I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.delete")),
+      destroy_failure: I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.delete")),
       unauthenticated: I18n.t("devise.failure.unauthenticated"),
     }
   end
@@ -254,9 +261,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal @node.nics.first.id, Node.last.nics.first.id
     assert_equal @node.nics.first.name, Node.last.nics.first.name
     assert_not Node.last.nics.first.locked
-    assert_equal @node.nics.first.interface_type, Node.last.nics.first.interface_type
+    assert_equal @node.nics.first.interface_type,
+      Node.last.nics.first.interface_type
     assert_equal @node.nics.first.auth, Node.last.nics.first.auth
-    assert_equal hex_to_binary(new_node[:nics_attributes][0][:mac_address]), Node.last.nics.first.mac_address_data
+    assert_equal hex_to_binary(new_node[:nics_attributes][0][:mac_address]),
+      Node.last.nics.first.mac_address_data
     assert_equal @node.nics.first.network_id, Node.last.nics.first.network_id
     assert_equal @node.nics.first.ipv4_config, Node.last.nics.first.ipv4_config
     assert_not_equal @node.nics.first.ipv4_data, Node.last.nics.first.ipv4_data
@@ -276,7 +285,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node with same hostname and same domain" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: @node.hostname, domain: @node.domain}}
+      post nodes_url, params: {node: {
+        name: "name",
+        hostname: @node.hostname,
+        domain: @node.domain,
+      }}
     end
     assert_equal @messages[:create_failure], flash[:alert]
     assert_response :success
@@ -285,7 +298,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with different hostname and different domain" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: "hostname", domain: "test.example.jp"}}
+      post nodes_url, params: {node: {
+        name: "name",
+        hostname: "hostname",
+        domain: "test.example.jp",
+      }}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -296,7 +313,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with different hostname and same domain" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: "hostname", domain: @node.domain}}
+      post nodes_url, params: {node: {
+        name: "name",
+        hostname: "hostname",
+        domain: @node.domain,
+      }}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -307,7 +328,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with same hostname and different domain" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: @node.hostname, domain: "test.example.jp"}}
+      post nodes_url, params: {node: {
+        name: "name",
+        hostname: @node.hostname,
+        domain: "test.example.jp",
+      }}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -319,7 +344,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     assert_nil nodes(:note).domain
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: nodes(:note).hostname, domain: nil}}
+      post nodes_url, params: {node: {
+        name: "name",
+        hostname: nodes(:note).hostname,
+        domain: nil,
+      }}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -330,7 +359,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT create node without hostname and with domain" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", hostname: nil, domain: "test.example.jp"}}
+      post nodes_url, params: {node: {
+        name: "name",
+        hostname: nil,
+        domain: "test.example.jp",
+      }}
     end
   end
 
@@ -398,7 +431,9 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should create node with flags, but ignored" do
     sign_in users(:user)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", specific: true, public: true, dns: true}}
+      post nodes_url, params: {node: {
+        name: "name", specific: true, public: true, dns: true,
+      }}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -411,7 +446,9 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should create node with flags" do
     sign_in users(:admin)
     assert_difference("Node.count") do
-      post nodes_url, params: {node: {name: "name", specific: true, public: true, dns: true}}
+      post nodes_url, params: {node: {
+        name: "name", specific: true, public: true, dns: true,
+      }}
     end
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
@@ -444,7 +481,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     assert_difference("Place.count") do
       assert_difference("Node.count") do
-        post nodes_url, params: {node: {name: "name", place: {**place_to_params(@node.place), room: "other"}}}
+        post nodes_url, params: {node: {
+          name: "name",
+          place: {**place_to_params(@node.place), room: "other"},
+        }}
       end
     end
     assert_equal @messages[:create_success], flash[:notice]
@@ -458,7 +498,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       assert_difference("Node.count") do
         post nodes_url, params: {node: {
           name: "name",
-          hardware: {**hardware_to_params(@node.hardware), product_name: "other"},
+          hardware: {
+            **hardware_to_params(@node.hardware),
+            product_name: "other",
+          },
         }}
       end
     end
@@ -473,7 +516,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       assert_difference("Node.count") do
         post nodes_url, params: {node: {
           name: "name",
-          operating_system: {**operating_system_to_params(@node.operating_system), name: "other"},
+          operating_system: {
+            **operating_system_to_params(@node.operating_system),
+            name: "other",
+          },
         }}
       end
     end
@@ -602,7 +648,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @messages[:create_success], flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.auth
-    assert_equal hex_to_binary("00-11-22-33-44-FF"), Node.last.nics.first.mac_address_data
+    assert_equal hex_to_binary("00-11-22-33-44-FF"),
+      Node.last.nics.first.mac_address_data
   end
 
   test "should NOT create node without mac_address and with auth" do
@@ -1180,7 +1227,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should NOT update node with same hostname and same domain" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {hostname: nodes(:server).hostname, domain: nodes(:server).domain}}
+    patch node_url(@node),params: {node: {
+      hostname: nodes(:server).hostname,
+                      domain: nodes(:server).domain,
+                      }}
     assert_response :success
     assert_equal @messages[:update_failure], flash[:alert]
     assert_equal @node.hostname, Node.find(@node.id).hostname
@@ -1189,7 +1239,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node with different hostname and same domain" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {hostname: "hostname", domain: nodes(:server).domain}}
+    patch node_url(@node), params: {node: {
+      hostname: "hostname",
+      domain: nodes(:server).domain
+      }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal "hostname", Node.find(@node.id).hostname
@@ -1198,7 +1251,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node with same hostname and differen domain" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {hostname: nodes(:server).hostname, domain: "test.example.jp"}}
+    patch node_url(@node),  params: {node: {
+      hostname: nodes(:server).hostname,
+                      domain: "test.example.jp",
+                      }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal nodes(:server).hostname, Node.find(@node.id).hostname
@@ -1207,7 +1263,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node with same hostname and without domain" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {hostname: nodes(:note).hostname, domain: nil}}
+    patch node_url(@node),params: {node: {
+      hostname: nodes(:note).hostname,
+       domain: nil
+       }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal nodes(:note).hostname, Node.find(@node.id).hostname
@@ -1242,7 +1301,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node set logical" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {logical: true, component_ids: [nodes(:note).id]}}
+    patch node_url(@node), params: {node: {
+      logical: true,
+       component_ids: [nodes(:note).id]
+      }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert Node.find(@node.id).logical
@@ -1258,7 +1320,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update virtual node set logical" do
     sign_in users(:user)
     @node = nodes(:virtual_desktop)
-    patch node_url(@node), params: {node: {logical: true, component_ids: [nodes(:note).id]}}
+    patch node_url(@node),
+      params: {node: {logical: true, component_ids: [nodes(:note).id]}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert Node.find(@node.id).logical
@@ -1284,7 +1347,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node set virtual_machine" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {virtual_machine: true, host_id: nodes(:server).id}}
+    patch node_url(@node),
+      params: {node: {virtual_machine: true, host_id: nodes(:server).id}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert Node.find(@node.id).virtual_machine
@@ -1305,7 +1369,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node set flags, but ignore" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {specific: true, public: true, dns: true}}
+    patch node_url(@node),
+      params: {node: {specific: true, public: true, dns: true}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     # unchaneg attributes
@@ -1317,7 +1382,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update node unset flags, but ignore" do
     sign_in users(:user)
     @node = nodes(:server)
-    patch node_url(@node), params: {node: {specific: false, public: false, dns: false}}
+    patch node_url(@node),
+      params: {node: {specific: false, public: false, dns: false}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     # unchaneg attributes
@@ -1328,7 +1394,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "admin should update node set flags" do
     sign_in users(:admin)
-    patch node_url(@node), params: {node: {specific: true, public: true, dns: true}}
+    patch node_url(@node),
+      params: {node: {specific: true, public: true, dns: true}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     # unchaneg attributes
@@ -1340,7 +1407,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should update node unset flags" do
     sign_in users(:admin)
     @node = nodes(:server)
-    patch node_url(@node), params: {node: {specific: false, public: false, dns: false}}
+    patch node_url(@node),
+      params: {node: {specific: false, public: false, dns: false}}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     # unchaneg attributes
@@ -1374,8 +1442,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         assert_difference("OperatingSystem.count") do
           patch node_url(@node), params: {node: {
             place: {**place_to_params(@node.place), room: "other"},
-            hardware: {**hardware_to_params(@node.hardware), product_name: "other"},
-            operating_system: {**operating_system_to_params(@node.operating_system), name: "other"},
+            hardware: {
+              **hardware_to_params(@node.hardware),
+              product_name: "other",
+            },
+            operating_system: {
+              **operating_system_to_params(@node.operating_system),
+              name: "other",
+            },
           }}
         end
       end
@@ -1384,7 +1458,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @messages[:update_success], flash[:notice]
     assert_not_equal @node.place_id, Node.find(@node.id).place_id
     assert_not_equal @node.hardware_id, Node.find(@node.id).hardware_id
-    assert_not_equal @node.operating_system_id, Node.find(@node.id).operating_system_id
+    assert_not_equal @node.operating_system_id,
+      Node.find(@node.id).operating_system_id
   end
 
   test "should update node with new nic" do

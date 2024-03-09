@@ -30,7 +30,8 @@ class HexDataTest < ActiveSupport::TestCase
     assert_equal @str, @class.hex_data_to_str(@data)
     assert_equal @str.downcase, @class.hex_data_to_str(@data, char_case: :lower)
     assert_equal @str.tr("-", ":"), @class.hex_data_to_str(@data, sep: ":")
-    assert_equal @str.downcase.delete("-"), @class.hex_data_to_str(@data, char_case: :lower, sep: "")
+    assert_equal @str.downcase.delete("-"),
+      @class.hex_data_to_str(@data, char_case: :lower, sep: "")
 
     assert_empty @class.hex_data_to_str(String.new)
     assert_nil @class.hex_data_to_str(nil)
@@ -56,7 +57,8 @@ class HexDataTest < ActiveSupport::TestCase
     assert_equal @str, @class.hex_list_to_str(@list)
     assert_equal @str.downcase, @class.hex_list_to_str(@list, char_case: :lower)
     assert_equal @str.tr("-", ":"), @class.hex_list_to_str(@list, sep: ":")
-    assert_equal @str.downcase.delete("-"), @class.hex_list_to_str(@list, char_case: :lower, sep: "")
+    assert_equal @str.downcase.delete("-"),
+      @class.hex_list_to_str(@list, char_case: :lower, sep: "")
 
     assert_empty @class.hex_list_to_str([])
     assert_nil @class.hex_list_to_str(nil)

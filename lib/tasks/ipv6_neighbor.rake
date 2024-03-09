@@ -19,7 +19,8 @@ namespace :ipv6_neighbor do
 
         mac_address_data = [row["mac"].delete("-:")].pack("H12")
         time = Time.zone.at(row["time"].to_i)
-        ipv6_neighbor = Ipv6Neighbor.find_or_initialize_by(ipv6_data: ipv6.hton, mac_address_data: mac_address_data)
+        ipv6_neighbor = Ipv6Neighbor.find_or_initialize_by(
+          ipv6_data: ipv6.hton, mac_address_data: mac_address_data)
         if ipv6_neighbor.discovered_at.nil? || time > ipv6_neighbor.discovered_at
           ipv6_neighbor.discovered_at = time
           if ipv6_neighbor.save

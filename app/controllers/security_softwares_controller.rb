@@ -8,7 +8,8 @@ class SecuritySoftwaresController < ApplicationController
       :per,
       :target,
       :format,
-      order: [:id, :os_category_id, :installation_method, :name, :confirmations_count],
+      order: [:id, :os_category_id, :installation_method, :name,
+        :confirmations_count,],
       condition: [:os_category_id, :installation_method, :name])
 
     @page = permitted_params[:page]
@@ -26,14 +27,17 @@ class SecuritySoftwaresController < ApplicationController
 
     if @target
       if [:name].include?(@target)
-        @security_softwares = @security_softwares.select(@target, :description).distinct
+        @security_softwares = @security_softwares
+          .select(@target, :description).distinct
       else
         raise ActionController::BadRequest,
           "[security_softwares#index] invalid target: #{@target}"
       end
     end
 
-    @security_softwares = @security_softwares.page(@page).per(@per) unless permitted_params[:format] == "csv"
+    unless permitted_params[:format] == "csv"
+      @security_softwares = @security_softwares.page(@page).per(@per)
+    end
   end
 
   def show

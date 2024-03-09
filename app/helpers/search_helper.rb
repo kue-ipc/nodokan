@@ -36,8 +36,10 @@ module SearchHelper
     end
   end
 
-  def filter_collection_select(attr, collection, value_method, text_method, **options)
-    bootstrap_form_tag url: public_send("#{controller.controller_path}_path"), method: "get" do |f|
+  def filter_collection_select(attr, collection, value_method, text_method,
+    **options)
+    bootstrap_form_tag(url: public_send("#{controller.controller_path}_path"),
+      method: "get") do |f|
       content = "".html_safe
       content += f.hidden_field("query", value: @query) if @query.present?
       content += f.hidden_field("per", value: @per) if @per.present?
@@ -58,9 +60,13 @@ module SearchHelper
         end
 
       content += f.collection_select(
-        "condition[#{attr}]", collection, value_method, text_method, include_blank: "(#{all_text})",
-        selected: @condition&.fetch(attr, nil), hide_label: true, wrapper_class: "col-12 mb-3",
-        append: f.primary('<i class="fas fa-filter"></i>'.html_safe, name: :filter, render_as_button: true),
+        "condition[#{attr}]", collection, value_method, text_method,
+        include_blank: "(#{all_text})",
+        selected: @condition&.fetch(attr, nil),
+        hide_label: true,
+        wrapper_class: "col-12 mb-3",
+        append: f.primary('<i class="fas fa-filter"></i>'.html_safe,
+          name: :filter, render_as_button: true),
         **options)
       content
     end

@@ -13,10 +13,15 @@ class UsersController < ApplicationController
   def index
     set_page
     set_search
-    @users = search_and_sort(policy_scope(User)).includes(:auth_networks, :use_networks, :manage_networks)
+    @users = search_and_sort(policy_scope(User)).includes(:auth_networks,
+      :use_networks, :manage_networks)
     respond_to do |format|
-      format.html { @users = paginate(@users) }
-      format.json { @users = paginate(@users) }
+      format.html do
+        @users = paginate(@users)
+      end
+      format.json do
+        @users = paginate(@users)
+      end
       format.csv { @users }
     end
   end
@@ -37,10 +42,14 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to @user, notice: "ユーザーを更新しました。" }
+        format.html do
+          redirect_to @user, notice: "ユーザーを更新しました。"
+        end
         format.json { render :show, status: :ok, location: @user }
       else
-        format.html { render @user }
+        format.html do
+          render @user
+        end
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
@@ -53,7 +62,8 @@ class UsersController < ApplicationController
   private def set_user
     @user =
       if params[:id]
-        User.includes(:auth_networks, :use_networks, :manage_networks).find(params[:id])
+        User.includes(:auth_networks, :use_networks,
+          :manage_networks).find(params[:id])
       else
         current_user
       end

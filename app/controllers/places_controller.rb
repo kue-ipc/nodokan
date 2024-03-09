@@ -33,7 +33,9 @@ class PlacesController < ApplicationController
       end
     end
 
-    @places = @places.page(@page).per(@per) unless permitted_params[:format] == "csv"
+    unless permitted_params[:format] == "csv"
+      @places = @places.page(@page).per(@per)
+    end
   end
 
   def show

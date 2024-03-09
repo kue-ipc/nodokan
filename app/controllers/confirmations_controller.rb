@@ -31,13 +31,17 @@ class ConfirmationsController < ApplicationController
       security_hardwares: [],
       security_software: [:os_category_id, :installation_method, :name])
 
-    security_hardware = list_to_bitwise(permitted_params[:security_hardwares], Confirmation.security_hardwares)
+    security_hardware = list_to_bitwise(permitted_params[:security_hardwares],
+      Confirmation.security_hardwares)
 
-    security_software = permitted_params.dig(:security_software, :installation_method).presence &&
-                        SecuritySoftware.find_or_initialize_by(permitted_params[:security_software])
+    security_software = permitted_params
+      .dig(:security_software, :installation_method).presence &&
+      SecuritySoftware.find_or_initialize_by(
+        permitted_params[:security_software])
 
     permitted_params.except(:security_hardwares, :security_software)
-      .merge(security_hardware: security_hardware, security_software: security_software)
+      .merge(security_hardware: security_hardware,
+        security_software: security_software)
   end
 
   private def list_to_bitwise(list, bitwises)

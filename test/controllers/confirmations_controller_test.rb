@@ -31,7 +31,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:admin)
     other_node = nodes(:other_desktop)
     assert_difference("Confirmation.count") do
-      post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
+      post node_confirmation_url(other_node),
+        params: {confirmation: confirmation_to_params(@confirmation)}
     end
     assert_redirected_to node_url(other_node)
   end
@@ -40,7 +41,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     other_node = nodes(:server)
     assert_difference("Confirmation.count") do
-      post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
+      post node_confirmation_url(other_node),
+        params: {confirmation: confirmation_to_params(@confirmation)}
     end
     assert_redirected_to node_url(other_node)
   end
@@ -50,7 +52,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     other_node = nodes(:other_desktop)
     assert_no_difference("Confirmation.count") do
       assert_raises(Pundit::NotAuthorizedError) do
-        post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
+        post node_confirmation_url(other_node),
+          params: {confirmation: confirmation_to_params(@confirmation)}
       end
     end
   end
@@ -58,7 +61,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   test "redirect to login INSTEAD OF create confirmation" do
     other_node = nodes(:other_desktop)
     assert_no_difference("Confirmation.count") do
-      post node_confirmation_url(other_node), params: {confirmation: confirmation_to_params(@confirmation)}
+      post node_confirmation_url(other_node),
+        params: {confirmation: confirmation_to_params(@confirmation)}
     end
     assert_redirected_to new_user_session_path
   end
@@ -67,18 +71,21 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
 
   test "admin should update confirmation" do
     sign_in users(:admin)
-    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
+    patch node_confirmation_url(@confirmation.node),
+      params: {confirmation: confirmation_to_params(@confirmation)}
     assert_redirected_to node_url(@confirmation.node)
   end
 
   test "user should update confirmation" do
     sign_in users(:user)
-    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
+    patch node_confirmation_url(@confirmation.node),
+      params: {confirmation: confirmation_to_params(@confirmation)}
     assert_redirected_to node_url(@confirmation.node)
   end
 
   test "redirect to login INSTEAD OF update confirmation" do
-    patch node_confirmation_url(@confirmation.node), params: {confirmation: confirmation_to_params(@confirmation)}
+    patch node_confirmation_url(@confirmation.node),
+      params: {confirmation: confirmation_to_params(@confirmation)}
     assert_redirected_to new_user_session_path
   end
 end

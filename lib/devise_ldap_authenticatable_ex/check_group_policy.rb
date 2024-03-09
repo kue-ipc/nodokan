@@ -20,14 +20,16 @@ module DeviseLdapAuthenticatableEx
       Devise.class_variable_set(:@@ldap_check_group_policy, :and) # rubocop:disable Style/ClassVars
 
       Devise::LDAP::Connection.attr_reader :in_groups
-      unless Devise::LDAP::Connection.instance_methods.include?(:in_required_groups_and?)
-        Devise::LDAP::Connection.alias_method :in_required_groups_and?, :in_required_groups?
+      unless Devise::LDAP::Connection.instance_methods
+        .include?(:in_required_groups_and?)
+        Devise::LDAP::Connection.alias_method :in_required_groups_and?,
+          :in_required_groups?
       end
 
       Devise::LDAP::Connection.class_eval do
         def in_required_groups_or?
           return true unless @check_group_membership ||
-                             @check_group_membership_without_admin
+            @check_group_membership_without_admin
 
           ## FIXME set errors here, the ldap.yml isn't set properly.
           return false if @required_groups.nil?
@@ -48,18 +50,18 @@ module DeviseLdapAuthenticatableEx
         # overwrite in_required_groups?
         def in_required_groups?
           return true unless @check_group_membership ||
-                             @check_group_membership_without_admin
+            @check_group_membership_without_admin
 
           case Devise.ldap_check_group_policy
           when :and, /\Aand\z/i, "&", "&&"
             if in_required_groups_and?
-              @in_groups = @required_groups.map do |group|
+              @in_groups = @required_groups.map { |group|
                 if group.is_a?(Array)
                   group[1]
                 else
                   group
                 end
-              end
+              }
               true
             else
               false

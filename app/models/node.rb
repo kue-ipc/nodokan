@@ -14,8 +14,10 @@ class Node < ApplicationRecord
   belongs_to :hardware, optional: true, counter_cache: true
   belongs_to :operating_system, optional: true, counter_cache: true
 
-  belongs_to :host, optional: true, class_name: "Node", foreign_key: "node_id", inverse_of: :guests
-  has_many :guests, dependent: :restrict_with_error, class_name: "Node", foreign_key: "host_id", inverse_of: :host
+  belongs_to :host, optional: true, class_name: "Node", foreign_key: "node_id",
+    inverse_of: :guests
+  has_many :guests, dependent: :restrict_with_error, class_name: "Node",
+    foreign_key: "host_id", inverse_of: :host
 
   has_many :logical_compositions, dependent: :destroy
   has_many :components, through: :logical_compositions
@@ -92,9 +94,15 @@ class Node < ApplicationRecord
   def connected_at
     return @connected_at if @connected_at_checked
 
-    @connected_at = nics.flat_map do |nic|
-      [:ipv4_resolved_at, :ipv6_discovered_at, :ipv4_leased_at, :ipv6_leased_at, :auth_at].map { |name| nic[name] }
-    end.compact.max
+    @connected_at = nics.flat_map { |nic|
+      [
+        :ipv4_resolved_at,
+        :ipv6_discovered_at,
+        :ipv4_leased_at,
+        :ipv6_leased_at,
+        :auth_at,
+      ].map { |name| nic[name] }
+    }.compact.max
     @connected_at_checked = true
     @connected_at
   end

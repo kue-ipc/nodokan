@@ -7,5 +7,6 @@ json.model do
   json.partial! "model", model: DeviceType
 end
 json.entities do
-  json.array! @device_types, partial: "device_types/device_type", as: :device_type
+  json.array! @device_types, partial: "device_types/device_type",
+    as: :device_type
 end

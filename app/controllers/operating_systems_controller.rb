@@ -17,19 +17,28 @@ class OperatingSystemsController < ApplicationController
     @target = permitted_params[:target]&.intern
 
     @operating_systems = policy_scope(OperatingSystem).includes(:os_category)
-    @operating_systems = @operating_systems.where(permitted_params[:condition]) if permitted_params[:condition]
-    @operating_systems = @operating_systems.order(permitted_params[:order].to_h) if permitted_params[:order]
+    if permitted_params[:condition]
+      @operating_systems = @operating_systems
+        .where(permitted_params[:condition])
+    end
+    if permitted_params[:order]
+      @operating_systems = @operating_systems
+        .order(permitted_params[:order].to_h)
+    end
 
     if @target
       if [:name].include?(@target)
-        @operating_systems = @operating_systems.select(:os_category_id, @target, :description).distinct
+        @operating_systems = @operating_systems
+          .select(:os_category_id, @target, :description).distinct
       else
         raise ActionController::BadRequest,
           "[operating_systems#index] invalid target: #{@target}"
       end
     end
 
-    @operating_systems = @operating_systems.page(@page).per(@per) unless permitted_params[:format] == "csv"
+    unless permitted_params[:format] == "csv"
+      @operating_systems = @operating_systems.page(@page).per(@per)
+    end
   end
 
   def show
