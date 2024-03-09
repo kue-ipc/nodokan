@@ -39,8 +39,10 @@ class NodeConfirm
           @collapse.hide()
 
     ['os_update', 'app_update'].forEach (attrName) =>
-      collapseSecuredEl = document.getElementById("node-confirm-secured-#{attrName}")
-      collapseSecured = Collapse.getOrCreateInstance(collapseSecuredEl, toggle: false)
+      collapseSecuredEl =
+        document.getElementById("node-confirm-secured-#{attrName}")
+      collapseSecured =
+        Collapse.getOrCreateInstance(collapseSecuredEl, toggle: false)
       for el in document.querySelectorAll("input[name=\"confirmation[#{attrName}]\"]")
         if el.value == 'secured'
           collapseSecured.show() if el.checked
@@ -68,8 +70,11 @@ class NodeConfirm
     for el in document.getElementsByName("commit")
       el.addEventListener "click", (e) =>
         ['security_hardwares'].forEach (attrName) =>
-          checkElList = document.getElementsByName("confirmation[#{attrName}][]")
-          requiredFlag = @collapseShown && (el for el in checkElList when el.checked).length == 0
+          checkElList =
+            document.getElementsByName("confirmation[#{attrName}][]")
+          requiredFlag =
+            @collapseShown &&
+            (el for el in checkElList when el.checked).length == 0
           for el in checkElList
             el.required = requiredFlag
 

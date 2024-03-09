@@ -14,9 +14,11 @@ document.addEventListener 'turbo:load', ->
 
   externalSelect = document.getElementById('specific_node_application_external')
 
-  ruleListTextArea = document.getElementById('specific_node_application_rule_list')
+  ruleListTextArea =
+    document.getElementById('specific_node_application_rule_list')
 
-  registerDnsCheckBox = document.getElementById('specific_node_application_register_dns')
+  registerDnsCheckBox =
+    document.getElementById('specific_node_application_register_dns')
 
   fqdnText = document.getElementById('specific_node_application_fqdn')
 

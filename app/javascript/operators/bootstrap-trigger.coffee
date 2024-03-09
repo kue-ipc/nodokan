@@ -1,5 +1,6 @@
 # bootstrap components
-# Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover, ScrollSpy, Tab, Toast, Tooltip
+# Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover,
+#   ScrollSpy, Tab, Toast, Tooltip
 import * as bootstrap from 'bootstrap'
 
 # default allow list custmized

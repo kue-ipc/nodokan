@@ -233,9 +233,11 @@ pageNav = ({page}) ->
   pageLinkList = []
   if page.current != 1
     pageLinkList.push({key: 'frist', page: 1, text: PAGINATION_TEXT.first})
-    pageLinkList.push({key: 'previous', page: page.current - 1, text: PAGINATION_TEXT.previous})
+    pageLinkList.push({
+      key: 'previous', page: page.current - 1, text: PAGINATION_TEXT.previous})
   if page.current >= 4
-    pageLinkList.push({key: 'pre_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
+    pageLinkList.push({
+      key: 'pre_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
   if page.current >= 3
     pageLinkList.push({page: page.current - 2, text: "#{page.current - 2}"})
   if page.current >= 2
@@ -246,16 +248,21 @@ pageNav = ({page}) ->
   if page.current <= page.total - 2
     pageLinkList.push({page: page.current + 2, text: "#{page.current + 2}"})
   if page.current <= page.total - 3
-    pageLinkList.push({key: 'post_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
+    pageLinkList.push({
+      key: 'post_truncate', text: PAGINATION_TEXT.truncate, disabled: true})
   if page.current != page.total
-    pageLinkList.push({key: 'next', page: page.current + 1, text: PAGINATION_TEXT.next})
-    pageLinkList.push({key: 'last', page: page.total, text: PAGINATION_TEXT.last})
+    pageLinkList.push({
+      key: 'next', page: page.current + 1, text: PAGINATION_TEXT.next})
+    pageLinkList.push({
+      key: 'last', page: page.total, text: PAGINATION_TEXT.last})
 
   h 'nav', {},
     h 'ul', {class: 'pagination'}, pageLinkList.map (pageLink) ->
       h 'li', {
         key: pageLink.key || pageLink.page
-        class: {'page-item': true, disabled: pageLink.disabled, active: pageLink.active}
+        class: {
+          'page-item': true, disabled: pageLink.disabled,
+          active: pageLink.active}
       }, h 'button', {
         class: 'page-link'
         onclick: pageLink.page && [setPage, pageLink.page]
@@ -327,7 +334,8 @@ saveEntity = (state, {id, model}) ->
   ]
 
 putEntity = (dispatch, {entity, model}) ->
-  params = (attribute.name for attribute in model.attributes when !attribute.readonly)
+  params =
+    (attribute.name for attribute in model.attributes when !attribute.readonly)
   entityData = Object.fromEntries([param, entity[param]] for param in params)
 
   putData = {

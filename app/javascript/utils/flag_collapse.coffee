@@ -3,10 +3,12 @@ import {Collapse} from 'bootstrap'
 export default class FlagCollapse
   constructor: (@element, {@name}) ->
     @name ?= @element.id
-    @showCollapse = for el in document.getElementsByClassName("collapse #{@name}-show")
-      new Collapse(el, {toggle: false})
-    @hideCollapse = for el in document.getElementsByClassName("collapse #{@name}-hide")
-      new Collapse(el, {toggle: false})
+    @showCollapse =
+      for el in document.getElementsByClassName("collapse #{@name}-show")
+        new Collapse(el, {toggle: false})
+    @hideCollapse =
+      for el in document.getElementsByClassName("collapse #{@name}-hide")
+        new Collapse(el, {toggle: false})
 
     @element.addEventListener 'change', => @change()
     @change()

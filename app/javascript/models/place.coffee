@@ -30,7 +30,8 @@ export default class Place extends ApplicationRecord
     data.data.map (d) ->
       new Place(d)
 
-  constructor: ({@area, @building, @floor, @room, @confirmed, @nodes_count, props...}) ->
+  constructor: ({@area, @building, @floor, @room, @confirmed, @nodes_count,
+    props...}) ->
     super(props)
     @edit = false
 
