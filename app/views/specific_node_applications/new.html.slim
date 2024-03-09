@@ -33,14 +33,17 @@ p
       | -
       =<> @node.hostname
     | (
-    = @node.nics.find(&:ipv4_data)&.ipv4_address || @node.nics.find(&:ipv6_data)&.ipv6_address
+    = @node.nics.find(&:ipv4_data)&.ipv4_address || \
+      @node.nics.find(&:ipv6_data)&.ipv6_address
     | )
 
     - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
       - if @node.__send__(attr)
-        = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
+        = badge_for(attr, scope: "activerecord.attributes.node",
+          badge_class: "ms-1")
 
-= bootstrap_form_with model: @specific_node_application, url: node_specific_node_application_path(@node),
+= bootstrap_form_with model: @specific_node_application,
+  url: node_specific_node_application_path(@node),
   data: {turbo: false} do |f|
   = f.form_group :action, label: {text: "申請"} do
     - if @node.specific
@@ -51,8 +54,8 @@ p
       - checked_action = "register"
     - ["register", "change", "release"].each do |action|
       - enabled = enabled_actions.include?(action)
-      = f.radio_button :action, action, label: t(action, scope: "actions"), inline: true,
-        disabled: !enabled, required: enabled,
+      = f.radio_button :action, action, label: t(action, scope: "actions"),
+        inline: true, disabled: !enabled, required: enabled,
         checked: checked_action == action
 
   = f.text_field :reason, label: "申請理由 (端末の用途や目的など)", required: true
@@ -60,15 +63,20 @@ p
   = f.form_group :rule_set, label: {text: "アクセスルールセット"} do
     - Settings.specific_node_application.rules.each_with_index do |rule, idx|
       = f.radio_button :rule_set, idx, label: rule.name,
-        data: {dns: rule.dns, external: rule.external, list: rule.list.to_json}, required: true
+        data: {dns: rule.dns, external: rule.external,
+          list: rule.list.to_json,},
+        required: true
     = f.radio_button :rule_set, -1, label: "カスタムルール (下記に詳細を記載)", required: true
 
-  = f.select :external, [["接続無し", "none"],
-                          ["NAT", "nat"],
-                          ["NAPT (IPマスカレード)", "napt"],
-                          ["無変換", "through"],
-                          ["直接接続", "direct"],
-                        ], {include_blank: "(未選択)", label: "外部接続"}, required: true
+  = f.select :external,
+    [ \
+      ["接続無し", "none"],
+      ["NAT", "nat"],
+      ["NAPT (IPマスカレード)", "napt"],
+      ["無変換", "through"],
+      ["直接接続", "direct"],
+    ],
+    {include_blank: "(未選択)", label: "外部接続"}, required: true
 
   = f.text_area :rule_list, label: "アクセスルールリスト", rows: 5
 

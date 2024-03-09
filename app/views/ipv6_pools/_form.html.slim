@@ -2,7 +2,9 @@
   = form.hidden_field :id
   .col-md-1.mt-2
     = form.check_box :_destroy
-  = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Ipv6Pool), :first, :second,
-                                  hide_label: true, wrapper: {class: "col-md-3"}
-  = form.text_field :ipv6_first_address, hide_label: true, wrapper: {class: "col-md-4"}
-  = form.text_field :ipv6_last_address, hide_label: true, wrapper: {class: "col-md-4"}
+  = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Ipv6Pool),
+    :first, :second, hide_label: true, wrapper: {class: "col-md-3"}
+  = form.text_field :ipv6_first_address, hide_label: true,
+    wrapper: {class: "col-md-4"}
+  = form.text_field :ipv6_last_address, hide_label: true,
+    wrapper: {class: "col-md-4"}

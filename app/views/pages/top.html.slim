@@ -7,7 +7,8 @@
 /       | 台あります。
 /     = link_to "要確認端末一覧", nodes_path(uc: 1)
 /     | にアクセスし、確認を実施してください。
-/     button.btn-close type="button" data-bs-dismiss="alert" aria-label=t("do_actions.close")
+/     button.btn-close[type="button" data-bs-dismiss="alert"
+/       aria-label=t("do_actions.close")]
 
 h3 利用者メニュー
 
@@ -74,7 +75,8 @@ h3 利用者メニュー
         .card-body
           | 機器形態の管理を行います。
     / .col-md-6.col-lg-4.my-1
-    /   = link_to manage_security_softwares_path, class: "card border-warning" do
+    /   = link_to manage_security_softwares_path,
+    /     class: "card border-warning" do
     /     .card-header.text-center
     /       | セキュリティソフト管理
     /     .card-body

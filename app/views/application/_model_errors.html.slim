@@ -1,6 +1,7 @@
   - if model.errors.any?
     .alert.alert-danger#error_explanation role="alert"
-      h4 = t("errors.messages.not_saved", resource: model, count: model.errors.count)
+      h4 = t("errors.messages.not_saved", resource: model,
+        count: model.errors.count)
       hr
       ul.mb-0
         - model.errors.full_messages.each do |message|

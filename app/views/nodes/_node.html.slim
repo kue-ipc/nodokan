@@ -4,7 +4,8 @@
       = name
       - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
         - if node.__send__(attr)
-          = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
+          = badge_for(attr, scope: "activerecord.attributes.node",
+            badge_class: "ms-1")
     = dt_dd_for node, :fqdn
     - unless node.logical?
       = dt_dd_for node, :place do |place|
@@ -54,22 +55,26 @@
                   - else
                     = nic.number
                 td
-                  = t(nic.interface_type, scope: "activerecord.enums.interface_types")
+                  = t(nic.interface_type,
+                    scope: "activerecord.enums.interface_types")
                 td
                   = nic.name
                   - [:locked, :auth, :global].each do |attr|
                     - if nic.__send__(attr)
-                      = badge_for(attr, scope: "activerecord.attributes.nic", badge_class: "ms-1")
+                      = badge_for(attr, scope: "activerecord.attributes.nic",
+                        badge_class: "ms-1")
                 td = nic.mac_address
                 td
                   - if nic.network
                     = link_to nic.network.name, nic.network
                 td
-                  = badge_for(nic.ipv4_config, scope: "activerecord.enums.ipv4_configs")
+                  = badge_for(nic.ipv4_config,
+                    scope: "activerecord.enums.ipv4_configs")
                   =< span_value_for(nic.ipv4, hide_blank: true)
                 - if Settings.config.ipv6
                   td
-                    = badge_for(nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
+                    = badge_for(nic.ipv6_config,
+                      scope: "activerecord.enums.ipv6_configs")
                     =< span_value_for(nic.ipv6, hide_blank: true)
     = dt_dd_for node, :duid
     = dt_dd_for node, :confirmation do |confirmation|
@@ -82,7 +87,8 @@
       - when :expired
         i.fas.fa-times-circle.text-danger
         =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expired_date", date: l(confirmation.expiration.to_date, format: :long))
+        = t("messages.node_confirmation_expired_date",
+          date: l(confirmation.expiration.to_date, format: :long))
         - if confirmation.approved
           =< t("messages.approved")
         - else
@@ -92,20 +98,23 @@
       - when :unapproved
         i.fas.fa-exclamation-triangle.text-warning
         =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expiration_date", date: l(confirmation.expiration.to_date, format: :long))
+        = t("messages.node_confirmation_expiration_date",
+          date: l(confirmation.expiration.to_date, format: :long))
         =< t("messages.unapproved")
 
       - when :expire_soon
         i.fas.fa-exclamation-triangle.text-warning
         =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expiration_date", date: l(confirmation.expiration.to_date, format: :long))
+        = t("messages.node_confirmation_expiration_date",
+          date: l(confirmation.expiration.to_date, format: :long))
         =< t("messages.expire_soon")
         .text-warning = t("messages.node_confirmation_expiring_soon")
 
       - when :approved
         i.fas.fa-check.text-success
         =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expiration_date", date: l(confirmation.expiration.to_date, format: :long))
+        = t("messages.node_confirmation_expiration_date",
+          date: l(confirmation.expiration.to_date, format: :long))
         =< t("messages.approved")
 
       - if confirmation.confirmed_at.present? && !confirmation.approved
@@ -189,7 +198,8 @@
           端末が存在しない、または、不明の場合は削除してください。
           削除した端末はネットワークに接続できません。
       =<> button_to t("actions.destroy"), node,
-        data: {turbo_confirm: t("messages.corfirm_destroy_name", name: node.name)},
+        data: {turbo_confirm: t("messages.corfirm_destroy_name",
+          name: node.name)},
         method: :delete,
         class: "btn btn-danger"
 
@@ -201,9 +211,12 @@
         端末の所有者(管理者)ではない場合は、本来の所有者に管理を譲渡してください。
         譲渡先ユーザーのユーザー名を入力してください。
 
-    = bootstrap_form_with url: transfer_node_path(node), data: {turbo: false} do |f|
+    = bootstrap_form_with url: transfer_node_path(node),
+      data: {turbo: false} do |f|
       = f.text_field :username, label: "ユーザー名", label_class: "me-1"
-      = f.text_area :note, label: "備考 (下記のメッセージを端末の備考に追加します)", label_class: "me-1",
+      = f.text_area :note,
+        label: "備考 (下記のメッセージを端末の備考に追加します)",
+        label_class: "me-1",
         value: "[#{current_user.username}から管理譲渡]"
       = f.submit "譲渡", class: "btn btn-primary ms-1"
 
@@ -309,7 +322,8 @@
   - if node.specific
     p
       | この端末は特定端末です。「変更」や「解除」が必要な場合は、申請画面から申請を行ってください。
-    = link_to "特定端末申請画面へ", new_node_specific_node_application_path(node), class: "btn btn-secondary"
+    = link_to "特定端末申請画面へ",
+      new_node_specific_node_application_path(node), class: "btn btn-secondary"
   - elsif node.confirmation&.status != :approved
     p
       | この端末は「確認」が「承認済み」ではないため、特定端末として申請することはできません。
@@ -319,7 +333,8 @@
       | この端末には固有のIPアドレスが割り当てられていないため、特定端末として申請することはできません。
       | ネットワークの設定で予約または固定を選択し、IPアドレスを割り当ててください。
   - else
-    = link_to "特定端末申請画面へ", new_node_specific_node_application_path(node), class: "btn btn-secondary",
-      data: {turbo: false}
+    = link_to "特定端末申請画面へ",
+      new_node_specific_node_application_path(node),
+      class: "btn btn-secondary", data: {turbo: false}
 
   = render "confirm_form"

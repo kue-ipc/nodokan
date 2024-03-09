@@ -4,11 +4,13 @@
     = t("actions.index")
 
 .mb-2
-  = bootstrap_form_tag url: users_path, method: "get", data: {turbo_frame: "users-list"} do |f|
+  = bootstrap_form_tag url: users_path, method: "get",
+    data: {turbo_frame: "users-list"} do |f|
     .row.row-cols-md-auto.g-3.align-items-center
       .col-12
         = f.search_field :query, value: @query, hide_label: true,
-          append: f.primary('<i class="fas fa-search"></i>'.html_safe, name: :search, render_as_button: true)
+          append: f.primary('<i class="fas fa-search"></i>'.html_safe,
+            name: :search, render_as_button: true)
       .col-12.mb-3
         = link_to t("actions.download_csv"), users_path(format: :csv),
             class: "btn btn-primary",

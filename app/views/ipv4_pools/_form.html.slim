@@ -2,7 +2,9 @@
   = form.hidden_field :id
   .col-md-1.mt-2
     = form.check_box :_destroy
-  = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool), :first, :second,
-                                  hide_label: true, wrapper: {class: "col-md-3"}
-  = form.text_field :ipv4_first_address, hide_label: true, wrapper: {class: "col-md-4"}
-  = form.text_field :ipv4_last_address, hide_label: true, wrapper: {class: "col-md-4"}
+  = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Ipv4Pool),
+    :first, :second, hide_label: true, wrapper: {class: "col-md-3"}
+  = form.text_field :ipv4_first_address, hide_label: true,
+    wrapper: {class: "col-md-4"}
+  = form.text_field :ipv4_last_address, hide_label: true,
+    wrapper: {class: "col-md-4"}

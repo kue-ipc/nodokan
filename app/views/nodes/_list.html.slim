@@ -5,7 +5,8 @@
         => filter_link(:specific)
         | 特定端末
       .col-12
-        = filter_collection_select(:nics_network_id, current_user.usable_networks.to_a, :id, :name)
+        = filter_collection_select(:nics_network_id,
+          current_user.usable_networks.to_a, :id, :name)
       - if current_user.admin?
         .col-12
           = filter_collection_select(:user_id, User.all, :id, :username)
@@ -46,7 +47,8 @@
           = node.name
           - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
             - if node.__send__(attr)
-              = badge_for(attr, scope: "activerecord.attributes.node", badge_class: "ms-1")
+              = badge_for(attr, scope: "activerecord.attributes.node",
+                badge_class: "ms-1")
         div class=(list_col_classes(:hostname)) = node.hostname
         div class=(list_col_classes(:place)) = node.place&.short_name
         div class=(list_col_classes(:ipv4_address))

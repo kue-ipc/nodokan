@@ -1,6 +1,8 @@
 h2 = t(".sign_in")
-= bootstrap_form_with model: resource, as: resource_name, url: session_path(resource_name), data: {turbo: false} do |f|
-  = f.text_field :username, autofocus: true, autocomplete: "username", required: true
+= bootstrap_form_with model: resource, as: resource_name,
+  url: session_path(resource_name), data: {turbo: false} do |f|
+  = f.text_field :username, autofocus: true, autocomplete: "username",
+    required: true
   = f.password_field :password, autocomplete: "current-password", required: true
   - if devise_mapping.rememberable?
     = f.check_box :remember_me

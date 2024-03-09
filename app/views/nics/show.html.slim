@@ -10,7 +10,8 @@ dl
     = name
     - [:locked, :auth, :global].each do |attr|
       - if @nic.__send__(attr)
-        = badge_for(attr, scope: "activerecord.attributes.nic", badge_class: "ms-1")
+        = badge_for(attr, scope: "activerecord.attributes.nic",
+          badge_class: "ms-1")
   = dt_dd_for @nic, :mac_address
   = dt_dd_for @nic.node, :duid
   = dt_dd_for @nic, :network
@@ -89,7 +90,9 @@ dl
           - if @radpostauth
             td = @radpostauth&.authdate
             td
-            td = @radpostauth&.username&.upcase&.each_char&.each_slice(2)&.map(&:join)&.join("-")
+            td
+              = @radpostauth&.username&.upcase&.each_char&.each_slice(2) \
+                &.map(&:join)&.join("-")
             td = @radpostauth&.pass
           - else
             td colspan="4" = span_value_for(nil)

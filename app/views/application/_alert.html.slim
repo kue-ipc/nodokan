@@ -10,6 +10,8 @@ noscript
   .alert.alert-danger.alert-dismissible.fade.show role="alert"
     = t("messages.require_modern_browser")
 javascript:
-  if (window.Promise == null) document.getElementById("require-modern-browser").classList.remove("d-none");
+  if (typeof globalThis == "undefined")
+    var el = document.getElementById("require-modern-browser")
+    el.classList.remove("d-none");
 
 = render "flash"
