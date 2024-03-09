@@ -59,6 +59,13 @@ class Confirmation < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
+  enum software: {
+    trusted: 0,
+    os_only: 9,
+    untrusted: 16,
+    unknown: -1,
+  }, _prefix: true
+
   enum security_update: {
     auto: 0,
     built_in: 4,
@@ -73,13 +80,6 @@ class Confirmation < ApplicationRecord
     manual: 1,
     not_implemented: 9,
     not_do: 16,
-    unknown: -1,
-  }, _prefix: true
-
-  enum software: {
-    trusted: 0,
-    os_only: 9,
-    untrusted: 16,
     unknown: -1,
   }, _prefix: true
 

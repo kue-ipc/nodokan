@@ -78,8 +78,8 @@
                     =< span_value_for(nic.ipv6, hide_blank: true)
     = dt_dd_for node, :duid
     = dt_dd_for node, :confirmation do |confirmation|
-      - case confirmation.status
-      - when :unconfirmed
+      - case confirmation&.status
+      - when nil, :unconfirmed
         i.fas.fa-times-circle.text-danger
         =< t("messages.unconfirmed")
         .text-danger = t("messages.node_confirmation_unconfirmed")
@@ -117,7 +117,7 @@
           date: l(confirmation.expiration.to_date, format: :long))
         =< t("messages.approved")
 
-      - if confirmation.confirmed_at.present? && !confirmation.approved
+      - if confirmation&.confirmed_at.present? && !confirmation.approved
         - case confirmation.existence
         - when "existing"
           .text-warning = t("messages.node_confirmation_unapproved")
@@ -185,7 +185,7 @@
       | 一部のネットワークは検知に対応してません。
       | 端末の実在確認の参考にしてください。
 
-  - if node.confirmation.destroyable?
+  - if node.confirmation&.destroyable?
     hr
     h3 端末の削除
     - if node.specific
@@ -203,7 +203,7 @@
         method: :delete,
         class: "btn btn-danger"
 
-  - if node.confirmation.transferable?
+  - if node.confirmation&.transferable?
     hr
     h3 管理の譲渡
     p
@@ -337,4 +337,7 @@
       new_node_specific_node_application_path(node),
       class: "btn btn-secondary", data: {turbo: false}
 
-  = render "confirm_form"
+  #node-confirm-modal.modal.fade tabindex="-1" role="dialog"
+    .modal-dialog.modal-xl role="document"
+      .modal-content
+        = render "confirmations/form", confirmation: init_confirmation(@node)

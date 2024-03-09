@@ -15,4 +15,43 @@ module NodesHelper
   def list_col_classes(name)
     LIST_COL_CLASSES[name]
   end
+
+  def installation_methods(node)
+    if node.operating_system
+      policy_scope(SecuritySoftware)
+        .where(os_category: node.operating_system.os_category)
+        .distinct
+        .pluck(:installation_method)
+    else
+      []
+    end
+  end
+
+  def init_confirmation(node)
+    confirmation = node.confirmation || node.build_confirmation
+    # check os
+    if node.operating_system.nil?
+      confirmation.security_software = nil
+      confirmation.security_update = nil
+      confirmation.security_scan = nil
+    elsif confirmation.security_software&.os_category !=
+        node.operating_system.os_category
+
+      confirmation.security_software =
+        SecuritySoftware.new(os_category: node.operating_system.os_category)
+      confirmation.security_update = nil
+      confirmation.security_scan = nil
+    end
+    reset_unknown_confirmation(confirmation)
+  end
+
+  private def reset_unknown_confirmation(confirmation)
+    Confirmation::NUM_ATTRS.each do |name|
+      confirmation.send("#{name}=", nil) if confirmation.send(name) == "unknown"
+    end
+    if confirmation.security_hardwares&.include?("unknown")
+      confirmation.security_hardware = nil
+    end
+    confirmation
+  end
 end

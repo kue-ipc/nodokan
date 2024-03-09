@@ -29,8 +29,6 @@ class NodesController < ApplicationController
   # GET /nodes/1
   # GET /nodes/1.json
   def show
-    @installation_methods = installation_methods_for_node(@node)
-    @confirmation = init_confirmation_for_node(@node)
   end
 
   # GET /nodes/new
@@ -64,8 +62,6 @@ class NodesController < ApplicationController
     respond_to do |format|
       if @node.save
         format.turbo_stream do
-          @installation_methods = installation_methods_for_node(@node)
-          @confirmation = init_confirmation_for_node(@node)
           flash.now.notice = t_success(@node, :register)
         end
         format.html do
@@ -88,8 +84,6 @@ class NodesController < ApplicationController
     respond_to do |format|
       if @node.update(node_params)
         format.turbo_stream do
-          @installation_methods = installation_methods_for_node(@node)
-          @confirmation = init_confirmation_for_node(@node)
           flash.now.notice = t_success(@node, :update)
         end
         format.html do
@@ -374,49 +368,5 @@ class NodesController < ApplicationController
       end
     end
     node
-  end
-
-  private def installation_methods_for_node(node)
-    if node.operating_system
-      policy_scope(SecuritySoftware)
-        .where(os_category: node.operating_system.os_category)
-        .distinct
-        .pluck(:installation_method)
-    else
-      []
-    end
-  end
-
-  private def init_confirmation_for_node(node)
-    confirmation = node.confirmation || node.build_confirmation
-
-    # check os
-    if node.operating_system.nil?
-      confirmation.security_software = nil
-      confirmation.security_update = nil
-      confirmation.security_scan = nil
-    elsif confirmation.security_software&.os_category != node.operating_system.os_category
-      confirmation.security_software = SecuritySoftware.new(
-        os_category: node.operating_system.os_category)
-      confirmation.security_update = nil
-      confirmation.security_scan = nil
-    end
-
-    reset_confirmation_unknown(confirmation)
-  end
-
-  # confirmation unknown value to nil
-  private def reset_confirmation_unknown(confirmation)
-    confirmation.existence = nil if confirmation.existence_unknown?
-    confirmation.content = nil if confirmation.content_unknown?
-    confirmation.os_update = nil if confirmation.os_update_unknown?
-    confirmation.app_update = nil if confirmation.app_update_unknown?
-    confirmation.software = nil if confirmation.software_unknown?
-    if confirmation.security_hardware_unknown?
-      confirmation.security_hardware = nil
-    end
-    confirmation.security_update = nil if confirmation.security_update_unknown?
-    confirmation.security_scan = nil if confirmation.security_scan_unknown?
-    confirmation
   end
 end

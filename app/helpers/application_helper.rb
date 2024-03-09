@@ -22,37 +22,29 @@ module ApplicationHelper
     Settings.site.title || t(:nodokan)
   end
 
-  # traslation
-  def t_enums(attr, model = nil)
-    model_class =
-      if model.nil?
-        controller.controller_name.classify.constantize
-      elsif model.is_a?(ActiveRecord)
-        model.class
-      else
-        model
-      end
-    model_class.__send__(attr).keys.index_with do |key|
-      t_enum(key, attr)
+  def model_class(model = nil)
+    if model.nil?
+      controller.controller_name.classify.constantize
+    elsif model.is_a?(ActiveRecord)
+      model.class
+    else
+      model
     end
+  end
+
+  # traslation
+  def t_enums(attr, model = nil, keys: nil)
+    keys ||= model_class(model).__send__(attr).keys
+    keys.index_with { |key| t_enum(key, attr) }
   end
 
   def t_enum(value, attr)
     t(value, scope: [:activerecord, :enums, attr])
   end
 
-  def t_bitwises(attr, model = nil)
-    model_class =
-      if model.nil?
-        controller.controller_name.classify.constantize
-      elsif model.is_a?(ActiveRecord)
-        model.class
-      else
-        model
-      end
-    model_class.__send__(attr).keys.index_with do |key|
-      t_bitwise(key, attr)
-    end
+  def t_bitwises(attr, model = nil, keys: nil)
+    keys ||= model_class(model).__send__(attr).keys
+    keys.index_with { |key| t_bitwise(key, attr) }
   end
 
   def t_bitwise(value, attr)
