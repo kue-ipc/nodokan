@@ -71,6 +71,7 @@ ja:
     fail: 失敗する
     error: エラーになる
     start: 開始する
+    cancel: キャンセルする
 
   messages:
     comment: コメント

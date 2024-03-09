@@ -1,0 +1,16 @@
+- case modal_size
+- when "sm", "lg", "xl"
+
+.modal.fade tabindex="-1" id=modal_id
+  .modal-dialog.modal-xl
+    .modal-content
+        .modal-header
+          h5.modal-title = title
+          button.btn-close[type="button" data-bs-dismiss="modal"
+            aria-label=t("do_actions.close")]
+        .modal-body
+          = yield 
+        .modal-footer
+          button.btn.btn-dark type="button" data-bs-dismiss="modal"
+            = t("do_actions.close")
+          = f.submit "確認終了", class: "btn btn-primary"
