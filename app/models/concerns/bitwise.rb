@@ -56,7 +56,7 @@ module Bitwise
               update!(name => [self[name], 0].max ^ value)
             end
             scope(attr_name,
-              lambda { where("#{name} > 0 AND #{name} & #{value} > 0") })
+              -> { where("#{name} > 0 AND #{name} & #{value} > 0") })
           else
             define_method("#{attr_name}?") do
               self[name] == value

@@ -4,7 +4,7 @@ class RadiusCompressJob < ApplicationJob
   def perform(*_args)
     limit_size = 1000
     total = 0
-    Radius::Radpostauth.group(:username).count.filter { |_k, v| v > 1}
+    Radius::Radpostauth.group(:username).count.filter { |_k, v| v > 1 }
       .each do |username, count|
       ((count / limit_size) + 1).times do
         total += Radius::Radpostauth

@@ -21,7 +21,7 @@ module DeviseLdapAuthenticatableEx
 
       Devise::LDAP::Connection.attr_reader :in_groups
       unless Devise::LDAP::Connection.instance_methods
-        .include?(:in_required_groups_and?)
+          .include?(:in_required_groups_and?)
         Devise::LDAP::Connection.alias_method :in_required_groups_and?,
           :in_required_groups?
       end

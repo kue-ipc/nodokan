@@ -1227,10 +1227,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should NOT update node with same hostname and same domain" do
     sign_in users(:user)
-    patch node_url(@node),params: {node: {
+    patch node_url(@node), params: {node: {
       hostname: nodes(:server).hostname,
-                      domain: nodes(:server).domain,
-                      }}
+      domain: nodes(:server).domain,
+    }}
     assert_response :success
     assert_equal @messages[:update_failure], flash[:alert]
     assert_equal @node.hostname, Node.find(@node.id).hostname
@@ -1241,8 +1241,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {
       hostname: "hostname",
-      domain: nodes(:server).domain
-      }}
+      domain: nodes(:server).domain,
+    }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal "hostname", Node.find(@node.id).hostname
@@ -1251,10 +1251,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node with same hostname and differen domain" do
     sign_in users(:user)
-    patch node_url(@node),  params: {node: {
+    patch node_url(@node), params: {node: {
       hostname: nodes(:server).hostname,
-                      domain: "test.example.jp",
-                      }}
+      domain: "test.example.jp",
+    }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal nodes(:server).hostname, Node.find(@node.id).hostname
@@ -1263,10 +1263,10 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update node with same hostname and without domain" do
     sign_in users(:user)
-    patch node_url(@node),params: {node: {
+    patch node_url(@node), params: {node: {
       hostname: nodes(:note).hostname,
-       domain: nil
-       }}
+      domain: nil,
+    }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert_equal nodes(:note).hostname, Node.find(@node.id).hostname
@@ -1303,8 +1303,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {
       logical: true,
-       component_ids: [nodes(:note).id]
-      }}
+      component_ids: [nodes(:note).id],
+    }}
     assert_redirected_to node_url(@node)
     assert_equal @messages[:update_success], flash[:notice]
     assert Node.find(@node.id).logical
