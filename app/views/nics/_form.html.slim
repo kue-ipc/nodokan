@@ -1,4 +1,8 @@
-.rounded.border.p-2.mb-2.node-nic-root(id="node_nics_attributes_#{form.index}")
+.rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"
+  data-node-nic-messages=({ \
+    address_placeholders: t("messages.address_placeholders"),
+  }.to_json)
+  ]
   = form.hidden_field :id
   - nic_ro = false
 

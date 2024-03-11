@@ -1,259 +1,275 @@
-"civet coffeeCompat"
-# NodeのNICを操作するためのJavaScript
+// NodeのNICを操作するためのJavaScript
 
-import {listToSnake, listToField} from '../utils/string_utils.civet'
-import Network from '../models/network.civet'
-import ipaddr from 'ipaddr.js'
+import {listToSnake, listToField} from "../utils/string_utils.civet"
+import Network from "../models/network.civet"
+import ipaddr from "ipaddr.js"
+ipmort {fieldType} = from "../utils/form.civet"
 
 class NodeNic
   @NAMES = [
-    '_destroy'
-    'interface_type'
-    'name'
-    'network_id'
-    'auth'
-    'mac_address'
+    "_destroy"
+    "interface_type"
+    "name"
+    "network_id"
+    "auth"
+    "mac_address"
+    "ipv4_config"
+    "ipv4_address"
+    "ipv6_conifg"
+    "ipv6_address"
   ]
-
-  @NAMES_IP = {
-    ipv4: ['ipv4_config', 'ipv4_address']
-    ipv6: ['ipv6_config', 'ipv6_address']
-  }
 
   @MESSAGES = [
-    'no_network'
-    'auth_network'
-    'require_mac'
-    'require_duid'
-    'network_note'
-    'unconfigurable'
+    "no_network"
+    "auth_network"
+    "require_mac"
+    "require_duid"
+    "network_note"
+    "unconfigurable"
   ]
 
-  constructor: (@number, {@ipv6 = true, @address_placeholders = {}}) ->
-    @prefixList = ['node', 'nics_attributes', @number.toString()]
+  @(@root, {@messages = {}} = {})
+    console.debug `NodeNic: ${@root.id}`
+    @id = @root.id.match(/^node_nics_attributes_(\d+)$/)?.at(1)
+    unless @id?
+      console.warn "NodeNic element's id not match node_nics_attributes_*"
+      return
 
-    @ip_versions = ['ipv4']
-    @ip_versions.push('ipv6') if @ipv6
-    @ip_configs = @ip_versions.map((ip_version) -> "#{ip_version}_config")
+    @prefixList = ["node", "nics_attributes", @id]
 
-    @names = [...NodeNic.NAMES]
-    for ip_version in @ip_versions
-      @names = [...@names, ...NodeNic.NAMES_IP[ip_version]]
+//     for ip_version of ["ipv4", "ipv6"]
+//       for name = ["config", "address"]
+//       document.getElementById(`${@prefixId}${ip_version}_config`)
 
-    @rootNode = @getNode()
+
+//         @ip_configs = @ip_versions.map((ip_version) -> `${ip_version}_config`)
+
+// node_nics_attributes_0_ipv4_config
+
+    // NodeNic.NAMES = [
+    //   ...NodeNic.NAMES
+    //   ...@ip_configs
+    //   ...@ip_versions.map((ip_version) -> `${ip_version}_address`)
+    // ]
+
+    // @rootNode = @getNode()
     @inputs = new Map(
-      for name in @names
-        node = @getNode(name)
-        init = {
+      NodeNic.NAMES.map (name) ->
+        node := @getNode(name)
+        return [name, null] unless node?
+
+        init := {
           value: node.value
           checked: node.checked
           selectedIndex: node.selectedIndex
         }
-        options =
-          if node?.tagName?.toUpperCase() == 'SELECT'
-            new Map(
-              for optionNode, index in node.options ? []
-                [optionNode.value, {node: optionNode, index}]
-            )
-        [name, {node, init, options}]
+
+        options :=
+          if node.tagName == "SELECT"
+            [...node.options]
+
+        hidden :=
+          if node.tagName == "INPUT" && node.type == "checkbox"
+            [...document.getElementsByName(node.name)]
+              .find (el) -> el.type == "hidden"
+
+        [name, {node, init, options, hidden}]
     )
 
     @messages = new Map(
-      for name in NodeNic.MESSAGES
-        node = @getNode('message', name)
+      NodeNic.MESSAGES.map (name) ->
+        node = @getNode("message", name)
+        return [name, null] unless node?
+
         [name, {node}]
     )
 
-    @inputs.get('_destroy').node.addEventListener 'change', (_e) =>
+    @inputs.get("_destroy").node.addEventListener "change", (_e) =>
       @changeDestroy()
-    @inputs.get('interface_type').node.addEventListener 'change', (_e) =>
+    @inputs.get("interface_type").node.addEventListener "change", (_e) =>
       @changeInterfaceType()
-    @inputs.get('network_id').node.addEventListener 'change', (_e) =>
+    @inputs.get("network_id").node.addEventListener "change", (_e) =>
       @changeNetwork()
 
-    @inputs.get('auth').node.addEventListener 'change', (_e) =>
+    @inputs.get("auth").node.addEventListener "change", (_e) =>
       @requireMacAddress()
-    @inputs.get('ipv4_config').node.addEventListener 'change', (e) =>
-      @requireMacAddress()
-      @adjustAddress('ipv4', e.target.value)
 
-    if @ipv6
-      @inputs.get('ipv6_config').node.addEventListener 'change', (e) =>
-        @requireDuid()
-        @adjustAddress('ipv6', e.target.value)
+    @inputs.get("ipv4_config")?.node?.addEventListener "change", (e) =>
+      @requireMacAddress()
+      @adjustAddress("ipv4", e.target.value)
+    @inputs.get("ipv6_config")?.node.addEventListener "change", (e) =>
+      @requireDuid()
+      @adjustAddress("ipv6", e.target.value)
 
     @requireMacAddress()
     @requireDuid()
 
     @network = null
-    # all check
+    // changeDestroyを呼び出すとすべての変更が呼び出される
     @changeDestroy()
 
-  getNodeId: (...names) ->
+  getNodeId(...names)
     listToSnake(...@prefixList, ...names)
 
-  getNode: (...names) ->
+  getNode(...names)
     document.getElementById(@getNodeId(...names))
 
-  disableInputs: (names, {excludes = []} = {}) ->
-    for name in names when !excludes.includes(name)
-      node = @inputs.get(name)?.node
-      next unless node?
+  disableInputs(names, {excludes = []} = {})
+    for name of names
+      continue if excludes.includes(name)
 
-      # 現在の設定値で固定化する
-      if node.tagName == 'INPUT' && node.type == 'checkbox'
-        checkboxElements = {}
-        for element in document.getElementsByName(node.name)
-          checkboxElements[element.type] = element
-        if checkboxElements.checkbox?.checked
-          checkboxElements.hidden?.value = '1'
-        else
-          checkboxElements.hidden?.value = '0'
+      {node, hidden} := @inputs.get(name) || {}
+      continue unless node?
+
+      // チェックボックスはhiddenに現在の設定値を入れて固定化する
+      if node.tagName == "INPUT" && node.type == "checkbox" && hidden?
+        hidden.value = if node.checked then "1" else "0"
 
       node.disabled = true
 
-  enableInputs: (names, {excludes = []} = {}) ->
-    for name in names when !excludes.includes(name)
-      node = @inputs.get(name)?.node
-      next unless node?
+  enableInputs(names, {excludes = []} = {})
+    for name of names
+      continue if excludes.includes(name)
 
-      # 0に戻す
-      if node.tagName == 'INPUT' && node.type == 'checkbox'
-        for element in document.getElementsByName(node.name)
-          if element.type == 'hidden'
-            element.value = '0'
+      {node, hidden} := @inputs.get(name) || {}
+      continue unless input?.node?
 
-      node.disabled = false
+      // チェックボックスはhiddenを0に戻す
+      if input.node.tagName == "INPUT" && input.node.type == "checkbox"
+        input.hidden.value = "0"
 
-  displayMessage: (name, message = null) ->
-    node = @messages.get(name).node
+      input.node.disabled = false
+
+  displayMessage(name, message = null)
+    node := @messages.get(name).node
     node.textContent = message if message?
-    node.classList.remove('d-none')
+    node.classList.remove("d-none")
 
-  hideMessage: (name) ->
-    node.classList.add('d-none')
+  hideMessage(name)
+    node := @messages.get(name).node
+    node.classList.add("d-none")
 
-  hideAllMessages: ->
-    for [key, value] from @messages
-      value.node.classList.add('d-none')
+  hideAllMessages()
+    for value of @messages.values()
+      value.node.classList.add("d-none")
 
-  adjustConfig: (ip, list) ->
-    console.log(ip, list)
-    config_name = ip + '_config'
-    {node, init, options} = @inputs.get(config_name)
-    selectedIndex = -1
-    disabledIndex = -1
-    availableIndices = []
-    for [value, option] from options
-      disabledIndex = option.index if value == 'disabled'
+  adjustConfig(ip, list)
+    console.debug `adjustCnofig: ${ip}, ${list}`
 
-      if list.includes(value)
-        availableIndices.push(option.index)
-        selectedIndex = option.index if option.node.selected
-        option.node.disabled = false
+    {node, init, options} := @inputs.get(`${ip}_config"`) || {}
+    return unless node?
+
+    selectedIndex := opitons.findIndex (el) -> el.selected
+    disabledIndex := options.findInedx (el) -> el.value == "disabled"
+    
+    // 有効化と無効化
+    for el of options
+      if list.includes(el.value)
+        el.disabled = false
       else
-        option.node.disabled = true
+        el.disabled = true
 
     node.selectedIndex =
-      if selectedIndex >= 0 && selectedIndex != disabledIndex
+      if selectedIndex != disabledIndex && !options[selectedIndex].disbaled
         selectedIndex
-      else if @checkInitInput('network_id')
+      else if @checkInitInput("network_id")
         init.selectedIndex
       else
-        availableIndices[0] ? -1
+        (options.findIndex (el) -> !el.disabled) || disabledIndex
 
     @adjustAddress(ip, node.value)
 
-  adjustAddress: (ip, config) ->
-    address_name = ip + '_address'
-    config_name = ip + '_config'
+  // TODO: ここから
+  adjustAddress(ip, config)
+    console.debug `adjustAddress: ${ip}, ${config}`
 
-    {node, init, options} = @inputs.get(address_name)
+    {node, init, options} := @inputs.get(`${ip}_address`) || {}
+    return unless node?
 
     node.placeholder = @address_placeholders[config]
-    if @network?.id?.toString() == @inputs.get('network_id').init.value &&
-        config == @inputs.get(config_name).init.value
-      node.value = init.value || ''
+    if @network?.id?.toString() == @inputs.get("network_id").init.value &&
+        config == @inputs.get(`${ip}_config`).init.value
+      node.value = init.value || ""
     else
-      node.value = ''
+      node.value = ""
 
     if !@network?.current_user?.manageable ||
-        ['dynamic', 'disabled'].includes(config)
+        ["dynamic", "disabled"].includes(config)
       node.disabled = true
     else
       node.disabled = false
 
   requireMacAddress: ->
-    if @inputs.get('auth').node.checked ||
-        @inputs.get('ipv4_config').node.value == 'reserved'
-      @inputs.get('mac_address').node.required = true
-      @displayMessage('require_mac')
+    if @inputs.get("auth").node.checked ||
+        @inputs.get("ipv4_config").node.value == "reserved"
+      @inputs.get("mac_address").node.required = true
+      @displayMessage("require_mac")
     else
-      @inputs.get('mac_address').node.required = false
+      @inputs.get("mac_address").node.required = false
 
   requireDuid: ->
     # TODO: DUIDは端末側にあるため、工夫が必要と思われる。
-    if @inputs.get('ipv6_config').node.value == 'reserved'
-      # @inputs.get('duid').node.required = true
-      @displayMessage('require_duid')
+    if @inputs.get("ipv6_config").node.value == "reserved"
+      # @inputs.get("duid").node.required = true
+      @displayMessage("require_duid")
     else
-      # @inputs.get('duid').node.required = false
+      # @inputs.get("duid").node.required = false
 
   setInitInput: (name) ->
     {node, init} = @inputs.get(name)
     switch node.tagName.toUpperCase()
-      when 'INPUT'
-        if node.getAttribute('type').toLowerCase() == 'checkbox'
+      when "INPUT"
+        if node.getAttribute("type").toLowerCase() == "checkbox"
           node.checked = init.checked
         else
           node.value = init.value
-      when 'SELECT'
+      when "SELECT"
         node.selectedIndex = init.selectedIndex
 
   checkInitInput: (name) ->
     {node, init} = @inputs.get(name)
     switch node.tagName.toUpperCase()
-      when 'INPUT'
-        if node.getAttribute('type').toLowerCase() == 'checkbox'
+      when "INPUT"
+        if node.getAttribute("type").toLowerCase() == "checkbox"
           node.checked == init.checked
         else
           node.value == init.value
-      when 'SELECT'
+      when "SELECT"
         node.selectedIndex == init.selectedIndex
       else
         false
 
   changeDestroy: ->
-    if @inputs.get('_destroy').node.checked
-      @disableInputs(@names, excludes: ['_destroy'])
+    if @inputs.get("_destroy").node.checked
+      @disableInputs(NodeNic.NAMES, excludes: ["_destroy"])
       return
 
-    @enableInputs(['interface_type'])
+    @enableInputs(["interface_type"])
     @changeInterfaceType()
 
   changeInterfaceType: ->
-    unless @inputs.get('interface_type').node.value
-      @disableInputs(@names, excludes: ['_destroy', 'interface_type'])
+    unless @inputs.get("interface_type").node.value
+      @disableInputs(NodeNic.NAMES, excludes: ["_destroy", "interface_type"])
       return
 
-    @enableInputs(['name', 'network_id', 'mac_address', 'duid'])
+    @enableInputs(["name", "network_id", "mac_address", "duid"])
     @changeNetwork()
 
   changeNetwork: ->
     @hideAllMessages()
 
-    networkId = @inputs.get('network_id').node.value
+    networkId = @inputs.get("network_id").node.value
     unless networkId
       @network = null
       for ip in @ip_versions
-        @adjustConfig(ip, ['disabled'])
+        @adjustConfig(ip, ["disabled"])
       @disableInputs(@ip_configs)
 
-      @inputs.get('auth').node.checked = false
+      @inputs.get("auth").node.checked = false
       @requireMacAddress()
-      @disableInputs(['auth'])
+      @disableInputs(["auth"])
 
-      @displayMessage('no_network')
+      @displayMessage("no_network")
       return
 
     @network = await Network.fetch(networkId)
@@ -263,40 +279,41 @@ class NodeNic
         @setInitInput(name)
       @disableInputs(@ip_configs)
 
-      @setInitInput('auth')
+      @setInitInput("auth")
       @requireMacAddress()
-      @disableInputs(['auth'])
+      @disableInputs(["auth"])
 
-      @displayMessage('unconfigurable')
+      @displayMessage("unconfigurable")
       return
 
-    if @network['auth']
-      @displayMessage('auth_network')
+    if @network["auth"]
+      @displayMessage("auth_network")
 
-      if @checkInitInput('network_id')
-        @setInitInput('auth')
+      if @checkInitInput("network_id")
+        @setInitInput("auth")
       else
-        @inputs.get('auth').node.checked = true
+        @inputs.get("auth").node.checked = true
       @requireMacAddress()
-      @enableInputs(['auth'])
+      @enableInputs(["auth"])
     else
-      @inputs.get('auth').node.checked = false
+      @inputs.get("auth").node.checked = false
       @requireMacAddress()
-      @disableInputs(['auth'])
+      @disableInputs(["auth"])
 
     for ip in @ip_versions
-      @adjustConfig(ip, @network["#{ip}_config_list"])
+      @adjustConfig(ip, @network[`${ip}_config_list`])
     @enableInputs(@ip_configs)
 
     @requireMacAddress()
     @requireDuid()
 
-    if @network['note']
-      @displayMessage('network_note', @network['note'])
+    if @network["note"]
+      @displayMessage("network_note", @network["note"])
 
-document.addEventListener 'turbo:load', ->
-  nodeNicInfoEl = document.getElementById('node-nic-info')
-  if nodeNicInfoEl?
-    info = JSON.parse(document.getElementById('node-nic-info').textContent)
-    for id in info.list
-      new NodeNic(id, info.options)
+document.addEventListener "turbo:load", ->
+  for el of document.getElementsByClassName("node-nic-frame")
+    params = {}
+    for name of ["messages"]
+      if el.data["node-nic-messages"]
+        params["messages"] = el.data["node-nic-messages"]
+    new NodeNic(el, params)

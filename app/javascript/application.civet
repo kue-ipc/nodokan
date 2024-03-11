@@ -1,18 +1,15 @@
-"civet coffeeCompat"
-# Entry point for the build script in your package.json
+// Entry point for the build script in your package.json
 import "@hotwired/turbo-rails"
 import "./controllers"
 
-import './operators/bootstrap-trigger.civet'
-import './operators/icon-font.civet'
+import "./operators/bootstrap-trigger.civet"
+import "./operators/icon-font.civet"
 
-import './views/datalist_candidation.civet'
-import './views/manage_table.civet'
-import './views/node_confirm.civet'
-import './views/node_flags.civet'
-# import './views/node_nic.civet'
-import './views/specific_node_application.civet'
+import "./views/datalist_candidation.civet"
+import "./views/manage_table.civet"
+import "./views/node_confirm.civet"
+import "./views/node_flags.civet"
+import "./views/node_nic.civet"
+import "./views/specific_node_application.civet"
 
-import './views/test.civet'
-
-console.log "new hello5"
+import "./views/test.civet"
