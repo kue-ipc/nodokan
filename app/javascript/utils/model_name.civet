@@ -1,4 +1,5 @@
-import {snakize} from './string_utils.coffee'
+"civet coffeeCompat"
+import {snakize} from './string_utils.civet'
 
 export default class ModelName
   constructor: (@klass) ->

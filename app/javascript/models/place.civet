@@ -1,5 +1,6 @@
-import ApplicationRecord from './application_record.coffee'
-import csrf from '../utils/csrf.coffee'
+"civet coffeeCompat"
+import ApplicationRecord from './application_record.civet'
+import csrf from '../utils/csrf.civet'
 
 export default class Place extends ApplicationRecord
   @attrs: [
@@ -31,7 +32,7 @@ export default class Place extends ApplicationRecord
       new Place(d)
 
   constructor: ({@area, @building, @floor, @room, @confirmed, @nodes_count,
-    props...}) ->
+    ...props}) ->
     super(props)
     @edit = false
 

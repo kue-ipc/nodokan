@@ -1,3 +1,4 @@
+"civet coffeeCompat"
 # bootstrap components
 # Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover,
 #   ScrollSpy, Tab, Toast, Tooltip
@@ -15,7 +16,8 @@ bootstrapComponentSelectors = [
 ]
 
 bootstrapEnbaleComponents = ->
-  for {component, selector, option = {}} in bootstrapComponentSelectors
+  for selector in bootstrapComponentSelectors
+    {component, selector, option = {}} = selector
     for el in document.querySelectorAll selector
       new component(el, option)
 

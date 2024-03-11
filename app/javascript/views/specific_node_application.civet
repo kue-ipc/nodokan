@@ -1,3 +1,4 @@
+"civet coffeeCompat"
 # specific node application
 
 document.addEventListener 'turbo:load', ->
@@ -25,28 +26,28 @@ document.addEventListener 'turbo:load', ->
   labelFor = (el) ->
     document.querySelector("label[for=\"#{el.id}\"]")
 
-  setRequired = (list...) ->
+  setRequired = (...list) ->
     for el in list
       el.required = true
       labelFor(el)?.classList?.add('required')
 
-  unsetRequired = (list...) ->
+  unsetRequired = (...list) ->
     for el in list
       el.required = false
       labelFor(el)?.classList?.remove('required')
 
-  setDisabled = (list...) ->
+  setDisabled = (...list) ->
     for el in list
       el.disabled = true
 
-  unsetDisabled = (list...) ->
+  unsetDisabled = (...list) ->
     for el in list
       el.disabled = false
 
   checkAction = ->
     if actionRadioMap.get('release').checked
       setDisabled(
-        ruleSetRadioMap.values()...,
+        ...ruleSetRadioMap.values(),
         externalSelect,
         ruleListTextArea,
         registerDnsCheckBox,
@@ -54,7 +55,7 @@ document.addEventListener 'turbo:load', ->
       )
     else
       unsetDisabled(
-        ruleSetRadioMap.values()...,
+        ...ruleSetRadioMap.values(),
         externalSelect,
         ruleListTextArea,
         registerDnsCheckBox,

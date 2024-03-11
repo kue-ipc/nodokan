@@ -1,4 +1,5 @@
-import ModelName from '../utils/model_name.coffee'
+"civet coffeeCompat"
+import ModelName from '../utils/model_name.civet'
 
 export default class ApplicationRecord
   @model_name: ->

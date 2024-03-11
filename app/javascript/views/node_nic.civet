@@ -1,7 +1,8 @@
+"civet coffeeCompat"
 # NodeのNICを操作するためのJavaScript
 
-import {listToSnake, listToField} from '../utils/string_utils.coffee'
-import Network from '../models/network.coffee'
+import {listToSnake, listToField} from '../utils/string_utils.civet'
+import Network from '../models/network.civet'
 import ipaddr from 'ipaddr.js'
 
 class NodeNic
@@ -35,9 +36,9 @@ class NodeNic
     @ip_versions.push('ipv6') if @ipv6
     @ip_configs = @ip_versions.map((ip_version) -> "#{ip_version}_config")
 
-    @names = [NodeNic.NAMES...]
+    @names = [...NodeNic.NAMES]
     for ip_version in @ip_versions
-      @names = [@names..., NodeNic.NAMES_IP[ip_version]...]
+      @names = [...@names, ...NodeNic.NAMES_IP[ip_version]]
 
     @rootNode = @getNode()
     @inputs = new Map(
@@ -88,11 +89,11 @@ class NodeNic
     # all check
     @changeDestroy()
 
-  getNodeId: (names...) ->
-    listToSnake(@prefixList..., names...)
+  getNodeId: (...names) ->
+    listToSnake(...@prefixList, ...names)
 
-  getNode: (names...) ->
-    document.getElementById(@getNodeId(names...))
+  getNode: (...names) ->
+    document.getElementById(@getNodeId(...names))
 
   disableInputs: (names, {excludes = []} = {}) ->
     for name in names when !excludes.includes(name)

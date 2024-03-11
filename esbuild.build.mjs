@@ -1,6 +1,7 @@
 import process from 'node:process';
 import * as esbuild from 'esbuild';
 import coffeeScriptPlugin from 'esbuild-coffeescript';
+import civetPlugin from '@danielx/civet/esbuild-plugin';
 
 const esbuildOptions = {
   entryPoints: ['app/javascript/*.*'],
@@ -8,7 +9,7 @@ const esbuildOptions = {
   sourcemap: true,
   outdir: 'app/assets/builds',
   publicPath: '/assets',
-  plugins: [coffeeScriptPlugin()],
+  plugins: [coffeeScriptPlugin(), civetPlugin()],
 }
 
 if (process.argv.includes('--watch')) {
@@ -22,6 +23,6 @@ if (process.argv.includes('--watch')) {
     sourcemap: true,
     outdir: 'app/assets/builds',
     publicPath: '/assets',
-    plugins: [coffeeScriptPlugin()],
+    plugins: [coffeeScriptPlugin(), civetPlugin()],
   });
 }

@@ -1,4 +1,5 @@
-import FlagCollapse from '../utils/flag_collapse.coffee'
+"civet coffeeCompat"
+import FlagCollapse from '../utils/flag_collapse.civet'
 
 document.addEventListener 'turbo:load', ->
   for name in ['logical', 'virtual_machine', 'specific', 'public', 'dns']

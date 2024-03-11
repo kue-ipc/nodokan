@@ -1,3 +1,4 @@
+"civet coffeeCompat"
 # DatalisntCandidation#constructor
 # name: モデルの名前 [必須]
 # target: 対象となる属性 [必須]
@@ -66,7 +67,7 @@ class DatalistCandidation
     @targetDescriptions = new Map
 
   attrId: (attr) ->
-    [@parents..., @name, attr].join('_')
+    [...@parents, @name, attr].join('_')
 
   createUrl: ->
     list = []
@@ -114,7 +115,7 @@ class DatalistCandidation
           ''
 
     if @locked?
-      if (attr for attr in @attrList when attr.name is @locked.name and @locked.list.includes(attr.value))[0]?
+      if ((attr for attr in @attrList when attr.name is @locked.name and @locked.list.includes(attr.value))[0]?)
         @targetNode.readOnly = true
         @targetNodeLabel.classList.add('readonly')
         @targetNode.value = data[0][@target]
@@ -123,7 +124,7 @@ class DatalistCandidation
         @targetNode.readOnly = false
 
     if @required?
-      if (attr for attr in @attrList when attr.name is @required.name and @required.list.includes(attr.value))[0]?
+      if ((attr for attr in @attrList when attr.name is @required.name and @required.list.includes(attr.value))[0]?)
         @targetNode.required = true
         @targetNodeLabel.classList.add('required')
       else
@@ -156,7 +157,8 @@ class DatalistCandidation
     @descriptionNode.textContent = message ? ''
 
   run: ->
-    for {node} in @attrList
+    for attr in @attrList
+      {node} = attr
       node.addEventListener 'change', => @updateDatalist({})
 
     if @description
