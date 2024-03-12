@@ -65,6 +65,7 @@ class DatalistCandidation
 
     @data = []
     @targetDescriptions = new Map
+    @
 
   attrId: (attr) ->
     [...@parents, @name, attr].join('_')

@@ -11,5 +11,3 @@ import "./views/node_confirm.civet"
 import "./views/node_flags.civet"
 import "./views/node_nic.civet"
 import "./views/specific_node_application.civet"
-
-import "./views/test.civet"

@@ -1,51 +1,43 @@
-"civet coffeeCompat"
-import ApplicationRecord from './application_record.civet'
-import Ipv4Pool from './ipv4_pool.civet'
-import Ipv6Pool from './ipv6_pool.civet'
-import ipaddr from 'ipaddr.js'
+import ApplicationRecord from "./application_record.civet"
+import Ipv4Pool from "./ipv4_pool.civet"
+import Ipv6Pool from "./ipv6_pool.civet"
+import ipaddr from "ipaddr.js"
 
 export default class Network extends ApplicationRecord
   @networks = new Map
 
-  @fetch: (id) ->
-    if typeof id != 'string'
-      id = String(id)
+  @fetch = (id) ->
+    id = String(id) if id !<? "string"
 
     unless /^\d+$/.test(id)
-      throw new TypeError("#{id} is not positive integer nmuber string")
+      throw new TypeError(`${id} is not positive integer nmuber string`)
 
-    if @networks.has(id)
-      return @networks.get(id)
+    return @networks.get(id) if @networks.has(id)
 
-    url = "/networks/#{id}.json"
+    url := `/networks/${id}.json`
 
-    response = await fetch(url)
+    response := await fetch(url)
 
-    if response.status == 404
-      console.log "network #{id} is not found for current user"
+    if response.status is 404
+      console.log `network ${id} is not found for current user`
       return null
 
-    data = await response.json()
+    data := await response.json()
 
-    network = new Network(data)
+    network := new Network(data)
     @networks.set(id, network)
     network
 
-  constructor: ({@name, @vlan, @auth, @note,
+  @({@name, @vlan, @auth, @note,
       ipv4_network_address, ipv4_prefix_length, ipv4_gateway_address,
       ipv6_network_address, ipv6_prefix_length, ipv6_gateway_address,
       ipv4_pools, ipv6_pools,
-      @current_user,
-      ...props}) ->
+      @current_user, ...props})
     super(props)
-    @ipv4_network = if ipv4_network_address
-      ipaddr.parse(ipv4_network_address)
-    @ipv4_gateway = if ipv4_gateway_address
-      ipaddr.parse(ipv4_gateway_address)
-    @ipv6_network = if ipv6_network_address
-      ipaddr.parse(ipv6_network_address)
-    @ipv6_gateway = if ipv6_gateway_address
-      ipaddr.parse(ipv6_gateway_address)
+    @ipv4_network = ipv4_network_address ?? ipaddr.parse(ipv4_network_address)
+    @ipv4_gateway = ipv4_gateway_address ?? ipaddr.parse(ipv4_gateway_address)
+    @ipv6_network = ipv6_network_address ?? ipaddr.parse(ipv6_network_address)
+    @ipv6_gateway = ipv6_gateway_address ?? ipaddr.parse(ipv6_gateway_address)
     @ipv4_pools = (new Ipv4Pool(ipv4_pool) for ipv4_pool in ipv4_pools)
     @ipv6_pools = (new Ipv6Pool(ipv6_pool) for ipv6_pool in ipv6_pools)
 
@@ -61,22 +53,23 @@ export default class Network extends ApplicationRecord
       pools: @ipv6_pools
     }
 
-    @ipv4_config_list = @availableIpConfig('ipv4')
-    @ipv6_config_list = @availableIpConfig('ipv6')
+    @ipv4_config_list = @availableIpConfig("ipv4")
+    @ipv6_config_list = @availableIpConfig("ipv6")
 
-  # disabledは常に設定可能
-  availableIpConfig: (ip_version) ->
-    # 選択不可の場合は選択肢なし
+  // disabledは常に設定可能
+  availableIpConfig(ip_version)
+    // 選択不可の場合は選択肢なし
     return [] unless @current_user.usable
 
-    # ネットワークがない場合は disabled
-    return ['disabled'] unless @[ip_version].network
+    // ネットワークがない場合は disabled
+    return ["disabled"] unless @[ip_version].network
 
-    configs = new Set((pool.ip_config() for pool in @[ip_version].pools))
+    configs := new Set(["disabled"])
+    for pool in @[ip_version].pools
+      configs.add(pool.ip_config())
 
-    # 管理可能な場合
+    // 管理可能な場合
     if @current_user.manageable
-      configs.add('manual')
+      configs.add("manual")
 
-    configs.add('disabled')
     [...configs]

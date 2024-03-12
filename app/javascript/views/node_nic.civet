@@ -3,7 +3,6 @@
 import {listToSnake, listToField} from "../utils/string_utils.civet"
 import Network from "../models/network.civet"
 import ipaddr from "ipaddr.js"
-import {fieldType} from "../utils/form.civet"
 
 class MessageStore
   @(@messageStore)
@@ -35,15 +34,6 @@ class NodeNic
     "ipv6_address"
   ]
 
-  // @MESSAGES = [
-  //   "no_network"
-  //   "auth_network"
-  //   "require_mac"
-  //   "require_duid"
-  //   "network_note"
-  //   "unconfigurable"
-  // ]
-
   @(@rootNode, {@messageStore = new MessageStore({})} = {})
     console.debug `NodeNic: ${@rootNode.id}`
     @id = @rootNode.id.match(/^node_nics_attributes_(\d+)$/)?.at(1)
@@ -54,7 +44,7 @@ class NodeNic
     @prefixList = ["node", "nics_attributes", @id]
 
     @inputs = Object.fromEntries(
-      NodeNic.NAMES.map (name) ->
+      NodeNic.NAMES.map (name) =>
         node := @getNode(name)
         return [name, null] unless node?
 
@@ -75,7 +65,7 @@ class NodeNic
 
         [name, {node, init, options, hidden}]
     )
-    @duidNode = docugemnt.getElementById("node_duid")
+    @duidNode = document.getElementById("node_duid")
     @messagesNode = @getNode("messages")
     @messageTemplateNode = @getNode("message", "template")
 
@@ -132,14 +122,14 @@ class NodeNic
       continue unless node?
 
       // チェックボックスはhiddenを0に戻す
-      if input.node.tagName is "INPUT" && input.node.type is "checkbox"
-        input.hidden.value = "0"
+      if node.tagName is "INPUT" and node.type is "checkbox"
+        hidden.value = "0"
 
-      input.node.disabled = false
+      node.disabled = false
 
   addMessage(message)
     messageNode := @messageTemplateNode.content.cloneNode(true)
-    messageNode.querySelector(".message")?.textConent = message
+    messageNode.querySelector(".message").textConent = message
     @messagesNode.appendChild(document.createTextNode(messageNode))
 
   clearMessages()
@@ -165,7 +155,7 @@ class NodeNic
         el.disabled = true
 
     node.selectedIndex =
-      if selectedIndex is not disabledIndex && !options[selectedIndex].disbaled
+      if selectedIndex is not disabledIndex and !options[selectedIndex].disbaled
         selectedIndex
       else if @checkInitInput("network_id")
         init.selectedIndex
@@ -197,14 +187,14 @@ class NodeNic
 
   requireMacAddress()
     if @inputs["auth"].node.checked or
-        @inputs["ipv4_config"].node.value is "reserved"
+        @inputs["ipv4_config"]?.node?.value is "reserved"
       @inputs["mac_address"].node.required = true
       @addMessage(@messageStore.get("helps.require_mac"))
     else
       @inputs["mac_address"].node.required = false
 
   requireDuid()
-    if @inputs["ipv6_config"].node.value is "reserved"
+    if @inputs["ipv6_config"]?.node?.value is "reserved"
       @duidNode.required = true
       @addMessage(@messageStore.get("helps.require_duid"))
     else

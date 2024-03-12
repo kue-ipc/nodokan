@@ -15,3 +15,4 @@ export default class ModelName
 
     @collection = @plural
     @route_key = @plural
+    @

@@ -79,6 +79,8 @@ class NodeConfirm
           for el in checkElList
             el.required = requiredFlag
 
+    @
+
   modalShow: ->
     @modal.show()
 

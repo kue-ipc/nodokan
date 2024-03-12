@@ -35,6 +35,7 @@ export default class Place extends ApplicationRecord
     ...props}) ->
     super(props)
     @edit = false
+    @
 
   update: ->
     {param, token} = csrf()

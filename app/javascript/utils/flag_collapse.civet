@@ -13,6 +13,7 @@ export default class FlagCollapse
 
     @element.addEventListener 'change', => @change()
     @change()
+    @
 
   change: ->
     if @element.checked
