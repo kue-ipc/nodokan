@@ -3,10 +3,31 @@ import Ipv4Pool from "./ipv4_pool.civet"
 import Ipv6Pool from "./ipv6_pool.civet"
 import ipaddr from "ipaddr.js"
 
-export default class Network extends ApplicationRecord
-  @networks = new Map
+namespace Network
+  export interface InitParams extends ApplicationRecord.InitParams
+    name: string
+    vlan: number
+    auth: boolean
+    note: string
+    ipv4_network_address: string?
+    ipv4_prefix_length: number
+    ipv4_gateway_address: string?
+    ipv6_network_address: string?
+    ipv6_prefix_length: number
+    ipv6_gateway_address: string?
+    ipv4_pools: Ipv4Pool.InitParams[]
+    ipv6_pools: Ipv6Pool.InitParams[]
+    current_user: UserFlags
 
-  @fetch = (id: string | number | bigint) ->
+  export interface UserFlags
+    auth: boolean
+    usable: boolean
+    manageable: boolean
+
+class Network extends ApplicationRecord
+  @networks: Map<string, Network?> := new Map
+
+  @fetch(id: string | number | bigint): Promise<Network?>
     id = String(id) if id !<? "string"
 
     unless /^\d+$/.test(id)
@@ -15,57 +36,94 @@ export default class Network extends ApplicationRecord
     return @networks.get(id) if @networks.has(id)
 
     url := `/networks/${id}.json`
-
     response := await fetch(url)
 
     if response.status is 404
       console.log `network ${id} is not found for current user`
-      return null
+      @networks.set(id, undefined)
+      return
 
     data := await response.json()
-
     network := new Network(data)
     @networks.set(id, network)
     network
 
+  name: string
+  vlan: number
+  auth: boolean
+  note: string
+  current_user: Network.UserFlags
+  ipv4_network: ipaddr.IPv4?
+  ipv4_prefix_length: number
+  ipv4_gateway: ipaddr.IPv4?
+  ipv6_network: ipaddr.IPv6?
+  ipv6_prefix_length: number
+  ipv6_gateway: ipaddr.IPv6?
+  ipv4_pools: Ipv4Pool[]
+  ipv6_pools: Ipv6Pool[]
+  ipv4_config_list: string[]
+  ipv6_config_list: string[]
+
+  ipv4: {
+    network: ipaddr.IPv4?
+    prefix_length: number
+    gateway: ipaddr.IPv4?
+    pools: Ipv4Pool[]
+    config_list: string[]
+  }
+  ipv6: {
+    network: ipaddr.IPv6?
+    prefix_length: number
+    gateway: ipaddr.IPv6?
+    pools: Ipv6Pool[]
+    config_list: string[]
+  }
+
   @({@name, @vlan, @auth, @note,
-      ipv4_network_address, ipv4_prefix_length, ipv4_gateway_address,
-      ipv6_network_address, ipv6_prefix_length, ipv6_gateway_address,
+      ipv4_network_address, @ipv4_prefix_length, ipv4_gateway_address,
+      ipv6_network_address, @ipv6_prefix_length, ipv6_gateway_address,
       ipv4_pools, ipv6_pools,
-      @current_user, ...props})
+      @current_user, ...props}: Network.InitParams)
     super(props)
-    @ipv4_network = ipv4_network_address ?? ipaddr.parse(ipv4_network_address)
-    @ipv4_gateway = ipv4_gateway_address ?? ipaddr.parse(ipv4_gateway_address)
-    @ipv6_network = ipv6_network_address ?? ipaddr.parse(ipv6_network_address)
-    @ipv6_gateway = ipv6_gateway_address ?? ipaddr.parse(ipv6_gateway_address)
+
+    if ipv4_network_address 
+      @ipv4_network = ipaddr.IPv4.parse(ipv4_network_address)
+    if ipv4_gateway_address
+      @ipv4_gateway = ipaddr.IPv4.parse(ipv4_gateway_address)
+    if ipv6_network_address
+      @ipv6_network = ipaddr.IPv6.parse(ipv6_network_address)
+    if ipv6_gateway_address
+      @ipv6_gateway = ipaddr.IPv6.parse(ipv6_gateway_address)
+
     @ipv4_pools = ipv4_pools.map (pool) -> new Ipv4Pool(pool)
     @ipv6_pools = ipv6_pools.map (pool) -> new Ipv6Pool(pool)
 
+    @ipv4_config_list = @availableIpConfig(@ipv4_pools)
+    @ipv6_config_list = @availableIpConfig(@ipv6_pools)
+
     @ipv4 = {
       network: @ipv4_network
+      prefix_length: @ipv4_prefix_length
       gateway: @ipv4_gateway
       pools: @ipv4_pools
+      config_list: @ipv4_config_list
     }
 
     @ipv6 = {
       network: @ipv6_network
+      prefix_length: @ipv6_prefix_length
       gateway: @ipv6_gateway
       pools: @ipv6_pools
+      config_list: @ipv6_config_list
     }
 
-    @ipv4_config_list = @availableIpConfig("ipv4")
-    @ipv6_config_list = @availableIpConfig("ipv6")
-
   // disabledは常に設定可能
-  availableIpConfig(ip_version)
+  availableIpConfig(pools: Ipv4Pool[] | Ipv6Pool[]): string[]
     // 選択不可の場合は選択肢なし
     return [] unless @current_user.usable
 
-    // ネットワークがない場合は disabled
-    return ["disabled"] unless @[ip_version].network
-
     configs := new Set(["disabled"])
-    for pool of @[ip_version].pools
+    for pool of pools
       configs.add(pool.ip_config)
 
     // 管理可能な場合
@@ -73,3 +131,5 @@ export default class Network extends ApplicationRecord
       configs.add("manual")
 
     [...configs]
+
+export default Network

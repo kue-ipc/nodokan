@@ -1,5 +1,12 @@
 import ModelName from "../utils/model_name.civet"
 
+namespace ApplicationRecord
+  export interface InitParams
+    id: number
+    created_at: string
+    updated_at: string
+    url: string?
+
 class ApplicationRecord
   @model_name := new ModelName(@)
   @param_key := @model_name.param_key
@@ -12,12 +19,5 @@ class ApplicationRecord
   @({@id, created_at, updated_at, @url}: ApplicationRecord.InitParams)
     @created_at = new Date(created_at)
     @updated_at = new Date(updated_at)
-
-namespace ApplicationRecord
-  export interface InitParams
-    id: number
-    created_at: string
-    updated_at: string
-    url: string?
 
 export default ApplicationRecord

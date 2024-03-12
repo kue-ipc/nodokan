@@ -1,6 +1,12 @@
 import ApplicationRecord from "./application_record.civet"
 import ipaddr from "ipaddr.js"
 
+namespace Ipv4Pool
+  export interface InitParams extends ApplicationRecord.InitParams
+    ipv4_config: string
+    ipv4_first_address: string
+    ipv4_last_address: string
+
 class Ipv4Pool extends ApplicationRecord
   ipv4_config: string
   ipv4_first: ipaddr.IPv4
@@ -10,23 +16,10 @@ class Ipv4Pool extends ApplicationRecord
     Ipv4Pool.InitParams)
     super(props)
 
-    ipv4_first := ipaddr.parse(ipv4_first_address)
-    unless ipv4_first <? ipaddr.IPv4
-      throw new Error("ipv4_first_address is not an IPv4 address")
-    @ipv4_first = ipv4_first
-
-    ipv4_last := ipaddr.parse(ipv4_last_address)
-    unless ipv4_last <? ipaddr.IPv4
-      throw new Error("ipv4_last_address is not an IPv4 address")
-    @ipv4_last = ipv4_last
+    @ipv4_first = ipaddr.IPv4.parse(ipv4_first_address)
+    @ipv4_last = ipaddr.IPv4.parse(ipv4_last_address)
 
   get ip_config()
     @ipv4_config
-
-namespace Ipv4Pool
-  export interface InitParams extends ApplicationRecord.InitParams
-    ipv4_config: string
-    ipv4_first_address: string
-    ipv4_last_address: string
 
 export default Ipv4Pool 

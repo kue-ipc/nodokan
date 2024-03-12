@@ -134,7 +134,7 @@ class NodeNic
 
   clearMessages()
     while @messagesNode.firstChild
-      @messagesNode.removeChild(@messageNode.lastChild)
+      @messagesNode.removeChild(@messagesNode.lastChild)
 
   adjustConfig(ip)
     // networkがなければ、何もしない
