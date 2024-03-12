@@ -72,7 +72,7 @@ export default class Network extends ApplicationRecord
     # ネットワークがない場合は disabled
     return ['disabled'] unless @[ip_version].network
 
-    configs = new Set(pool.ip_config() for pool in @[ip_version].pools)
+    configs = new Set((pool.ip_config() for pool in @[ip_version].pools))
 
     # 管理可能な場合
     if @current_user.manageable

@@ -1,8 +1,4 @@
-.rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"
-  data-node-nic-messages=({ \
-    address_placeholders: t("messages.address_placeholders"),
-  }.to_json)
-  ]
+.rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"]
   = form.hidden_field :id
   - nic_ro = false
 
@@ -62,7 +58,6 @@
         = form.text_field :ipv6_address,
           pattern: '([\dA-Fa-f](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
           wrapper_class: "col-md-4"
-      - prefix_message_id = "node_nics_attributes_#{form.index}_message_"
-      - %w(no_network unconfigurable auth_network require_mac require_duid network_note).each do |name|
-        .col-md-12.form-text.d-none id="#{prefix_message_id}#{name}"
-          = t(name, scope: "messages.node_nic")
+    template id="node_nics_attributes_#{form.index}_message_template"
+      .col-md-12.form-text.message
+    .row id="node_nics_attributes_#{form.index}_messages"

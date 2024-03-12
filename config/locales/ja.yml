@@ -161,7 +161,7 @@ ja:
       security_scan: |
         Windows Defenderはデフォルト設定で定期的なクイックスキャンが実施されます。
         定期的なスキャンは週1回程度を目安にしてください。
-    node_nic:
+    node_nic_helps:
       no_network: |
         接続するネットワークを選択してください。
       unconfigurable: |
@@ -181,12 +181,13 @@ ja:
         DHCPの予約のためにDUIDの入力が必須です。
       network_note: |
         ネットワークの備考欄です。
-    address_placeholders:
+    node_nic_no_address:
       dynamic: (常時変動)
-      reserved: (保存時割当)
-      static: (保存時割当)
-      manual: ''
-      disabled: ''
+      reserved: (保存時自動割当)
+      static: (保存時自動割当)
+      manual: (必須)
+      disabled: (無効)
+      mapped: (IPv4アドレスからの自動計算)
     node_nic_setting: |
       下記のように端末のネットワークを設定してください。
     node_unregistered_place: |

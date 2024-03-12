@@ -135,6 +135,11 @@
         .col
           = link_to t("actions.add"), new_nic_path, class: "btn btn-secondary",
             data: {turbo: true, turbo_stream: true}
+      script#node-nic-messages type="application/json"
+        == { \
+          no_address: t("messages.node_nic_no_address"),
+          helps: t("messages.node_nic_helps"),
+        }.to_json
 
     .rounded.border.p-2.mb-2
       = f.text_area :note
