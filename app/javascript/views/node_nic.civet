@@ -5,13 +5,13 @@ import Network from "../models/network.civet"
 import ipaddr from "ipaddr.js"
 
 class MessageStore
-  @(@messageStore)
+  @(@messages)
 
-  get(key, {scope, default: defaultMessage})
+  get(key, {scope, default: defaultMessage} = {})
     scope = [] if !scope?
     scope = scope.split('.') if scope <? "string"
-    list = [...scope, ...str.split('.')].filter .#
-    msg = @messageStore
+    list := [...scope, ...key.split('.')].filter .#
+    let msg = @messages
     for name of list
       if msg <? "string"
         break
@@ -129,8 +129,8 @@ class NodeNic
 
   addMessage(message)
     messageNode := @messageTemplateNode.content.cloneNode(true)
-    messageNode.querySelector(".message").textConent = message
-    @messagesNode.appendChild(document.createTextNode(messageNode))
+    messageNode.querySelector(".message").textContent = message
+    @messagesNode.appendChild(messageNode)
 
   clearMessages()
     while @messagesNode.firstChild
@@ -287,12 +287,12 @@ class NodeNic
 let messageStore
 
 document.addEventListener "turbo:load", ->
-  if messageStore?
+  unless messageStore?
     messagesNode := document.getElementById("node-nic-messages")
     if messagesNode?
-      messages = JSON.parse(messagesNode.textContent)
+      messages := JSON.parse(messagesNode.textContent)
       messageStore = new MessageStore(messages)
 
   for el of document.getElementsByClassName("node-nic-frame")
     unless el.classList.contains("node-nic-initialized")
-      new NodeNic(el, messageStore)
+      new NodeNic(el, {messageStore})

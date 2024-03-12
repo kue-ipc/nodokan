@@ -1,14 +1,23 @@
-"civet coffeeCompat"
-import ModelName from '../utils/model_name.civet'
+import ModelName from "../utils/model_name.civet"
 
-export default class ApplicationRecord
-  @model_name: ->
-    @model_name_cache ?= new ModelName(@)
+class ApplicationRecord
+  @model_name := new ModelName(@)
+  @param_key := @model_name.param_key
 
-  constructor: ({@id, created_at, updated_at, @url = null}) ->
+  id: number
+  url: string?
+  created_at: Date
+  updated_at: Date
+
+  @({@id, created_at, updated_at, @url}: ApplicationRecord.InitParams)
     @created_at = new Date(created_at)
     @updated_at = new Date(updated_at)
-    @
 
-Object.defineProperty ApplicationRecord, 'param_key',
-  get: -> @model_name().param_key
+namespace ApplicationRecord
+  export interface InitParams
+    id: number
+    created_at: string
+    updated_at: string
+    url: string?
+
+export default ApplicationRecord

@@ -1,15 +1,32 @@
-"civet coffeeCompat"
-import ApplicationRecord from './application_record.civet'
-import ipaddr from 'ipaddr.js'
+import ApplicationRecord from "./application_record.civet"
+import ipaddr from "ipaddr.js"
 
-export default class Ipv6Pool extends ApplicationRecord
-  constructor: ({
-    @ipv6_config, ipv6_first_address, ipv6_last_address,
-    ...props
-  }) ->
+class Ipv6Pool extends ApplicationRecord
+  ipv6_config: string
+  ipv6_first: ipaddr.IPv6
+  ipv6_last: ipaddr.IPv6
+
+  @({@ipv6_config, ipv6_first_address, ipv6_last_address, ...props}:
+    Ipv6Pool.InitParams)
     super(props)
-    @ipv6_first_address = ipaddr.parse(ipv6_first_address)
-    @ipv6_last_address = ipaddr.parse(ipv6_last_address)
-    @
 
-  ip_config: -> @ipv6_config
+    ipv6_first := ipaddr.parse(ipv6_first_address)
+    unless ipv6_first <? ipaddr.IPv6
+      throw new Error("ipv6_first_address is not an IPv6 address")
+    @ipv6_first = ipv6_first
+
+    ipv6_last := ipaddr.parse(ipv6_last_address)
+    unless ipv6_last <? ipaddr.IPv6
+      throw new Error("ipv6_last_address is not an IPv6 address")
+    @ipv6_last = ipv6_last
+
+  get ip_config()
+    @ipv6_config
+
+namespace Ipv6Pool
+  export interface InitParams extends ApplicationRecord.InitParams
+    ipv6_config: string
+    ipv6_first_address: string
+    ipv6_last_address: string
+
+export default Ipv6Pool 

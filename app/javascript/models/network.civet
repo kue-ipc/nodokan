@@ -6,7 +6,7 @@ import ipaddr from "ipaddr.js"
 export default class Network extends ApplicationRecord
   @networks = new Map
 
-  @fetch = (id) ->
+  @fetch = (id: string | number | bigint) ->
     id = String(id) if id !<? "string"
 
     unless /^\d+$/.test(id)
@@ -38,8 +38,8 @@ export default class Network extends ApplicationRecord
     @ipv4_gateway = ipv4_gateway_address ?? ipaddr.parse(ipv4_gateway_address)
     @ipv6_network = ipv6_network_address ?? ipaddr.parse(ipv6_network_address)
     @ipv6_gateway = ipv6_gateway_address ?? ipaddr.parse(ipv6_gateway_address)
-    @ipv4_pools = (new Ipv4Pool(ipv4_pool) for ipv4_pool in ipv4_pools)
-    @ipv6_pools = (new Ipv6Pool(ipv6_pool) for ipv6_pool in ipv6_pools)
+    @ipv4_pools = ipv4_pools.map (pool) -> new Ipv4Pool(pool)
+    @ipv6_pools = ipv6_pools.map (pool) -> new Ipv6Pool(pool)
 
     @ipv4 = {
       network: @ipv4_network
@@ -65,8 +65,8 @@ export default class Network extends ApplicationRecord
     return ["disabled"] unless @[ip_version].network
 
     configs := new Set(["disabled"])
-    for pool in @[ip_version].pools
-      configs.add(pool.ip_config())
+    for pool of @[ip_version].pools
+      configs.add(pool.ip_config)
 
     // 管理可能な場合
     if @current_user.manageable

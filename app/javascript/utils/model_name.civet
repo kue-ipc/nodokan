@@ -1,9 +1,18 @@
-"civet coffeeCompat"
-import {snakize} from './string_utils.civet'
+import {snakize} from "./string_utils.civet"
 
 export default class ModelName
-  constructor: (@klass) ->
-    @name = @klass.name
+  name: string
+  singular: string
+  plural: string
+  i18n_key: string
+  param_key: string
+  singular_route_key: string
+  element: string
+  collection: string
+  route_key: string
+
+  @(klass: Function)
+    @name = klass.name
 
     @singular = snakize(@name)
     @plural = "#{@singular}s"
@@ -15,4 +24,3 @@ export default class ModelName
 
     @collection = @plural
     @route_key = @plural
-    @
