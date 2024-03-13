@@ -1,4 +1,4 @@
-import {Collapse} from 'bootstrap'
+import {Collapse} from "bootstrap"
 
 export default class FlagCollapse
   element: HTMLInputElement
@@ -9,13 +9,13 @@ export default class FlagCollapse
   @(@element: HTMLInputElement, {name}: {name?: string} = {})
     @name = name ?? @element.id
     @showCollapse =
-      [...document.getElementsByClassName("collapse #{@name}-show")].map (el) ->
+      [...document.getElementsByClassName(`collapse ${@name}-show`)].map (el) ->
         new Collapse(el, {toggle: false})
     @hideCollapse =
-      [...document.getElementsByClassName("collapse #{@name}-hide")].map (el) ->
+      [...document.getElementsByClassName(`collapse ${@name}-hide`)].map (el) ->
         new Collapse(el, {toggle: false})
 
-    @element.addEventListener 'change', => @update()
+    @element.addEventListener "change", => @update()
     @update()
 
   update(): void
@@ -25,14 +25,14 @@ export default class FlagCollapse
       @off()
   
   on(): void
-    console.debug "#{@name} on"
+    console.debug `${@name} on`
     for coll of @hideCollapse
       coll.hide()
     for coll of @showCollapse
       coll.show() 
 
   off(): void
-    console.debug "#{@name} off"
+    console.debug `${@name} off`
     for coll of @showCollapse
       coll.hide()
     for coll of @hideCollapse
