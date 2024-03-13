@@ -7,7 +7,7 @@ import "./operators/icon_font.civet"
 
 import "./views/datalist_candidation.civet"
 import "./views/manage_table.civet"
-import "./views/node_confirm.civet"
+import {loadNodeConfirm} from "./views/node_confirm.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
 import "./views/node_nic.civet"
 import "./views/specific_node_application.civet"
@@ -16,6 +16,7 @@ import "./views/specific_node_application.civet"
 document.addEventListener "turbo:load", (_e)->
   console.debug "turbo:load event occured "
   loadBootstrapComponents()
+  loadNodeConfirm()
   loadNodeFlags()
 
 document.addEventListener "turbo:frame-load", (e)->
@@ -25,4 +26,5 @@ document.addEventListener "turbo:frame-load", (e)->
 
   console.debug `turbo:frame-load event occured on ${e.target.id}`
   loadBootstrapComponents(e.target)
+  loadNodeConfirm(e.target)
   loadNodeFlags(e.target)
