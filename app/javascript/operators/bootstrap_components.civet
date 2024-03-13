@@ -19,8 +19,17 @@ bootstrapComponentSelectors: ComponentSelector[] := [
   {component: bootstrap.Tooltip, selector: '[data-bs-toggle="tooltip"]'}
 ]
 
-export loadBootstrapComponents: (_id?: string) => void := (_id) ->
+LOADED_ELEMENTS := new WeakSet()
+
+export loadBootstrapComponents: (element?: Element) => void := (element) ->
+  element ?= document.documentElement
   for componentSelector of bootstrapComponentSelectors
-    for el of document.querySelectorAll(componentSelector.selector)
+    for el of element.querySelectorAll(componentSelector.selector)
+      if LOADED_ELEMENTS.has(el)
+        console.warn `[bootstrap component] element is already loaded: ${el}`
+        continue
+
       new componentSelector.component(el, componentSelector.options)
+      LOADED_ELEMENTS.add(el)
+
 
