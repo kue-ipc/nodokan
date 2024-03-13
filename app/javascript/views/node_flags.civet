@@ -1,10 +1,9 @@
-"civet coffeeCompat"
-import FlagCollapse from '../utils/flag_collapse.civet'
+import FlagCollapse from "../utils/flag_collapse.civet"
 
-document.addEventListener 'turbo:load', ->
-  for name in ['logical', 'virtual_machine', 'specific', 'public', 'dns']
-    id = "node_#{name}"
-    el = document.getElementById(id)
-    return unless el?
+export loadNodeFlags: (id?: string) => void := (id) ->
+  if not id? or id.includes("node_")
+    for name of ["logical", "virtual_machine", "specific", "public", "dns"]
+      el := document.getElementById(`node_${name}`)
+      return unless el <? HTMLInputElement
 
-    new FlagCollapse(el, {name})
+      new FlagCollapse(el, {name})

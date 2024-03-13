@@ -19,17 +19,8 @@ bootstrapComponentSelectors: ComponentSelector[] := [
   {component: bootstrap.Tooltip, selector: '[data-bs-toggle="tooltip"]'}
 ]
 
-bootstrapEnbaleComponents: () => void := ->
+export loadBootstrapComponents: (_id?: string) => void := (_id) ->
   for componentSelector of bootstrapComponentSelectors
     for el of document.querySelectorAll(componentSelector.selector)
       new componentSelector.component(el, componentSelector.options)
 
-document.addEventListener "turbo:load", ->
-  console.debug "toggle bootstrp by turbo:load"
-  bootstrapEnbaleComponents()
-
-document.addEventListener "turbo:frame-load", ->
-  console.debug "toggle bootstrp by turbo:frame-load"
-  bootstrapEnbaleComponents()
-
-globalThis.bootstrap = bootstrap

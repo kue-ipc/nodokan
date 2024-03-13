@@ -84,7 +84,8 @@ class NodeConfirm
   modalShow: ->
     @modal.show()
 
-document.addEventListener 'turbo:load', ->
+// document.addEventListener 'turbo:load', ->
+document.addEventListener 'turbo:frame-load', ->
   modalEl = document.getElementById('node-confirm-modal')
   if modalEl?
     nc = new NodeConfirm(modalEl)
