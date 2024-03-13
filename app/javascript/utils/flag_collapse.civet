@@ -1,32 +1,39 @@
-"civet coffeeCompat"
 import {Collapse} from 'bootstrap'
 
 export default class FlagCollapse
-  constructor: (@element, {@name}) ->
-    @name ?= @element.id
+  element: HTMLInputElement
+  name: string
+  showCollapse: bootstrap.Collapse[]
+  hideCollapse: bootstrap.Collapse[]
+
+  @(@element: HTMLInputElement, {name}: {name?: string} = {})
+    @name = name ?? @element.id
     @showCollapse =
-      for el in document.getElementsByClassName("collapse #{@name}-show")
+      [...document.getElementsByClassName("collapse #{@name}-show")].map (el) ->
         new Collapse(el, {toggle: false})
     @hideCollapse =
-      for el in document.getElementsByClassName("collapse #{@name}-hide")
+      [...document.getElementsByClassName("collapse #{@name}-hide")].map (el) ->
         new Collapse(el, {toggle: false})
 
-    @element.addEventListener 'change', => @change()
-    @change()
-    @
+    @element.addEventListener 'change', => @update()
+    @update()
 
-  change: ->
+  update(): void
     if @element.checked
       @on()
     else
       @off()
   
-  on: ->
+  on(): void
     console.debug "#{@name} on"
-    coll.hide() for coll in @hideCollapse
-    coll.show() for coll in @showCollapse
+    for coll of @hideCollapse
+      coll.hide()
+    for coll of @showCollapse
+      coll.show() 
 
-  off: ->
+  off(): void
     console.debug "#{@name} off"
-    coll.hide() for coll in @showCollapse
-    coll.show() for coll in @hideCollapse
+    for coll of @showCollapse
+      coll.hide()
+    for coll of @hideCollapse
+      coll.show() 

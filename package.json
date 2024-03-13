@@ -27,6 +27,7 @@
   ],
   "devDependencies": {
     "@coffeelint/cli": "^5.2.11",
+    "@types/bootstrap": "^5.2.10",
     "postcss": "^8.4.35",
     "postcss-sass": "^0.5.0",
     "stylelint": "^16.2.1",

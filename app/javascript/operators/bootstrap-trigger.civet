@@ -1,31 +1,34 @@
-"civet coffeeCompat"
-# bootstrap components
-# Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover,
-#   ScrollSpy, Tab, Toast, Tooltip
-import * as bootstrap from 'bootstrap'
+// bootstrap components
+//   Alert, Button, Carousel, Collapse, Dropdown, Modal, Offcanvas, Popover,
+//   ScrollSpy, Tab, Toast, Tooltip
+import * as bootstrap from "bootstrap"
 
-# default allow list custmized
-customDefaultAllowList = bootstrap.Tooltip.Default.allowList
+// default allow list custmized
+customDefaultAllowList := bootstrap.Tooltip.Default.allowList
 customDefaultAllowList.dl = []
 customDefaultAllowList.dt = []
 customDefaultAllowList.dd = []
 
-bootstrapComponentSelectors = [
+interface ComponentSelector
+  component: {new(element: Element, options?: object | undefined): object}
+  selector: string
+  options?: object | undefined
+
+bootstrapComponentSelectors: ComponentSelector[] := [
   {component: bootstrap.Popover, selector: '[data-bs-toggle="popover"]'}
   {component: bootstrap.Tooltip, selector: '[data-bs-toggle="tooltip"]'}
 ]
 
-bootstrapEnbaleComponents = ->
-  for selector in bootstrapComponentSelectors
-    {component, selector, option = {}} = selector
-    for el in document.querySelectorAll selector
-      new component(el, option)
+bootstrapEnbaleComponents: () => void := ->
+  for componentSelector of bootstrapComponentSelectors
+    for el of document.querySelectorAll(componentSelector.selector)
+      new componentSelector.component(el, componentSelector.options)
 
-document.addEventListener 'turbo:load', ->
+document.addEventListener "turbo:load", ->
   console.debug "toggle bootstrp by turbo:load"
   bootstrapEnbaleComponents()
 
-document.addEventListener 'turbo:frame-load', ->
+document.addEventListener "turbo:frame-load", ->
   console.debug "toggle bootstrp by turbo:frame-load"
   bootstrapEnbaleComponents()
 

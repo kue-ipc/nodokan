@@ -16,15 +16,8 @@ class Ipv6Pool extends ApplicationRecord
     Ipv6Pool.InitParams)
     super(props)
 
-    ipv6_first := ipaddr.parse(ipv6_first_address)
-    unless ipv6_first <? ipaddr.IPv6
-      throw new Error("ipv6_first_address is not an IPv6 address")
-    @ipv6_first = ipv6_first
-
-    ipv6_last := ipaddr.parse(ipv6_last_address)
-    unless ipv6_last <? ipaddr.IPv6
-      throw new Error("ipv6_last_address is not an IPv6 address")
-    @ipv6_last = ipv6_last
+    @ipv6_first = ipaddr.IPv6.parse(ipv6_first_address)
+    @ipv6_last = ipaddr.IPv6.parse(ipv6_last_address)
 
   get ip_config()
     @ipv6_config

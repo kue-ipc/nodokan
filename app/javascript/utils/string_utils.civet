@@ -1,50 +1,60 @@
-"civet coffeeCompat"
-# String Utils
+// "civet coffeeCompat"
+// String Utils
 
-# ['abc', 'xyz'] -> 'abcXyz'
-export listToCamel = (...list) ->
-  (list[0]?.toLowerCase() ? '') +
-    (capitalize(str) for str in list[1..]).join('')
+// ["abc", "xyz"] -> "abcXyz"
+export listToCamel: (...list: string[]) => string := (...list) ->
+  (list[0]?.toLowerCase() ?? "") +
+    (capitalize(str) for str of list[1..]).join("")
 
-# ['abc', 'xyz'] -> 'AbcXyz'
-export listToPascal = (...list) ->
-  (capitalize(str) for str in list).join('')
+// ["abc", "xyz"] -> "AbcXyz"
+export listToPascal: (...list: string[]) => string := (...list) ->
+  (capitalize(str) for str of list).join("")
 
-# ['abc', 'xyz'] -> 'abc_xyz'
-export listToSnake = (...list) ->
-  (str.toLowerCase().replace(/-/g, '_') for str in list).join('_')
+// ["abc", "xyz"] -> "abc_xyz"
+export listToSnake: (...list: string[]) => string := (...list) ->
+  (str.toLowerCase().replace(/-/g, "_") for str of list).join("_")
 
-# ['abc', 'xyz'] -> 'abc-xyz'
-export listToKebab = (...list) ->
-  (str.toLowerCase().replace(/_/g, '-') for str in list).join('-')
+// ["abc", "xyz"] -> "abc-xyz"
+export listToKebab: (...list: string[]) => string := (...list) ->
+  (str.toLowerCase().replace(/_/g, "-") for str of list).join("-")
 
-# ['abc', 'xyz'] -> 'abc[xyz]'
-export listToField = (...list) ->
-  (list[0] ? '') +
-    ("[#{str}]" for str in list[1..]).join('')
+// ["abc", "xyz"] -> "abc[xyz]"
+export listToField: (...list: string[]) => string := (...list) ->
+  (list[0] ?? "") +
+    (`[${str}]` for str of list[1..]).join("")
 
-# 'abc_xyz' -> ['abc', 'xyz']
-export strToList = (str) ->
-  str.replace(/([A-Z\d]+)([A-Z][a-z])/g, '$1 $2')
-    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+// "abc_xyz" -> ["abc", "xyz"]
+export strToList: (str: string) => string[] := (str) ->
+  str.replace(/([A-Z\d]+)([A-Z][a-z])/g, "$1 $2")
+    .replace(/([a-z\d])([A-Z])/g, "$1 $2")
     .toLowerCase().split(/[-_\s]+/)
 
-# camelCase
-export camelize = (str) ->
+// Capital
+export capitalize: (str: string) => string := (str) ->
+  return str if str.# is 0
+
+  firstCode := str.codePointAt(0)
+  return str unless firstCode?
+
+  firstLength := if firstCode < 0x10000 then 1 else 2
+  String.fromCodePoint(firstCode).toUpperCase() + str.slice(firstLength)
+
+// camelCase
+export camelize: (str: string) => string := (str) ->
   listToCamel(...strToList(str))
 
-# PascalCase
-export pascalize = (str) ->
+// PascalCase
+export pascalize: (str: string) => string := (str) ->
   listToPascal(...strToList(str))
 
-# snake_case
-export snakize = (str) ->
+// snake_case
+export snakize: (str: string) => string := (str) ->
   listToSnake(...strToList(str))
 
-# kebab-case
-export kebabize = (str) ->
+// kebab-case
+export kebabize: (str: string) => string := (str) ->
   listToKebab(...strToList(str))
 
-# form[field][name]
-export fieldize = (str) ->
+// form[field][name]
+export fieldize: (str: string) => string := (str) ->
   listToField(...strToList(str))

@@ -17,12 +17,7 @@ namespace Network
     ipv6_gateway_address: string?
     ipv4_pools: Ipv4Pool.InitParams[]
     ipv6_pools: Ipv6Pool.InitParams[]
-    current_user: UserFlags
-
-  export interface UserFlags
-    auth: boolean
-    usable: boolean
-    manageable: boolean
+    current_user: Record<"auth" | "usable" | "manageable", boolean>
 
 class Network extends ApplicationRecord
   @networks: Map<string, Network?> := new Map
@@ -52,7 +47,7 @@ class Network extends ApplicationRecord
   vlan: number
   auth: boolean
   note: string
-  current_user: Network.UserFlags
+  current_user: Record<"auth" | "usable" | "manageable", boolean>
   ipv4_network: ipaddr.IPv4?
   ipv4_prefix_length: number
   ipv4_gateway: ipaddr.IPv4?
@@ -117,19 +112,12 @@ class Network extends ApplicationRecord
       config_list: @ipv6_config_list
     }
 
-  // disabledは常に設定可能
   availableIpConfig(pools: Ipv4Pool[] | Ipv6Pool[]): string[]
-    // 選択不可の場合は選択肢なし
     return [] unless @current_user.usable
-
     configs := new Set(["disabled"])
     for pool of pools
       configs.add(pool.ip_config)
-
-    // 管理可能な場合
-    if @current_user.manageable
-      configs.add("manual")
-
+    configs.add("manual") if @current_user.manageable
     [...configs]
 
 export default Network

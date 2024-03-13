@@ -2,23 +2,8 @@
 
 import {listToSnake, listToField} from "../utils/string_utils.civet"
 import Network from "../models/network.civet"
+import MessageStore from "../utils/message_store.civet"
 import ipaddr from "ipaddr.js"
-
-class MessageStore
-  @(@messages)
-
-  get(key, {scope, default: defaultMessage} = {})
-    scope = [] if !scope?
-    scope = scope.split('.') if scope <? "string"
-    list := [...scope, ...key.split('.')].filter .#
-    let msg = @messages
-    for name of list
-      if msg <? "string"
-        break
-      else
-        msg = msg[name]
-
-    msg or defaultMessage or key
 
 class NodeNic
   @NAMES = [

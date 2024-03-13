@@ -1,0 +1,33 @@
+type MessageMap = Map<string, string | MessageMap>
+
+export default class MessageStore
+  #messageMap: MessageMap
+
+  @(messages: object)
+    #messageMap = @createMap(messages)
+
+  createMap(messages: object): MessageMap
+    map: MessageMap := new Map()
+    for [key, value] of Object.entries(messages)
+      throw new TypeError("key is not string") unless key <? "string"
+
+      if value <? "string"
+        map.set(key, value)
+      else if value <? "object"
+        map.set(key, @createMap(value))
+      else
+        throw new TypeError("value is not string or object")
+    map
+
+  get(key: string, {scope, default: defaultMessage}:
+    {scope?: string | string[], default?: string} = {}): string
+    scope = [] if not scope?
+    scope = scope.split('.') if scope <? "string"
+    list := [...scope, ...key.split('.')].filter .#
+    msg: MessageMap | string | undefined .= #messageMap
+    for name of list
+      break if not msg? or msg <? "string"
+      msg = msg.get(name)
+    msg = undefined if msg? <? Map
+    msg or defaultMessage or key
+

@@ -1,7 +1,13 @@
-"civet coffeeCompat"
-export default csrf = ->
-  param =
-    (el for el in document.getElementsByName('csrf-param') when el.tagName == 'META')[0].content
-  token =
-    (el for el in document.getElementsByName('csrf-token') when el.tagName == 'META')[0].content
-  {[param]: token}
+getMetaElementContent: (name: string) => string? := (name) ->
+  for el of Array.from(document.getElementsByTagName<"meta">("meta"))
+    if el.name is name
+      return el.content
+  return
+
+export default csrf: () => {[key: string]: string?} := ->
+  param := getMetaElementContent("csrf-param")
+  token := getMetaElementContent("csrf-token")
+  if param?
+    {[param]: token}
+  else
+    {}
