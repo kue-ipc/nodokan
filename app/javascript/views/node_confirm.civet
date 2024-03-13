@@ -4,7 +4,13 @@
 import {Collapse, Modal} from "bootstrap"
 
 class NodeConfirm
-  @(@modalEl)
+  modalEl: Element
+  modal: Modal
+  collapseEl: Element
+  collapse: Collapse
+  collapseShown: boolean
+
+  @(@modalEl: Element)
     @modal = Modal.getOrCreateInstance(@modalEl)
 
     @modalEl.addEventListener "shown.bs.modal", ->
@@ -13,24 +19,29 @@ class NodeConfirm
     @modalEl.addEventListener "hidden.bs.modal", ->
       location.hash = ""
 
-    @collapseEl = document.getElementById("node-confirm-collapse")
+    @collapseEl = document.getElementById("node-confirm-collapse") ??
+      throw new Error("node-confirm-collapse not found")
     @collapse = Collapse.getOrCreateInstance(@collapseEl, toggle: false)
     @collapseShown = false
 
     @collapseEl.addEventListener "shown.bs.collapse", =>
       @collapseShown = true
-      for el of @collapseEl.querySelectorAll("input,select")
-        if el.type is not "checkbox"
-          el.required = true
+      for el of @collapseEl.getElementsByTagName<"input">("input")
+        continue if el.type is "checkbox"
+        el.required = true
+      for el of @collapseEl.getElementsByTagName<"select">("select")
+        el.required = true
 
     @collapseEl.addEventListener "hidden.bs.collapse", =>
       @collapseShown = false
-      for el of @collapseEl.querySelectorAll("input,select")
-        if el.type is not "checkbox"
-          el.required = false
-    
+      for el of @collapseEl.getElementsByTagName<"input">("input")
+        continue if el.type is "checkbox"
+        el.required = false
+      for el of @collapseEl.getElementsByTagName<"select">("select")
+        el.required = false
 
-    for el of @modalEl.querySelectorAll('input[name="confirmation[existence]"]')
+    for el of @modalEl.querySelectorAll<HTMLInputElement>(
+      'input[name="confirmation[existence]"]')
       if el.value is "existing"
         @collapse.show() if el.checked
 
@@ -42,10 +53,11 @@ class NodeConfirm
 
     for attrName of ["os_update", "app_update"]
       collapseSecuredEl :=
-        document.getElementById(`node-confirm-secured-${attrName}`)
+        document.getElementById(`node-confirm-secured-${attrName}`) ??
+          throw new Error(`node-confirm-secured-${attrName} not found`)
       collapseSecured :=
         Collapse.getOrCreateInstance(collapseSecuredEl, toggle: false)
-      for el of document.querySelectorAll(
+      for el of collapseSecuredEl.querySelectorAll<HTMLInputElement>(
         `input[name="confirmation[${attrName}]"]`)
         if el.value is "secured"
           collapseSecured.show() if el.checked
@@ -82,7 +94,7 @@ class NodeConfirm
           for el of checkElList
             el.required = requiredFlag
 
-  modalShow()
+  modalShow(): void
     @modal.show()
 
 LOADED_ELEMENTS := new WeakSet()
