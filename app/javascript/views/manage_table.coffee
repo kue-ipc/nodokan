@@ -402,9 +402,15 @@ margeAll = (state, data) ->
     }
   }
 
-main = ->
+LOADED_ELEMENTS = new WeakSet()
+
+export loadManageTable = (element) ->
   node = document.getElementById('manage-table')
   return unless node?
+
+  if LOADED_ELEMENTS.has(node)
+    console.warn "[manage_table] element is already loaded: #{node.id}"
+    return
 
   url = node.dataset.url
   params = {
@@ -412,17 +418,11 @@ main = ->
     per: DEFAULT_PER_PAGE,
     order: {id: 'asc'},
   }
+  init = [
+    {url, params}
+    [fetchAll, {url, params}]
+  ]
 
-  app {
-    init: [
-      {url, params}
-      [fetchAll, {url, params}]
-    ]
-    view
-    node: document.getElementById('manage-table')
-  }
+  app {init, view, node}
 
-document.addEventListener 'turbo:load', ->
-  main()
-
-
+  LOADED_ELEMENTS.add(node)

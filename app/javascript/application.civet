@@ -6,7 +6,7 @@ import {loadBootstrapComponents} from "./operators/bootstrap_components.civet"
 import "./operators/icon_font.civet"
 
 import {loadDatalistCandidate} from "./views/datalist_candidate.coffee"
-import "./views/manage_table.coffee"
+import {loadManageTable} from "./views/manage_table.coffee"
 
 import {loadConfirmNode} from "./views/confirm_node.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
@@ -19,6 +19,7 @@ document.addEventListener "turbo:load", (_e)->
   loadBootstrapComponents()
   loadConfirmNode()
   loadDatalistCandidate()
+  loadManageTable()
   loadNodeFlags()
   loadApplySpecifiNode()
 
@@ -31,5 +32,6 @@ document.addEventListener "turbo:frame-load", (e)->
   loadBootstrapComponents(e.target)
   loadConfirmNode(e.target)
   loadDatalistCandidate(e.target)
+  loadManageTable(e.target)
   loadNodeFlags(e.target)
   loadApplySpecifiNode(e.target)
