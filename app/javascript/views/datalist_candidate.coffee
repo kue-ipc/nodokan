@@ -1,4 +1,4 @@
-# DatalisntCandidation#constructor
+# DatalisntCandidate#constructor
 # name: モデルの名前 [必須]
 # target: 対象となる属性 [必須]
 # url: indexのJSONのパス [必須]
@@ -13,7 +13,7 @@
 # locked: 変更不可になるもの
 # required: 入力必須になるもの
 
-class DatalistCandidation
+class DatalistCandidate
   constructor: ({
     @name,
     @target,
@@ -30,11 +30,11 @@ class DatalistCandidation
     @required = null,
   }) ->
     unless @name?
-      throw new Error('Name required for DatalistCandidation')
+      throw new Error('Name required for DatalistCandidate')
     unless @target?
-      throw new Error('Target required for DatalistCandidation')
+      throw new Error('Target required for DatalistCandidate')
     unless @url?
-      throw new Error('Url required for DatalistCandidation')
+      throw new Error('Url required for DatalistCandidate')
 
     if @parent?
       @parents.push(@parent)
@@ -166,7 +166,7 @@ class DatalistCandidation
 
     @updateDatalist({init: true})
 
-document.addEventListener 'turbo:load', ->
-  for node in document.getElementsByClassName('datalist-canadidation')
-    dc = new DatalistCandidation(JSON.parse(node.getAttribute('data-params')))
+export loadDatalistCandidate = (element) ->
+  for node in document.getElementsByClassName('datalist-candidate')
+    dc = new DatalistCandidate(JSON.parse(node.getAttribute('data-params')))
     dc.run()

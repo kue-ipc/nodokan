@@ -1,5 +1,5 @@
-module DatalistCanadidationHelper
-  def datalist_canadidation(
+module DatalistCandidateHelper
+  def datalist_candidate(
     name,
     target,
     url,
@@ -16,7 +16,7 @@ module DatalistCanadidationHelper
     attr_name = [*parents, name, target].join("_")
     tag.div(
       id: "#{attr_name}-app",
-      class: ["datalist-canadidation", "d-none"],
+      class: ["datalist-candidate", "d-none"],
       "data-params": params.to_json)
   end
 end

@@ -88,7 +88,7 @@
                   = security_software_f.text_field :name, list: "confirmation_security_software_name-list",
                     wrapper_class: "col-md-8", disabled: true
 
-                  = datalist_canadidation :security_software, :name, security_softwares_path,
+                  = datalist_candidate :security_software, :name, security_softwares_path,
                     parents: [:confirmation],
                     order: {confirmations_count: "desc"},
                     inputList: [:os_category_id, :installation_method],

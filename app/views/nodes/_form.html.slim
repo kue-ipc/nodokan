@@ -51,11 +51,11 @@
             = f.fields_for :place, node.place || Place.new do |place_f|
               = place_f.text_field :area, list: "node_place_area-list",
                 wrapper_class: "col-md-3 mb-3"
-              = datalist_canadidation :place, :area, places_path,
+              = datalist_candidate :place, :area, places_path,
                 parents: [:node]
               = place_f.text_field :building, list: "node_place_building-list",
                 wrapper_class: "col-md-3 mb-3"
-              = datalist_canadidation :place, :building, places_path,
+              = datalist_candidate :place, :building, places_path,
                 parents: [:node], inputList: [:area]
 
               - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
@@ -64,7 +64,7 @@
 
               = place_f.text_field :room, list: "node_place_room-list",
                 wrapper_class: "col-md-4 mb-3"
-              = datalist_canadidation :place, :room, places_path,
+              = datalist_candidate :place, :room, places_path,
                 parents: [:node], order: {nodes_count: "desc"},
                 inputList: [:area, :building, :floor]
 
@@ -80,19 +80,19 @@
 
             = hardware_f.text_field :maker, list: "node_hardware_maker-list",
               wrapper_class: "col-md-2 mb-3"
-            = datalist_canadidation :hardware, :maker, hardwares_path,
+            = datalist_candidate :hardware, :maker, hardwares_path,
               parents: [:node], inputList: [:device_type_id]
 
             = hardware_f.text_field :product_name,
               list: "node_hardware_product_name-list",
               wrapper_class: "col-md-4 mb-3"
-            = datalist_canadidation :hardware, :product_name, hardwares_path,
+            = datalist_candidate :hardware, :product_name, hardwares_path,
               parents: [:node], inputList: [:device_type_id, :maker]
 
             = hardware_f.text_field :model_number,
               list: "node_hardware_model_number-list",
               wrapper_class: "col-md-3 mb-3"
-            = datalist_canadidation :hardware, :model_number, hardwares_path,
+            = datalist_candidate :hardware, :model_number, hardwares_path,
               parents: [:node],
               inputList: [:device_type_id, :maker, :product_name]
 
@@ -110,7 +110,7 @@
               list: "node_operating_system_name-list",
               wrapper_class: "col-md-8 mb-3",
               disabled: true, required: false
-            = datalist_canadidation :operating_system, :name,
+            = datalist_candidate :operating_system, :name,
               operating_systems_path, parents: [:node],
               order: {nodes_count: "desc"},
               inputList: [:os_category_id],
