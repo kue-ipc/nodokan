@@ -1,12 +1,24 @@
-// NodeのNICを操作するためのJavaScript
+// node nics
 
 import {listToSnake, listToField} from "../utils/string_utils.civet"
 import Network from "../models/network.civet"
 import MessageStore from "../utils/message_store.civet"
-import ipaddr from "ipaddr.js"
+
+namespace NodeNic
+  export type Name = typeof NodeNic.NAMES[number]
+  export interface InputInit
+    value: string?
+    checked?: boolean
+    selectedIndex?: number
+
+  export interface Input
+    node: HTMLInputElement | HTMLSelectElement
+    init: InputInit
+    options?: HTMLOptionElement[]
+    hidden?: HTMLInputElement
 
 class NodeNic
-  @NAMES = [
+  @NAMES := [
     "_destroy"
     "interface_type"
     "name"
@@ -15,223 +27,287 @@ class NodeNic
     "mac_address"
     "ipv4_config"
     "ipv4_address"
-    "ipv6_conifg"
+    "ipv6_config"
     "ipv6_address"
-  ]
+  ] as const
 
-  @(@rootNode, {@messageStore = new MessageStore({})} = {})
+  rootNode: Element
+  messageStore: MessageStore
+  id: string
+  prefixList: string[]
+  inputMap: Map<NodeNic.Name, NodeNic.Input?>
+  duidNode: HTMLInputElement
+  messagesNode: HTMLElement
+  messageTemplateNode: HTMLTemplateElement
+  network: Network?
+
+  @(@rootNode: Element,
+    {@messageStore = new MessageStore({})}: {messageStore?: MessageStore} = {})
     console.debug `NodeNic: ${@rootNode.id}`
-    @id = @rootNode.id.match(/^node_nics_attributes_(\d+)$/)?.at(1)
-    unless @id?
-      console.warn "NodeNic element's id not match node_nics_attributes_*"
-      return
-
+    idMatches := @rootNode.id.match(/^node_nics_attributes_(\d+)$/)
+    unless idMatches?
+      throw new Error("[NodeNic] element's id not match node_nics_attributes_*")
+    @id = idMatches[1]
     @prefixList = ["node", "nics_attributes", @id]
 
-    @inputs = Object.fromEntries(
-      NodeNic.NAMES.map (name) =>
-        node := @getNode(name)
-        return [name, null] unless node?
-
-        init := {
-          value: node.value.toString()
-          checked: node.checked
-          selectedIndex: node.selectedIndex
-        }
-
-        options :=
-          if node.tagName is "SELECT"
-            [...node.options]
-
-        hidden :=
-          if node.tagName is "INPUT" and node.type is "checkbox"
-            [...document.getElementsByName(node.name)]
-              .find (el) -> el.type is "hidden"
-
-        [name, {node, init, options, hidden}]
+    @inputMap = new Map(
+      NodeNic.NAMES.map (name) => [name, @getInput(name)]
     )
-    @duidNode = document.getElementById("node_duid")
-    @messagesNode = @getNode("messages")
-    @messageTemplateNode = @getNode("message", "template")
 
-    @inputs["_destroy"].node.addEventListener "change", (_e) =>
+    duidNode := document.getElementById("node_duid")
+    unless duidNode <? HTMLInputElement
+      throw new Error("[NodeNic] node duid not found")
+    @duidNode = duidNode
+ 
+    messagesNode := @getNode("messages")
+    unless messagesNode?
+      throw new Error("[NodeNic] messages not found")
+    @messagesNode = messagesNode
+
+    messageTemplateNode := @getNode("message", "template")
+    unless messageTemplateNode <? HTMLTemplateElement
+      throw new Error("[NodeNic] message template not found")
+    @messageTemplateNode = messageTemplateNode
+
+    @inputMap.get("_destroy")?.node.addEventListener "change", (_e) =>
       @changeDestroy()
-    @inputs["interface_type"].node.addEventListener "change", (_e) =>
+    @inputMap.get("interface_type")?.node.addEventListener "change", (_e) =>
       @changeInterfaceType()
-    @inputs["network_id"].node.addEventListener "change", (_e) =>
+    @inputMap.get("network_id")?.node.addEventListener "change", (_e) =>
       @changeNetwork()
 
-    @inputs["auth"].node.addEventListener "change", (_e) =>
+    @inputMap.get("auth")?.node.addEventListener "change", (_e) =>
       @requireMacAddress()
 
-    @inputs["ipv4_config"]?.node?.addEventListener "change", (e) =>
+    @inputMap.get("ipv4_config")?.node?.addEventListener "change", (e) =>
       @requireMacAddress()
-      @adjustAddress("ipv4", e.target.value)
-    @inputs["ipv6_config"]?.node.addEventListener "change", (e) =>
+      @adjustAddress("ipv4")
+    @inputMap.get("ipv6_config")?.node.addEventListener "change", (e) =>
       @requireDuid()
-      @adjustAddress("ipv6", e.target.value)
+      @adjustAddress("ipv6")
 
     @requireMacAddress()
     @requireDuid()
 
-    @network = null
     // changeDestroyを呼び出すとすべての変更が呼び出される
     @changeDestroy()
 
-  getNodeId(...names)
+  getNodeId(...names: string[]): string
     listToSnake(...@prefixList, ...names)
 
-  getNode(...names)
+  getNode(...names: string[]): HTMLElement | null
     document.getElementById(@getNodeId(...names))
 
-  disableInputs(names, {excludes = []} = {})
-    for name of names
-      continue if excludes.includes(name)
+  getInput(name: NodeNic.Name): NodeNic.Input?
+    node := @getNode(name)
+    switch node
+      <? HTMLInputElement
+        if node.type is "checkbox"
+          hidden := [...document.getElementsByName(node.name)]
+            .find (el) -> el <? HTMLInputElement and el.type is "hidden"
+          unless hidden <? HTMLInputElement
+            throw new Error(`[NodeNic] hidden input not found: ${name}`)
+          {node, init: {value: node.value, checked: node.checked}, hidden}
+        else
+          {node, init: {value: node.value}}
+      <? HTMLSelectElement
+        {
+          node
+          init: {value: node.value, selectedIndex: node.selectedIndex}
+          options: [...node.options]
+        }
+      else
+        if node?
+          throw new Error(`[NodeNic] invalid element type: ${name}`)
+        else
+          return
 
-      {node, hidden} := @inputs[name] || {}
+  disableInputs(names: NodeNic.Name[]): void
+    for name of names
+      console.debug `disbale: ${name}`
+      {node, hidden} := @inputMap.get(name) || {}
       continue unless node?
 
       // チェックボックスはhiddenに現在の設定値を入れて固定化する
-      if node.tagName is "INPUT" && node.type is "checkbox" && hidden?
+      if node <? HTMLInputElement and node.type is "checkbox" and hidden?
         hidden.value = if node.checked then "1" else "0"
 
       node.disabled = true
 
-  enableInputs(names, {excludes = []} = {})
+  enableInputs(names: NodeNic.Name[]): void
     for name of names
-      continue if excludes.includes(name)
-
-      {node, hidden} := @inputs[name] || {}
+      console.debug `enable: ${name}`
+      {node, hidden} := @inputMap.get(name) || {}
       continue unless node?
 
       // チェックボックスはhiddenを0に戻す
-      if node.tagName is "INPUT" and node.type is "checkbox"
+      if node <? HTMLInputElement and node.type is "checkbox" and hidden?
         hidden.value = "0"
 
       node.disabled = false
 
-  addMessage(message)
-    messageNode := @messageTemplateNode.content.cloneNode(true)
-    messageNode.querySelector(".message").textContent = message
-    @messagesNode.appendChild(messageNode)
+  addMessage(message: string): void
+    messageRoot := @messageTemplateNode.content.cloneNode(true)
+    unless messageRoot <? DocumentFragment or messageRoot <? Element
+      console.warn "[NodeNic] no document frament nor element in template"
+      return
+    messageNode := messageRoot.querySelector(".message")
+    unless messageNode <? Element
+      console.warn "[NodeNic] no message element in template"
+      return
+    messageNode.textContent = message
+    @messagesNode.appendChild(messageRoot)
 
-  clearMessages()
+  clearMessages(): void
     while @messagesNode.firstChild
-      @messagesNode.removeChild(@messagesNode.lastChild)
+      last := @messagesNode.lastChild
+      @messagesNode.removeChild(last) if last?
 
-  adjustConfig(ip)
+  adjustConfig(ip: "ipv4" | "ipv6"): void
     // networkがなければ、何もしない
     return unless @network?
 
-    {node, init, options} := @inputs[`${ip}_config"`] || {}
-    return unless node?
+    input := @inputMap.get(`${ip}_config`)
+    return unless input?
+    {node, init, options} := input
+    unless node <? HTMLSelectElement
+      console.warn `[NodeNic] not selet element for ${ip}_config`
+      return
+    unless options?
+      console.warn `[NodeNic] no options for ${ip}_config`
+      return
 
     list := @network?[`${ip}_config_list`]
-
-    selectedIndex := opitons.findIndex (el) -> el.selected
-    disabledIndex := options.findInedx (el) -> el.value is "disabled"
-    
     for el of options
       if list.includes(el.value)
         el.disabled = false
       else
         el.disabled = true
 
-    node.selectedIndex =
-      if selectedIndex is not disabledIndex and !options[selectedIndex].disbaled
-        selectedIndex
-      else if @checkInitInput("network_id")
-        init.selectedIndex
-      else
-        (options.findIndex (el) -> !el.disabled) || disabledIndex
+    selectedOption := node.selectedOptions.item(0)    
+
+    if @checkInitInput("network_id")
+      node.selectedIndex = init.selectedIndex || -1
+    else if selectedOption !<? HTMLOptionElement or
+        selectedOption.disabled or
+        selectedOption.value is "disabled"
+      node.selectedIndex = 
+        (options.findIndex (el) -> !el.disabled) ||
+        (options.findIndex (el) -> el.value is "disabled") ||
+        -1
 
     @adjustAddress(ip)
 
-  adjustAddress(ip)
-    {node, init} := @inputs[`${ip}_address`] || {}
-    return unless node?
+  adjustAddress(ip: "ipv4" | "ipv6"): void
+    input := @inputMap.get(`${ip}_address`)
+    return unless input?
+    {node, init} := input
+    unless node <? HTMLInputElement
+      console.warn `[NodeNic] not input element for ${ip}_config`
+      return
 
-    config := @inputs[`${ip}_config`]?.value || "disabled"
+    config := @inputMap.get(`${ip}_config`)?.node.value || "disabled"
 
-    node.placeholder = @messageStore.get(config, scope: "no_address",
-      default: "")
+    node.placeholder =
+      @messageStore.get(config, scope: "no_address",default: "")
     node.value =
-      if checkInitInput("network_id") && checkInitInput(`${ip}_config`)
+      if @checkInitInput("network_id") && @checkInitInput(`${ip}_config`)
         init.value || ""
       else
         ""
 
-    node.disabled = 
-      if !@network?.current_user?.manageable or
-           ["dynamic", "disabled", "mapped"].includes(config)
-        node.disabled = true
-      else
-        node.disabled = false
+    node.disabled =
+      ["dynamic", "disabled", "mapped"].includes(config) or
+        not @network?.current_user.manageable
 
-  requireMacAddress()
-    if @inputs["auth"].node.checked or
-        @inputs["ipv4_config"]?.node?.value is "reserved"
-      @inputs["mac_address"].node.required = true
+  requireMacAddress(): void
+    macAddressNode := @inputMap.get("mac_address")?.node
+    unless macAddressNode <? HTMLInputElement
+      console.warn "[NodeNic] not input element for mac_address"
+      return
+    authNode := @inputMap.get("auth")?.node
+
+    if (authNode <? HTMLInputElement and authNode.checked) or
+        @inputMap.get("ipv4_config")?.node.value is "reserved"
+      macAddressNode.required = true
       @addMessage(@messageStore.get("helps.require_mac"))
     else
-      @inputs["mac_address"].node.required = false
+      macAddressNode.required = false
 
-  requireDuid()
-    if @inputs["ipv6_config"]?.node?.value is "reserved"
+  requireDuid(): void
+    if @inputMap.get("ipv6_config")?.node?.value is "reserved"
       @duidNode.required = true
       @addMessage(@messageStore.get("helps.require_duid"))
     else
       @duidNode.required = false
 
-  setInitInput(name)
-    {node, init} := @inputs[name]
-    return unless node?
+  setInitInput(name: NodeNic.Name): void
+    input := @inputMap.get(name)
+    return unless input?
 
-    switch node.tagName
-      "INPUT"
+    {node, init} := input
+
+    switch node
+      <? HTMLInputElement
         if node.type is "checkbox"
-          node.checked = init.checked
+          node.checked = init.checked || false
         else
-          node.value = init.value
-      "SELECT"
-        node.selectedIndex = init.selectedIndex
+          node.value = init.value || ""
+      <? HTMLSelectElement
+        node.selectedIndex = init.selectedIndex || -1
 
-  checkInitInput(name) ->
-    {node, init} := @inputs[name]
-    return true unless node?
+  checkInitInput(name: NodeNic.Name): boolean
+    input := @inputMap.get(name)
+    return false unless input?
+    {node, init} := input
 
-    switch node.tagName
-      "INPUT"
+    switch node
+      <? HTMLInputElement
         if node.type is "checkbox"
           node.checked is init.checked
         else
           node.value is init.value
-      "SELECT"
+      <? HTMLSelectElement
         node.selectedIndex is init.selectedIndex
       else
         false
 
-  changeDestroy()
-    if @inputs["_destroy"].node.checked
-      @disableInputs(NodeNic.NAMES, excludes: ["_destroy"])
+  changeDestroy(): void
+    destroyNode := @inputMap.get("_destroy")?.node
+    unless destroyNode <? HTMLInputElement
+      console.warn "[NodeNic] destroy input not found"
       return
 
-    @enableInputs(["interface_type"])
-    @changeInterfaceType()
+    if destroyNode.checked
+      @disableInputs(NodeNic.NAMES.filter & is not "_destroy")
+    else
+      @enableInputs(["interface_type"])
+      @changeInterfaceType()
 
-  changeInterfaceType()
-    unless @inputs["interface_type"].node.value
-      @disableInputs(NodeNic.NAMES, excludes: ["_destroy", "interface_type"])
+  changeInterfaceType(): void
+    interfaceTypeNode := @inputMap.get("interface_type")?.node
+    unless interfaceTypeNode <? HTMLSelectElement
+      console.warn "[NodeNic] interafec_type select not found"
       return
 
-    @enableInputs(["name", "network_id", "mac_address", "duid"])
-    @changeNetwork()
+    if interfaceTypeNode.value
+      @enableInputs(["name", "network_id", "mac_address"])
+      @changeNetwork()
+    else
+      @disableInputs(NodeNic.NAMES
+        .filter (name) -> not ["_destroy", "interface_type"].includes(name))
 
-  changeNetwork()
+  changeNetwork(): Promise<void>
     @clearMessages()
 
-    networkId := @inputs["network_id"].node.value
-    @network = if networkId? then await Network.fetch(networkId) else null
+    networkIdNode := @inputMap.get("network_id")?.node
+    unless networkIdNode <? HTMLSelectElement
+      console.warn "[NodeNic] network_id select not found"
+      return
+    networkId := networkIdNode.value
+    authNode := @inputMap.get("auth")?.node
+
+    @network = if networkId then await Network.fetch(networkId) else undefined
 
     if @network
         // auth
@@ -240,10 +316,10 @@ class NodeNic
           if @checkInitInput("network_id")
             @setInitInput("auth")
           else
-            @inputs["auth"].node.checked = true
+            authNode.checked = true if authNode <? HTMLInputElement
           @enableInputs(["auth"])
         else
-          @inputs["auth"].node.checked = false
+          authNode.checked = false if authNode <? HTMLInputElement
           @disableInputs(["auth"])
 
         // note
@@ -251,14 +327,14 @@ class NodeNic
           @addMessage(@network.note)
 
         @enableInputs(["ipv4_config", "ipv6_config"])
-    else if networkId?
+    else if networkId
       @setInitInput("auth")
       @setInitInput("ipv4_config")
       @setInitInput("ipv6_config")
       @disableInputs(["auth", "ipv4_config", "ipv6_config"])
       @addMessage(@messageStore.get("helps.unconfigurable"))
     else
-      @inputs["auth"].node.checked = false
+      authNode.checked = false if authNode <? HTMLInputElement
       @disableInputs(["auth", "ipv4_config", "ipv6_config"])
       @addMessage(@messageStore.get("helps.no_network"))
 
@@ -267,7 +343,7 @@ class NodeNic
     @requireMacAddress()
     @requireDuid()
 
-let messageStore
+let messageStore: MessageStore
 
 LOADED_ELEMENTS := new WeakSet()
 
@@ -279,7 +355,7 @@ export loadNodeNics: (element?: Element) => void := (element) ->
   unless messageStore?
     messagesNode := document.getElementById("node-nic-messages")
     if messagesNode?
-      messages := JSON.parse(messagesNode.textContent)
+      messages := JSON.parse(messagesNode.textContent || "{}")
       messageStore = new MessageStore(messages)
 
   for el of document.getElementsByClassName("node-nic-frame")
