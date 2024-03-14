@@ -115,7 +115,9 @@ class DatalistCandidate
           ''
 
     if @locked?
-      if ((attr for attr in @attrList when attr.name is @locked.name and @locked.list.includes(attr.value))[0]?)
+      lockedAttr = @attrList.find (attr) ->
+        attr.name is @locked.name and @locked.list.includes(attr.value)
+      if lockedAttr?
         @targetNode.readOnly = true
         @targetNodeLabel.classList.add('readonly')
         @targetNode.value = data[0][@target]
@@ -124,7 +126,9 @@ class DatalistCandidate
         @targetNode.readOnly = false
 
     if @required?
-      if ((attr for attr in @attrList when attr.name is @required.name and @required.list.includes(attr.value))[0]?)
+      requiredAttr = @attrList.find (attr) ->
+        attr.name is @required.name and @required.list.includes(attr.value)
+      if requiredAttr?
         @targetNode.required = true
         @targetNodeLabel.classList.add('required')
       else
