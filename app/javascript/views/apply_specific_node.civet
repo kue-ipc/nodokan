@@ -21,16 +21,32 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
 
   externalSelect :=
     document.getElementById("specific_node_application_external")
-  unless externalSelect?
-    console.warn "[specific_node_application]"
+  unless externalSelect <? HTMLSelectElement
+    console.warn "[apply_specific_node] external select not found"
+    return
 
   ruleListTextArea :=
     document.getElementById("specific_node_application_rule_list")
+  unless ruleListTextArea <? HTMLTextAreaElement
+    console.warn "[apply_specific_node] rule list text area not fonud"
+    return
 
   registerDnsCheckBox :=
     document.getElementById("specific_node_application_register_dns")
+  unless registerDnsCheckBox <? HTMLInputElement
+    console.warn "[apply_specific_node] register dns check box not fonud"
+    return
+
+  previousRegisterDns := registerDnsCheckBox.previousElementSibling
+  unless previousRegisterDns <? HTMLInputElement
+    console.warn "[apply_specific_node] previous register dns not fonud"
+    return
+
 
   fqdnText := document.getElementById("specific_node_application_fqdn")
+  unless fqdnText <? HTMLInputElement
+    console.warn "[apply_specific_node] fqdn text not fonud"
+    return
 
   labelFor: (el: HTMLElement) => HTMLLabelElement | null := (el) ->
     document.querySelector<HTMLLabelElement>(`label[for="${el.id}"]`)
@@ -72,7 +88,7 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
       )
     checkRuleSet()
 
-  checkRuleSet: () => := ->
+  checkRuleSet: () => void := ->
     for el of ruleSetRadioMap.values()
       continue unless el.checked
 
@@ -85,14 +101,14 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
             option.selected = false
             option.disabled = true
 
-        ruleListTextArea.value = JSON.parse(el.dataset.list).join(`\n`)
+        ruleListTextArea.value = JSON.parse(el.dataset?.list ?? "").join("\n")
         ruleListTextArea.readOnly = true
 
-        if ["true", "1", "on"].includes(el.dataset.dns.toLowerCase())
-          registerDnsCheckBox.previousElementSibling.value = "1"
+        if ["true", "1", "on"].includes(el.dataset?.dns?.toLowerCase() ?? "")
+          previousRegisterDns.value = "1"
           registerDnsCheckBox.checked = true
         else
-          registerDnsCheckBox.previousElementSibling.value = "0"
+          previousRegisterDns.value = "0"
           registerDnsCheckBox.checked = false
         registerDnsCheckBox.disabled = true
 
@@ -106,16 +122,15 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
         ruleListTextArea.value = ""
         ruleListTextArea.readOnly = false
 
-        registerDnsCheckBox.previousElementSibling.value = "0"
+        previousRegisterDns.value = "0"
         registerDnsCheckBox.checked = false
         registerDnsCheckBox.disabled = false
 
         setRequired(externalSelect, ruleListTextArea)
 
       checkDns()
-      break
 
-  checkExternal: () => := ->
+  checkExternal: () => void := ->
     if ["none", "direct"].includes(externalSelect.value)
       ruleListTextArea.value = ""
       ruleListTextArea.readOnly = true
@@ -124,7 +139,7 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
       ruleListTextArea.readOnly = false
       setRequired(ruleListTextArea)
 
-  checkDns: () => := ->
+  checkDns: () => void := ->
     if registerDnsCheckBox.checked
       setRequired(fqdnText)
     else
