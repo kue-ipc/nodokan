@@ -7,18 +7,18 @@ import "./operators/icon_font.civet"
 
 import "./views/datalist_candidation.civet"
 import "./views/manage_table.civet"
-import {loadNodeConfirm} from "./views/node_confirm.civet"
+import {loadConfirmNode} from "./views/confirm_node.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
 import "./views/node_nic.civet"
-import {loadSpecifiNodeApplication} from "./views/specific_node_application.civet"
+import {loadApplySpecifiNode} from "./views/apply_specific_node.civet"
 
 
 document.addEventListener "turbo:load", (_e)->
   console.debug "[application] turbo:load event occured "
   loadBootstrapComponents()
-  loadNodeConfirm()
+  loadConfirmNode()
   loadNodeFlags()
-  loadSpecifiNodeApplication()
+  loadApplySpecifiNode()
 
 document.addEventListener "turbo:frame-load", (e)->
   unless e.target <? Element
@@ -27,6 +27,6 @@ document.addEventListener "turbo:frame-load", (e)->
 
   console.debug `[application] turbo:frame-load event occured on ${e.target.id}`
   loadBootstrapComponents(e.target)
-  loadNodeConfirm(e.target)
+  loadConfirmNode(e.target)
   loadNodeFlags(e.target)
-  loadSpecifiNodeApplication(e.target)
+  loadApplySpecifiNode(e.target)

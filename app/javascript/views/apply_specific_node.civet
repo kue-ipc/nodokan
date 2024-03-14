@@ -1,22 +1,28 @@
-// specific node application
+// GET nodes/:id/specific_node_application/new
+// apply specific node
+
+type HTMLFormControlElement = HTMLInputElement | HTMLSelectElement |
+  HTMLTextAreaElement
 
 // document.addEventListener "turbo:load", ->
 // LOADED_ELEMENTS := new WeakSet()
 
-export loadSpecifiNodeApplication: (element?: Element) => void := (element) ->
+export loadApplySpecifiNode: (element?: Element) => void := (element) ->
   reasonText := document.getElementById("specific_node_application_reason")
   return unless reasonText?
 
-  actionRadioMap := new Map
+  actionRadioMap: Map<string, HTMLInputElement> := new Map
   for el of document.getElementsByName("specific_node_application[action]")
-    actionRadioMap.set(el.value, el)
+    actionRadioMap.set(el.value, el) if el <? HTMLInputElement
 
-  ruleSetRadioMap := new Map
+  ruleSetRadioMap: Map<string, HTMLInputElement> := new Map
   for el of document.getElementsByName("specific_node_application[rule_set]")
-    ruleSetRadioMap.set(el.value, el)
+    ruleSetRadioMap.set(el.value, el) if el <? HTMLInputElement
 
   externalSelect :=
     document.getElementById("specific_node_application_external")
+  unless externalSelect?
+    console.warn "[specific_node_application]"
 
   ruleListTextArea :=
     document.getElementById("specific_node_application_rule_list")
@@ -26,29 +32,29 @@ export loadSpecifiNodeApplication: (element?: Element) => void := (element) ->
 
   fqdnText := document.getElementById("specific_node_application_fqdn")
 
-  labelFor := (el) ->
-    document.querySelector(`label[for="${el.id}"]`)
+  labelFor: (el: HTMLElement) => HTMLLabelElement | null := (el) ->
+    document.querySelector<HTMLLabelElement>(`label[for="${el.id}"]`)
 
-  setRequired := (...list) ->
+  setRequired: (...list: HTMLFormControlElement[]) => void := (...list) ->
     for el of list
       el.required = true
       labelFor(el)?.classList?.add("required")
 
-  unsetRequired := (...list) ->
+  unsetRequired: (...list: HTMLFormControlElement[]) => void := (...list) ->
     for el of list
       el.required = false
       labelFor(el)?.classList?.remove("required")
 
-  setDisabled := (...list) ->
+  setDisabled: (...list: HTMLFormControlElement[]) => void := (...list) ->
     for el of list
       el.disabled = true
 
-  unsetDisabled := (...list) ->
+  unsetDisabled: (...list: HTMLFormControlElement[]) => void := (...list) ->
     for el of list
       el.disabled = false
 
-  checkAction := ->
-    if actionRadioMap.get("release").checked
+  checkAction: () => void := ->
+    if actionRadioMap.get("release")?.checked
       setDisabled(
         ...ruleSetRadioMap.values(),
         externalSelect,
@@ -66,7 +72,7 @@ export loadSpecifiNodeApplication: (element?: Element) => void := (element) ->
       )
     checkRuleSet()
 
-  checkRuleSet := ->
+  checkRuleSet: () => := ->
     for el of ruleSetRadioMap.values()
       continue unless el.checked
 
@@ -109,7 +115,7 @@ export loadSpecifiNodeApplication: (element?: Element) => void := (element) ->
       checkDns()
       break
 
-  checkExternal := ->
+  checkExternal: () => := ->
     if ["none", "direct"].includes(externalSelect.value)
       ruleListTextArea.value = ""
       ruleListTextArea.readOnly = true
@@ -118,7 +124,7 @@ export loadSpecifiNodeApplication: (element?: Element) => void := (element) ->
       ruleListTextArea.readOnly = false
       setRequired(ruleListTextArea)
 
-  checkDns := ->
+  checkDns: () => := ->
     if registerDnsCheckBox.checked
       setRequired(fqdnText)
     else

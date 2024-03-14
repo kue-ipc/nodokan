@@ -1,5 +1,5 @@
-// GET nodes/:id
-// confirmation form
+// GET nodes/:id#confirm
+// corfim node
 
 import {Collapse, Modal} from "bootstrap"
 
@@ -105,12 +105,12 @@ class NodeConfirm
 
 LOADED_ELEMENTS := new WeakSet()
 
-export loadNodeConfirm: (element?: Element) => void := (element) ->
+export loadConfirmNode: (element?: Element) => void := (element) ->
   el := document.getElementById("node-confirm-modal")
   return unless el?
 
   if LOADED_ELEMENTS.has(el)
-    console.warn `[node_confirmation] element is already loaded: ${el.id}`
+    console.warn `[confirm_node] element is already loaded: ${el.id}`
     return
 
   nc := new NodeConfirm(el)
