@@ -146,17 +146,34 @@ class NodeNic
 
       node.disabled = false
 
-  addMessage(message: string): void
-    messageRoot := @messageTemplateNode.content.cloneNode(true)
-    unless messageRoot <? DocumentFragment or messageRoot <? Element
-      console.warn "[NodeNic] no document frament nor element in template"
+  addMessage(key: string, message?: string): void
+    message = @messageStore.get(key) unless message?
+    unless message
+      console.warn "[NodeNic] no message"
       return
-    messageNode := messageRoot.querySelector(".message")
-    unless messageNode <? Element
-      console.warn "[NodeNic] no message element in template"
-      return
-    messageNode.textContent = message
-    @messagesNode.appendChild(messageRoot)
+
+    id := @getNodeId("messages", key)
+    currentMessageNode := document.getElementById(id)
+    if currentMessageNode?
+      currentMessageNode.textContent = message
+    else
+      clone := @messageTemplateNode.content.cloneNode(true)
+      unless clone <? DocumentFragment or clone <? Element
+        console.warn "[NodeNic] no document frament nor element in template"
+        return
+      messageNode := clone.querySelector(".message")
+      unless messageNode <? Element
+        console.warn "[NodeNic] no message element in template"
+        return
+      messageNode.id = id
+      messageNode.textContent = message
+      @messagesNode.appendChild(clone)
+  
+  removeMessage(key: string): void
+    id := @getNodeId("messages", key)
+    messageNode := document.getElementById(id)
+    if messageNode?
+      @messagesNode.removeChild(messageNode)
 
   clearMessages(): void
     while @messagesNode.firstChild
@@ -230,16 +247,18 @@ class NodeNic
     if (authNode <? HTMLInputElement and authNode.checked) or
         @inputMap.get("ipv4_config")?.node.value is "reserved"
       macAddressNode.required = true
-      @addMessage(@messageStore.get("helps.require_mac"))
+      @addMessage("helps.require_mac")
     else
       macAddressNode.required = false
+      @removeMessage("helps.require_mac")
 
   requireDuid(): void
     if @inputMap.get("ipv6_config")?.node?.value is "reserved"
       @duidNode.required = true
-      @addMessage(@messageStore.get("helps.require_duid"))
+      @addMessage("helps.require_duid")
     else
       @duidNode.required = false
+      @removeMessage("helps.require_duid")
 
   setInitInput(name: NodeNic.Name): void
     input := @inputMap.get(name)
@@ -312,7 +331,7 @@ class NodeNic
     if @network
         // auth
         if @network.auth
-          @addMessage(@messageStore.get("helps.auth_network"))
+          @addMessage("helps.auth_network")
           if @checkInitInput("network_id")
             @setInitInput("auth")
           else
@@ -324,7 +343,7 @@ class NodeNic
 
         // note
         if @network.note
-          @addMessage(@network.note)
+          @addMessage("note", @network.note)
 
         @enableInputs(["ipv4_config", "ipv6_config"])
     else if networkId
@@ -332,11 +351,11 @@ class NodeNic
       @setInitInput("ipv4_config")
       @setInitInput("ipv6_config")
       @disableInputs(["auth", "ipv4_config", "ipv6_config"])
-      @addMessage(@messageStore.get("helps.unconfigurable"))
+      @addMessage("helps.unconfigurable")
     else
       authNode.checked = false if authNode <? HTMLInputElement
       @disableInputs(["auth", "ipv4_config", "ipv6_config"])
-      @addMessage(@messageStore.get("helps.no_network"))
+      @addMessage("helps.no_network")
 
     @adjustConfig("ipv4")
     @adjustConfig("ipv6")
