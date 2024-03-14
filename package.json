@@ -16,7 +16,8 @@
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.1.0",
     "rails_admin": "3.1.2",
-    "sass": "^1.71.1"
+    "sass": "^1.71.1",
+    "typescript": "^5.4.2"
   },
   "scripts": {
     "build": "node esbuild.build.mjs",
