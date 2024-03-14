@@ -70,10 +70,14 @@ class NodeConfirm
 
     for attrName of ["security_hardwares"]
       exclusiveValues := ["none", "unknown"]
-      checkElList := document.getElementsByName(`confirmation[${attrName}][]`)
+      checkElList: HTMLInputElement[] := []
+      for el of document.getElementsByName(`confirmation[${attrName}][]`)
+        checkElList.push(el) if el <? HTMLInputElement
 
       for el of checkElList
         el.addEventListener "change", (event) =>
+          return unless event.target <? HTMLInputElement
+
           if event.target.checked
             if exclusiveValues.includes(event.target.value)
               for otherEl of checkElList
@@ -87,8 +91,10 @@ class NodeConfirm
     for el of document.getElementsByName(`commit`)
       el.addEventListener `click`, (event) =>
         for attrName of ["security_hardwares"]
-          checkElList :=
-            document.getElementsByName(`confirmation[${attrName}][]`)
+          checkElList: HTMLInputElement[] := []
+          for el of document.getElementsByName(`confirmation[${attrName}][]`)
+            checkElList.push(el) if el <? HTMLInputElement
+
           requiredFlag := @collapseShown &&
             [...checkElList].filter(.checked).# is 0
           for el of checkElList

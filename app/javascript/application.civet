@@ -14,17 +14,17 @@ import "./views/specific_node_application.civet"
 
 
 document.addEventListener "turbo:load", (_e)->
-  console.debug "turbo:load event occured "
+  console.debug "[application] turbo:load event occured "
   loadBootstrapComponents()
   loadNodeConfirm()
   loadNodeFlags()
 
 document.addEventListener "turbo:frame-load", (e)->
   unless e.target <? Element
-    console.warn "turbo:frame-load event occured on not Element"
+    console.warn "[application] turbo:frame-load event occured on not Element"
     return
 
-  console.debug `turbo:frame-load event occured on ${e.target.id}`
+  console.debug `[application] turbo:frame-load event occured on ${e.target.id}`
   loadBootstrapComponents(e.target)
   loadNodeConfirm(e.target)
   loadNodeFlags(e.target)
