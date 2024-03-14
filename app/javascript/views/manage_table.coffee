@@ -1,4 +1,3 @@
-"civet coffeeCompat"
 import {app, h, text} from 'hyperapp'
 import csrf from '../utils/csrf.civet'
 

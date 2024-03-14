@@ -5,8 +5,9 @@ import "./controllers"
 import {loadBootstrapComponents} from "./operators/bootstrap_components.civet"
 import "./operators/icon_font.civet"
 
-import "./views/datalist_candidation.civet"
-import "./views/manage_table.civet"
+import "./views/datalist_candidation.coffee"
+import "./views/manage_table.coffee"
+
 import {loadConfirmNode} from "./views/confirm_node.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
 import "./views/node_nic.civet"

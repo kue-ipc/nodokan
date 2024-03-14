@@ -1,4 +1,3 @@
-"civet coffeeCompat"
 # DatalisntCandidation#constructor
 # name: モデルの名前 [必須]
 # target: 対象となる属性 [必須]
