@@ -115,7 +115,7 @@ class DatalistCandidate
           ''
 
     if @locked?
-      lockedAttr = @attrList.find (attr) ->
+      lockedAttr = @attrList.find (attr) =>
         attr.name is @locked.name and @locked.list.includes(attr.value)
       if lockedAttr?
         @targetNode.readOnly = true
@@ -126,7 +126,7 @@ class DatalistCandidate
         @targetNode.readOnly = false
 
     if @required?
-      requiredAttr = @attrList.find (attr) ->
+      requiredAttr = @attrList.find (attr) =>
         attr.name is @required.name and @required.list.includes(attr.value)
       if requiredAttr?
         @targetNode.required = true

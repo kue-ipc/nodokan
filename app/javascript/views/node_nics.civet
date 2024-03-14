@@ -78,8 +78,6 @@ class NodeNic
     // changeDestroyを呼び出すとすべての変更が呼び出される
     @changeDestroy()
 
-    @rootNode.classList.add("node-nic-initialized")
-
   getNodeId(...names)
     listToSnake(...@prefixList, ...names)
 
@@ -271,7 +269,13 @@ class NodeNic
 
 let messageStore
 
-document.addEventListener "turbo:load", ->
+LOADED_ELEMENTS := new WeakSet()
+
+export loadNodeFlags: (element?: Element) => void := (element) ->
+
+export loadNodeNics: (element?: Element) => void := (element) ->
+  return if element? and not element.id.includes("node_")
+
   unless messageStore?
     messagesNode := document.getElementById("node-nic-messages")
     if messagesNode?
@@ -279,5 +283,9 @@ document.addEventListener "turbo:load", ->
       messageStore = new MessageStore(messages)
 
   for el of document.getElementsByClassName("node-nic-frame")
-    unless el.classList.contains("node-nic-initialized")
-      new NodeNic(el, {messageStore})
+    if LOADED_ELEMENTS.has(el)
+      console.warn `[node_nics] element is already loaded: ${el.id}`
+      continue
+
+    new NodeNic(el, {messageStore})
+    LOADED_ELEMENTS.add(el)

@@ -8,20 +8,21 @@ import "./operators/icon_font.civet"
 import {loadDatalistCandidate} from "./views/datalist_candidate.coffee"
 import {loadManageTable} from "./views/manage_table.coffee"
 
+import {loadApplySpecifiNode} from "./views/apply_specific_node.civet"
 import {loadConfirmNode} from "./views/confirm_node.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
-import "./views/node_nic.civet"
-import {loadApplySpecifiNode} from "./views/apply_specific_node.civet"
+import {loadNodeNics} from "./views/node_nics.civet"
 
 
 document.addEventListener "turbo:load", (_e)->
   console.debug "[application] turbo:load event occured "
+  loadApplySpecifiNode()
   loadBootstrapComponents()
   loadConfirmNode()
   loadDatalistCandidate()
   loadManageTable()
   loadNodeFlags()
-  loadApplySpecifiNode()
+  loadNodeNics()
 
 document.addEventListener "turbo:frame-load", (e)->
   unless e.target <? Element
@@ -29,9 +30,10 @@ document.addEventListener "turbo:frame-load", (e)->
     return
 
   console.debug `[application] turbo:frame-load event occured on ${e.target.id}`
+  loadApplySpecifiNode(e.target)
   loadBootstrapComponents(e.target)
   loadConfirmNode(e.target)
   loadDatalistCandidate(e.target)
   loadManageTable(e.target)
   loadNodeFlags(e.target)
-  loadApplySpecifiNode(e.target)
+  loadNodeNics(e.target)
