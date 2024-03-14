@@ -1,51 +1,54 @@
-"civet coffeeCompat"
-# specific node application
+// specific node application
 
-document.addEventListener 'turbo:load', ->
-  reasonText = document.getElementById('specific_node_application_reason')
+// document.addEventListener "turbo:load", ->
+// LOADED_ELEMENTS := new WeakSet()
+
+export loadSpecifiNodeApplication: (element?: Element) => void := (element) ->
+  reasonText := document.getElementById("specific_node_application_reason")
   return unless reasonText?
 
-  actionRadioMap = new Map
-  for el in document.getElementsByName('specific_node_application[action]')
+  actionRadioMap := new Map
+  for el of document.getElementsByName("specific_node_application[action]")
     actionRadioMap.set(el.value, el)
 
-  ruleSetRadioMap = new Map
-  for el in document.getElementsByName('specific_node_application[rule_set]')
+  ruleSetRadioMap := new Map
+  for el of document.getElementsByName("specific_node_application[rule_set]")
     ruleSetRadioMap.set(el.value, el)
 
-  externalSelect = document.getElementById('specific_node_application_external')
+  externalSelect :=
+    document.getElementById("specific_node_application_external")
 
-  ruleListTextArea =
-    document.getElementById('specific_node_application_rule_list')
+  ruleListTextArea :=
+    document.getElementById("specific_node_application_rule_list")
 
-  registerDnsCheckBox =
-    document.getElementById('specific_node_application_register_dns')
+  registerDnsCheckBox :=
+    document.getElementById("specific_node_application_register_dns")
 
-  fqdnText = document.getElementById('specific_node_application_fqdn')
+  fqdnText := document.getElementById("specific_node_application_fqdn")
 
-  labelFor = (el) ->
-    document.querySelector("label[for=\"#{el.id}\"]")
+  labelFor := (el) ->
+    document.querySelector(`label[for="${el.id}"]`)
 
-  setRequired = (...list) ->
-    for el in list
+  setRequired := (...list) ->
+    for el of list
       el.required = true
-      labelFor(el)?.classList?.add('required')
+      labelFor(el)?.classList?.add("required")
 
-  unsetRequired = (...list) ->
-    for el in list
+  unsetRequired := (...list) ->
+    for el of list
       el.required = false
-      labelFor(el)?.classList?.remove('required')
+      labelFor(el)?.classList?.remove("required")
 
-  setDisabled = (...list) ->
-    for el in list
+  setDisabled := (...list) ->
+    for el of list
       el.disabled = true
 
-  unsetDisabled = (...list) ->
-    for el in list
+  unsetDisabled := (...list) ->
+    for el of list
       el.disabled = false
 
-  checkAction = ->
-    if actionRadioMap.get('release').checked
+  checkAction := ->
+    if actionRadioMap.get("release").checked
       setDisabled(
         ...ruleSetRadioMap.values(),
         externalSelect,
@@ -63,12 +66,12 @@ document.addEventListener 'turbo:load', ->
       )
     checkRuleSet()
 
-  checkRuleSet = ->
-    for el from ruleSetRadioMap.values()
+  checkRuleSet := ->
+    for el of ruleSetRadioMap.values()
       continue unless el.checked
 
       if Number(el.value) >= 0
-        for option in externalSelect.getElementsByTagName('option')
+        for option of externalSelect.getElementsByTagName("option")
           if option.value == el.dataset.external
             option.selected = true
             option.disabled = false
@@ -76,28 +79,28 @@ document.addEventListener 'turbo:load', ->
             option.selected = false
             option.disabled = true
 
-        ruleListTextArea.value = JSON.parse(el.dataset.list).join("\n")
+        ruleListTextArea.value = JSON.parse(el.dataset.list).join(`\n`)
         ruleListTextArea.readOnly = true
 
-        if ['true', '1', 'on'].includes(el.dataset.dns.toLowerCase())
-          registerDnsCheckBox.previousElementSibling.value = '1'
+        if ["true", "1", "on"].includes(el.dataset.dns.toLowerCase())
+          registerDnsCheckBox.previousElementSibling.value = "1"
           registerDnsCheckBox.checked = true
         else
-          registerDnsCheckBox.previousElementSibling.value = '0'
+          registerDnsCheckBox.previousElementSibling.value = "0"
           registerDnsCheckBox.checked = false
         registerDnsCheckBox.disabled = true
 
         unsetRequired(externalSelect, ruleListTextArea)
 
       else
-        for option in externalSelect.getElementsByTagName('option')
+        for option of externalSelect.getElementsByTagName("option")
           option.selected = false
           option.disabled = false
 
-        ruleListTextArea.value = ''
+        ruleListTextArea.value = ""
         ruleListTextArea.readOnly = false
 
-        registerDnsCheckBox.previousElementSibling.value = '0'
+        registerDnsCheckBox.previousElementSibling.value = "0"
         registerDnsCheckBox.checked = false
         registerDnsCheckBox.disabled = false
 
@@ -106,34 +109,33 @@ document.addEventListener 'turbo:load', ->
       checkDns()
       break
 
-  checkExternal = ->
-    if ['none', 'direct'].includes(externalSelect.value)
-      ruleListTextArea.value = ''
+  checkExternal := ->
+    if ["none", "direct"].includes(externalSelect.value)
+      ruleListTextArea.value = ""
       ruleListTextArea.readOnly = true
       unsetRequired(ruleListTextArea)
     else
       ruleListTextArea.readOnly = false
       setRequired(ruleListTextArea)
 
-  checkDns = ->
+  checkDns := ->
     if registerDnsCheckBox.checked
       setRequired(fqdnText)
     else
       unsetRequired(fqdnText)
 
-  for el from actionRadioMap.values()
-    el.addEventListener 'click', ->
+  for el of actionRadioMap.values()
+    el.addEventListener "click", ->
       checkAction()
 
-  for el from ruleSetRadioMap.values()
-    el.addEventListener 'click', ->
+  for el of ruleSetRadioMap.values()
+    el.addEventListener "click", ->
       checkRuleSet()
 
-  externalSelect.addEventListener 'click', ->
+  externalSelect.addEventListener "click", ->
     checkExternal()
 
-  registerDnsCheckBox.addEventListener 'click', ->
+  registerDnsCheckBox.addEventListener "click", ->
     checkDns()
 
   checkAction()
-

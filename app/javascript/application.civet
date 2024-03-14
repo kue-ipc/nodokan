@@ -10,7 +10,7 @@ import "./views/manage_table.civet"
 import {loadNodeConfirm} from "./views/node_confirm.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
 import "./views/node_nic.civet"
-import "./views/specific_node_application.civet"
+import {loadSpecifiNodeApplication} from "./views/specific_node_application.civet"
 
 
 document.addEventListener "turbo:load", (_e)->
@@ -18,6 +18,7 @@ document.addEventListener "turbo:load", (_e)->
   loadBootstrapComponents()
   loadNodeConfirm()
   loadNodeFlags()
+  loadSpecifiNodeApplication()
 
 document.addEventListener "turbo:frame-load", (e)->
   unless e.target <? Element
@@ -28,3 +29,4 @@ document.addEventListener "turbo:frame-load", (e)->
   loadBootstrapComponents(e.target)
   loadNodeConfirm(e.target)
   loadNodeFlags(e.target)
+  loadSpecifiNodeApplication(e.target)
