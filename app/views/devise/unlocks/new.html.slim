@@ -1,13 +1,10 @@
 h2
   = t(".resend_unlock_instructions")
 p
-  |
-    一定回数以上パスワードを間違えると、アカウントが一時的にロックされ、ログインできなくなります。
-    ロックされたタイミングで、ロック解除に関するメールを送信していますので、確認してください。
-    ロック解除に関するメールが見つからない場合は、メールアドレスを入力して、メールを再送してください。
+  = t(".abount_unlock")
 = bootstrap_form_with model: resource, as: resource_name,
   url: unlock_path(resource_name), data: {turbo: false} do |f|
-  = f.email_field :email, autofocus: true, autocomplete: "email"
+  = f.email_field :email, autofocus: true, autocomplete: "email", floating: true
   = f.submit t(".resend_unlock_instructions")
 hr
 = render "devise/shared/links"
