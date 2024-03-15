@@ -29,6 +29,12 @@ label.required
     content: " 【必須】"
     font-size: 0.75em
 
+.form-floating > label
+  color: rgba(var(--#{$prefix}body-color-rgb), #{$form-floating-label-opacity})
+
+.form-floating > textarea.form-control
+  height: calc(4.5rem + calc(var(--bs-border-width)* 2))
+
 .clickable-row
   cursor: pointer
 

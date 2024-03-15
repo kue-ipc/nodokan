@@ -8,12 +8,12 @@
       h4 = t("forms.node.base.title")
       small.text-muted = t("forms.node.base.help")
       .row
-        = f.text_field :name, required: true,
-          wrapper_class: "col-md-4 mb-3"
-        = f.text_field :hostname, pattern: "[0-9A-Za-z\\-]*",
-          wrapper_class: "col-md-3 mb-3"
-        = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*",
-          wrapper_class: "col-md-5 mb-3"
+        .col-md-4
+          = f.text_field :name, required: true, floating: true
+        .col-md-3
+          = f.text_field :hostname, pattern: "[0-9A-Za-z\\-]*", floating: true
+        .col-md-5
+          = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*", floating: true
       .row
         .col = f.check_box :logical
         .col = f.check_box :virtual_machine
@@ -49,24 +49,26 @@
           small.text-muted = t("forms.node.place.help")
           .row
             = f.fields_for :place, node.place || Place.new do |place_f|
-              = place_f.text_field :area, list: "node_place_area-list",
-                wrapper_class: "col-md-3 mb-3"
-              = datalist_candidate :place, :area, places_path,
-                parents: [:node]
-              = place_f.text_field :building, list: "node_place_building-list",
-                wrapper_class: "col-md-3 mb-3"
-              = datalist_candidate :place, :building, places_path,
-                parents: [:node], inputList: [:area]
-
-              - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
-              = place_f.select :floor, floor_list,
-                wrapper_class: "col-md-2 mb-3"
-
-              = place_f.text_field :room, list: "node_place_room-list",
-                wrapper_class: "col-md-4 mb-3"
-              = datalist_candidate :place, :room, places_path,
-                parents: [:node], order: {nodes_count: "desc"},
-                inputList: [:area, :building, :floor]
+              .col-md-3
+                = place_f.text_field :area, list: "node_place_area-list",
+                  floating: true
+                = datalist_candidate :place, :area, places_path,
+                  parents: [:node]
+              .col-md-3
+                = place_f.text_field :building,
+                  list: "node_place_building-list",
+                  floating: true
+                = datalist_candidate :place, :building, places_path,
+                  parents: [:node], inputList: [:area]
+              .col-md-2
+                - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
+                = place_f.select :floor, floor_list, floating: true
+              .col-md-4
+                = place_f.text_field :room, list: "node_place_room-list",
+                  floating: true
+                = datalist_candidate :place, :room, places_path,
+                  parents: [:node], order: {nodes_count: "desc"},
+                  inputList: [:area, :building, :floor]
 
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.hardware.title")
@@ -74,27 +76,28 @@
         .row
           = f.fields_for :hardware,
             node.hardware || Hardware.new do |hardware_f|
-            = hardware_f.collection_select :device_type_id,
-              DeviceType.order(:order), :id, :name,
-              include_blank: "(未選択)", wrapper_class: "col-md-3 mb-3"
-
-            = hardware_f.text_field :maker, list: "node_hardware_maker-list",
-              wrapper_class: "col-md-2 mb-3"
-            = datalist_candidate :hardware, :maker, hardwares_path,
-              parents: [:node], inputList: [:device_type_id]
-
-            = hardware_f.text_field :product_name,
-              list: "node_hardware_product_name-list",
-              wrapper_class: "col-md-4 mb-3"
-            = datalist_candidate :hardware, :product_name, hardwares_path,
-              parents: [:node], inputList: [:device_type_id, :maker]
-
-            = hardware_f.text_field :model_number,
-              list: "node_hardware_model_number-list",
-              wrapper_class: "col-md-3 mb-3"
-            = datalist_candidate :hardware, :model_number, hardwares_path,
-              parents: [:node],
-              inputList: [:device_type_id, :maker, :product_name]
+            .col-md-3
+              = hardware_f.collection_select :device_type_id,
+                DeviceType.order(:order), :id, :name,
+                include_blank: "(未選択)", floating: true
+            .col-md-2
+              = hardware_f.text_field :maker, list: "node_hardware_maker-list",
+                floating: true
+              = datalist_candidate :hardware, :maker, hardwares_path,
+                parents: [:node], inputList: [:device_type_id]
+            .col-md-4
+              = hardware_f.text_field :product_name,
+                list: "node_hardware_product_name-list",
+                floating: true
+              = datalist_candidate :hardware, :product_name, hardwares_path,
+                parents: [:node], inputList: [:device_type_id, :maker]
+            .col-md-3
+              = hardware_f.text_field :model_number,
+                list: "node_hardware_model_number-list",
+                floating: true
+              = datalist_candidate :hardware, :model_number, hardwares_path,
+                parents: [:node],
+                inputList: [:device_type_id, :maker, :product_name]
 
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.operating_system.title")
@@ -102,23 +105,25 @@
         .row
           = f.fields_for :operating_system,
             node.operating_system || OperatingSystem.new do |operating_system_f|
-            = operating_system_f.collection_select :os_category_id,
-              OsCategory.order(:order), :id, :name,
-              include_blank: "(未選択)", wrapper_class: "col-md-4 mb-3",
-              required: false
-            = operating_system_f.text_field :name,
-              list: "node_operating_system_name-list",
-              wrapper_class: "col-md-8 mb-3",
-              disabled: true, required: false
-            = datalist_candidate :operating_system, :name,
-              operating_systems_path, parents: [:node],
-              order: {nodes_count: "desc"},
-              inputList: [:os_category_id],
-              requiredInput: :os_category_id,
-              description: true,
-              clear: true,
-              locked: {name: :os_category_id,
-                list: OsCategory.where(locked: true).map(&:id).map(&:to_s),}
+            .col-md-4
+              = operating_system_f.collection_select :os_category_id,
+                OsCategory.order(:order), :id, :name,
+                include_blank: "(未選択)", floating: true,
+                required: false
+            .col-md-3
+              = operating_system_f.text_field :name,
+                list: "node_operating_system_name-list",
+                floating: true,
+                disabled: true, required: false
+              = datalist_candidate :operating_system, :name,
+                operating_systems_path, parents: [:node],
+                order: {nodes_count: "desc"},
+                inputList: [:os_category_id],
+                requiredInput: :os_category_id,
+                description: true,
+                clear: true,
+                locked: {name: :os_category_id,
+                  list: OsCategory.where(locked: true).map(&:id).map(&:to_s),}
 
         small#node_operating_system_name-description.form-text
 
@@ -142,12 +147,13 @@
         }.to_json
 
     .rounded.border.p-2.mb-2
-      = f.text_area :note
+      = f.text_area :note, floating: true, class: "dobule-height"
       - if current_user.admin?
         .row
-          = f.collection_select :user_id,
-            User.order(:username).where(deleted: false),
-            :id, :name, {wrapper_class: "col-md-4 mb-3"}
+          .col-md-4
+            = f.collection_select :user_id,
+              User.order(:username).where(deleted: false),
+              :id, :name, floating: true
 
     = f.submit class: "btn btn-primary"
 
