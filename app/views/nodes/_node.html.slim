@@ -213,10 +213,9 @@
 
     = bootstrap_form_with url: transfer_node_path(node),
       data: {turbo: false} do |f|
-      = f.text_field :username, label: "ユーザー名", label_class: "me-1"
-      = f.text_area :note,
-        label: "備考 (下記のメッセージを端末の備考に追加します)",
-        label_class: "me-1",
+      = f.text_field :username, label: "ユーザー名", floating: true
+      = f.text_area :note, floating: true,
+        label: "備考 (端末の備考に追加します)",
         value: "[#{current_user.username}から管理譲渡]"
       = f.submit "譲渡", class: "btn btn-primary ms-1"
 

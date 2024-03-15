@@ -46,6 +46,7 @@ p
   url: node_specific_node_application_path(@node),
   data: {turbo: false} do |f|
   = f.form_group :action, label: {text: "申請"} do
+    = " "
     - if @node.specific
       - enabled_actions = ["change", "release"]
       - checked_action = "change"
@@ -58,7 +59,8 @@ p
         inline: true, disabled: !enabled, required: enabled,
         checked: checked_action == action
 
-  = f.text_field :reason, label: "申請理由 (端末の用途や目的など)", required: true
+  = f.text_field :reason, label: "申請理由 (端末の用途や目的など)",
+    required: true, floating: true
 
   = f.form_group :rule_set, label: {text: "アクセスルールセット"} do
     - Settings.specific_node_application.rules.each_with_index do |rule, idx|
@@ -76,15 +78,18 @@ p
       ["無変換", "through"],
       ["直接接続", "direct"],
     ],
-    {include_blank: "(未選択)", label: "外部接続"}, required: true
+    include_blank: "【必須】(未選択)", label: "外部接続", required: true,
+    floating: true
 
-  = f.text_area :rule_list, label: "アクセスルールリスト", rows: 5
+  = f.text_area :rule_list, label: "アクセスルールリスト", rows: 5,
+    floating: true
 
-  = f.check_box :register_dns, label: "DNS登録"
+  = f.check_box :register_dns, label: "DNS登録", floating: true
 
-  = f.text_field :fqdn, value: @node.fqdn, label: {text: "FQDN (DNS登録に使用)"}
+  = f.text_field :fqdn, value: @node.fqdn, floating: true,
+    label: {text: "FQDN (DNS登録に使用)"}
 
-  = f.text_area :note, label: "備考"
+  = f.text_area :note, label: "備考", floating: true
 
   = f.submit "申請", class: "btn btn-primary"
 
