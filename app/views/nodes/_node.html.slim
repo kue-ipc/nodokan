@@ -51,7 +51,7 @@
               tr
                 td scope="row"
                   - if current_user.admin?
-                    = link_to nic.number, nic_path(nic)
+                    = link_to nic.number, nic_path(nic), data: {turbo: false}
                   - else
                     = nic.number
                 td
