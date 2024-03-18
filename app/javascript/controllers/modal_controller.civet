@@ -1,0 +1,15 @@
+import {Controller} from "@hotwired/stimulus"
+import {Modal} from "bootstrap"
+
+// Connects to data-controller="modal"
+export default class < Controller
+  modal: Modal?
+
+  connect()
+    @modal = new Modal(@element)
+    @modal.show()
+  
+  close(event)
+    console.log event
+    if event.detail.success
+      @modal?.hide()

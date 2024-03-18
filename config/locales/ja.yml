@@ -43,6 +43,7 @@ ja:
     change: 変更
     release: 解除
     cancel: キャンセル
+    select: 選択
 
   do_actions:
     close: 閉じる
@@ -190,6 +191,8 @@ ja:
       mapped: (IPv4アドレスからの自動計算)
     node_nic_setting: |
       下記のように端末のネットワークを設定してください。
+    node_unregistered_host: |
+      (未登録) 「編集」を押して仮想ホストを登録してください。
     node_unregistered_place: |
       (未登録) 「編集」を押して設置場所を登録してください。
     node_unregistered_hardware: |
@@ -800,7 +803,7 @@ ja:
       host:
         title: 仮想ホスト
         help: |
-          端末が動作しているホストを選択してください。
+          端末が仮想ゲストとして動作している仮想ホストを登録します。
       place:
         title: 設置場所
         help: |

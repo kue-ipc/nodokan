@@ -6,7 +6,7 @@
   = bootstrap_form_with model: node do |f|
     .rounded.border.p-2.mb-2
       h4 = t("forms.node.base.title")
-      small.text-muted = t("forms.node.base.help")
+      .mb-2: small.text-muted = t("forms.node.base.help")
       .row
         .col-md-4
           = f.text_field :name, required: true, floating: true
@@ -32,7 +32,7 @@
     = tag.div class: {collapse: true, "logical-show": true, show: node.logical}
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.components.title")
-        small.text-muted = t("forms.node.components.help")
+        .md-2: small.text-muted = t("forms.node.components.help")
 
     / hide if logical is enabled
     = tag.div class: {collapse: true, "logical-hide": true, show: !node.logical}
@@ -40,13 +40,15 @@
         show: node.virtual_machine,}
         .rounded.border.p-2.mb-2
           h4 = t("forms.node.host.title")
-          small.text-muted = t("forms.node.host.help")
+          .mb-2: small.text-muted = t("forms.node.host.help")
+
+          = render "hosts/host", form: f
 
       = tag.div class: {collapse: true, "virtual_machine-hide": true,
         show: !node.virtual_machine,}
         .rounded.border.p-2.mb-2
           h4 = t("forms.node.place.title")
-          small.text-muted = t("forms.node.place.help")
+          .mb-2: small.text-muted = t("forms.node.place.help")
           .row
             = f.fields_for :place, node.place || Place.new do |place_f|
               .col-md-3
@@ -72,7 +74,7 @@
 
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.hardware.title")
-        small.text-muted = t("forms.node.hardware.help")
+        .mb-2: small.text-muted = t("forms.node.hardware.help")
         .row
           = f.fields_for :hardware,
             node.hardware || Hardware.new do |hardware_f|
@@ -101,7 +103,7 @@
 
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.operating_system.title")
-        small.text-muted = t("forms.node.operating_system.help")
+        .mb-2: small.text-muted = t("forms.node.operating_system.help")
         .row
           = f.fields_for :operating_system,
             node.operating_system || OperatingSystem.new do |operating_system_f|
@@ -129,7 +131,7 @@
 
     .rounded.border.p-2.mb-2
       h4 = t("forms.node.nic.title")
-      small.text-muted = t("forms.node.nic.help")
+      .mb-2: small.text-muted = t("forms.node.nic.help")
       .row
         .col-md-4
           = f.text_field :duid, floating: true,

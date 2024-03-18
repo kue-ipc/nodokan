@@ -1,0 +1,17 @@
+- node = form.object
+- host = node.host
+= turbo_frame_tag "#{dom_id(node)}_host"
+  = form.hidden_field :host_id
+  .row: .col
+    - if host
+      = host.name
+      =< link_to t("actions.change"), edit_host_path(host),
+        class: "btn btn-sm btn-warnig"
+      =< button_to t("actions.destroy"), node_host_path(host),
+        method: :delete,
+        class: "btn btn-danger"
+    - else
+      = t("values.none")
+      =< link_to t("actions.select"),
+        new_node_host_path(node_id: node.id || "new"),
+        class: "btn btn-sm btn-primary"

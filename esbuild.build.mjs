@@ -17,12 +17,5 @@ if (process.argv.includes('--watch')) {
   await ctx.watch();
   console.log('watching...');
 } else {
-  await esbuild.build({
-    entryPoints: ['app/javascript/*.*'],
-    bundle: true,
-    sourcemap: true,
-    outdir: 'app/assets/builds',
-    publicPath: '/assets',
-    plugins: [coffeeScriptPlugin(), civetPlugin()],
-  });
+  await esbuild.build(esbuildOptions);
 }

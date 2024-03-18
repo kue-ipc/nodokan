@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     end
     resource :confirmation, only: [:create, :update]
     resource :specific_node_application, only: [:new, :create]
+    resource :host
   end
   resources :nics, only: [:show, :new]
 
