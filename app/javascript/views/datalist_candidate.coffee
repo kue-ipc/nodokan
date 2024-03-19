@@ -170,7 +170,14 @@ class DatalistCandidate
 
     @updateDatalist({init: true})
 
+LOADED_ELEMENTS = new WeakSet()
+
 export loadDatalistCandidate = (element) ->
   for node in document.getElementsByClassName('datalist-candidate')
+    if LOADED_ELEMENTS.has(node)
+      console.warn "[datalist_canditate] element is already loaded: #{node.id}"
+      continue
+
     dc = new DatalistCandidate(JSON.parse(node.getAttribute('data-params')))
     dc.run()
+    LOADED_ELEMENTS.add(node)
