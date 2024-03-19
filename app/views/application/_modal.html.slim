@@ -1,17 +1,17 @@
 - modal_dialog_class = ["modal-dialog"]
-- if local_assigns[:modal_class]
-  - modal_dialog_class.concat(modal_class.map { |name| "modal-#{name}" })
+- if local_assigns[:modal_options]
+  - modal_dialog_class.concat(modal_options.map { |name| "modal-#{name}" })
 = turbo_frame_tag "modal"
   .modal.fade tabindex="-1" data-controller="modal"
     = tag.div class: modal_dialog_class
       .modal-content
-          .modal-header
-            h5.modal-title = title
-            button.btn-close[type="button" data-bs-dismiss="modal"
-              aria-label=t("do_actions.close")]
-          .modal-body
+        .modal-header
+          h5.modal-title = title
+          button.btn-close[type="button" data-bs-dismiss="modal"
+            aria-label=t("do_actions.close")]
+        .modal-body
+          .container-fluid
             = yield
-          .modal-footer
-            button.btn.btn-dark type="button" data-bs-dismiss="modal"
-              = t("do_actions.close")
-            = yield "footer"
+        .modal-footer
+          button.btn.btn-dark type="button" data-bs-dismiss="modal"
+            = t("do_actions.close")

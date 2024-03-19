@@ -12,6 +12,10 @@ module NodesHelper
   }.freeze
   # rubocop: enable Layout
 
+  def node_flag_attributes
+    [:logical, :virtual_machine, :specific, :global, :public, :dns]
+  end
+
   def list_col_classes(name)
     LIST_COL_CLASSES[name]
   end

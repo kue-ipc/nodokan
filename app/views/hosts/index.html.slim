@@ -1,11 +1,62 @@
-p style="color: green" = notice
+= turbo_frame_tag "node_hosts-search"
+  .mb-2
+    = bootstrap_form_tag url: nodes_path, method: "get",
+      data: {turbo_frame: "node_hosts-list"} do |f|
+      = f.hidden_field("per", value: 10)
+      .row.row-cols-md-auto.g-3.align-items-center
+        .col-12
+          = f.search_field :query, value: @query, hide_label: true,
+            append: f.primary('<i class="fas fa-search"></i>'.html_safe,
+              name: :search, render_as_button: true)
 
-h1 Hosts
+hr
 
-#hosts
-  - @hosts.each do |host|
-    == render host
-    p
-      = link_to "Show this host", host
+= turbo_frame_tag "node_hosts-list"
+  .mb-2
+    .row.mb-2.fw-bold
+      div class=(node_hosts_list_col_classes(:action))
+      div class=(node_hosts_list_col_classes(:name))
+        = Node.human_attribute_name(:name)
+      div class=(node_hosts_list_col_classes(:hostname))
+        = Node.human_attribute_name(:hostname)
+      div class=(node_hosts_list_col_classes(:ipv4_address))
+        = Nic.human_attribute_name(:ipv4_address)
+      div class=(node_hosts_list_col_classes(:ipv6_address))
+        = Nic.human_attribute_name(:ipv6_address)
 
-= link_to "New host", new_host_path
+    - @nodes.each do |node|
+      .row.py-1.border-top
+        div class=(node_hosts_list_col_classes(:action))
+          = bootstrap_form_with \
+            url: node_host_path(node_id: node.id || "new"),
+            method: :post,
+            data: {turbo_frame: "#{dom_id(@node)}_host"} do |f|
+              = f.hidden_field("id", node.id)
+              = f.submit t("actions.selecet")
+        div class=(node_hosts_list_col_classes(:name))
+          = node.name
+          - node_flag_attributes.each do |attr|
+            - if node.__send__(attr)
+              = badge_for(attr, scope: "activerecord.attributes.node",
+                badge_class: "ms-1")
+        div class=(node_hosts_list_col_classes(:hostname)) = node.hostname
+        div class=(node_hosts_list_col_classes(:ipv4_address))
+          - node.nics.each do |nic|
+            - if nic.ipv4_dynamic?
+              span.text-success
+                = t_enum(:dynamic, :ipv4_configs)
+            - else
+              = span_value_for(nic.ipv4, hide_blank: true)
+            br
+        div class=(node_hosts_list_col_classes(:ipv6_address))
+          - node.nics.each do |nic|
+            - if nic.ipv6_dynamic?
+              span.text-primary
+                = t_enum(:dynamic, :ipv6_configs)
+            - else
+              = span_value_for(nic.ipv6, hide_blank: true)
+            br
+
+  = paginate @nodes
+  p
+    = page_entries_info @nodes

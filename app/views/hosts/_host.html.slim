@@ -1,12 +1,16 @@
-- node = form.object
+// node or form(with for node)
+- if local_assigns[:form]
+  - node = form.object
 - host = node.host
 = turbo_frame_tag "#{dom_id(node)}_host"
-  = form.hidden_field :host_id
+  - if local_assigns[:form]
+    = form.hidden_field :host_id
   .row: .col
     - if host
       = host.name
       =< link_to t("actions.change"), edit_host_path(host),
-        class: "btn btn-sm btn-warnig"
+        class: "btn btn-sm btn-warnig",
+        data: {turbo_frame: "modal"}
       =< button_to t("actions.destroy"), node_host_path(host),
         method: :delete,
         class: "btn btn-danger"
@@ -14,4 +18,5 @@
       = t("values.none")
       =< link_to t("actions.select"),
         new_node_host_path(node_id: node.id || "new"),
-        class: "btn btn-sm btn-primary"
+        class: "btn btn-sm btn-primary",
+        data: {turbo_frame: "modal"}

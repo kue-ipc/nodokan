@@ -1,13 +1,1 @@
-= turbo_frame_tag "node_host"
-  = form.hidden_field :host_id
-  - host = form.object.host
-  - if host
-    = host.name
-    = link_to t("actions.change"), edit_host_path(host),
-      class: "btn btn-sm btn-warnig"
-    = button_to t("actions.destroy"), host_path,
-      method: :delete,
-      class: "btn btn-danger"
-  - else
-    = link_to t("actinos.register"), new_host_path,
-      class: "btn btn-sm btn-primary"
+= render "host", node: @node

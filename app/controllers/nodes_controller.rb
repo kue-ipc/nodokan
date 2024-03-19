@@ -13,11 +13,14 @@ class NodesController < ApplicationController
   def index
     set_page
     set_search
-    @nodes = search_and_sort(policy_scope(Node)).includes(:user, :place, :hardware, :operating_system, :confirmation,
-      nics: :network)
+    @nodes = search_and_sort(policy_scope(Node)).includes(:user,
+      :place, :hardware, :operating_system, :confirmation, nics: :network)
     respond_to do |format|
       format.html do
         @nodes = paginate(@nodes)
+        if turbo_frame_request? && turbo_frame_request_id == "node_hosts-search"
+          render "hosts/index"
+        end
       end
       format.json do
         @nodes = paginate(@nodes)

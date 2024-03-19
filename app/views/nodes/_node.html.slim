@@ -1,8 +1,9 @@
-= turbo_frame_tag node, autoscroll: true, data: {autoscroll_block: "start"}
+= turbo_frame_tag node, autoscroll: true,
+  data: {autoscroll_block: "start", turbo_action: :advance}
   dl
     = dt_dd_for node, :name do |name|
       = name
-      - [:logical, :virtual_machine, :specific, :global, :public, :dns].each do |attr|
+      - node_flag_attributes.each do |attr|
         - if node.__send__(attr)
           = badge_for(attr, scope: "activerecord.attributes.node",
             badge_class: "ms-1")
