@@ -69,8 +69,8 @@ h4 = User.human_attribute_name(:networks)
           td
             = link_to network.name, network_path(network)
           td = network.vlan
-          td = network.ipv4_network&.to_string
-          td = network.ipv6_network&.to_string
+          td = network.ipv4_network&.to_s
+          td = network.ipv6_network&.to_s
           td
             - manage = @user.manage_networks.include?(network)
             - if current_user.admin?

@@ -1,7 +1,7 @@
 - modal_dialog_class = ["modal-dialog"]
 - if local_assigns[:modal_options]
   - modal_dialog_class.concat(modal_options.map { |name| "modal-#{name}" })
-= turbo_frame_tag "modal"
+= turbo_frame_tag "modal" do
   .modal.fade tabindex="-1" data-controller="modal"
     = tag.div class: modal_dialog_class
       .modal-content

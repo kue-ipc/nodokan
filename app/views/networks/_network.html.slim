@@ -1,4 +1,5 @@
-= turbo_frame_tag network, autoscroll: true, data: {autoscroll_block: "start"}
+= turbo_frame_tag network, autoscroll: true,
+  data: {autoscroll_block: "start", turbo_action: :advance} do
   dl
     = dt_dd_for network, :name do |value|
       = value

@@ -1,4 +1,5 @@
-= turbo_frame_tag node, autoscroll: true, data: {autoscroll_block: "start"}
+= turbo_frame_tag node, autoscroll: true,
+  data: {autoscroll_block: "start", turbo_action: :advance} do
   = render "model_errors", model: node
 
   p = t("forms.common.required_input")
