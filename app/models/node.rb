@@ -21,9 +21,10 @@ class Node < ApplicationRecord
   has_many :logical_compositions, dependent: :destroy
   has_many :components, through: :logical_compositions
 
-  has_many :composed_compositions, dependent: :destroy, class_name: "LogicalComposition", foreign_key: "component_id",
+  has_many :composed_compositions, dependent: :destroy,
+    class_name: "LogicalComposition", foreign_key: "component_id",
     inverse_of: :component
-  has_many :logical_nodes, through: :composed_compositions
+  has_many :logical_nodes, through: :composed_compositions, source: :node
 
   has_many :nics, -> { order(:number) }, dependent: :destroy, inverse_of: :node
   accepts_nested_attributes_for :nics, allow_destroy: true

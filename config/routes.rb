@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resource :confirmation, only: [:create, :update]
     resource :specific_node_application, only: [:new, :create]
     resource :host
+    resources :components, only: [:index, :show, :new, :update, :destroy]
   end
   resources :nics, only: [:show, :new]
 

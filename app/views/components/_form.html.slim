@@ -1,0 +1,10 @@
+= form_with(model: component) do |form|
+  - if component.errors.any?
+    div style="color: red"
+      h2 = "#{pluralize(component.errors.count, "error")} prohibited this component from being saved:"
+      ul
+        - component.errors.each do |error|
+          li = error.full_message
+
+  div
+    = form.submit
