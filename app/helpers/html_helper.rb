@@ -88,7 +88,7 @@ module HtmlHelper
       end
       span_text_tag(str, **opts)
     when ApplicationRecord
-      link_to(value.to_s, value)
+      link_to(value.to_s, value, data: {turbo: false})
     when ActiveRecord::Associations::CollectionProxy
       span_value_for(value.to_a, **opts)
     else

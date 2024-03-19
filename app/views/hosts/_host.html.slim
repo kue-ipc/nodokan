@@ -12,9 +12,9 @@
         edit_node_host_path(node_id: node.id || "new"),
         class: "btn btn-sm btn-warning",
         data: {turbo_frame: "modal"}
-      =< button_to t("actions.destroy"),
+      =< link_to t("actions.destroy"),
         node_host_path(node_id: node.id || "new"),
-        method: :delete,
+        data: {turbo_mtethod: :delete},
         class: "btn btn-sm btn-danger"
     - else
       = t("values.none")

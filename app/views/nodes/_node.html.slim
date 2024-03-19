@@ -8,12 +8,30 @@
           = badge_for(attr, scope: "activerecord.attributes.node",
             badge_class: "ms-1")
     = dt_dd_for node, :fqdn
-    - unless node.logical?
-      = dt_dd_for node, :place do |place|
-        - if place&.name.present?
-          = place.name
-        - else
-          .text-warning = t("messages.node_unregistered_place")
+    - if node.logical?
+      = dt_dd_for node, :components do |components|
+        - components.each do |component|
+          - if current_user.admin? || component.user.id == current.user.id
+            = span_value_for(component)
+          - else
+            = component.name
+          br
+    - else
+      - if node.virtual_machine?
+        = dt_dd_for node, :host do |host|
+          - if host
+            - if current_user.admin? || host.user.id == current.user.id
+              = span_value_for(host)
+            - else
+              = host.name
+          - else
+            .text-warning = t("messages.node_unregistered_host")
+      - else
+        = dt_dd_for node, :place do |place|
+          - if place&.name.present?
+            = place.name
+          - else
+            .text-warning = t("messages.node_unregistered_place")
       = dt_dd_for node, :hardware do |hardware|
         - if hardware&.name.present?
           - if hardware.device_type
