@@ -14,8 +14,7 @@ class Node < ApplicationRecord
   belongs_to :hardware, optional: true, counter_cache: true
   belongs_to :operating_system, optional: true, counter_cache: true
 
-  belongs_to :host, optional: true, class_name: "Node", foreign_key: "node_id",
-    inverse_of: :guests
+  belongs_to :host, optional: true, class_name: "Node", inverse_of: :guests
   has_many :guests, dependent: :restrict_with_error, class_name: "Node",
     foreign_key: "host_id", inverse_of: :host
 

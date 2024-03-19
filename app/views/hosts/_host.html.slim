@@ -8,12 +8,14 @@
   .row: .col
     - if host
       = host.name
-      =< link_to t("actions.change"), edit_host_path(host),
-        class: "btn btn-sm btn-warnig",
+      =< link_to t("actions.change"),
+        edit_node_host_path(node_id: node.id || "new"),
+        class: "btn btn-sm btn-warning",
         data: {turbo_frame: "modal"}
-      =< button_to t("actions.destroy"), node_host_path(host),
+      =< button_to t("actions.destroy"),
+        node_host_path(node_id: node.id || "new"),
         method: :delete,
-        class: "btn btn-danger"
+        class: "btn btn-sm btn-danger"
     - else
       = t("values.none")
       =< link_to t("actions.select"),

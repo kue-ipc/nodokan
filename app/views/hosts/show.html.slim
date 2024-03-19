@@ -1,1 +1,2 @@
-= render "host", node: @node
+= bootstrap_form_with model: @node do |f|
+  = render "host", form: f

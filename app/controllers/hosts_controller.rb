@@ -12,65 +12,34 @@ class HostsController < ApplicationController
 
   # GET /nodes/1/host/new
   def new
-    @host = Node.new
     set_page
     set_search
     @hosts = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
   end
 
-  # GET /hosts/1/host/edit
+  # GET /nodes/1/host/edit
   def edit
     set_page
     set_search
     @hosts = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
   end
 
-  # POST /hosts or /hosts.json
+  # POST /nodes/1/host
   def create
-    @host = Host.new(host_params)
-
-    respond_to do |format|
-      if @host.save
-        format.html do
-          redirect_to host_url(@host), notice: "Host was successfully created."
-        end
-        format.json { render :show, status: :created, location: @host }
-      else
-        format.html do
-          render :new, status: :unprocessable_entity
-        end
-        format.json { render json: @host.errors, status: :unprocessable_entity }
-      end
-    end
+    @node.host = Node.find(host_params[:id])
+    render :show
   end
 
-  # PATCH/PUT /hosts/1 or /hosts/1.json
+  # PATCH/PUT /nodes/1/host
   def update
-    respond_to do |format|
-      if @host.update(host_params)
-        format.html do
-          redirect_to host_url(@host), notice: "Host was successfully updated."
-        end
-        format.json { render :show, status: :ok, location: @host }
-      else
-        format.html do
-          render :edit, status: :unprocessable_entity
-        end
-        format.json { render json: @host.errors, status: :unprocessable_entity }
-      end
-    end
+    @node.host = Node.find(host_params[:id])
+    render :show
   end
 
-  # DELETE /hosts/1 or /hosts/1.json
+  # DELETE /nodes/1/host
   def destroy
-    @host.destroy!
-
-    respond_to do |format|
-      format.html do
-        redirect_to hosts_url, notice: "Host was successfully destroyed."
-      end
-      format.json { head :no_content }
-    end
+    @node.host = nil
+    render :show
   end
 
   private def set_node

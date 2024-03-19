@@ -11,6 +11,12 @@
       div class=(node_hosts_list_col_classes(:ipv6_address))
         = Nic.human_attribute_name(:ipv6_address)
 
+    - if node.host
+      - method = :patch
+      - button_txt = t("actions.change")
+    - else
+      - method = :post
+      - button_txt = t("actions.select")
     - hosts.each do |host|
       .row.py-1.border-top
         div class=(node_hosts_list_col_classes(:action))
@@ -19,16 +25,14 @@
           - elsif host.id == node.host&.id
             = t("messages.selected")
           - else
-            = bootstrap_form_with scope: "host",
-              url: node_host_path(node_id: host.id || "new"),
-              method: :post,
+            = bootstrap_form_with scope: "host", method: method,
+              url: node_host_path(node_id: node.id || "new"),
               data: { \
                 turbo_frame: "#{dom_id(node)}_host",
                 action: "turbo:submit-end->modal#close",
               } do |f|
                 = f.hidden_field("id", value: host.id)
-                = f.submit t("actions.select"),
-                  class: "btn btn-primary btn-sm"
+                = f.submit button_txt, class: "btn btn-primary btn-sm"
         div class=(node_hosts_list_col_classes(:name))
           = host.name
           - node_flag_attributes.each do |attr|
