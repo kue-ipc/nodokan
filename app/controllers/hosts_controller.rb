@@ -1,17 +1,28 @@
 class HostsController < ApplicationController
+  include Page
+  include Search
+
   before_action :set_node
 
-  # GET /nodes/i/host/1 or /hosts/1.json
+  search_for Node
+
+  # GET /nodes/1/host
   def show
   end
 
-  # GET /hosts/new
+  # GET /nodes/1/host/new
   def new
     @host = Node.new
+    set_page
+    set_search
+    @hosts = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
   end
 
-  # GET /hosts/1/edit
+  # GET /hosts/1/host/edit
   def edit
+    set_page
+    set_search
+    @hosts = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
   end
 
   # POST /hosts or /hosts.json

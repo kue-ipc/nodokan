@@ -90,6 +90,11 @@ ja:
     content_of_action: "%{action}内容"
     address: アドレス
     address_for_config: "%{name}用アドレス"
+    selected: 選択済み
+    added: 追加済み
+    deleted: 削除済み
+    current: 現在
+    self: 自身
 
     corfirm_destroy: "本当に削除してもよろしいですか？"
     corfirm_destroy_name: "「%{name}」を本当に削除してもよろしいですか？"

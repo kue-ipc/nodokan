@@ -18,9 +18,6 @@ class NodesController < ApplicationController
     respond_to do |format|
       format.html do
         @nodes = paginate(@nodes)
-        if turbo_frame_request? && turbo_frame_request_id == "node_hosts-search"
-          render "hosts/index"
-        end
       end
       format.json do
         @nodes = paginate(@nodes)

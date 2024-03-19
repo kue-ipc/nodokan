@@ -1,0 +1,58 @@
+= turbo_frame_tag "#{dom_id(node)}_hosts-list"
+  .mb-2
+    .row.mb-2.fw-bold
+      div class=(node_hosts_list_col_classes(:action))
+      div class=(node_hosts_list_col_classes(:name))
+        = Node.human_attribute_name(:name)
+      div class=(node_hosts_list_col_classes(:hostname))
+        = Node.human_attribute_name(:hostname)
+      div class=(node_hosts_list_col_classes(:ipv4_address))
+        = Nic.human_attribute_name(:ipv4_address)
+      div class=(node_hosts_list_col_classes(:ipv6_address))
+        = Nic.human_attribute_name(:ipv6_address)
+
+    - hosts.each do |host|
+      .row.py-1.border-top
+        div class=(node_hosts_list_col_classes(:action))
+          - if host.id == node.id
+            = t("messages.self")
+          - elsif host.id == node.host&.id
+            = t("messages.selected")
+          - else
+            = bootstrap_form_with scope: "host",
+              url: node_host_path(node_id: host.id || "new"),
+              method: :post,
+              data: { \
+                turbo_frame: "#{dom_id(node)}_host",
+                action: "turbo:submit-end->modal#close",
+              } do |f|
+                = f.hidden_field("id", value: host.id)
+                = f.submit t("actions.select"),
+                  class: "btn btn-primary btn-sm"
+        div class=(node_hosts_list_col_classes(:name))
+          = host.name
+          - node_flag_attributes.each do |attr|
+            - if host.__send__(attr)
+              = badge_for(attr, scope: "activerecord.attributes.node",
+                badge_class: "ms-1")
+        div class=(node_hosts_list_col_classes(:hostname)) = host.hostname
+        div class=(node_hosts_list_col_classes(:ipv4_address))
+          - host.nics.each do |nic|
+            - if nic.ipv4_dynamic?
+              span.text-success
+                = t_enum(:dynamic, :ipv4_configs)
+            - else
+              = span_value_for(nic.ipv4, hide_blank: true)
+            br
+        div class=(node_hosts_list_col_classes(:ipv6_address))
+          - host.nics.each do |nic|
+            - if nic.ipv6_dynamic?
+              span.text-primary
+                = t_enum(:dynamic, :ipv6_configs)
+            - else
+              = span_value_for(nic.ipv6, hide_blank: true)
+            br
+
+  = paginate hosts
+  p
+    = page_entries_info hosts

@@ -1,7 +1,7 @@
-= turbo_frame_tag "node_hosts-search"
+= turbo_frame_tag "#{dom_id(node)}_hosts-search"
   .mb-2
-    = bootstrap_form_tag url: nodes_path, method: "get",
-      data: {turbo_frame: "node_hosts-list"} do |f|
+    = bootstrap_form_with method: "get",
+      data: {turbo_frame: "#{dom_id(node)}_hosts-list"} do |f|
       = f.hidden_field("per", value: 10)
       .row.row-cols-md-auto.g-3.align-items-center
         .col-12
@@ -11,5 +11,4 @@
 
 hr
 
-= turbo_frame_tag "node_hosts-list"
-  p 仮想ホストとして選択したい端末の名前等で検索してください。
+= render "list", node: node, hosts: hosts
