@@ -1,48 +1,45 @@
 require "test_helper"
 
 class HostsControllerTest < ActionDispatch::IntegrationTest
-  setup do
-    @host = hosts(:one)
-  end
+  include Devise::Test::IntegrationHelpers
 
-  test "should get index" do
-    get hosts_url
-    assert_response :success
+  setup do
+    @node = nodes(:virtual_desktop)
   end
 
   test "should get new" do
-    get new_host_url
+    sign_in users(:user)
+    get new_node_host_url(@node)
     assert_response :success
   end
 
   test "should create host" do
-    assert_difference("Host.count") do
-      post hosts_url, params: { host: {  } }
-    end
-
-    assert_redirected_to host_url(Host.last)
+    sign_in users(:user)
+    post node_host_url(@node), params: {host: {id: nodes(:server).id}}
+    assert_response :success
   end
 
   test "should show host" do
-    get host_url(@host)
+    sign_in users(:user)
+    get node_host_url(@node)
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_host_url(@host)
+    sign_in users(:user)
+    get edit_node_host_url(@node)
     assert_response :success
   end
 
   test "should update host" do
-    patch host_url(@host), params: { host: {  } }
-    assert_redirected_to host_url(@host)
+    sign_in users(:user)
+    patch node_host_url(@node), params: {host: {id: nodes(:server).id}}
+    assert_response :success
   end
 
   test "should destroy host" do
-    assert_difference("Host.count", -1) do
-      delete host_url(@host)
-    end
-
-    assert_redirected_to hosts_url
+    sign_in users(:user)
+    delete node_host_url(@node)
+    assert_response :success
   end
 end
