@@ -19,7 +19,7 @@ class ComponentsController < ApplicationController
   def new
     set_page
     set_search
-    @component = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
+    @components = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
   end
 
   # PATCH/PUT /nodes/1/components/1

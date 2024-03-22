@@ -34,6 +34,7 @@
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.components.title")
         .md-2: small.text-muted = t("forms.node.components.help")
+        = render "components/list", form: f
 
     / hide if logical is enabled
     = tag.div class: {collapse: true, "logical-hide": true, show: !node.logical}
@@ -42,7 +43,6 @@
         .rounded.border.p-2.mb-2
           h4 = t("forms.node.host.title")
           .mb-2: small.text-muted = t("forms.node.host.help")
-
           = render "hosts/host", form: f
 
       = tag.div class: {collapse: true, "virtual_machine-hide": true,

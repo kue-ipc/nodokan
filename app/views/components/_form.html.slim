@@ -1,61 +1,20 @@
-= tubor_frame_tag "#{dom_id(node)}_components-search"
-  .mb-2
-    .row.row-cols-md-auto.g-3.align-items-center
-      .col-12
-        = bootstrap_form_with method: "get",
-          data: {turbo_frame: "#{dom_id(node)}_components-results"} do |f|
-          = f.hidden_field("per", value: 10)
-          = f.search_field :query, value: @query, hide_label: true,
-            append: f.primary('<i class="fas fa-search"></i>'.html_safe,
-              name: :search, render_as_button: true)
+- frame_prefix = "#{dom_id(node)}_components-add"
+.mb-2
+  .row.row-cols-md-auto.g-3.align-items-center
+    .col-12
+      = node_search_form_for(frame_prefix, query: @query, per: 10)
 
 hr
 
-= turbo_frame_tag "#{dom_id(node)}_components-results"
-  .mb-2
-    .row.mb-2.fw-bold
-      = node_search_result_col(:action)
-      - [:name, :hostname, :ipv4_address, :ipv6_address].each do |name|
-        = node_search_result_col(name, Node.human_attribute_name(name))
-
-    - results.each do |component|
-      .row.py-1.border-top
-        = node_search_result_col(:action) do
-          - if component.id == node.id
-            = t("messages.self")
-          - elsif node.components_ids.include?(component.id)
-            = t("messages.selected")
-          - else
-            = bootstrap_form_with scope: "component", method: :put,
-              url: node_components_path(node_id: node.id || "new",
-                id: component.id),
-              data: {action: "turbo:submit-end->modal#close"} do |f|
-                = f.hidden_field("id", value: component.id)
-                = f.submit t("actions.add"), class: "btn btn-primary btn-sm"
-        div class=(node_components_list_col_classes(:name))
-          = component.name
-          - node_flag_attributes.each do |attr|
-            - if component.__send__(attr)
-              = badge_for(attr, scope: "activerecord.attributes.node",
-                badge_class: "ms-1")
-        div class=(node_components_list_col_classes(:componentname)) = component.componentname
-        div class=(node_components_list_col_classes(:ipv4_address))
-          - component.nics.each do |nic|
-            - if nic.ipv4_dynamic?
-              span.text-success
-                = t_enum(:dynamic, :ipv4_configs)
-            - else
-              = span_value_for(nic.ipv4, hide_blank: true)
-            br
-        div class=(node_components_list_col_classes(:ipv6_address))
-          - component.nics.each do |nic|
-            - if nic.ipv6_dynamic?
-              span.text-primary
-                = t_enum(:dynamic, :ipv6_configs)
-            - else
-              = span_value_for(nic.ipv6, hide_blank: true)
-            br
-
-  = paginate components
-  p
-    = page_entries_info components
+= node_search_list_for(components, frame_prefix) do |component|
+  - if component.id == node.id
+    = t("messages.self")
+  - elsif node.component_ids.include?(component.id)
+    = t("messages.selected")
+  - else
+    = bootstrap_form_with scope: "component", method: :put,
+      url: node_components_path(node_id: node.id || "new",
+        id: component.id),
+      data: {action: "turbo:submit-end->modal#close"} do |f|
+        = f.hidden_field("id", value: component.id)
+        = f.submit t("actions.add"), class: "btn btn-primary btn-sm"
