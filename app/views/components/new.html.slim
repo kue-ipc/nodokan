@@ -1,1 +1,3 @@
-= render "form", node: @node, components: @components
+= render "modal", title: Node.human_attribute_name(:components),
+  modal_options: ["xl", "fullscreen-lg-down"]
+  = render "form", node: @node, components: @components

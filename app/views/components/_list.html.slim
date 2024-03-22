@@ -1,18 +1,16 @@
 // node or form(with node)
-- if local_assigns[:form]
+- unless local_assigns[:node]
   - node = form.object
+- unless local_assigns[:components]
+  - components = node.components
+
 = turbo_frame_tag "#{dom_id(node)}_components-list"
-  - node.components.each do |component|
-    = turbo_frame_tag dom_id(component, "#{dom_id(node)}_component")
-      .row
-        .col
-          =< link_to t("actions.destroy"),
-            node_components_path(node_id: node.id || "new",
-              component: component),
-            data: {turbo_mtethod: :delete},
-            class: "btn btn-sm btn-danger"
-        .col
-          = component.name
+  - components.each do |component|
+    - if local_assigns[:form]
+      = render "components/component", node: node, component: component,
+        form: form
+    - else
+      = render "components/component", node: node, component: component
 
 .row
   .col

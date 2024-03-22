@@ -13,7 +13,7 @@ hr
     = t("messages.selected")
   - else
     = bootstrap_form_with scope: "component", method: :put,
-      url: node_components_path(node_id: node.id || "new",
+      url: node_component_path(node_id: node.id || "new",
         id: component.id),
       data: {action: "turbo:submit-end->modal#close"} do |f|
         = f.hidden_field("id", value: component.id)

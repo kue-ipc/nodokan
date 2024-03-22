@@ -144,6 +144,9 @@ Style/HashTransformValues:
 Style/OneLineConditional:
   AlwaysCorrectToMultiline: true
 
+Style/MultilineBlockChain:
+  Enabled: false
+
 Style/NumericLiterals:
   Enabled: false
 

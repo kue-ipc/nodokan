@@ -41,12 +41,19 @@ module NodeSearchHelper
             *[:ipv4_address, :ipv6_address].map { |name|
               node_search_list_col(name, Nic.human_attribute_name(name))
             },
-          ].reduce(&:+)
+          ].inject(:+)
         }
         nodes.each do |node|
           rows += tag.div(class: "row py-1 boder-top") {
-            cols = node_search_list_col(:action) { yield node }
-            cols
+            [
+              node_search_list_col(:action) { yield node },
+              node_search_list_col(:name, node_name_decorated(node)),
+              node_search_list_col(:hostname, node.hostname),
+              node_search_list_col(:ipv4_address,
+                node_ipv4_address_decorated(node)),
+              node_search_list_col(:ipv6_address,
+                node_ipv6_address_decorated(node)),
+            ].inject(:+)
           }
         end
         rows

@@ -1,0 +1,4 @@
+= bootstrap_form_with(model: Node.new, id: "dummy_new_node_form") do |f|
+  = turbo_stream.append "#{dom_id(@node)}_components-list"
+    = render "component", form: f, node: @node, component: @component
+= turbo_stream.remove "dummy_new_node_form"
