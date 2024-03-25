@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@danielx/civet": "^0.6.83",
+    "@danielx/civet": "^0.6.86",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.4",
@@ -11,13 +11,13 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "coffeescript": "^2.7.0",
-    "esbuild": "^0.20.1",
+    "esbuild": "^0.20.2",
     "esbuild-coffeescript": "^2.2.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.1.0",
     "rails_admin": "3.1.2",
-    "sass": "^1.71.1",
-    "typescript": "^5.4.2"
+    "sass": "^1.72.0",
+    "typescript": "^5.4.3"
   },
   "scripts": {
     "build": "node esbuild.build.mjs",
@@ -29,9 +29,9 @@
   "devDependencies": {
     "@coffeelint/cli": "^5.2.11",
     "@types/bootstrap": "^5.2.10",
-    "postcss": "^8.4.35",
+    "postcss": "^8.4.38",
     "postcss-sass": "^0.5.0",
-    "stylelint": "^16.2.1",
+    "stylelint": "^16.3.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-config-standard-scss": "^13.0.0"
   }
