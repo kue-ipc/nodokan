@@ -3,6 +3,6 @@
     = form.hidden_field :component_ids, multiple: true, value: component.id
   = node_list_col_for(component, cols: NodesHelper::NODE_ACTION_LIST_COLS) do
     =< link_to t("actions.destroy"),
-      node_components_path(node_id: node.id || "new", component: component),
+      node_component_path(node_id: node.id || "new", id: component.id),
       data: {turbo_method: :delete},
       class: "btn btn-sm btn-danger"
