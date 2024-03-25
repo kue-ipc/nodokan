@@ -1,10 +1,10 @@
 module NodeSearchHelper
   NODE_SEARCH_LIST_COL_CLASSES = {
-    action: %w(col-2 col-md-1 col-xl-1),
     name: %w(col-6 col-md-5 col-xl-3),
-    hostname: %w(col-4 col-md-3 col-xl-2),
+    hostname: %w(col-4 col-md-2 col-xl-2),
     ipv4_address: %w(d-none d-md-block col-md-3 col-xl-2),
     ipv6_address: %w(d-none d-xl-block col-xl-4),
+    action: %w(col-2 col-md-2 col-xl-1),
   }.freeze
 
   def node_search_form_for(frame_prefix = "node", query: nil, per: nil,
@@ -34,25 +34,25 @@ module NodeSearchHelper
       tag.div(class: "mb-2") {
         rows = tag.div(class: "row mb-2 fw-bold") {
           [
-            node_search_list_col(:action),
             *[:name, :hostname].map { |name|
               node_search_list_col(name, Node.human_attribute_name(name))
             },
             *[:ipv4_address, :ipv6_address].map { |name|
               node_search_list_col(name, Nic.human_attribute_name(name))
             },
+            node_search_list_col(:action, t("messages.action")),
           ].inject(:+)
         }
         nodes.each do |node|
-          rows += tag.div(class: "row py-1 boder-top") {
+          rows += tag.div(class: "row py-1 border-top") {
             [
-              node_search_list_col(:action) { yield node },
               node_search_list_col(:name, node_name_decorated(node)),
               node_search_list_col(:hostname, node.hostname),
               node_search_list_col(:ipv4_address,
                 node_ipv4_address_decorated(node)),
               node_search_list_col(:ipv6_address,
                 node_ipv6_address_decorated(node)),
+              node_search_list_col(:action) { yield node },
             ].inject(:+)
           }
         end

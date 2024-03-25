@@ -33,7 +33,7 @@
     = tag.div class: {collapse: true, "logical-show": true, show: node.logical}
       .rounded.border.p-2.mb-2
         h4 = t("forms.node.components.title")
-        .md-2: small.text-muted = t("forms.node.components.help")
+        .mb-2: small.text-muted = t("forms.node.components.help")
         = render "components/list", form: f
 
     / hide if logical is enabled

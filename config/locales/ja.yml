@@ -75,6 +75,7 @@ ja:
     cancel: キャンセルする
 
   messages:
+    action: 操作
     comment: コメント
     comment_of_action: "%{action}時のコメント"
     all: 全て

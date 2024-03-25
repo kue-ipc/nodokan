@@ -187,4 +187,44 @@ module HtmlHelper
     ("&nbsp;" * number).html_safe
     # rubocop:enable Rails/OutputSafety
   end
+
+  GRID_TIERS = [:xs, :sm, :md, :lg, :xl, :xxl].freeze
+
+  def grid_classes(grid)
+    classes = []
+    grid.zip(HtmlHelper::GRID_TIERS).flat_map do |size, tier|
+      next if size.nil?
+
+      pre_tiers = HtmlHelper::GRID_TIERS.take_while { |t| t != tier }.reverse
+      none_tier = pre_tiers
+        .find { |t| classes.include?(display_class(:none, tier: t)) }
+      block_display = none_tier.nil? || pre_tiers
+        .take_while { |t| t != none_tier }
+        .any? { |t| classes.include?(display_class(:block, tier: t)) }
+
+      if size.zero?
+        classes << display_class(:none, tier: tier) if block_display
+      else
+        classes << display_class(:block, tier: tier) unless block_display
+        classes << col_class(size, tier: tier)
+      end
+    end
+    classes
+  end
+
+  def display_class(display, tier: nil)
+    if tier && tier.intern != :xs
+      "d-#{tier}-#{display}"
+    else
+      "d-#{display}"
+    end
+  end
+
+  def col_class(size, tier: nil)
+    if tier && tier.intern != :xs
+      "col-#{tier}-#{size}"
+    else
+      "col-#{size}"
+    end
+  end
 end
