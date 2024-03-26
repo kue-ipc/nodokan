@@ -27,32 +27,3 @@ hr
       } do |f|
         = f.hidden_field("id", value: host.id)
         = f.submit button_txt, class: "btn btn-primary btn-sm"
-
-
-  / - if component.id == node.id
-  /   = t("messages.self")
-  / - elsif node.component_ids.include?(component.id)
-  /   = t("messages.selected")
-  / - else
-  /   = bootstrap_form_with scope: "component", method: :put,
-  /     url: node_component_path(node_id: node.id || "new",
-  /       id: component.id),
-  /     data: {action: "turbo:submit-end->modal#close"} do |f|
-  /       = f.hidden_field("id", value: component.id)
-  /       = f.submit t("actions.add"), class: "btn btn-primary btn-sm"
-
-
-/ = turbo_frame_tag "#{dom_id(node)}_hosts-search"
-/   .mb-2
-/     .row.row-cols-md-auto.g-3.align-items-center
-/       .col-12
-/         = bootstrap_form_with method: "get",
-/           data: {turbo_frame: "#{dom_id(node)}_hosts-list"} do |f|
-/           = f.hidden_field("per", value: 10)
-/           = f.search_field :query, value: @query, hide_label: true,
-/             append: f.primary('<i class="fas fa-search"></i>'.html_safe,
-/               name: :search, render_as_button: true)
-
-/ hr
-
-/ = render "list", node: node, hosts: hosts
