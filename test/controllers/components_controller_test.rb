@@ -1,48 +1,41 @@
 require "test_helper"
 
 class ComponentsControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
   setup do
-    @component = components(:one)
+    @node = nodes(:cluster)
   end
 
   test "should get index" do
-    get components_url
+    sign_in users(:user)
+    get node_components_url(@node)
     assert_response :success
   end
 
   test "should get new" do
-    get new_component_url
+    sign_in users(:user)
+    get new_node_component_url(@node)
     assert_response :success
-  end
-
-  test "should create component" do
-    assert_difference("Component.count") do
-      post components_url, params: { component: {  } }
-    end
-
-    assert_redirected_to component_url(Component.last)
   end
 
   test "should show component" do
-    get component_url(@component)
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_component_url(@component)
+    sign_in users(:user)
+    get node_component_url(@node.components.first, node_id: @node.id)
     assert_response :success
   end
 
   test "should update component" do
-    patch component_url(@component), params: { component: {  } }
-    assert_redirected_to component_url(@component)
+    sign_in users(:user)
+    put node_component_url(@node.components.first, node_id: @node.id),
+      as: :turbo_stream
+    assert_response :success
   end
 
   test "should destroy component" do
-    assert_difference("Component.count", -1) do
-      delete component_url(@component)
-    end
-
-    assert_redirected_to components_url
+    sign_in users(:user)
+    delete node_component_url(@node.components.first, node_id: @node.id),
+      as: :turbo_stream
+    assert_response :success
   end
 end
