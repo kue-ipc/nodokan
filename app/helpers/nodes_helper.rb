@@ -1,12 +1,12 @@
 module NodesHelper
   NODE_LIST_COLS = [
-    {name: :user,         grid: [0, 0, 2, 2, 1, 1]},
-    {name: :name,         grid: [4, 3, 3, 3, 3, 2]},
-    {name: :hostname,     grid: [3, 3, 2, 2, 2, 1]},
-    {name: :place,        grid: [0, 0, 0, 0, 0, 1]},
-    {name: :ipv4_address, grid: [5, 4, 3, 2, 2, 2]},
-    {name: :ipv6_address, grid: [0, 0, 0, 0, 3, 2]},
-    {name: :mac_address,  grid: [0, 0, 0, 0, 0, 2]},
+    {name: :user,         grid: [0, 0, 2, 2, 1, 1], sort: :user_username},
+    {name: :name,         grid: [4, 3, 3, 3, 3, 2], sort: :name},
+    {name: :hostname,     grid: [3, 3, 2, 2, 2, 1], sort: :hostname},
+    {name: :place,        grid: [0, 0, 0, 0, 0, 1], sort: :place_room},
+    {name: :ipv4_address, grid: [5, 4, 3, 2, 2, 2], sort: :nics_ipv4},
+    {name: :ipv6_address, grid: [0, 0, 0, 0, 3, 2], sort: :nics_ipv6},
+    {name: :mac_address,  grid: [0, 0, 0, 0, 0, 2], sort: :nics_mac_address},
     {name: :confirmation, grid: [0, 2, 2, 2, 1, 1]},
   ].freeze
 
@@ -114,6 +114,26 @@ module NodesHelper
     }.inject { |result, item| result + tag.br + item }
   end
 
+  def node_confirmation_decorated(node)
+    case node.confirmation&.status
+    when nil, :unconfirmed
+      tag.i(class: "fas fa-times-circle text-danger") +
+        tag.span(t("messages.unconfirmed"), class: "text-danger")
+    when :expired
+      tag.i(class: "fas fa-times-circle text-danger") +
+        tag.span(t("messages.expired"), class: "text-danger")
+    when :unapproved
+      tag.i(class: "fas fa-exclamation-triangle text-warning") +
+        tag.span(t("messages.unapproved"), class: "text-warning")
+    when :expire_soon
+      tag.i(class: "fas fa-exclamation-triangle text-warning") +
+        tag.span(t("messages.expire_soon"), class: "text-warning")
+    when :approved
+      tag.i(class: "fas fa-check text-success") +
+        tag.span(t("messages.approved"), class: "text-success")
+    end
+  end
+
   def node_mac_address_decorated(node)
     node.nics.map { |nic| h(nic.mac_address) }
       .inject { |result, item| result + tag.br + item }
@@ -159,48 +179,60 @@ module NodesHelper
   end
 
   def node_list_headers_for(cols: NODE_LIST_COLS)
-    tag.div(class: "row pb-1 mb-1 fw-bold border-bottom") do
+    tag.div(class: "row py-1 border-bottom fw-bold") do
       cols.map { |col|
         name = col[:name]
         opts = {class: node_col_grid_class!(col)}
-        case name
-        when :action
-          tag.div(t("messages.action"), **opts)
-        when :ipv4_address, :ipv6_address, :mac_address
-          tag.div(Nic.human_attribute_name(name), **opts)
-        else
-          tag.div(Node.human_attribute_name(name), **opts)
-        end
+        content =
+          case name
+          when :action
+            t("messages.action")
+          when :ipv4_address, :ipv6_address, :mac_address
+            h(Nic.human_attribute_name(name))
+          else
+            h(Node.human_attribute_name(name))
+          end
+        content += h(" ") + sort_link(col[:sort]) if col[:sort]
+        tag.div(content, **opts)
       }.inject(:+)
     end
   end
 
-  def node_list_col_for(node, cols: NODE_LIST_COLS, action: nil)
-    tag.div(class: "row py-1 border-bottom") do
-      cols.map { |col|
-        name = col[:name]
-        opts = {class: node_col_grid_class!(col)}
-        case name
-        when :action
-          if block_given?
-            tag.div(**opts) { yield node }
-          else
-            tag.div(action&.call(node), **opts)
-          end
-        when :user
-          tag.div(node.user&.username, **opts)
-        when :name
-          tag.div(node_name_decorated(node), **opts)
-        when :ipv4_address
-          tag.div(node_ipv4_address_decorated(node), **opts)
-        when :ipv6_address
-          tag.div(node_ipv6_address_decorated(node), **opts)
-        when :mac_address
-          tag.div(node_mac_address_decorated(node), **opts)
+  def node_list_col_for(node, cols: NODE_LIST_COLS, link: nil, action: nil)
+    content = cols.map { |col|
+      name = col[:name]
+      opts = {class: node_col_grid_class!(col)}
+      case name
+      when :action
+        if block_given?
+          tag.div(**opts) { yield node }
         else
-          tag.div(node.__send__(name), **opts)
+          tag.div(action&.call(node), **opts)
         end
-      }.inject(:+)
+      when :user
+        tag.div(node.user&.username, **opts)
+      when :name
+        tag.div(node_name_decorated(node), **opts)
+      when :place
+        tag.div(node.place&.short_name, **opts)
+      when :confirmation
+        tag.div(node_confirmation_decorated(node), **opts)
+      when :ipv4_address
+        tag.div(node_ipv4_address_decorated(node), **opts)
+      when :ipv6_address
+        tag.div(node_ipv6_address_decorated(node), **opts)
+      when :mac_address
+        tag.div(node_mac_address_decorated(node), **opts)
+      else
+        tag.div(node.__send__(name), **opts)
+      end
+    }.inject(:+)
+
+    if link
+      link_to(content, link, class: "row py-1 border-bottom",
+        data: {turbo: false})
+    else
+      tag.div(content, class: "row py-1 border-bottom")
     end
   end
 end
