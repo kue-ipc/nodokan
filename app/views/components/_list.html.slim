@@ -5,6 +5,9 @@
   - components = node.components
 
 = turbo_frame_tag "#{dom_id(node)}_components-list"
+  - if local_assigns[:form]
+    // dummy for all delete
+    = form.hidden_field :component_ids, multiple: true, value: ""
   = node_list_for(components,
     filters: nil, pagination: false,
     cols: NodesHelper::NODE_ACTION_LIST_COLS) do |component|
