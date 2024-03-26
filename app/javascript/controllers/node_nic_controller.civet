@@ -1,6 +1,39 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="node-nic"
-export default class NodeNicController < Controller
+export default class NodeNicController < Controller<HTMLElement>
+  @targets = [
+    "destroy"
+    "interface_type"
+    "name"
+    "network_id"
+    "mac_address"
+    "auth"
+    "ipv4_config"
+    "ipv4_address"
+    "ipv6_config"
+    "ipv6_address"
+  ]
+
+  declare readonly destroy: HTMLInputElement
+  // declare readonly interface_type: HTMLSelectElement
+  // declare readonly name: HTMLInputElement
+  // declare readonly network_id: HTMLSelectElement
+  // declare readonly mac_address: HTMLInputElement
+  // declare readonly auth: HTMLInputElement
+  // declare readonly ipv4_config: HTMLSelectElement
+  // declare readonly ipv4_address: HTMLInputElement
+  // declare readonly ipv6_config: HTMLSelectElement
+  // declare readonly ipv6_address: HTMLInputElement
+
   connect()
-    
+    console.log "------------------------------------"
+    console.log @
+    console.log @nameTarget
+
+  destroy(event: Event)
+    console.log "=============destroy==========="
+    console.log event.target.value
+    console.log @nameTarget
+
+

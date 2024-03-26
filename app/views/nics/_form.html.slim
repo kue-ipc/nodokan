@@ -1,17 +1,19 @@
 - nic = form.object
-.rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"]
+.rounded.border.p-2.mb-2.[id="node_nics_attributes_#{form.index}"
+  data-controller="node-nic"]
   = form.hidden_field :id
+  = form.check_box :_destroy, label: "このNICを削除する",
+    data: {node_nic_target: "destroy", action: "change->node-nic#destroy"}
   - if current_user.admin?
     = form.check_box :locked
-
-  = form.check_box :_destroy, label: "このNICを削除する"
   .row.node-nic-form
     .col-md-4
       = form.collection_select :interface_type,
         t_enums(:interface_types, Nic), :first, :second,
         required: true, floating: true, prompt: "【必須】(選択してください)"
     .col-md-8
-      = form.text_field :name, floating: true
+      = form.text_field :name, floating: true,  data: {node_nic_target: "name"}
+
     .col-md-4
       - nic_networks = current_user.usable_networks.to_a
       - if nic.network && nic_networks.exclude?(nic.network)
