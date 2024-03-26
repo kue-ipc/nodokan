@@ -378,6 +378,13 @@ export loadNodeNics: (element?: Element) => void := (element) ->
       messageStore = new MessageStore(messages)
 
   for el of document.getElementsByClassName("node-nic-frame")
+    if el !<? HTMLElement
+      console.warn `[node_nics] element is not HTMLElement: ${el.id}`
+      continue
+
+    if el.dataset.readonly?
+      continue
+
     if LOADED_ELEMENTS.has(el)
       console.warn `[node_nics] element is already loaded: ${el.id}`
       continue
