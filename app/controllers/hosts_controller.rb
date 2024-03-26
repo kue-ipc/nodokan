@@ -38,7 +38,7 @@ class HostsController < ApplicationController
 
   # DELETE /nodes/1/host
   def destroy
-    @node.host = nil
+    @node.host_id = nil
     render :show
   end
 

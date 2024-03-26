@@ -8,8 +8,7 @@
   - if local_assigns[:form]
     // dummy for all delete
     = form.hidden_field :component_ids, multiple: true, value: ""
-  = node_list_for(components,
-    filters: nil, pagination: false,
+  = node_list_for(components, pagination: false,
     cols: NodesHelper::NODE_ACTION_LIST_COLS) do |component|
       - if local_assigns[:form]
         = render "components/component", node: node, component: component,

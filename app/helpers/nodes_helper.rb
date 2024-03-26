@@ -20,6 +20,15 @@ module NodesHelper
     {name: :action,       grid: [2, 2, 2, 2, 1, 1]},
   ].freeze
 
+  NODE_DOUBLE_ACTION_LIST_COLS = [
+    {name: :name,         grid: [8, 4, 4, 4, 3, 2]},
+    {name: :hostname,     grid: [0, 3, 2, 2, 2, 1]},
+    {name: :ipv4_address, grid: [0, 0, 4, 4, 2, 2]},
+    {name: :ipv6_address, grid: [0, 0, 0, 0, 3, 3]},
+    {name: :mac_address,  grid: [0, 0, 0, 0, 0, 2]},
+    {name: :action,       grid: [4, 3, 2, 2, 2, 2]},
+  ].freeze
+
   LIST_COL_CLASSES = {
     user: %w(d-none d-md-block col-md-2 col-lg-2 col-xl-1 col-xxl-1),
     name: %w(col-4 col-sm-3 col-md-3 col-lg-3 col-xl-3 col-xxl-2),

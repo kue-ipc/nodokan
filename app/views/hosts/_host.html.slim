@@ -5,20 +5,26 @@
 = turbo_frame_tag "#{dom_id(node)}_host"
   - if local_assigns[:form]
     = form.hidden_field :host_id
-  .row: .col
-    - if host
-      = host.name
+  - if host
+    = node_list_col_for(host,
+      cols: NodesHelper::NODE_DOUBLE_ACTION_LIST_COLS) do
       =< link_to t("actions.change"),
         edit_node_host_path(node_id: node.id || "new"),
         class: "btn btn-sm btn-warning",
         data: {turbo_frame: "modal"}
       =< link_to t("actions.destroy"),
         node_host_path(node_id: node.id || "new"),
-        data: {turbo_mtethod: :delete},
+        data: {turbo_method: :delete},
         class: "btn btn-sm btn-danger"
-    - else
-      = t("values.none")
-      =< link_to t("actions.select"),
-        new_node_host_path(node_id: node.id || "new"),
-        class: "btn btn-sm btn-primary",
-        data: {turbo_frame: "modal"}
+  - else
+    .row
+      .col
+        = span_value_for(nil)
+      - action_grid = NodesHelper::NODE_DOUBLE_ACTION_LIST_COLS \
+        .find { |col| col[:name] == :action }[:grid]
+      - action_grid_class = grid_classes(action_grid)
+      div class=action_grid_class
+        =< link_to t("actions.select"),
+          new_node_host_path(node_id: node.id || "new"),
+          class: "btn btn-sm btn-primary",
+          data: {turbo_frame: "modal"}
