@@ -1,63 +1,44 @@
 - nic = form.object
-- readonly_nic = !current_user.admin? && nic.locked
-
-
-
-.rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"
-data-readonly=readonly_nic]
+.rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"]
   = form.hidden_field :id
-  - if readonly_nic
-    .row.mb-2
-      .col
-        small.text-muted<
-          |
-            このNICは管理者によってロックされているため、
-            編集や削除はできません。
-    .row
-      .col.px-3
-        = render nic
-  - else
-    - if current_user.admin?
-      = form.check_box :locked
+  - if current_user.admin?
+    = form.check_box :locked
 
-    = form.check_box :_destroy, label: "このNICを削除する"
-    .row.node-nic-form
+  = form.check_box :_destroy, label: "このNICを削除する"
+  .row.node-nic-form
+    .col-md-4
+      = form.collection_select :interface_type,
+        t_enums(:interface_types, Nic), :first, :second,
+        required: true, floating: true, prompt: "【必須】(選択してください)"
+    .col-md-8
+      = form.text_field :name, floating: true
+    .col-md-4
+      - nic_networks = current_user.usable_networks.to_a
+      - if nic.network && nic_networks.exclude?(nic.network)
+        - nic_networks << nic.network
+      = form.collection_select :network_id, nic_networks, :id, :name,
+        required: true, floating: true, prompt: "【必須】(選択してください。)"
+    .col-md-4
+      = form.text_field :mac_address, pattern: mac_address_pattern,
+        floating: true
+    .col-md-4
+      = form.form_group :auth, label: {text: "認証ネットワーク登録"} do
+        = form.check_box :auth, label: "MACアドレスを登録する"
+    .col-md-4
+      = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),
+        :first, :second, floating: true
+    .col-md-4
+      = form.text_field :ipv4_address, pattern: ipv4_address_pattern,
+        floating: true
+    .col-md-4
+    - if Settings.config.ipv6
       .col-md-4
-        = form.collection_select :interface_type,
-          t_enums(:interface_types, Nic), :first, :second,
-          required: true, floating: true, prompt: "【必須】(選択してください)"
-      .col-md-8
-        = form.text_field :name, floating: true
-      .col-md-4
-        - nic_networks = current_user.usable_networks.to_a
-        - if nic.network && nic_networks.exclude?(nic.network)
-          - nic_networks << nic.network
-        = form.collection_select :network_id, nic_networks, :id, :name,
-          required: true, floating: true, prompt: "【必須】(選択してください。)"
-      .col-md-4
-        = form.text_field :mac_address,
-          pattern: "([0-9A-Fa-f]{2}[\\-:]?){5}[0-9a-fA-F]{2}",
-          floating: true
-      .col-md-4
-        = form.form_group :auth, label: {text: "認証ネットワーク登録"} do
-          = form.check_box :auth, label: "MACアドレスを登録する"
-      .col-md-4
-        = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),
+        = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
           :first, :second, floating: true
       .col-md-4
-        = form.text_field :ipv4_address,
-          pattern: '((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)',
+        = form.text_field :ipv6_address, pattern: ipv6_address_pattern,
           floating: true
       .col-md-4
-      - if Settings.config.ipv6
-        .col-md-4
-          = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
-            :first, :second, floating: true
-        .col-md-4
-          = form.text_field :ipv6_address,
-            pattern: '([\dA-Fa-f](?![\da-fA-F]{4})|:((?!:{2}))){2,39}',
-            floating: true
-        .col-md-4
-    template id="node_nics_attributes_#{form.index}_message_template"
-      .col-md-12.form-text.message
-    .row id="node_nics_attributes_#{form.index}_messages"
+  template id="node_nics_attributes_#{form.index}_message_template"
+    .col-md-12.form-text.message
+  .row id="node_nics_attributes_#{form.index}_messages"
