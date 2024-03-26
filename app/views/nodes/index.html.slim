@@ -4,26 +4,25 @@
     = t("actions.index")
 
 .mb-2
-  = bootstrap_form_tag url: nodes_path, method: "get",
-    data: {turbo_frame: "nodes-list"} do |f|
-    - @per.present?
-      = f.hidden_field("per", value: @per)
-    - @order&.each do |name, value|
-      = f.hidden_field("order[#{name}]", value: value)
-    - @condition&.each do |name, value|
-      = f.hidden_field("condition[#{name}]", value: value)
-    .row.row-cols-md-auto.g-3.align-items-center
-      .col-12
+  .row.row-cols-md-auto.g-3.align-items-center
+    .col-12
+      = bootstrap_form_tag url: nodes_path, method: "get",
+        data: {turbo_frame: "nodes-list"} do |f|
+        - @per.present?
+          = f.hidden_field("per", value: @per)
+        - @order&.each do |name, value|
+          = f.hidden_field("order[#{name}]", value: value)
+        - @condition&.each do |name, value|
+          = f.hidden_field("condition[#{name}]", value: value)
         = f.search_field :query, value: @query, hide_label: true,
           append: f.primary('<i class="fas fa-search"></i>'.html_safe,
             name: :search, render_as_button: true)
-      .col-12.mb-3
-        = link_to t("actions.download_csv"), nodes_path(format: :csv),
-            class: "btn btn-primary",
-            download: "nodes_#{Time.current.strftime('%Y%m%d')}.csv"
-      .col-12.mb-3
-        = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
-
+    .col-12.mb-3
+      = link_to t("actions.download_csv"), nodes_path(format: :csv),
+          class: "btn btn-primary",
+          download: "nodes_#{Time.current.strftime('%Y%m%d')}.csv"
+    .col-12.mb-3
+      = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
 p
   | 1年に1度、端末の確認を行ってください。
 

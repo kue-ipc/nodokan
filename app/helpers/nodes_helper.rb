@@ -10,14 +10,6 @@ module NodesHelper
     {name: :confirmation, grid: [0, 2, 2, 2, 1, 1]},
   ].freeze
 
-  NODE_LIST_FILTERS = [
-    {name: :specific, type: :boolean},
-    {name: :nics_network_id, type: :select,
-     collection: -> { current_user.usable_networks.to_a },},
-    {name: :user_id, type: :select,
-     collection: -> { User.all }, admin_only: true,},
-  ]
-
   NODE_ACTION_LIST_COLS = [
     {name: :user,         grid: [0, 0, 2, 2, 1, 1]},
     {name: :name,         grid: [6, 3, 3, 3, 3, 2]},
@@ -143,15 +135,12 @@ module NodesHelper
     col[:grid_class] ||= col.fetch(:class, []) + grid_classes(col[:grid])
   end
 
-  def node_list_for(nodes, filters: NODE_LIST_FILTERS,
+  def node_list_for(nodes,
     write_headers: true, pagination: :both, cols: NODE_LIST_COLS,
     wrapper: {}, action: nil, &block)
     pagination = :both if pagination == true
     tag.div(**wrapper) do
       contents = []
-      if filters
-        # TODO: 実装すること
-      end
       contents << paginate(nodes) if [:both, :above].include?(pagination)
       contents << node_list_table_for(nodes, write_headers: write_headers,
         cols: cols, action: action, &block)
