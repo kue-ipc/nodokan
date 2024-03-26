@@ -1,0 +1,28 @@
+.rounded.border.p-2.mb-2
+  h4 = t("forms.node.operating_system.title")
+  .mb-2: small.text-muted = t("forms.node.operating_system.help")
+  .row
+    = form.fields_for :operating_system,
+      form.object.operating_system || OperatingSystem.new do |field|
+      .col-md-4
+        = field.collection_select :os_category_id,
+          OsCategory.order(:order), :id, :name,
+          include_blank: "(未選択)", floating: true,
+          required: false
+      .col-md-3
+        = field.text_field :name,
+          list: "node_operating_system_name-list",
+          floating: true,
+          disabled: true, required: false
+        = datalist_candidate :operating_system, :name,
+          operating_systems_path, parents: [:node],
+          order: {nodes_count: "desc"},
+          inputList: [:os_category_id],
+          requiredInput: :os_category_id,
+          description: true,
+          clear: true,
+          locked: {name: :os_category_id,
+            list: OsCategory.where(locked: true).map(&:id).map(&:to_s),}
+
+  small#node_operating_system_name-description.form-text
+

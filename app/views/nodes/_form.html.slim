@@ -31,124 +31,23 @@
 
     / show if logical is enabled
     = tag.div class: {collapse: true, "logical-show": true, show: node.logical}
-      .rounded.border.p-2.mb-2
-        h4 = t("forms.node.components.title")
-        .mb-2: small.text-muted = t("forms.node.components.help")
-        = render "components/list", form: f
-
+      = render "form_components", form: f
+ 
     / hide if logical is enabled
     = tag.div class: {collapse: true, "logical-hide": true, show: !node.logical}
       = tag.div class: {collapse: true, "virtual_machine-show": true,
         show: node.virtual_machine,}
-        .rounded.border.p-2.mb-2
-          h4 = t("forms.node.host.title")
-          .mb-2: small.text-muted = t("forms.node.host.help")
-          = render "hosts/host", form: f
+        = render "form_host", form: f
 
       = tag.div class: {collapse: true, "virtual_machine-hide": true,
         show: !node.virtual_machine,}
-        .rounded.border.p-2.mb-2
-          h4 = t("forms.node.place.title")
-          .mb-2: small.text-muted = t("forms.node.place.help")
-          .row
-            = f.fields_for :place, node.place || Place.new do |place_f|
-              .col-md-3
-                = place_f.text_field :area, list: "node_place_area-list",
-                  floating: true
-                = datalist_candidate :place, :area, places_path,
-                  parents: [:node]
-              .col-md-3
-                = place_f.text_field :building,
-                  list: "node_place_building-list",
-                  floating: true
-                = datalist_candidate :place, :building, places_path,
-                  parents: [:node], inputList: [:area]
-              .col-md-2
-                - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
-                = place_f.select :floor, floor_list, floating: true
-              .col-md-4
-                = place_f.text_field :room, list: "node_place_room-list",
-                  floating: true
-                = datalist_candidate :place, :room, places_path,
-                  parents: [:node], order: {nodes_count: "desc"},
-                  inputList: [:area, :building, :floor]
+        = render "form_place", form: f
 
-      .rounded.border.p-2.mb-2
-        h4 = t("forms.node.hardware.title")
-        .mb-2: small.text-muted = t("forms.node.hardware.help")
-        .row
-          = f.fields_for :hardware,
-            node.hardware || Hardware.new do |hardware_f|
-            .col-md-3
-              = hardware_f.collection_select :device_type_id,
-                DeviceType.order(:order), :id, :name,
-                include_blank: "(未選択)", floating: true
-            .col-md-2
-              = hardware_f.text_field :maker, list: "node_hardware_maker-list",
-                floating: true
-              = datalist_candidate :hardware, :maker, hardwares_path,
-                parents: [:node], inputList: [:device_type_id]
-            .col-md-4
-              = hardware_f.text_field :product_name,
-                list: "node_hardware_product_name-list",
-                floating: true
-              = datalist_candidate :hardware, :product_name, hardwares_path,
-                parents: [:node], inputList: [:device_type_id, :maker]
-            .col-md-3
-              = hardware_f.text_field :model_number,
-                list: "node_hardware_model_number-list",
-                floating: true
-              = datalist_candidate :hardware, :model_number, hardwares_path,
-                parents: [:node],
-                inputList: [:device_type_id, :maker, :product_name]
+      = render "form_hardware", form: f
 
-      .rounded.border.p-2.mb-2
-        h4 = t("forms.node.operating_system.title")
-        .mb-2: small.text-muted = t("forms.node.operating_system.help")
-        .row
-          = f.fields_for :operating_system,
-            node.operating_system || OperatingSystem.new do |operating_system_f|
-            .col-md-4
-              = operating_system_f.collection_select :os_category_id,
-                OsCategory.order(:order), :id, :name,
-                include_blank: "(未選択)", floating: true,
-                required: false
-            .col-md-3
-              = operating_system_f.text_field :name,
-                list: "node_operating_system_name-list",
-                floating: true,
-                disabled: true, required: false
-              = datalist_candidate :operating_system, :name,
-                operating_systems_path, parents: [:node],
-                order: {nodes_count: "desc"},
-                inputList: [:os_category_id],
-                requiredInput: :os_category_id,
-                description: true,
-                clear: true,
-                locked: {name: :os_category_id,
-                  list: OsCategory.where(locked: true).map(&:id).map(&:to_s),}
+      = render "form_operating_system", form: f
 
-        small#node_operating_system_name-description.form-text
-
-    .rounded.border.p-2.mb-2
-      h4 = t("forms.node.nic.title")
-      .mb-2: small.text-muted = t("forms.node.nic.help")
-      .row
-        .col-md-4
-          = f.text_field :duid, floating: true,
-            pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}"
-      = turbo_frame_tag "nics"
-        = f.fields_for :nics do |nic_f|
-          = render "nics/form", form: nic_f
-      .row
-        .col
-          = link_to t("actions.add"), new_nic_path, class: "btn btn-secondary",
-            data: {turbo: true, turbo_stream: true}
-      script#node-nic-messages type="application/json"
-        == { \
-          no_address: t("messages.node_nic_no_address"),
-          helps: t("messages.node_nic_helps"),
-        }.to_json
+    = render "form_nics", form: f
 
     .rounded.border.p-2.mb-2
       = f.text_area :note, floating: true, class: "dobule-height"

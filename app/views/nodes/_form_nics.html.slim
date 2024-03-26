@@ -1,0 +1,19 @@
+.rounded.border.p-2.mb-2
+  h4 = t("forms.node.nic.title")
+  .mb-2: small.text-muted = t("forms.node.nic.help")
+  .row
+    .col-md-4
+      = form.text_field :duid, floating: true,
+        pattern: "([0-9A-Fa-f]{2}[\\-:]?)*[0-9a-fA-F]{2}"
+    .col.text-end
+      = link_to t("with_actions.add", name: Nic.model_name.human),
+        new_nic_path, class: "btn btn-secondary",
+        data: {turbo: true, turbo_stream: true}
+  = turbo_frame_tag "nics"
+    = form.fields_for :nics do |field|
+      = render "nics/form", form: field
+  script#node-nic-messages type="application/json"
+    == { \
+      no_address: t("messages.node_nic_no_address"),
+      helps: t("messages.node_nic_helps"),
+    }.to_json

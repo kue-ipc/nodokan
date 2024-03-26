@@ -1,0 +1,25 @@
+.rounded.border.p-2.mb-2
+  h4 = t("forms.node.place.title")
+  .mb-2: small.text-muted = t("forms.node.place.help")
+  .row
+    = form.fields_for :place, form.object.place || Place.new do |field|
+      .col-md-3
+        = field.text_field :area, list: "node_place_area-list",
+          floating: true
+        = datalist_candidate :place, :area, places_path,
+          parents: [:node]
+      .col-md-3
+        = field.text_field :building,
+          list: "node_place_building-list",
+          floating: true
+        = datalist_candidate :place, :building, places_path,
+          parents: [:node], inputList: [:area]
+      .col-md-2
+        - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
+        = field.select :floor, floor_list, floating: true
+      .col-md-4
+        = field.text_field :room, list: "node_place_room-list",
+          floating: true
+        = datalist_candidate :place, :room, places_path,
+          parents: [:node], order: {nodes_count: "desc"},
+          inputList: [:area, :building, :floor]

@@ -6,3 +6,6 @@ import { application } from "./application"
 
 import ModalController from "./modal_controller.civet"
 application.register("modal", ModalController)
+
+import NodeNicController from "./node_nic_controller.civet"
+application.register("node-nic", NodeNicController)

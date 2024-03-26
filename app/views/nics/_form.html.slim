@@ -1,6 +1,8 @@
 - nic = form.object
 - readonly_nic = !current_user.admin? && nic.locked
 
+
+
 .rounded.border.p-2.mb-2.node-nic-frame[id="node_nics_attributes_#{form.index}"
 data-readonly=readonly_nic]
   = form.hidden_field :id

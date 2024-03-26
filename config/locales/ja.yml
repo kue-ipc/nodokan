@@ -48,7 +48,7 @@ ja:
   do_actions:
     close: 閉じる
     index: 一覧を表示する
-    new: 新規作成する
+    new: 新規に作成する
     show: 閲覧する
     edit: 編集する
     destroy: 削除する
@@ -73,6 +73,27 @@ ja:
     error: エラーになる
     start: 開始する
     cancel: キャンセルする
+
+  with_actions:
+    close: "%{name}を閉じる"
+    index: "%{name}の一覧を表示する"
+    new: "%{name}を新規に作成する"
+    show: "%{name}を閲覧する"
+    edit: "%{name}を編集する"
+    destroy: "%{name}を削除する"
+    save: "%{name}を保存する"
+    create: "%{name}を作成する"
+    update: "%{name}を更新する"
+    add: "%{name}を追加する"
+    delete: "%{name}を削除する"
+    insert: "%{name}を挿入する"
+    register: "%{name}を登録する"
+    reset: "%{name}をリセットする"
+    apply: "%{name}を申し込む"
+    finish: "%{name}を完了する"
+    start: "%{name}を開始する"
+    cancel: "%{name}をキャンセルする"
+
 
   messages:
     action: 操作
