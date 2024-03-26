@@ -11,7 +11,7 @@
     - if node.logical?
       = dt_dd_for node, :components do |components|
         - components.each do |component|
-          - if current_user.admin? || component.user.id == current.user.id
+          - if current_user.admin? || component.user.id == current_user.id
             = span_value_for(component)
           - else
             = component.name
@@ -20,7 +20,7 @@
       - if node.virtual_machine?
         = dt_dd_for node, :host do |host|
           - if host
-            - if current_user.admin? || host.user.id == current.user.id
+            - if current_user.admin? || host.user.id == current_user.id
               = span_value_for(host)
             - else
               = host.name
