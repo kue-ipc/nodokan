@@ -3,10 +3,12 @@
   data-controller="node-nic"]
   = form.hidden_field :id
   = form.check_box :_destroy, label: "このNICを削除する",
-    data: {node_nic_target: "destroy", action: "change->node-nic#destroy"}
+    data: {node_nic_target: "destroy", action: "change->node-nic#changeDestroy"}
   - if current_user.admin?
-    = form.check_box :locked
-  .row.node-nic-form
+    = form.check_box :locked,
+      data: {node_nic_target: "locked", action: "change->node-nic#changeLocked"}
+
+  .row
     .col-md-4
       = form.collection_select :interface_type,
         t_enums(:interface_types, Nic), :first, :second,

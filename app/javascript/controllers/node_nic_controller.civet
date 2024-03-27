@@ -4,36 +4,75 @@ import { Controller } from "@hotwired/stimulus"
 export default class NodeNicController < Controller<HTMLElement>
   @targets = [
     "destroy"
-    "interface_type"
+    "locked"
+    "interfaceType"
     "name"
-    "network_id"
-    "mac_address"
+    "networkId"
+    "macAddress"
     "auth"
-    "ipv4_config"
-    "ipv4_address"
-    "ipv6_config"
-    "ipv6_address"
+    "ipv4Config"
+    "ipv4Address"
+    "ipv6Config"
+    "ipv6Address"
   ]
 
-  declare readonly destroy: HTMLInputElement
-  // declare readonly interface_type: HTMLSelectElement
-  // declare readonly name: HTMLInputElement
-  // declare readonly network_id: HTMLSelectElement
-  // declare readonly mac_address: HTMLInputElement
-  // declare readonly auth: HTMLInputElement
-  // declare readonly ipv4_config: HTMLSelectElement
-  // declare readonly ipv4_address: HTMLInputElement
-  // declare readonly ipv6_config: HTMLSelectElement
-  // declare readonly ipv6_address: HTMLInputElement
+  // TODO: 下記のようにすべきだが、Civetがうまく動かない
+  // https://stimulus.hotwired.dev/reference/using-typescript
+  // declare readonly destroyTarget: HTMLInputElement? // checkbox
+  // declare readonly lockedTarget: HTMLInputElement? // checkbox
+  // declare readonly interfaceTypeTarget: HTMLSelectElement?
+  // declare readonly nameTarget: HTMLInputElement? // text
+  // declare readonly networkIdTarget: HTMLSelectElement?
+  // declare readonly macAddressTarget: HTMLInputElement? // text
+  // declare readonly authTarget: HTMLInputElement? // checkbox
+  // declare readonly ipv4ConfigTarget: HTMLSelectElement?
+  // declare readonly ipv4AddressTarget: HTMLInputElement? // text
+  // declare readonly ipv6ConfigTarget: HTMLSelectElement?
+  // declare readonly ipv6AddressTarget: HTMLInputElement? // text
 
-  connect()
-    console.log "------------------------------------"
-    console.log @
+  connect(): void
+    console.debug "----------------------------2--------"
+    console.log @destroyTarget
+    console.log @lockedTarget
+    console.log @interfaceTypeTarget
     console.log @nameTarget
+    console.log @networkIdTarget
+    console.log @macAddressTarget
+    console.log @authTarget
+    console.log @ipv4ConfigTarget
+    console.log @ipv4AddressTarget
+    console.log @ipv6ConfigTarget
+    console.log @ipv6AddressTarget
+    console.debug "=================================="
 
-  destroy(event: Event)
-    console.log "=============destroy==========="
-    console.log event.target.value
-    console.log @nameTarget
+  
+  // disable(elements: (HTMLInputElement | HTMLSelectElement)[]): void
+  //   for element of elements
+  //     continue unless element?
 
+  //     if element <? HTML
+  //     console.debug `disbale: ${element.id}`
+  //     // {node, hidden} := @inputMap.get(name) || {}
+  //     // continue unless node?
+
+  //     // チェックボックスはhiddenに現在の設定値を入れて固定化する
+  //     if node <? HTMLInputElement and node.type is "checkbox" and hidden?
+  //       hidden.value = if node.checked then "1" else "0"
+
+  //     node.disabled = true
+
+
+  // changeDestroy(event: Event): void
+  //   if @destroyTarget.checked
+  //     @interfaceTypeTarget: HTMLSelectElement
+  //     @nameTarget: HTMLInputElement
+  //     @networkIdTarget: HTMLSelectElement
+  //     @macAddressTarget: HTMLInputElement
+
+  //     @authTarget: HTMLInputElement
+
+  //     @ipv4ConfigTarget: HTMLSelectElement
+  //     @ipv4AddressTarget: HTMLInputElement
+  //     @ipv6ConfigTarget: HTMLSelectElement
+  //     @ipv6AddressTarget: HTMLInputElement
 
