@@ -1,4 +1,3 @@
-// "civet coffeeCompat"
 // String Utils
 
 // ["abc", "xyz"] -> "abcXyz"

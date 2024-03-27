@@ -1,0 +1,51 @@
+// List Utils for Set and Array
+
+export arrayToSet := <T>(array: readonly T[]) -> new Set(array)
+
+export setToArray := <T>(set: Set<T>) -> [...set]
+
+export arrayUniq := <T>(array: readonly T[]) -> array |> arrayToSet |> setToArray
+
+// TODO: Set methodsが実装されたときはやめる？
+
+// set - set
+export setDifference := <T>(a: Set<T>, b: Set<T>) ->
+  set := new Set<T>
+  for v of a
+    set.add(v) unless b.has(v)
+  set
+
+// set & set
+export setIntersection := <T>(a: Set<T>, b: Set<T>) ->
+  set := new Set<T>
+  for v of a
+    set.add(v) if b.has(v)
+  set
+
+// set ^ set
+export setSymmetricDifference := <T>(a: Set<T>, b: Set<T>) ->
+  setDifference(setIntersection(a, b), setUnion(a, b))
+
+// set | set
+export setUnion := <T>(a: Set<T>, b: Set<T>) ->
+  set := new Set(a)
+  for v of b
+    set.add(v)
+  set
+
+// array - array
+// preserve duplicates and order
+export arrayDifference := <T>(a: readonly T[], b: readonly T[]) ->
+  a.filter (v) -> not b.includes(v)
+
+// array & array
+export arrayIntersection := <T>(a: readonly T[], b: readonly T[]) ->
+  setIntersection(arrayToSet(a), arrayToSet(b)) |> setToArray
+
+// array ^ array
+export arraySymmetricDifference := <T>(a: readonly T[], b: readonly T[]) ->
+  setSymmetricDifference(arrayToSet(a), arrayToSet(b)) |> setToArray
+
+// array | array
+export arrayUinon := <T>(a: readonly T[], b: readonly T[]) ->
+  setUnion(arrayToSet(a), arrayToSet(b)) |> setToArray

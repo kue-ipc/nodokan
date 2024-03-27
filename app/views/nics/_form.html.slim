@@ -2,47 +2,71 @@
 .rounded.border.p-2.mb-2.[id="node_nics_attributes_#{form.index}"
   data-controller="node-nic"]
   = form.hidden_field :id
-  = form.check_box :_destroy, label: "このNICを削除する",
-    data: {node_nic_target: "destroy", action: "change->node-nic#changeDestroy"}
-  - if current_user.admin?
-    = form.check_box :locked,
-      data: {node_nic_target: "locked", action: "change->node-nic#changeLocked"}
-
   .row
     .col-md-4
       = form.collection_select :interface_type,
         t_enums(:interface_types, Nic), :first, :second,
-        required: true, floating: true, prompt: "【必須】(選択してください)"
+        {floating: true, prompt: "【必須】(選択してください)"},
+        required: true,
+        data: {node_nic_target: "interfaceType",
+          action: "node-nic#change",}
     .col-md-8
-      = form.text_field :name, floating: true,  data: {node_nic_target: "name"}
+      = form.text_field :name, floating: true, data: {node_nic_target: "name"}
 
     .col-md-4
       - nic_networks = current_user.usable_networks.to_a
       - if nic.network && nic_networks.exclude?(nic.network)
         - nic_networks << nic.network
       = form.collection_select :network_id, nic_networks, :id, :name,
-        required: true, floating: true, prompt: "【必須】(選択してください。)"
+        {floating: true, prompt: "【必須】(選択してください。)"},
+        required: true,
+        data: {node_nic_target: "networkId", action: "node-nic#change"}
+
     .col-md-4
       = form.text_field :mac_address, pattern: mac_address_pattern,
-        floating: true
+        floating: true, data: {node_nic_target: "macAddress"}
+
     .col-md-4
       = form.form_group :auth, label: {text: "認証ネットワーク登録"} do
-        = form.check_box :auth, label: "MACアドレスを登録する"
+        = form.check_box :auth, label: "MACアドレスを登録する",
+          data: {node_nic_target: "auth",
+            action: "node-nic#change",}
+
     .col-md-4
       = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),
-        :first, :second, floating: true
+        :first, :second, {floating: true},
+        data: {node_nic_target: "ipv4Config", action: "node-nic#change"}
+
     .col-md-4
       = form.text_field :ipv4_address, pattern: ipv4_address_pattern,
-        floating: true
+        floating: true, data: {node_nic_target: "ipv4Address"}
+
     .col-md-4
+
     - if Settings.config.ipv6
       .col-md-4
         = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
-          :first, :second, floating: true
+          :first, :second, {floating: true},
+          data: {node_nic_target: "ipv6Config",
+            action: "node-nic#change",}
+
       .col-md-4
         = form.text_field :ipv6_address, pattern: ipv6_address_pattern,
-          floating: true
+          floating: true, data: {node_nic_target: "ipv6Address"}
+
       .col-md-4
+
+    .col-md-4
+      = form.check_box :_destroy, label: "このNICを削除する",
+        data: {node_nic_target: "destroy", action: "node-nic#change"}
+
+    .col-md-4
+      - if current_user.admin?
+        = form.check_box :locked,
+          data: {node_nic_target: "locked", action: "node-nic#change"}
+
+    .col-md-4
+
   template id="node_nics_attributes_#{form.index}_message_template"
     .col-md-12.form-text.message
   .row id="node_nics_attributes_#{form.index}_messages"

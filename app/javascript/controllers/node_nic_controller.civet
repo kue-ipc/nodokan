@@ -1,4 +1,7 @@
-import { Controller } from "@hotwired/stimulus"
+import {Controller} from "@hotwired/stimulus"
+import {arrayDifference} from "../utils/set_utils.civet"
+import Network from "../models/network.civet"
+import {capitalize} from "../utils/string_utils.civet"
 
 // Connects to data-controller="node-nic"
 export default class NodeNicController < Controller<HTMLElement>
@@ -14,65 +17,108 @@ export default class NodeNicController < Controller<HTMLElement>
     "ipv4Address"
     "ipv6Config"
     "ipv6Address"
-  ]
+  ] as const
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
-  // declare readonly destroyTarget: HTMLInputElement? // checkbox
-  // declare readonly lockedTarget: HTMLInputElement? // checkbox
-  // declare readonly interfaceTypeTarget: HTMLSelectElement?
-  // declare readonly nameTarget: HTMLInputElement? // text
-  // declare readonly networkIdTarget: HTMLSelectElement?
-  // declare readonly macAddressTarget: HTMLInputElement? // text
-  // declare readonly authTarget: HTMLInputElement? // checkbox
-  // declare readonly ipv4ConfigTarget: HTMLSelectElement?
-  // declare readonly ipv4AddressTarget: HTMLInputElement? // text
-  // declare readonly ipv6ConfigTarget: HTMLSelectElement?
-  // declare readonly ipv6AddressTarget: HTMLInputElement? // text
+  // declare readonly destroyTarget: HTMLInputElement // checkbox
+  // declare readonly lockedTarget: HTMLInputElement // checkbox
+  // declare readonly interfaceTypeTarget: HTMLSelectElement
+  // declare readonly nameTarget: HTMLInputElement // text
+  // declare readonly networkIdTarget: HTMLSelectElement
+  // declare readonly macAddressTarget: HTMLInputElement // text
+  // declare readonly authTarget: HTMLInputElement // checkbox
+  // declare readonly ipv4ConfigTarget: HTMLSelectElement
+  // declare readonly ipv4AddressTarget: HTMLInputElement // text
+  // declare readonly ipv6ConfigTarget: HTMLSelectElement
+  // declare readonly ipv6AddressTarget: HTMLInputElement // text
+
+  network: Network?
 
   connect(): void
-    console.debug "----------------------------2--------"
-    console.log @destroyTarget
-    console.log @lockedTarget
-    console.log @interfaceTypeTarget
-    console.log @nameTarget
-    console.log @networkIdTarget
-    console.log @macAddressTarget
-    console.log @authTarget
-    console.log @ipv4ConfigTarget
-    console.log @ipv4AddressTarget
-    console.log @ipv6ConfigTarget
-    console.log @ipv6AddressTarget
-    console.debug "=================================="
+    @change()
 
-  
-  // disable(elements: (HTMLInputElement | HTMLSelectElement)[]): void
-  //   for element of elements
-  //     continue unless element?
+  change(_event?: Event): Promise<void>
+    if @destroyTarget.checked
+      @disableInputs(arrayDifference(NodeNicController.targets, ["destroy"]))
+      return
 
-  //     if element <? HTML
-  //     console.debug `disbale: ${element.id}`
-  //     // {node, hidden} := @inputMap.get(name) || {}
-  //     // continue unless node?
+    @enableInputs(["interfaceType"])
 
-  //     // チェックボックスはhiddenに現在の設定値を入れて固定化する
-  //     if node <? HTMLInputElement and node.type is "checkbox" and hidden?
-  //       hidden.value = if node.checked then "1" else "0"
+    unless @interfaceTypeTarget.value
+      @disableInputs(arrayDifference(NodeNicController.targets,
+        ["destroy", "interfaceType"]))
+      return
 
-  //     node.disabled = true
+    @enableInputs(["name", "networkId", "macAddress"])
 
+    networkId := @networkIdTarget.value
+    @network = if networkId then await Network.fetch(networkId) else undefined
 
-  // changeDestroy(event: Event): void
-  //   if @destroyTarget.checked
-  //     @interfaceTypeTarget: HTMLSelectElement
-  //     @nameTarget: HTMLInputElement
-  //     @networkIdTarget: HTMLSelectElement
-  //     @macAddressTarget: HTMLInputElement
+    console.debug @network
 
-  //     @authTarget: HTMLInputElement
+    // if @network
+    //     // auth
+    //     if @network.auth
+    //       @addMessage("helps.auth_network")
+    //       if @checkInitInput("network_id")
+    //         @setInitInput("auth")
+    //       else
+    //         authNode.checked = true if authNode <? HTMLInputElement
+    //       @enableInputs(["auth"])
+    //     else
+    //       authNode.checked = false if authNode <? HTMLInputElement
+    //       @disableInputs(["auth"])
 
-  //     @ipv4ConfigTarget: HTMLSelectElement
-  //     @ipv4AddressTarget: HTMLInputElement
-  //     @ipv6ConfigTarget: HTMLSelectElement
-  //     @ipv6AddressTarget: HTMLInputElement
+    //     // note
+    //     if @network.note
+    //       @addMessage("note", @network.note)
+
+    //     @enableInputs(["ipv4_config", "ipv6_config"])
+    // else if networkId
+    //   @setInitInput("auth")
+    //   @setInitInput("ipv4_config")
+    //   @setInitInput("ipv6_config")
+    //   @disableInputs(["auth", "ipv4_config", "ipv6_config"])
+    //   @addMessage("helps.unconfigurable")
+    // else
+    //   authNode.checked = false if authNode <? HTMLInputElement
+    //   @disableInputs(["auth", "ipv4_config", "ipv6_config"])
+    //   @addMessage("helps.no_network")
+
+    // @adjustConfig("ipv4")
+    // @adjustConfig("ipv6")
+    // @requireMacAddress()
+    // @requireDuid()
+
+  enableInputs(names: (typeof NodeNicController.targets[number])[]): void
+    for name of names
+      continue unless @[`has${capitalize(name)}Target`]
+
+      console.debug `enable: ${name}`
+      target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
+
+      // チェックボックスはhiddenを0に戻す
+      if target <? HTMLInputElement and target.type is "checkbox" and
+        target.previousElementSibling <? HTMLInputElement and
+        target.previousElementSibling.type is "hidden"
+        target.previousElementSibling.value = "0"
+
+      target.disabled = false
+
+  disableInputs(names: (typeof NodeNicController.targets[number])[]): void
+    for name of names
+      continue unless @[`has${capitalize(name)}Target`]
+
+      console.debug `disable: ${name}`
+      target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
+
+      // チェックボックスはhiddenに現在の設定値を入れて固定化する
+      if target <? HTMLInputElement and target.type is "checkbox" and
+        target.previousElementSibling <? HTMLInputElement and
+        target.previousElementSibling.type is "hidden"
+        target.previousElementSibling.value =
+          if target.checked then "1" else "0"
+
+      target.disabled = true
 
