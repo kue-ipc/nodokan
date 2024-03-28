@@ -6,7 +6,7 @@ import {capitalize} from "../utils/string_utils.civet"
 import MessageStore from "../utils/message_store.civet"
 
 // TODO: 全体で管理するようなものに変えるべきかと
-let messageStore: MessageStore? = undefined
+messageStore: MessageStore? .= undefined
 
 getMessageStore := ->
   return messageStore if messageStore?
@@ -20,7 +20,6 @@ getMessageStore := ->
 // Connects to data-controller="node-nic"
 export default class NodeNicController < Controller<HTMLElement>
   @names := [
-    "destroy"
     "locked"
     "interfaceType"
     "name"
@@ -33,11 +32,11 @@ export default class NodeNicController < Controller<HTMLElement>
     "ipv6Address"
   ] as const
 
-  @targets := [...@names, "messages", "messageTemplate", "message"]
+  @targets := [...@names, "destroy",
+    "messagesRow", "messageTemplate", "messageCol"]
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
-  // declare readonly destroyTarget: HTMLInputElement // checkbox
   // declare readonly lockedTarget: HTMLInputElement // checkbox
   // declare readonly interfaceTypeTarget: HTMLSelectElement
   // declare readonly nameTarget: HTMLInputElement // text
@@ -48,27 +47,54 @@ export default class NodeNicController < Controller<HTMLElement>
   // declare readonly ipv4AddressTarget: HTMLInputElement // text
   // declare readonly ipv6ConfigTarget: HTMLSelectElement
   // declare readonly ipv6AddressTarget: HTMLInputElement // text
-  // declare readonly messagesTarget: HTMLDivElement
-  // declare readonly messageTemplateTarget: HTMLTemplateElement
-  // declare readonly messageTargets: HTMLDivElement[]
 
-  network: Network?
-  messageStore: MessageStore?
+  // declare readonly destroyTarget: HTMLInputElement // checkbox
+
+  // declare readonly messagesRowTarget: HTMLDivElement
+  // declare readonly messageTemplateTarget: HTMLTemplateElement
+  // declare readonly messageColTargets: HTMLDivElement[]
+
+  network?: Network
+  messageStore?: MessageStore
+  initValue?: {
+    locked: boolean
+    interfaceType: number
+    name: string
+    networkId: number
+    macAddress: string
+    auth: boolean
+    ipv4Config: number
+    ipv4Address: string
+    ipv6Config?: number
+    ipv6Address?: string
+  }
 
   connect(): void
     @messageStore = getMessageStore()
+    @initValue = {
+      locked: @lockedTarget.checked
+      interfaceType: @interfaceTypeTarget.selectedIndex
+      name: @nameTarget.value
+      networkId: @networkIdTarget.selectedIndex
+      macAddress: @macAddressTarget.value
+      auth: @authTarget.checked
+      ipv4Config: @ipv4ConfigTarget.selectedIndex
+      ipv4Address: @ipv4AddressTarget.value
+      ipv6Config: if @hasIpv6ConfigTarget then @ipv6ConfigTarget.selectedIndex
+      ipv6Address: if @hasIpv6AddressTarget then @ipv6AddressTarget.value
+    }
     @change()
 
   change(_event?: Event): Promise<void>
     if @destroyTarget.checked
-      @disableInputs(arrayDifference(NodeNicController.names, ["destroy"]))
+      @disableInputs(NodeNicController.names)
       return
 
     @enableInputs(["interfaceType"])
 
     unless @interfaceTypeTarget.value
-      @disableInputs(arrayDifference(NodeNicController.names,
-        ["destroy", "interfaceType"]))
+      @disableInputs(
+        arrayDifference(NodeNicController.names, ["interfaceType"]))
       return
 
     @enableInputs(["name", "networkId", "macAddress"])
@@ -83,25 +109,25 @@ export default class NodeNicController < Controller<HTMLElement>
           if @checkInitInput("network_id")
             @setInitInput("auth")
           else
-            authNode.checked = true if authNode <? HTMLInputElement
+            @authTarget.checked = true
           @enableInputs(["auth"])
         else
-          authNode.checked = false if authNode <? HTMLInputElement
+          @authTarget.checked = false
           @disableInputs(["auth"])
 
         // note
         if @network.note
           @addMessage("note", @network.note)
 
-        @enableInputs(["ipv4_config", "ipv6_config"])
+        @enableInputs(["ipv4Config", "ipv6Config"])
     else if networkId
       @setInitInput("auth")
-      @setInitInput("ipv4_config")
-      @setInitInput("ipv6_config")
-      @disableInputs(["auth", "ipv4_config", "ipv6_config"])
+      @setInitInput("ipv4Config")
+      @setInitInput("ipv6Config")
+      @disableInputs(["auth", "ipv4Config", "ipv6Config"])
       @addMessage("helps.unconfigurable")
     else
-      authNode.checked = false if authNode <? HTMLInputElement
+      @authTarget.checked = false
       @disableInputs(["auth", "ipv4_config", "ipv6_config"])
       @addMessage("helps.no_network")
 
@@ -110,7 +136,7 @@ export default class NodeNicController < Controller<HTMLElement>
     @requireMacAddress()
     @requireDuid()
 
-  enableInputs(names: (typeof NodeNicController.names[number])[]): void
+  enableInputs(names: string[]): void
     for name of names
       continue unless @[`has${capitalize(name)}Target`]
 
@@ -125,7 +151,7 @@ export default class NodeNicController < Controller<HTMLElement>
 
       target.disabled = false
 
-  disableInputs(names: (typeof NodeNicController.names[number])[]): void
+  disableInputs(names: string[]): void
     for name of names
       continue unless @[`has${capitalize(name)}Target`]
 
@@ -146,143 +172,140 @@ export default class NodeNicController < Controller<HTMLElement>
     unless message
       console.warn "[NodeNicController] no message"
       return
+    
+    currentMessageCol :=
+      @messageColTargets.find (el) -> el.dataset.messageKey is key
+    if currentMessageCol
+      currentMessageCol.textContent = message
+      return
 
-    id := @getNodeId("messages", key)
-    currentMessageNode := document.getElementById(id)
-    if currentMessageNode?
-      currentMessageNode.textContent = message
-    else
-      clone := @messageTemplateNode.content.cloneNode(true)
-      unless clone <? DocumentFragment or clone <? Element
-        console.warn "[NodeNicController] no document frament nor element in template"
-        return
-      messageNode := clone.querySelector(".message")
-      unless messageNode <? Element
-        console.warn "[NodeNicController] no message element in template"
-        return
-      messageNode.id = id
-      messageNode.textContent = message
-      @messagesNode.appendChild(clone)
+    clone := @messageTemplateTarget.content.cloneNode(true)
+    unless clone <? DocumentFragment or clone <? HTMLElement
+      console.warn "[NodeNicController] " +
+        "no document frament nor html element in template"
+      return
+    messageCol := clone.querySelector(".message")
+    unless messageCol <? HTMLElement
+      console.warn "[NodeNicController] no message html element in template"
+      return
+
+    messageCol.dataset.nodeNicTarget = "messageRow"
+    messageCol.dataset.messageKey = key
+    messageCol.textContent = message
+    @messagesRowTarget.appendChild(clone)
   
   removeMessage(key: string): void
-    id := @getNodeId("messages", key)
-    messageNode := document.getElementById(id)
-    if messageNode?
-      @messagesNode.removeChild(messageNode)
+    currentMessageCol :=
+      @messageColTargets.find (el) -> el.dataset.messageKey is key
+
+    if currentMessageCol?
+      @messagesRowTarget.removeChild(currentMessageCol)
 
   clearMessages(): void
-    while @messagesNode.firstChild
-      last := @messagesNode.lastChild
-      @messagesNode.removeChild(last) if last?
+    while @messagesRowTarget.firstChild
+      last := @messagesRowTarget.lastChild
+      @messagesRowTarget.removeChild(last) if last?
 
-  setInitInput(name: NodeNic.Name): void
-    input := @inputMap.get(name)
-    return unless input?
+  setInitInput(name: string): void
+    return unless @[`has${capitalize(name)}Target`]
 
-    {node, init} := input
-
-    switch node
+    target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
+    switch target
       <? HTMLInputElement
-        if node.type is "checkbox"
-          node.checked = init.checked || false
+        if target.type is "checkbox"
+          target.checked = @initValue[name] ?? false
         else
-          node.value = init.value || ""
+          target.value = @initValue[name] ?? ""
       <? HTMLSelectElement
-        node.selectedIndex = init.selectedIndex || -1
+        target.selectedIndex = @initValue[name] ?? -1
 
-  checkInitInput(name: NodeNic.Name): boolean
-    input := @inputMap.get(name)
-    return false unless input?
-    {node, init} := input
+  checkInitInput(name: strnig): boolean
+    return false unless @[`has${capitalize(name)}Target`]
 
-    switch node
+    target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
+    switch target
       <? HTMLInputElement
-        if node.type is "checkbox"
-          node.checked is init.checked
+        if target.type is "checkbox"
+          target.checked is @initValue[name]
         else
-          node.value is init.value
+          target.value is @initValue[name]
       <? HTMLSelectElement
-        node.selectedIndex is init.selectedIndex
+        target.selectedIndex is @initValue[name]
       else
         false
 
   adjustConfig(ip: "ipv4" | "ipv6"): void
     // networkがなければ、何もしない
     return unless @network?
+    return unless @[`has${capitalize(ip)}ConfigTarget`]
 
-    input := @inputMap.get(`${ip}_config`)
-    return unless input?
-    {node, init, options} := input
-    unless node <? HTMLSelectElement
-      console.warn `[NodeNicController] not selet element for ${ip}_config`
-      return
-    unless options?
-      console.warn `[NodeNicController] no options for ${ip}_config`
+    target := @[`${ip}ConfigTarget`]
+    unless target <? HTMLSelectElement
+      console.warn `[NodeNicController] not select element for ${ip}Config`
       return
 
-    list := @network?[`${ip}_config_list`]
-    for el of options
+    list := @network[`${ip}_config_list`]
+    for each el of target.options
       if list.includes(el.value)
         el.disabled = false
       else
         el.disabled = true
 
-    selectedOption := node.selectedOptions.item(0)    
+    selectedOption := target.selectedOptions[0]
 
     if @checkInitInput("network_id")
-      node.selectedIndex = init.selectedIndex || -1
+      target.selectedIndex = @initValue(`${ip}Config`) ?? -1
     else if selectedOption !<? HTMLOptionElement or
         selectedOption.disabled or
         selectedOption.value is "disabled"
-      node.selectedIndex = 
-        (options.findIndex (el) -> !el.disabled) ||
-        (options.findIndex (el) -> el.value is "disabled") ||
+      target.selectedIndex = 
+        ([...target.options].findIndex (el) -> !el.disabled) ??
+        ([...target.options].findIndex (el) -> el.value is "disabled") ??
         -1
 
     @adjustAddress(ip)
 
   adjustAddress(ip: "ipv4" | "ipv6"): void
-    input := @inputMap.get(`${ip}_address`)
-    return unless input?
-    {node, init} := input
-    unless node <? HTMLInputElement
-      console.warn `[NodeNicController] not input element for ${ip}_config`
+    return unless @network?
+    return unless @[`has${capitalize(ip)}AddressTarget`]
+
+    target := @[`${ip}AddressTarget`]
+    unless target <? HTMLInputElement
+      console.warn `[NodeNicController] not input element for ${ip}Address`
       return
 
-    config := @inputMap.get(`${ip}_config`)?.node.value || "disabled"
+    config := @[`${ip}ConfigTarget`].value || "disabled"
 
-    node.placeholder =
-      @messageStore.get(config, scope: "no_address",default: "")
-    node.value =
-      if @checkInitInput("network_id") && @checkInitInput(`${ip}_config`)
-        init.value || ""
+    target.placeholder =
+      @messageStore?.get(config, scope: "no_address", default: "") ?? ""
+    target.value =
+      if @checkInitInput("networkId") && @checkInitInput(`${ip}Cconfig`)
+        @initValue?[`${ip}Address`] || ""
       else
         ""
 
-    node.disabled =
+    target.disabled =
       ["dynamic", "disabled", "mapped"].includes(config) or
         not @network?.current_user.manageable
 
   requireMacAddress(): void
-    macAddressNode := @inputMap.get("mac_address")?.node
-    unless macAddressNode <? HTMLInputElement
-      console.warn "[NodeNicController] not input element for mac_address"
-      return
-    authNode := @inputMap.get("auth")?.node
-
-    if (authNode <? HTMLInputElement and authNode.checked) or
-        @inputMap.get("ipv4_config")?.node.value is "reserved"
-      macAddressNode.required = true
+    if @authTarget.checked or @ipv4ConfigTarget.value is "reserved"
+      @macAddressTarget.required = true
       @addMessage("helps.require_mac")
     else
-      macAddressNode.required = false
+      @macAddressTarget.required = false
       @removeMessage("helps.require_mac")
 
   requireDuid(): void
-    if @inputMap.get("ipv6_config")?.node?.value is "reserved"
-      @duidNode.required = true
+    duidNode := document.getElementById("node_duid")
+    unless duidNode <? HTMLInputElement
+      console.warn "[NodeNicController] node duid not found"
+      return
+
+    if @hasIpv6ConfigTarget and @ipv6ConfigTarget.value is "reserved"
+      duidNode.required = true
       @addMessage("helps.require_duid")
     else
-      @duidNode.required = false
+      duidNode.required = false
       @removeMessage("helps.require_duid")
 
