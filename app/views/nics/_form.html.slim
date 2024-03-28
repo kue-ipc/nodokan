@@ -7,9 +7,7 @@
       = form.collection_select :interface_type,
         t_enums(:interface_types, Nic), :first, :second,
         {floating: true, prompt: "【必須】(選択してください)"},
-        required: true,
-        data: {node_nic_target: "interfaceType",
-          action: "node-nic#change",}
+        required: true, data: {node_nic_target: "interfaceType"}
     .col-md-8
       = form.text_field :name, floating: true, data: {node_nic_target: "name"}
 
@@ -35,7 +33,7 @@
     .col-md-4
       = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),
         :first, :second, {floating: true},
-        data: {node_nic_target: "ipv4Config", action: "node-nic#change"}
+        data: {node_nic_target: "ipv4Config", action: "node-nic#changeIpv4"}
 
     .col-md-4
       = form.text_field :ipv4_address, pattern: ipv4_address_pattern,
@@ -56,14 +54,14 @@
 
       .col-md-4
 
-  .row data-node-nic-target="messagesRow"
+  .row data-node-nic-target="messages"
   template data-node-nic-target="messageTemplate"
     .col-12.form-text.message
 
   .row
     .col-md-4
       = form.check_box :_destroy, label: "このNICを削除する",
-        data: {node_nic_target: "destroy", action: "node-nic#change"}
+        data: {node_nic_target: "destroy", action: "node-nic#changeIpv6"}
 
     .col-md-4
       - if current_user.admin?

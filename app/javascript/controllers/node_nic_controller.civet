@@ -32,8 +32,7 @@ export default class NodeNicController < Controller<HTMLElement>
     "ipv6Address"
   ] as const
 
-  @targets := [...@names, "destroy",
-    "messagesRow", "messageTemplate", "messageCol"]
+  @targets := [...@names, "destroy", "messages", "messageTemplate"]
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
@@ -50,18 +49,13 @@ export default class NodeNicController < Controller<HTMLElement>
 
   // declare readonly destroyTarget: HTMLInputElement // checkbox
 
-  // declare readonly messagesRowTarget: HTMLDivElement
+  // declare readonly messagesTarget: HTMLDivElement
   // declare readonly messageTemplateTarget: HTMLTemplateElement
-  // declare readonly messageColTargets: HTMLDivElement[]
 
   network?: Network
   messageStore?: MessageStore
   initValue?: {
-    locked: boolean
-    interfaceType: number
-    name: string
     networkId: number
-    macAddress: string
     auth: boolean
     ipv4Config: number
     ipv4Address: string
@@ -72,11 +66,7 @@ export default class NodeNicController < Controller<HTMLElement>
   connect(): void
     @messageStore = getMessageStore()
     @initValue = {
-      locked: @lockedTarget.checked
-      interfaceType: @interfaceTypeTarget.selectedIndex
-      name: @nameTarget.value
       networkId: @networkIdTarget.selectedIndex
-      macAddress: @macAddressTarget.value
       auth: @authTarget.checked
       ipv4Config: @ipv4ConfigTarget.selectedIndex
       ipv4Address: @ipv4AddressTarget.value
@@ -90,51 +80,61 @@ export default class NodeNicController < Controller<HTMLElement>
       @disableInputs(NodeNicController.names)
       return
 
-    @enableInputs(["interfaceType"])
-
-    unless @interfaceTypeTarget.value
-      @disableInputs(
-        arrayDifference(NodeNicController.names, ["interfaceType"]))
-      return
-
-    @enableInputs(["name", "networkId", "macAddress"])
+    @enableInputs(["interfaceType", "name", "networkId", "macAddress"])
 
     networkId := @networkIdTarget.value
     @network = if networkId then await Network.fetch(networkId) else undefined
 
-    if @network
-        // auth
-        if @network.auth
-          @addMessage("helps.auth_network")
-          if @checkInitInput("network_id")
-            @setInitInput("auth")
-          else
-            @authTarget.checked = true
-          @enableInputs(["auth"])
+    if @network?
+      // auth
+      if @network.auth
+        @addMessage("helps.auth_network")
+        if @checkInitInput("networkId")
+          @setInitInput("auth")
         else
-          @authTarget.checked = false
-          @disableInputs(["auth"])
+          @authTarget.checked = true
+        @enableInputs(["auth"])
+      else
+        @removeMessage("helps.auth_network")
+        @authTarget.checked = false
+        @disableInputs(["auth"])
 
-        // note
-        if @network.note
-          @addMessage("note", @network.note)
+      // note
+      if @network.note
+        @addMessage("note", @network.note)
+      else
+        @removeMessage("note")
 
-        @enableInputs(["ipv4Config", "ipv6Config"])
+      @enableInputs(["ipv4Config", "ipv6Config"])
+
+      @removeMessage("helps.unconfigurable")
+      @removeMessage("helps.no_network")
     else if networkId
       @setInitInput("auth")
       @setInitInput("ipv4Config")
       @setInitInput("ipv6Config")
-      @disableInputs(["auth", "ipv4Config", "ipv6Config"])
+      @disableInputs(["auth",
+        "ipv4Config", "ipv4Address", "ipv6Address", "ipv6Config"])
+
       @addMessage("helps.unconfigurable")
+      @removeMessage("helps.no_network")
     else
       @authTarget.checked = false
-      @disableInputs(["auth", "ipv4_config", "ipv6_config"])
+      @disableInputs(["auth", "ipv4Config", "ipv6Config"])
+
       @addMessage("helps.no_network")
+      @removeMessage("helps.unconfigurable")
 
     @adjustConfig("ipv4")
     @adjustConfig("ipv6")
     @requireMacAddress()
     @requireDuid()
+  
+  changeIpv4(_event?: Event): void
+    @adjustAddress("ipv4")
+
+  changeIpv6(_event?: Event): void
+    @adjustAddress("ipv6")
 
   enableInputs(names: string[]): void
     for name of names
@@ -167,16 +167,18 @@ export default class NodeNicController < Controller<HTMLElement>
 
       target.disabled = true
 
+  getMessageElement(key: string): Element?
+    @messagesTarget.querySelector(`[data-message-key="${key}"]`)
+
   addMessage(key: string, message?: string): void
     message = @messageStore?.get(key) unless message?
     unless message
       console.warn "[NodeNicController] no message"
       return
     
-    currentMessageCol :=
-      @messageColTargets.find (el) -> el.dataset.messageKey is key
-    if currentMessageCol
-      currentMessageCol.textContent = message
+    currentMessageElement := @getMessageElement(key)
+    if currentMessageElement?
+      currentMessageElement.textContent = message
       return
 
     clone := @messageTemplateTarget.content.cloneNode(true)
@@ -184,27 +186,25 @@ export default class NodeNicController < Controller<HTMLElement>
       console.warn "[NodeNicController] " +
         "no document frament nor html element in template"
       return
-    messageCol := clone.querySelector(".message")
-    unless messageCol <? HTMLElement
+    messageElement := clone.querySelector(".message")
+    unless messageElement <? HTMLElement
       console.warn "[NodeNicController] no message html element in template"
       return
 
-    messageCol.dataset.nodeNicTarget = "messageRow"
-    messageCol.dataset.messageKey = key
-    messageCol.textContent = message
-    @messagesRowTarget.appendChild(clone)
+    messageElement.dataset.messageKey = key
+    messageElement.textContent = message
+    @messagesTarget.appendChild(clone)
   
   removeMessage(key: string): void
-    currentMessageCol :=
-      @messageColTargets.find (el) -> el.dataset.messageKey is key
+    currentMessageElement := @getMessageElement(key)
 
-    if currentMessageCol?
-      @messagesRowTarget.removeChild(currentMessageCol)
+    if currentMessageElement?
+      @messagesTarget.removeChild(currentMessageElement)
 
   clearMessages(): void
-    while @messagesRowTarget.firstChild
-      last := @messagesRowTarget.lastChild
-      @messagesRowTarget.removeChild(last) if last?
+    while @messagesTarget.firstChild
+      last := @messagesTarget.lastChild
+      @messagesTarget.removeChild(last) if last?
 
   setInitInput(name: string): void
     return unless @[`has${capitalize(name)}Target`]
@@ -253,7 +253,7 @@ export default class NodeNicController < Controller<HTMLElement>
 
     selectedOption := target.selectedOptions[0]
 
-    if @checkInitInput("network_id")
+    if @checkInitInput("networkId")
       target.selectedIndex = @initValue(`${ip}Config`) ?? -1
     else if selectedOption !<? HTMLOptionElement or
         selectedOption.disabled or
