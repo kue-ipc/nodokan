@@ -1,5 +1,22 @@
 import {Controller} from "@hotwired/stimulus"
+import {Collapse} from "bootstrap"
 
 // Connects to data-controller="node-confirmation"
-export default class < Controller<HTMLFormElement>
+export default class NodeConfirmationController < Controller<HTMLFormElement>
+  @targets := [
+    "existence"
+
+
+    "collapse"
+  ]
+
+  // declare readonly existencTargets: HTMLInputElement[] // radio
+
+  // declare readonly collapseTarget: HTMLDivElement
+  
+  collapse: Collapse?
+
   connect()
+    console.log @existenceTargets
+    @collapse = new Collapse(@collapseTarget)
+    @collapes?.show()

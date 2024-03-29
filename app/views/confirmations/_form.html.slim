@@ -11,18 +11,12 @@
 
   - question_count = 1
   - [:existence].each do |attr_name|
-    = f.form_group attr_name, label: {text: safe_join([ \
-        tag.strong(t("messages.question_with_number", count: question_count)),
-        " ",
-        t(attr_name, scope: "messages.node_confirm_questions"),
-      ])},
-      help: t(attr_name, scope: "messages.node_confirm_helps", default: nil) do
-      - t_enums(attr_name.to_s.pluralize.intern, Confirmation) \
-        .each do |key, message|
-        = f.radio_button attr_name, key, label: message, required: true
+    = confirmation_question_radio_buttons(f, attr_name, count: question_count,
+      required: true)
     - question_count += 1
-  #node-confirm-collapse.collapse
+  .collapse data-node-confirmation-target="collapse"
     - [:content].each do |attr_name|
+      = confirmation_question_radio_buttons(f, attr_name, count: question_count)
       = f.form_group attr_name, label: {text: safe_join([ \
           tag.strong(t("messages.question_with_number", count: question_count)),
           " ",

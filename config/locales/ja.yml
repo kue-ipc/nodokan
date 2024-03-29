@@ -149,6 +149,7 @@ ja:
       Internet Explorerは使用できません。
       新しい Microsoft Edge、Mozilla Firefox、Google Chrome、Apple Safari等の
       モダンブラウザーを使用してください。
+    question: "質問"
     question_with_number: "質問%{count}"
     node_confirmation: |
       端末について下記を確認・回答し、「確認終了」を押してください。
