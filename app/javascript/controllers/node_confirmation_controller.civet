@@ -1,0 +1,5 @@
+import {Controller} from "@hotwired/stimulus"
+
+// Connects to data-controller="node-confirmation"
+export default class < Controller<HTMLFormElement>
+  connect()

@@ -1,5 +1,17 @@
 class ConfirmationsController < ApplicationController
-  before_action :set_node, only: [:create, :update]
+  before_action :set_node
+
+  # GET /nodes/1/confirmation
+  def show
+  end
+
+  # GET /nodes/1/confirmation/new
+  def new
+  end
+
+  # GET /nodes/1/confirmation/edit
+  def edit
+  end
 
   # POST /nodes/1/confirmation
   # POST /nodes/1/confirmation.json

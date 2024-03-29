@@ -191,10 +191,17 @@
     = dt_dd_for node, :connected_at, blank_alt: "-"
 
   p
-    button#node-confirm-modal-toggle.btn.btn-primary[
-      type="button" data-bs-toggle="modal" data-bs-target="#node-confirm-modal"]
-      = t("actions.confirm")
-    =<> link_to t("actions.edit"), edit_node_path(node),
+    - if node.confirmation
+      =< link_to t("actions.confirm"),
+        edit_node_confirmation_path(node),
+        class: "btn btn-primary",
+        data: {turbo_frame: "modal"}
+    - else
+      =< link_to t("actions.confirm"),
+        new_node_confirmation_path(node),
+        class: "btn btn-primary",
+        data: {turbo_frame: "modal"}
+    =< link_to t("actions.edit"), edit_node_path(node),
       class: "btn btn-warning"
 
   p.text-muted
@@ -354,8 +361,3 @@
     = link_to "特定端末申請画面へ",
       new_node_specific_node_application_path(node),
       class: "btn btn-secondary", data: {turbo: false}
-
-  #node-confirm-modal.modal.fade tabindex="-1" role="dialog"
-    .modal-dialog.modal-xl role="document"
-      .modal-content
-        = render "confirmations/form", confirmation: init_confirmation(@node)

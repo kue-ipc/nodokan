@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       get "copy"
       post "transfer"
     end
-    resource :confirmation, only: [:create, :update]
+    resource :confirmation, only: [:new, :edit, :create, :update]
     resource :specific_node_application, only: [:new, :create]
     resource :host
     resources :components, only: [:index, :show, :new, :update, :destroy]
