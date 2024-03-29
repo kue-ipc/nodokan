@@ -32,7 +32,8 @@ export default class NodeNicController < Controller<HTMLElement>
     "ipv6Address"
   ] as const
 
-  @targets := [...@names, "destroy", "messages", "messageTemplate"]
+  @targets := [...@names, "destroy", "ipv4Help", "ipv6Help",
+    "messages", "messageTemplate"]
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
@@ -48,6 +49,8 @@ export default class NodeNicController < Controller<HTMLElement>
   // declare readonly ipv6AddressTarget: HTMLInputElement // text
 
   // declare readonly destroyTarget: HTMLInputElement // checkbox
+  // declare readonly ipv4HelpTarget: HTMLDivElement // checkbox
+  // declare readonly ipv6HelpTarget: HTMLDivElement // checkbox
 
   // declare readonly messagesTarget: HTMLDivElement
   // declare readonly messageTemplateTarget: HTMLTemplateElement
@@ -112,7 +115,11 @@ export default class NodeNicController < Controller<HTMLElement>
     else if networkId
       @setInitInput("auth")
       @setInitInput("ipv4Config")
+      @setInitInput("ipv4Address")
+      @ipv4HelpTarget.textContent = ""
       @setInitInput("ipv6Config")
+      @setInitInput("ipv6Address")
+      @ipv6HelpTarget.textContent = ""
       @disableInputs(["auth",
         "ipv4Config", "ipv4Address", "ipv6Address", "ipv6Config"])
 
@@ -276,17 +283,30 @@ export default class NodeNicController < Controller<HTMLElement>
 
     config := @[`${ip}ConfigTarget`].value || "disabled"
 
-    target.placeholder =
-      @messageStore?.get(config, scope: "no_address", default: "") ?? ""
-    target.value =
-      if @checkInitInput("networkId") && @checkInitInput(`${ip}Cconfig`)
-        @initValue?[`${ip}Address`] || ""
-      else
-        ""
+    if @checkInitInput("networkId") && @checkInitInput(`${ip}Cconfig`)
+      @setInitInput(`${ip}Address`)
+    else
+      target.value = ""
 
-    target.disabled =
-      ["dynamic", "disabled", "mapped"].includes(config) or
-        not @network?.current_user.manageable
+    @[`${ip}HelpTarget`].innerText = ```
+      ${@network[ip].network}/${@network[ip].prefix_length}
+      ${@messageStore?.get(config, scope: "config_helps", default: "")}
+    ```
+
+    switch config
+      when "manual"
+        target.required = true
+        target.disabled = false
+      when "dynamic", "disabled", "mapped"
+        target.required = false
+        target.disabled = true
+      else
+        target.required = false
+        if @network.current_user.manageable
+          target.disabled = false
+        else
+          target.required = false
+          target.disabled = true
 
   requireMacAddress(): void
     if @authTarget.checked or @ipv4ConfigTarget.value is "reserved"

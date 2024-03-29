@@ -209,13 +209,15 @@ ja:
         DHCPの予約のためにDUIDの入力が必須です。
       network_note: |
         ネットワークの備考欄です。
-    node_nic_no_address:
-      dynamic: (常時変動)
-      reserved: (保存時自動割当)
-      static: (保存時自動割当)
-      manual: (必須)
-      disabled: (無効)
-      mapped: (IPv4アドレスからの自動計算)
+    node_nic_config_helps:
+      dynamic: アドレスは常に変動します。
+      reserved: 空白の場合、保存時に自動敵に割り当てられます。
+      static: 空白の場合、保存時に自動敵に割り当てられます。
+      manual: 手動で割り耐えます。アドレスは必須です。
+      disabled: 無効のためアドレスは設定できません。
+      mapped: IPv4アドレスからの自動的に計算されます。
+    node_nic_locked: |
+      このNICは管理者によってロックされているため、編集や削除はできません。
     node_nic_setting: |
       下記のように端末のネットワークを設定してください。
     node_unregistered_host: |
@@ -305,6 +307,9 @@ ja:
       【OS未登録】OSの登録を行わないとセキュリティソフトの確認ができため、確認を完了・承認することができません。
       「編集」ボタンを押して、編集画面でOSを登録してください。
     last_status: 前回のステータス
+    prompt_required_selection: 【必須】(選択してください)
+    prompt_selection: (選択してください)
+    register_auth_network: 認証ネットワーク登録
 
   date:
     formats:

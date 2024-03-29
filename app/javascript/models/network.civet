@@ -5,7 +5,7 @@ import ipaddr from "ipaddr.js"
 
 namespace Network
   export interface InitParams extends ApplicationRecord.InitParams
-    name: string
+    readonly name: string
     vlan: number
     auth: boolean
     note: string
@@ -43,30 +43,30 @@ class Network extends ApplicationRecord
     @networks.set(id, network)
     network
 
-  name: string
-  vlan: number
-  auth: boolean
-  note: string
-  current_user: Record<"auth" | "usable" | "manageable", boolean>
-  ipv4_network: ipaddr.IPv4?
-  ipv4_prefix_length: number
-  ipv4_gateway: ipaddr.IPv4?
-  ipv6_network: ipaddr.IPv6?
-  ipv6_prefix_length: number
-  ipv6_gateway: ipaddr.IPv6?
-  ipv4_pools: Ipv4Pool[]
-  ipv6_pools: Ipv6Pool[]
-  ipv4_config_list: string[]
-  ipv6_config_list: string[]
+  readonly name: string
+  readonly vlan: number
+  readonly auth: boolean
+  readonly note: string
+  readonly current_user: Record<"auth" | "usable" | "manageable", boolean>
+  readonly ipv4_network: ipaddr.IPv4?
+  readonly ipv4_prefix_length: number
+  readonly ipv4_gateway: ipaddr.IPv4?
+  readonly ipv6_network: ipaddr.IPv6?
+  readonly ipv6_prefix_length: number
+  readonly ipv6_gateway: ipaddr.IPv6?
+  readonly ipv4_pools: Ipv4Pool[]
+  readonly ipv6_pools: Ipv6Pool[]
+  readonly ipv4_config_list: string[]
+  readonly ipv6_config_list: string[]
 
-  ipv4: {
+  readonly ipv4: {
     network: ipaddr.IPv4?
     prefix_length: number
     gateway: ipaddr.IPv4?
     pools: Ipv4Pool[]
     config_list: string[]
   }
-  ipv6: {
+  readonly ipv6: {
     network: ipaddr.IPv6?
     prefix_length: number
     gateway: ipaddr.IPv6?

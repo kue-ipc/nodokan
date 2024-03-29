@@ -6,7 +6,7 @@
     .col-md-4
       = form.collection_select :interface_type,
         t_enums(:interface_types, Nic), :first, :second,
-        {floating: true, prompt: "【必須】(選択してください)"},
+        {floating: true, prompt: t("messages.prompt_required_selection")},
         required: true, data: {node_nic_target: "interfaceType"}
     .col-md-8
       = form.text_field :name, floating: true, data: {node_nic_target: "name"}
@@ -16,7 +16,7 @@
       - if nic.network && nic_networks.exclude?(nic.network)
         - nic_networks << nic.network
       = form.collection_select :network_id, nic_networks, :id, :name,
-        {floating: true, prompt: "【必須】(選択してください。)"},
+        {floating: true, prompt: t("messages.prompt_required_selection")},
         required: true,
         data: {node_nic_target: "networkId", action: "node-nic#change"}
 
@@ -25,10 +25,11 @@
         floating: true, data: {node_nic_target: "macAddress"}
 
     .col-md-4
-      = form.form_group :auth, label: {text: "認証ネットワーク登録"} do
-        = form.check_box :auth, label: "MACアドレスを登録する",
-          data: {node_nic_target: "auth",
-            action: "node-nic#change",}
+      = form.form_group :auth,
+        label: {text: t("messages.register_auth_network")} do
+        = form.check_box :auth, label: t("with_actions.register",
+          name: Nic.human_attribute_name(:mac_address)),
+          data: {node_nic_target: "auth", action: "node-nic#change"}
 
     .col-md-4
       = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),
@@ -40,6 +41,7 @@
         floating: true, data: {node_nic_target: "ipv4Address"}
 
     .col-md-4
+      .form-text data-node-nic-target="ipv4Help"
 
     - if Settings.config.ipv6
       .col-md-4
@@ -53,14 +55,16 @@
           floating: true, data: {node_nic_target: "ipv6Address"}
 
       .col-md-4
+        .form-text data-node-nic-target="ipv6Help"
 
-  .row data-node-nic-target="messages"
+  .row.mb-2 data-node-nic-target="messages"
   template data-node-nic-target="messageTemplate"
     .col-12.form-text.message
 
   .row
     .col-md-4
-      = form.check_box :_destroy, label: "このNICを削除する",
+      = form.check_box :_destroy, label: t("with_actions.delete",
+        name: Node.human_attribute_name(:nic)),
         data: {node_nic_target: "destroy", action: "node-nic#changeIpv6"}
 
     .col-md-4
@@ -69,4 +73,3 @@
           data: {node_nic_target: "locked", action: "node-nic#change"}
 
     .col-md-4
-

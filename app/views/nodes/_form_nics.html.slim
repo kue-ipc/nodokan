@@ -8,21 +8,20 @@
       = link_to t("with_actions.add", name: Nic.model_name.human),
         new_nic_path, class: "btn btn-secondary",
         data: {turbo: true, turbo_stream: true}
+
   = turbo_frame_tag "nics"
     = form.fields_for :nics do |field|
       - if current_user.admin? || !field.object.locked
         = render "nics/form", form: field
       - else
-        .row.mb-2: .col
-          small.text-muted<
-            |
-              このNICは管理者によってロックされているため、
-              編集や削除はできません。
-        .row: .col.px-3
-          = render field.object
+        .rounded.border.p-2.mb-2
+          .row.mb-2: .col
+            small.text-muted< = t("messages.node_nic_locked")
+          .row: .col.px-3
+            = render field.object
 
   script#node-nic-messages type="application/json"
     == { \
-      no_address: t("messages.node_nic_no_address"),
+      config_helps: t("messages.node_nic_config_helps"),
       helps: t("messages.node_nic_helps"),
     }.to_json
