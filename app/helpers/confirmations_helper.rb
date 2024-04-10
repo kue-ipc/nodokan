@@ -1,6 +1,6 @@
 module ConfirmationsHelper
   # for enum
-  def confirmation_question_radio_buttons(form, name, count: nil, excludes: [],
+  def confirmation_question_enum(form, name, count: nil, excludes: [],
     action: nil, **opts)
     pluralized_name = name.to_s.pluralize.intern
     list = t_enums(pluralized_name, Confirmation).except(*excludes).to_a
@@ -15,11 +15,10 @@ module ConfirmationsHelper
   end
 
   # for bitwise
-  def confirmation_question_check_boxes(form, name, count: nil, excludes: [],
+  def confirmation_question_bitwise(form, name, count: nil, excludes: [],
     action: nil, **opts)
-    pluralized_name = name.to_s.pluralize.intern
-    list = t_bitwises(pluralized_name, Confirmation).except(*excludes).to_a
-    form.collection_check_boxes(pluralized_name, list, :first, :second,
+    list = t_bitwises(name, Confirmation).except(*excludes).to_a
+    form.collection_check_boxes(name, list, :first, :second,
       label: {text: confirmation_question_label(name, count: count)},
       help: raw(t(name, scope: "messages.node_confirm_helps", default: nil)),
       data: {

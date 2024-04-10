@@ -9,7 +9,7 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     "osUpdate"
     "appUpdate"
     "software"
-    "securityHardware"
+    "securityHardwares"
     "securitySoftwareInstallationMethod"
     "securitySoftwareName"
     "securityUpdate"
@@ -53,13 +53,13 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     @osUpdateTargets.forEach (e) -> e.required = required
     @appUpdateTargets.forEach (e) -> e.required = required
     @softwareTargets.forEach (e) -> e.required = required
-    @securityHardwareTargets.forEach (e) -> e.required = required
     if @hasSecuritySoftwareInstallationMethodTarget
       @securitySoftwareInstallationMethodTarget.required = required
     if @hasSecuritySoftwareNameTarget
       @securitySoftwareNameTarget.required = required
     @securityUpdateTargets.forEach (e) -> e.required = required
     @securityScanTargets.forEach (e) -> e.required = required
+    @checkSecurityHardwares(required)
 
   changeExistence(event: Event): void
     target := event.target
@@ -94,3 +94,16 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     else
       @collapseAppUpdateSecured?.hide()
 
+  changeSecurityHardwares(event: Event): void
+    @checkSecurityHardwares()
+
+  checkSecurityHardwares(required: boolean = true): void
+    checked .= false
+    @securityHardwaresTargets.forEach (e) ->
+      if e.checked
+        checked = true
+        e.required = required
+      else if !checked && e.value is "unknown"
+        e.required = required
+      else
+        e.required = false

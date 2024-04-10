@@ -159,7 +159,7 @@ ja:
       os_update: OS(ファームウェア)のアップデートを実施しましたか？
       app_update: アプリケーションソフトウェア(OS標準提供を除く)のアップデートを実施しましたか？
       software: 利用を認められたOS(ファームウェア)およびアプリケーションのみを使用していますか？
-      security_hardware: 盗難・紛失等の物理的なセキュリティ被害の対策を実施していますか？実施している対策全てを選択してください。
+      security_hardwares: 盗難・紛失等の物理的なセキュリティ被害の対策を実施していますか？実施している対策全てを選択してください。
       security_software: セキュリティソフトウェアは何をお使いですか？
       security_update: セキュリティソフトウェアのアップデートは実施されていますか？
       security_scan: セキュリティソフトウェアのスキャンは実施されていますか？
@@ -559,6 +559,7 @@ ja:
         app_update: アプリケーションアップデート状況
         software: ソフトウェアインストール状況
         security_hardware: セキュリティハードウェア
+        security_hardwares: セキュリティハードウェア
         security_update: セキュリティソフトウェアアップデート状況
         security_scan: セキュリティスキャン実施状況
         expiriation: 有効期限
