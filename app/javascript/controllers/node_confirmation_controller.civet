@@ -39,10 +39,14 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     @collapseTarget.addEventListener "hide.bs.collapse", =>
       @setRequiredAll(false)
 
-    if @existenceTargets.find((e) -> e.value is "existing").checked
-      @collapse?.show()
-    else
+    unless @existenceTargets.find((e) -> e.value is "existing").checked
       @collapse?.hide()
+
+    if @osUpdateTargets.find((e) -> e.value is "secured").checked
+      @collapseOsUpdateSecured?.show()
+
+    if @appUpdateTargets.find((e) -> e.value is "secured").checked
+      @collapseAppUpdateSecured?.show()
 
   setRequiredAll(required: boolean): void
     @contentTargets.forEach (e) -> e.required = required
