@@ -9,7 +9,6 @@ import {loadDatalistCandidate} from "./views/datalist_candidate.coffee"
 import {loadManageTable} from "./views/manage_table.coffee"
 
 import {loadApplySpecifiNode} from "./views/apply_specific_node.civet"
-import {loadConfirmNode} from "./views/confirm_node.civet"
 import {loadNodeFlags} from "./views/node_flags.civet"
 import {loadNodeNics} from "./views/node_nics.civet"
 
@@ -18,7 +17,6 @@ document.addEventListener "turbo:load", (_e)->
   console.debug "[application] turbo:load event occured "
   loadApplySpecifiNode()
   loadBootstrapComponents()
-  loadConfirmNode()
   loadDatalistCandidate()
   loadManageTable()
   loadNodeFlags()
@@ -32,7 +30,6 @@ document.addEventListener "turbo:frame-load", (e)->
   console.debug `[application] turbo:frame-load event occured on ${e.target.id}`
   loadApplySpecifiNode(e.target)
   loadBootstrapComponents(e.target)
-  loadConfirmNode(e.target)
   loadDatalistCandidate(e.target)
   loadManageTable(e.target)
   loadNodeFlags(e.target)

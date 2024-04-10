@@ -15,6 +15,8 @@ class SecuritySoftware < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
+  validates :installation_method, presence: true
+
   validates :name, length: {maximum: 255}, uniqueness: {
     scope: [:os_category_id, :installation_method],
     case_sensitive: true,

@@ -10,7 +10,7 @@
       .mb-2: small.text-muted = t("forms.node.base.help")
       .row
         .col-md-4
-          = f.text_field :name, required: true, floating: true
+          = f.text_field :name, floating: true
         .col-md-3
           = f.text_field :hostname, pattern: "[0-9A-Za-z\\-]*", floating: true
         .col-md-5
