@@ -20,3 +20,5 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     console.log @existenceTargets
     @collapse = new Collapse(@collapseTarget)
     @collapes?.show()
+
+  
