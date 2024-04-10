@@ -49,16 +49,18 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
       @collapseAppUpdateSecured?.show()
 
   setRequiredAll(required: boolean): void
-    @contentTargets.forEach (e) -> e.required = required
-    @osUpdateTargets.forEach (e) -> e.required = required
-    @appUpdateTargets.forEach (e) -> e.required = required
-    @softwareTargets.forEach (e) -> e.required = required
+    e.required = required for each e of [
+      ...@contentTargets
+      ...@osUpdateTargets
+      ...@appUpdateTargets
+      ...@softwareTargets
+      ...@securityUpdateTargets
+      ...@securityScanTargets
+    ]
     if @hasSecuritySoftwareInstallationMethodTarget
       @securitySoftwareInstallationMethodTarget.required = required
     if @hasSecuritySoftwareNameTarget
       @securitySoftwareNameTarget.required = required
-    @securityUpdateTargets.forEach (e) -> e.required = required
-    @securityScanTargets.forEach (e) -> e.required = required
     @checkSecurityHardwares(required)
 
   changeExistence(event: Event): void
