@@ -15,16 +15,24 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     "securityUpdate"
     "securityScan"
     "collapse"
+    "collapseOsUpdateSecured"
+    "collapseAppUpdateSecured"
   ]
 
   // declare readonly existencTargets: HTMLInputElement[] // radio
   // ...
   // declare readonly collapseTarget: HTMLDivElement
   
-  collapse: Collapse?
+  collapse?: Collapse
+  collapseOsUpdateSecured?: Collapse
+  collapseAppUpdateSecured?: Collapse
 
   connect(): void
     @collapse = new Collapse(@collapseTarget, toggle: false)
+    @collapseOsUpdateSecured = new Collapse(@collapseOsUpdateSecuredTarget,
+      toggle: false)
+    @collapseAppUpdateSecured = new Collapse(@collapseAppUpdateSecuredTarget,
+      toggle: false)
 
     @collapseTarget.addEventListener "show.bs.collapse", =>
       @setRequiredAll(true)
@@ -60,5 +68,25 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     else
       @collapse?.hide()
 
+  changeOsUpdate(event: Event): void
+    target := event.target
+    unless target <? HTMLInputElement
+      console.warn `target is not HTMLInptuElement: ${target}`
+      return
 
+    if target.value is "secured"
+      @collapseOsUpdateSecured?.show()
+    else
+      @collapseOsUpdateSecured?.hide()
+
+  changeAppUpdate(event: Event): void
+    target := event.target
+    unless target <? HTMLInputElement
+      console.warn `target is not HTMLInptuElement: ${target}`
+      return
+
+    if target.value is "secured"
+      @collapseAppUpdateSecured?.show()
+    else
+      @collapseAppUpdateSecured?.hide()
 

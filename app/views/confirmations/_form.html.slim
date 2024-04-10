@@ -9,45 +9,36 @@
   p
     = t("messages.node_confirmation")
 
-  - question_count = 1
-  = confirmation_question_radio_buttons(f, :existence, count: question_count,
+  - count = 1
+  = confirmation_question_radio_buttons(f, :existence, count: count,
     action: "changeExistence")
-  - question_count += 1
+  - count += 1
   .collapse.show data-node-confirmation-target="collapse"
-    = confirmation_question_radio_buttons(f, :content, count: question_count)
-    - question_count += 1
+    = confirmation_question_radio_buttons(f, :content, count: count)
+    - count += 1
 
     - unless node.logical?
-      - [:os_update, :app_update].each do |attr_name|
-        = confirmation_question_radio_buttons(f, attr_name,
-          count: question_count, excludes: ["unnecessary"])
-        .collapse id="node-confirm-secured-#{attr_name}"
+      - [:os_update, :app_update].each do |name|
+        = confirmation_question_radio_buttons(f, name,
+          count: count, excludes: ["unnecessary"],
+          action: "change#{name.to_s.camelize}")
+        .collapse[
+          data-node-confirmation-target="collapse#{name.to_s.camelize}Secured"]
           .card
             .card-body.text-danger
-              | 【高度な技術的判断】が必要な項目が選択されています。
-              | この項目は、
-              strong
-                | セキュリティに関する知識を有する技術者が脆弱性が存在しないと総合的に判断した
-              | 場合のみ選択できます。
-              | 例えば、次のような場合の組み合わせです。
-              ul
-                li 最新ではないが、既知の脆弱性が無いバージョンを使用している。
-                li 既知の脆弱性がある機能を無効化している。
-                li 設定等により、既知の脆弱性を回避している。
-                li 他の機器やソフトウェアによる保護機能等により、既知の脆弱性の影響を受けないようにしている。
-                li その他の理由で、脆弱性が無いと判断できる。
-        - question_count += 1
+              == t("messages.update_secured")
+        - count += 1
 
-      = confirmation_question_radio_buttons(f, :software, count: question_count)
-      - question_count += 1
+      = confirmation_question_radio_buttons(f, :software, count: count)
+      - count += 1
 
       = confirmation_question_check_boxes(f, :security_hardware,
-        count: question_count, required: true)
-      - question_count += 1
+        count: count, required: true)
+      - count += 1
 
       - if confirmation.security_software
         = confirmation_question_group(f, :security_software,
-          count: question_count, required: true) do
+          count: count, required: true) do
           .row
             = f.fields_for :security_software,
               confirmation.security_software do |security_software_f|
@@ -86,12 +77,12 @@
                 }
 
           small#confirmation_security_software_name-description.form-text.text-muted
-        - question_count += 1
+        - count += 1
 
-        - [:security_update, :security_scan].each do |attr_name|
-          = confirmation_question_radio_buttons(f, attr_name,
-            count: question_count, required: true)
-          - question_count += 1
+        - [:security_update, :security_scan].each do |name|
+          = confirmation_question_radio_buttons(f, name,
+            count: count, required: true)
+          - count += 1
       - else
         p.text-danger
           | OS情報が登録されていないため、
