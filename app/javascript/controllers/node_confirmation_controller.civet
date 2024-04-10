@@ -95,11 +95,28 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
       @collapseAppUpdateSecured?.hide()
 
   changeSecurityHardwares(event: Event): void
+    target := event.target
+    unless target <? HTMLInputElement
+      console.warn `target is not HTMLInptuElement: ${target}`
+      return
+    
+    exclusiveValues := ["none", "unknown"]
+    // "none", "unkonwn" のみ排他
+    if target.checked
+      if target.value is in exclusiveValues
+        for each e of @securityHardwaresTargets
+          if e.value is not target.value
+            e.checked = false
+      else
+        for each e of @securityHardwaresTargets
+          if e.value is in exclusiveValues
+            e.checked = false
+
     @checkSecurityHardwares()
 
   checkSecurityHardwares(required: boolean = true): void
     checked .= false
-    @securityHardwaresTargets.forEach (e) ->
+    for each e of @securityHardwaresTargets
       if e.checked
         checked = true
         e.required = required
