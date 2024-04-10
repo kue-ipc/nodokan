@@ -33,11 +33,12 @@ select:invalid
 
 select.required option[value=""]
   color: $danger
-  
-label.required
-  &::after
-    color: $danger
-    content: " 【必須】"
+
+label.form-label.required
+  &:not(.form-floating > .form-select ~ label)
+    &::after
+      color: $danger
+      content: " 【必須】"
 
 .form-floating > label
   color: rgba(var(--#{$prefix}body-color-rgb), #{$form-floating-label-opacity})
