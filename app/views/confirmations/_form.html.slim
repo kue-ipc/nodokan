@@ -44,13 +44,16 @@
               confirmation.security_software do |security_software_f|
               = security_software_f.hidden_field :os_category_id
 
+              - name = "security_software_installation_method"
               = security_software_f.collection_select :installation_method,
                 t_enums(:installation_methods, SecuritySoftware,
                   keys: installation_methods(node)),
                 :first, :second,
                 {include_blank: "(未選択)", wrapper_class: "col-md-4"},
-                data: {node_confirmation_target: \
-                  "securitySoftwareInstallationMethod"}
+                data: { \
+                  node_confirmation_target: name.camelize(:lower),
+                  action: "node-confirmation#check#{name.camelize}",
+                }
 
               = security_software_f.text_field :name,
                 list: "confirmation_security_software_name-list",

@@ -34,13 +34,17 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     @collapseAppUpdateSecured = new Collapse(@collapseAppUpdateSecuredTarget,
       toggle: false)
 
-    @collapseTarget.addEventListener "show.bs.collapse", =>
-      @setRequiredAll(true)
-    @collapseTarget.addEventListener "hide.bs.collapse", =>
-      @setRequiredAll(false)
+    // @collapseTarget.addEventListener "show.bs.collapse", =>
+    //   @setRequiredAll(true)
+    // @collapseTarget.addEventListener "hide.bs.collapse", =>
+    //   @setRequiredAll(false)
 
-    unless @existenceTargets.find((e) -> e.value is "existing").checked
+    if @existenceTargets.find((e) -> e.value is "existing").checked
+      @collapse?.show()
+      @setRequiredAll(true)
+    else
       @collapse?.hide()
+      @setRequiredAll(false)
 
     if @osUpdateTargets.find((e) -> e.value is "secured").checked
       @collapseOsUpdateSecured?.show()
@@ -62,6 +66,7 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     if @hasSecuritySoftwareNameTarget
       @securitySoftwareNameTarget.required = required
     @checkSecurityHardwares(required)
+    @checkSecuritySoftwareInstallationMethod()
 
   changeExistence(event: Event): void
     target := event.target
@@ -71,8 +76,10 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
 
     if target.value is "existing"
       @collapse?.show()
+      @setRequiredAll(true)
     else
       @collapse?.hide()
+      @setRequiredAll(false)
 
   changeOsUpdate(event: Event): void
     target := event.target
@@ -102,8 +109,8 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
       console.warn `target is not HTMLInptuElement: ${target}`
       return
     
-    exclusiveValues := ["none", "unknown"]
     // "none", "unkonwn" のみ排他
+    exclusiveValues := ["none", "unknown"]
     if target.checked
       if target.value is in exclusiveValues
         for each e of @securityHardwaresTargets
@@ -126,3 +133,52 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
         e.required = required
       else
         e.required = false
+
+  checkSecuritySoftwareInstallationMethod(): void
+    return unless @hasSecuritySoftwareInstallationMethodTarget
+
+    switch @securitySoftwareInstallationMethodTarget.value
+      "", "other"
+        for each e of @securityUpdateTargets
+          e.disabled = false
+        for each e of @securityScanTargets
+          e.disabled = false
+      "unnecessary", "not_installed"
+        for each e of @securityUpdateTargets
+          if e.value is "not_implemented"
+            e.checked = true
+            e.disabled = false
+          else
+            e.disabled = true
+        for each e of @securityScanTargets
+          if e.value is "not_implemented"
+            e.checked = true
+            e.disabled = false
+          else
+            e.disabled = true
+      "unknown"
+        for each e of @securityUpdateTargets
+          if e.value is "unknown"
+            e.checked = true
+            e.disabled = false
+          else
+            e.disabled = true
+        for each e of @securityScanTargets
+          if e.value is "unknown"
+            e.checked = true
+            e.disabled = false
+          else
+            e.disabled = true
+      else
+        for each e of @securityUpdateTargets
+          if e.value is "not_implemented"
+            e.checked = false
+            e.disabled = true
+          else
+            e.disabled = false
+        for each e of @securityScanTargets
+          if e.value is "not_implemented"
+            e.checked = false
+            e.disabled = true
+          else
+            e.disabled = false
