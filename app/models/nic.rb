@@ -255,7 +255,7 @@ class Nic < ApplicationRecord
     when "dynamic", "disabled"
       self.ipv6 = nil
     when "reserved", "static"
-      unless has_ipv6
+      unless has_ipv6?
         next_ip = network.next_ipv6(ipv6_config)
         if next_ip.nil?
           errors.add(:ipv6_config, :no_free)
