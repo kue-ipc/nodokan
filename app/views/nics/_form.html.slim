@@ -46,8 +46,7 @@
     .col-md-4
       = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
         :first, :second, {floating: true},
-        data: {node_nic_target: "ipv6Config",
-          action: "node-nic#change",}
+        data: {node_nic_target: "ipv6Config", action: "node-nic#changeIpv6"}
 
     .col-md-4
       = form.text_field :ipv6_address, pattern: ipv6_address_pattern,

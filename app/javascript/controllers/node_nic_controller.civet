@@ -226,7 +226,7 @@ export default class NodeNicController < Controller<HTMLElement>
       <? HTMLSelectElement
         target.selectedIndex = @initValue[name] ?? -1
 
-  checkInitInput(name: strnig): boolean
+  checkInitInput(name: string): boolean
     return false unless @[`has${capitalize(name)}Target`]
 
     target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
@@ -283,7 +283,7 @@ export default class NodeNicController < Controller<HTMLElement>
 
     config := @[`${ip}ConfigTarget`].value || "disabled"
 
-    if @checkInitInput("networkId") && @checkInitInput(`${ip}Cconfig`)
+    if @checkInitInput("networkId") && @checkInitInput(`${ip}Config`)
       @setInitInput(`${ip}Address`)
     else
       target.value = ""
@@ -328,4 +328,3 @@ export default class NodeNicController < Controller<HTMLElement>
     else
       duidNode.required = false
       @removeMessage("helps.require_duid")
-
