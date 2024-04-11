@@ -207,7 +207,7 @@ ja:
       dynamic: アドレスは常に変動します。
       reserved: 空白の場合、保存時に自動敵に割り当てられます。
       static: 空白の場合、保存時に自動敵に割り当てられます。
-      manual: 手動で割り耐えます。アドレスは必須です。
+      manual: 手動で割り当てます。アドレスは必須です。
       disabled: 無効のためアドレスは設定できません。
       mapped: IPv4アドレスからの自動的に計算されます。
     node_nic_locked: |
@@ -637,6 +637,7 @@ ja:
         dynamic: 動的
         reserved: 予約
         static: 固定
+        mapped: 写像
         manual: 手動
         disabled: 無効
       existences:
@@ -782,8 +783,8 @@ ja:
       too_long: "%{count}文字以内で入力してください"
       too_short: "%{count}文字以上で入力してください"
       wrong_length: "%{count}文字で入力してください"
-      exclusion: 予約されています。
-      inclusion: 一覧にありません。
+      exclusion: 設定できない値です。
+      inclusion: 設定できる値の一覧にありません。
       invalid: 不正な値です。
       no_free: "%{name}の空きがありません。"
       invalid_ip_address: IPアドレスの形式ではありません
@@ -804,7 +805,10 @@ ja:
       ipv6_link_local: リンクローカルアドレスを設定することはできません
       ipv6_multicast: マルチキャストアドレスを設定することはできません
       ipv6_mapped: IPv4射影IPv6アドレスを設定することはできません
-      invalid_config: "設定値が間違っている、または、制限により設定できません。"
+      invalid_config: 設定値が間違っている、または、制限により設定できません。
+      out_of_network: ネットワーク外のアドレスです。
+      network_address: ネットワークアドレスを設定することはできません。
+      broadcast_address: ブロードキャストアドレスを設定することはできません。
 
   forms:
     common:

@@ -8,16 +8,33 @@ class Ipv6Pool < ApplicationRecord
   validates :ipv6_first_address, allow_blank: false, ipv6_address: true
   validates :ipv6_last_address, allow_blank: false, ipv6_address: true
 
+  validates :ipv6_last, comparison: {greater_than: :ipv6_first}
+
+  # TODO: ipv6の機能をつけてから
+  # validates :ipv6_config, exclusion: {in: %w(dynamic reserved)},
+  #   if: -> { !network. ... }
+
+  validates_each :ipv6_first, :ipv6_last do |record, attr, value|
+    # IPv6では最初の最後のアドレスもホストに設定可能
+    unless record.network.ipv6_network.include?(value)
+      record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
+    end
+  end
+
   def ipv6_first
     ipv6_first_data && IPAddr.new_ntoh(ipv6_first_data)
   end
 
   def ipv6_first_address
-    ipv6_first.to_s
+    ipv6_first&.to_s
+  end
+
+  def ipv6_first=(value)
+    self.ipv6_first_data = value&.hton
   end
 
   def ipv6_first_address=(value)
-    self.ipv6_first_data = IPAddr.new(value).hton
+    self.ipv6_first = value.presence && IPAddr.new(value)
   end
 
   def ipv6_last
@@ -25,11 +42,15 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def ipv6_last_address
-    ipv6_last.to_s
+    ipv6_last&.to_s
+  end
+
+  def ipv6_last=(value)
+    self.ipv6_last_data = value&.hton
   end
 
   def ipv6_last_address=(value)
-    self.ipv6_last_data = IPAddr.new(value).hton
+    self.ipv6_last = value.presence && IPAddr.new(value)
   end
 
   def ipv6_range

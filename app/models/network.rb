@@ -57,6 +57,9 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
+  validates :ipv4_pools, absence: true, if: -> { !ipv4? }
+  validates :ipv6_pools, absence: true, if: -> { !ipv6? }
+
   after_commit :kea_subnet4, :kea_subnet6
 
   # rubocop: disable Lint/UnusedMethodArgument
@@ -77,6 +80,10 @@ class Network < ApplicationRecord
   alias global global?
 
   # IPv4
+
+  def ipv4?
+    ipv4_network_data.present?
+  end
 
   # readonly
   def ipv4_network
@@ -125,6 +132,10 @@ class Network < ApplicationRecord
   end
 
   # Ipv6
+
+  def ipv6?
+    ipv6_network_data.present?
+  end
 
   # readonly
   def ipv6_network

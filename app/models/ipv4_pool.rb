@@ -7,16 +7,36 @@ class Ipv4Pool < ApplicationRecord
   validates :ipv4_first_address, allow_blank: false, ipv4_address: true
   validates :ipv4_last_address, allow_blank: false, ipv4_address: true
 
+  validates :ipv4_last, comparison: {greater_than: :ipv4_first}
+
+  validates :ipv4_config, exclusion: {in: %w(dynamic reserved)},
+    if: -> { !network.dhcp }
+
+  validates_each :ipv4_first, :ipv4_last do |record, attr, value|
+    network_range = record.network.ipv4_network.to_range
+    if !network_range.cover?(value)
+      record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
+    elsif network_range.begin == value
+      record.errors.add(attr, I18n.t("errors.messages.network_address"))
+    elsif network_range.end == value
+      record.errors.add(attr, I18n.t("errors.messages.broadcast_address"))
+    end
+  end
+
   def ipv4_first
     ipv4_first_data && IPAddr.new_ntoh(ipv4_first_data)
   end
 
   def ipv4_first_address
-    ipv4_first.to_s
+    ipv4_first&.to_s
+  end
+
+  def ipv4_first=(value)
+    self.ipv4_first_data = value&.hton
   end
 
   def ipv4_first_address=(value)
-    self.ipv4_first_data = IPAddr.new(value).hton
+    self.ipv4_first = value.presence && IPAddr.new(value)
   end
 
   def ipv4_last
@@ -24,11 +44,15 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def ipv4_last_address
-    ipv4_last.to_s
+    ipv4_last&.to_s
+  end
+
+  def ipv4_last=(value)
+    self.ipv4_last_data = value&.hton
   end
 
   def ipv4_last_address=(value)
-    self.ipv4_last_data = IPAddr.new(value).hton
+    self.ipv4_last = value.presence && IPAddr.new(value)
   end
 
   def ipv4_range

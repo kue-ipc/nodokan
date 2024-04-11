@@ -6,6 +6,7 @@ module Ipv6Config
       dynamic: 0,
       reserved: 1,
       static: 2,
+      mapped: 4,
       manual: 8,
       disabled: -1,
     }, _prefix: :ipv6
