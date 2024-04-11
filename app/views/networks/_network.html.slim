@@ -28,8 +28,9 @@
     =<> link_to t("actions.edit"), edit_network_path(network),
       class: "btn btn-primary"
     =<> button_to t("actions.destroy"), network,
-      data: {turbo_confirm: t("messages.corfirm_destroy")}, method: :delete,
-        class: "btn btn-danger"
+      data: {turbo_confirm: t("messages.corfirm_destroy"), turbo: false},
+      method: :delete,
+      class: "btn btn-danger"
     hr
 
   h3 = Ipv4Pool.model_name.human
