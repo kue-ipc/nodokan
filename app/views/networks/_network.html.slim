@@ -46,7 +46,7 @@
           th = Ipv4Pool.human_attribute_name(:ipv4_first_address)
           th = Ipv4Pool.human_attribute_name(:ipv4_last_address)
       tbody
-        - network.ipv4_pools.sort_by(&:ipv4_first_data).each do |ipv4_pool|
+        - network.ipv4_pools.each do |ipv4_pool|
           tr
             td = t_enum(ipv4_pool.ipv4_config, :ipv4_configs)
             td = ipv4_pool.ipv4_first_address
@@ -65,7 +65,7 @@
           th = Ipv6Pool.human_attribute_name(:ipv6_first_address)
           th = Ipv6Pool.human_attribute_name(:ipv6_last_address)
       tbody
-        - network.ipv6_pools.sort_by(&:ipv6_first_data).each do |ipv6_pool|
+        - network.ipv6_pools.each do |ipv6_pool|
           tr
             td = t_enum(ipv6_pool.ipv6_config, :ipv6_configs)
             td = ipv6_pool.ipv6_first_address

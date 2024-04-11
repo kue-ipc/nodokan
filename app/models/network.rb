@@ -12,9 +12,11 @@ class Network < ApplicationRecord
   has_many :nics, dependent: :nullify
   has_many :nodes, through: :nics
 
-  has_many :ipv4_pools, dependent: :destroy
+  has_many :ipv4_pools, -> { order(ipv4_first_data: :asc) },
+    dependent: :destroy, inverse_of: :network
   accepts_nested_attributes_for :ipv4_pools, allow_destroy: true
-  has_many :ipv6_pools, dependent: :destroy
+  has_many :ipv6_pools, -> { order(ipv6_first_data: :asc) },
+    dependent: :destroy, inverse_of: :network
   accepts_nested_attributes_for :ipv6_pools, allow_destroy: true
 
   has_many :assignments, dependent: :destroy
