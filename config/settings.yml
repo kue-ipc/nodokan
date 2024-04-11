@@ -10,7 +10,6 @@ database:
 config:
   # credentials
   radius_mac_password: null
-  ipv6: true
 ## Authorizations LDAP
 # Uncomment out the merging for each environment that you'd like to include.
 # You can also just copy and paste the tree (do not include the "authorizations") to each

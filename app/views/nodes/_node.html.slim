@@ -63,8 +63,7 @@
               th scope="col" = Nic.human_attribute_name(:mac_address)
               th scope="col" = Nic.human_attribute_name(:network)
               th scope="col" = Nic.human_attribute_name(:ipv4)
-              - if Settings.config.ipv6
-                th scope="col" = Nic.human_attribute_name(:ipv6)
+              th scope="col" = Nic.human_attribute_name(:ipv6)
           tbody
             - nics.each do |nic|
               tr
@@ -90,11 +89,10 @@
                   = badge_for(nic.ipv4_config,
                     scope: "activerecord.enums.ipv4_configs")
                   =< span_value_for(nic.ipv4, hide_blank: true)
-                - if Settings.config.ipv6
-                  td
-                    = badge_for(nic.ipv6_config,
-                      scope: "activerecord.enums.ipv6_configs")
-                    =< span_value_for(nic.ipv6, hide_blank: true)
+                td
+                  = badge_for(nic.ipv6_config,
+                    scope: "activerecord.enums.ipv6_configs")
+                  =< span_value_for(nic.ipv6, hide_blank: true)
     = dt_dd_for node, :duid
     = dt_dd_for node, :confirmation do |confirmation|
       - case confirmation&.status
@@ -302,41 +300,40 @@
               dd.col-sm-6 = ip_data[:netmask]
               dt.col-sm-6 = Network.human_attribute_name(:gateway)
               dd.col-sm-6 = ip_data[:gateway]
-          - if Settings.config.ipv6
-            .col-md-6
-              h4 IPv6
-              - case nic.ipv6_config
-              - when "dynamic", "reserved"
-                - ip_data = { \
-                  setting: "自動",
-                  address: "-",
-                  prefix_length: "-",
-                  gateway: "-",
-                }
-              - when "static", "manual"
-                - ip_data = { \
-                  setting: "手動",
-                  address: nic.ipv6_address.presence || sp,
-                  prefix_length: nic.network&.ipv6_prefix_length.presence || sp,
-                  gateway: nic.network&.ipv6_gateway.presence || sp,
-                }
-              - when "disabled"
-                - ip_data = { \
-                  setting: "無効",
-                  address: "-",
-                  prefix_length: "-",
-                  gateway: "-",
-                }
+          .col-md-6
+            h4 IPv6
+            - case nic.ipv6_config
+            - when "dynamic", "reserved"
+              - ip_data = { \
+                setting: "自動",
+                address: "-",
+                prefix_length: "-",
+                gateway: "-",
+              }
+            - when "static", "manual"
+              - ip_data = { \
+                setting: "手動",
+                address: nic.ipv6_address.presence || sp,
+                prefix_length: nic.network&.ipv6_prefix_length.presence || sp,
+                gateway: nic.network&.ipv6_gateway.presence || sp,
+              }
+            - when "disabled"
+              - ip_data = { \
+                setting: "無効",
+                address: "-",
+                prefix_length: "-",
+                gateway: "-",
+              }
 
-              dl.row.line
-                dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
-                dd.col-sm-6 = ip_data[:setting]
-                dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
-                dd.col-sm-6 = ip_data[:address]
-                dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
-                dd.col-sm-6 = ip_data[:prefix_length]
-                dt.col-sm-6 = Network.human_attribute_name(:gateway)
-                dd.col-sm-6 = ip_data[:gateway]
+            dl.row.line
+              dt.col-sm-6 = Nic.human_attribute_name(:ip_setting)
+              dd.col-sm-6 = ip_data[:setting]
+              dt.col-sm-6 = Nic.human_attribute_name(:ip_address)
+              dd.col-sm-6 = ip_data[:address]
+              dt.col-sm-6 = Network.human_attribute_name(:prefix_length)
+              dd.col-sm-6 = ip_data[:prefix_length]
+              dt.col-sm-6 = Network.human_attribute_name(:gateway)
+              dd.col-sm-6 = ip_data[:gateway]
 
     - if Settings.additional_messages.nic_setting
       p = Settings.additional_messages.nic_setting

@@ -16,9 +16,8 @@
     - else
       = dt_dd_for nic, :network, &:name
     = dt_dd_for nic, :ipv4 do |ipv4|
-        = badge_for(nic.ipv4_config, scope: "activerecord.enums.ipv4_configs")
-        =< span_value_for(ipv4, hide_blank: true)
-    - if Settings.config.ipv6
-      = dt_dd_for nic, :ipv6 do |ipv6|
-        = badge_for(nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
-        =< span_value_for(ipv6, hide_blank: true)
+      = badge_for(nic.ipv4_config, scope: "activerecord.enums.ipv4_configs")
+      =< span_value_for(ipv4, hide_blank: true)
+    = dt_dd_for nic, :ipv6 do |ipv6|
+      = badge_for(nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
+      =< span_value_for(ipv6, hide_blank: true)

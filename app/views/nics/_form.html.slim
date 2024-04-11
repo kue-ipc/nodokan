@@ -43,19 +43,18 @@
     .col-md-4
       .form-text data-node-nic-target="ipv4Help"
 
-    - if Settings.config.ipv6
-      .col-md-4
-        = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
-          :first, :second, {floating: true},
-          data: {node_nic_target: "ipv6Config",
-            action: "node-nic#change",}
+    .col-md-4
+      = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
+        :first, :second, {floating: true},
+        data: {node_nic_target: "ipv6Config",
+          action: "node-nic#change",}
 
-      .col-md-4
-        = form.text_field :ipv6_address, pattern: ipv6_address_pattern,
-          floating: true, data: {node_nic_target: "ipv6Address"}
+    .col-md-4
+      = form.text_field :ipv6_address, pattern: ipv6_address_pattern,
+        floating: true, data: {node_nic_target: "ipv6Address"}
 
-      .col-md-4
-        .form-text data-node-nic-target="ipv6Help"
+    .col-md-4
+      .form-text data-node-nic-target="ipv6Help"
 
   .row.mb-2 data-node-nic-target="messages"
   template data-node-nic-target="messageTemplate"
