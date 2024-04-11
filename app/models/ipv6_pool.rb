@@ -9,6 +9,8 @@ class Ipv6Pool < ApplicationRecord
   validates :ipv6_last_address, allow_blank: false, ipv6_address: true
 
   validates :ipv6_last, comparison: {greater_than: :ipv6_first}
+  validates :ipv6_last, comparison: {equal_to: :ipv6_mapped_last_from_first},
+    if: :ipv6_mapped?
 
   # TODO: ipv6の機能をつけてから
   # validates :ipv6_config, exclusion: {in: %w(dynamic reserved)},
@@ -51,6 +53,10 @@ class Ipv6Pool < ApplicationRecord
 
   def ipv6_last_address=(value)
     self.ipv6_last = value.presence && IPAddr.new(value)
+  end
+
+  def ipv6_mapped_last_from_first
+    IPAddr.new(ipv6_first.to_i + IPAddr::IN4MASK, Socket::AF_INET6)
   end
 
   def ipv6_range
