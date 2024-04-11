@@ -106,7 +106,8 @@ class NodesController < ApplicationController
     respond_to do |format|
       if @node.specific
         format.html do
-          redirect_to @node, alert: "特定端末は削除できません。特定端末の解除を申請してください。"
+          redirect_to @node,
+            alert: t("errors.messages.not_delete_specific_node")
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       elsif @node.destroy
@@ -356,17 +357,5 @@ class NodesController < ApplicationController
 
   private def authorize_node
     authorize Node
-  end
-
-  private def adjust_nics_ip(node)
-    node.nics.each_with_index do |nic, idx|
-      nic.number = idx + 1
-      nic.adjust_ipv4!(current_user)
-      nic.adjust_ipv6!(current_user)
-      nic.errors.each do |error|
-        node.errors.import(error, attribute: "nics.#{error}")
-      end
-    end
-    node
   end
 end

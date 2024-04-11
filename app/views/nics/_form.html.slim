@@ -29,7 +29,7 @@
         label: {text: t("messages.register_auth_network")} do
         = form.check_box :auth, label: t("with_actions.register",
           name: Nic.human_attribute_name(:mac_address)),
-          data: {node_nic_target: "auth", action: "node-nic#change"}
+          data: {node_nic_target: "auth", action: "node-nic#changeAuth"}
 
     .col-md-4
       = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),

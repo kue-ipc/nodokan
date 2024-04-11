@@ -59,8 +59,8 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
-  validates :ipv4_pools, absence: true, if: -> { !ipv4? }
-  validates :ipv6_pools, absence: true, if: -> { !ipv6? }
+  validates :ipv4_pools, absence: true, if: -> { !has_ipv4? }
+  validates :ipv6_pools, absence: true, if: -> { !has_ipv6? }
 
   after_commit :kea_subnet4, :kea_subnet6
 
@@ -83,7 +83,7 @@ class Network < ApplicationRecord
 
   # IPv4
 
-  def ipv4?
+  def has_ipv4?
     ipv4_network_data.present?
   end
 
@@ -135,7 +135,7 @@ class Network < ApplicationRecord
 
   # Ipv6
 
-  def ipv6?
+  def has_ipv6?
     ipv6_network_data.present?
   end
 
@@ -215,7 +215,8 @@ class Network < ApplicationRecord
   def next_ipv6(ipv6_config)
     return unless ipv6_network
 
-    selected_ipv6_pools = ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
+    selected_ipv6_pools =
+      ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
     return if selected_ipv6_pools.empty?
 
     nics_ipv6_set = nics.map(&:ipv6).compact.to_set
@@ -228,6 +229,15 @@ class Network < ApplicationRecord
     end
 
     nil
+  end
+
+  def mapped_ipv6(ipv4)
+    return unless ipv4
+
+    mapped_ipv6_pool = ipv6_pools.find_by(ipv6_config: "mapped")
+    return unless mapped_ipv6_pool
+
+    IPAddr.new(mapped_ipv6_pool.ipv6_first.to_i + ipv4.to_i, Socket::AF_INET6)
   end
 
   def ipv4_configs

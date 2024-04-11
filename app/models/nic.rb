@@ -116,32 +116,51 @@ class Nic < ApplicationRecord
     case ip_config
     when "dynamic", "disabled"
       # ignore ip address
-      send(:"#{version}=", nil)
+      nil
     when "reserved", "static", "manual"
       if manageable && send(version).present?
-        # nothing
+        send("#{version}")
       elsif same_old_nic?(:network_id, ip_config_key)
-        send(:"#{version}=", old_nic.send(version))
+        old_nic.send(version)
       elsif ip_config != "manual"
         next_ip = network.send(:"next_#{version}", ip_config)
-        send(:"#{version}=", next_ip)
         errors.add(ip_config_key, :no_free) unless next_ip
+        next_ip
       else
-        send(:"#{version}=", nil)
         errors.add(ip_config_key, :invalid_config)
+        nil
+      end
+    when "mapped"
+      if version == "ipv4"
+        errors.add(ip_config_key, :invalid_config)
+        nil
+      elsif !has_ipv4? || ["static", "reserved"].exclude?(ipv4_config)
+        errors.add(ip_config_key, :need_ipv4_address)
+        nil
+      elsif ["static", "reserved"].exclude?(ipv4_config)
+        errors.add(ip_config_key, :need_ipv4_config)
+        nil
+      else
+        mapped_pool = network.ipv6_pools.find(&:ipv6_mapped?)
+        if mapped_pool
+          IPAddr.new(mapped_pool.ipv6_first.to_i + ipv4.to_i, Socket::AF_INET6)
+        else
+          errors.add(ip_config_key, :invalid_config)
+          nil
+        end
       end
     else
-      send(:"#{version}=", nil)
       errors.add(ip_config_key, :invalid_config)
+      nil
     end
   end
 
   def adjust_ipv4!(user)
-    adjust_ip!("ipv4", user)
+    self.ipv4 = adjust_ip("ipv4", user)
   end
 
   def adjust_ipv6!(user)
-    adjust_ip!("ipv6", user)
+    self.ipv6 = adjust_ip("ipv6", user)
   end
 
   def radius_mac
@@ -218,7 +237,7 @@ class Nic < ApplicationRecord
     when "dynamic", "disabled"
       self.ipv4 = nil
     when "reserved", "static"
-      unless ipv4
+      unless has_ipv4?
         next_ip = network.next_ipv4(ipv4_config)
         if next_ip.nil?
           errors.add(:ipv4_config, :no_free)
@@ -236,7 +255,7 @@ class Nic < ApplicationRecord
     when "dynamic", "disabled"
       self.ipv6 = nil
     when "reserved", "static"
-      unless ipv6
+      unless has_ipv6
         next_ip = network.next_ipv6(ipv6_config)
         if next_ip.nil?
           errors.add(:ipv6_config, :no_free)
@@ -244,6 +263,17 @@ class Nic < ApplicationRecord
         end
         self.ipv6 = next_ip
       end
+    when "mapped"
+      if ["static", "manual"].exclude?(ipv4_config)
+        errors.add(:ipv6_config, :not_static_ipv4)
+        throw :abort
+      end
+      mapped_ip = network.mapped_ipv6(ipv4)
+      if mapped_ip.nil?
+        errors.add(:ipv6_config, :no_mapped_pool)
+        throw :abort
+      end
+      self.ipv6 = mapped_ip
     end
   end
 

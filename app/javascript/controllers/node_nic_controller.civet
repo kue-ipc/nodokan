@@ -137,10 +137,13 @@ export default class NodeNicController < Controller<HTMLElement>
     @requireMacAddress()
     @requireDuid()
   
-  changeIpv4(_event?: Event): void
+  changeAuth(): void
+    @requireMacAddress()
+  
+  changeIpv4(): void
     @adjustAddress("ipv4")
 
-  changeIpv6(_event?: Event): void
+  changeIpv6(): void
     @adjustAddress("ipv6")
 
   enableInputs(names: string[]): void

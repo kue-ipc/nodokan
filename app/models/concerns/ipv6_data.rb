@@ -8,6 +8,10 @@ module Ipv6Data
   # ipv6 ... IPAddr allow nil
   # ipv6_address ... String allow blank
 
+  def has_ipv6?
+    ipv6_data.present?
+  end
+
   def ipv6
     ipv6_data && IPAddr.new_ntoh(ipv6_data)
   end
