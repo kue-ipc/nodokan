@@ -3,6 +3,7 @@ module HtmlHelper
     dynamic: "success",
     reserved: "secondary",
     static: "primary",
+    mapped: "info",
     manual: "warning",
     disabled: "light",
     locked: "dark",
