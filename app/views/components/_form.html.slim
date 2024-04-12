@@ -9,8 +9,6 @@ hr
 = node_search_list_for(components, frame_prefix) do |component|
   - if component.id == node.id
     = t("messages.self")
-  - elsif node.component_ids.include?(component.id)
-    = t("messages.selected")
   - else
     = bootstrap_form_with scope: "component", method: :put,
       url: node_component_path(node_id: node.id || "new",

@@ -243,6 +243,7 @@ class NodesController < ApplicationController
     end
 
     if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
+      permitted_params[:component_ids] = permitted_params[:component_ids]&.uniq
       permitted_params.merge!({
         virtual_machine: false,
         host_id: nil,

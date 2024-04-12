@@ -16,8 +16,6 @@ hr
 = node_search_list_for(hosts, frame_prefix) do |host|
   - if host.id == node.id
     = t("messages.self")
-  - elsif host.id == node.host&.id
-    = t("messages.selected")
   - else
     = bootstrap_form_with scope: "host", method: method,
       url: node_host_path(node_id: node.id || "new"),
