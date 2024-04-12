@@ -264,7 +264,7 @@ export default class NodeNicController < Controller<HTMLElement>
     selectedOption := target.selectedOptions[0]
 
     if @checkInitInput("networkId")
-      target.selectedIndex = @initValue[`${ip}Config`] ?? -1
+      target.selectedIndex = @initValue?[`${ip}Config`] ?? -1
     else if selectedOption !<? HTMLOptionElement or
         selectedOption.disabled or
         selectedOption.value is "disabled"

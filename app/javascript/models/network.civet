@@ -93,8 +93,8 @@ class Network extends ApplicationRecord
     @ipv4_pools = ipv4_pools.map (pool) -> new Ipv4Pool(pool)
     @ipv6_pools = ipv6_pools.map (pool) -> new Ipv6Pool(pool)
 
-    @ipv4_config_list = @availableIpConfig(@ipv4_pools)
-    @ipv6_config_list = @availableIpConfig(@ipv6_pools)
+    @ipv4_config_list = @availableIpConfig(@ipv4_network, @ipv4_pools)
+    @ipv6_config_list = @availableIpConfig(@ipv6_network, @ipv6_pools)
 
     @ipv4 = {
       network: @ipv4_network
@@ -112,11 +112,13 @@ class Network extends ApplicationRecord
       config_list: @ipv6_config_list
     }
 
-  availableIpConfig(pools: Ipv4Pool[] | Ipv6Pool[]): string[]
+  availableIpConfig(ip: ipaddr.IPv4 | ipaddr.IPv6 | undefined,
+    pools: Ipv4Pool[] | Ipv6Pool[]): string[]
     return [] unless @current_user.usable
+    return ["disabled"] unless ip?
+
     configs := new Set(["disabled"])
-    for pool of pools
-      configs.add(pool.ip_config)
+    configs.add(pool.ip_config) for each pool of pools
     configs.add("manual") if @current_user.manageable
     [...configs]
   
