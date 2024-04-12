@@ -348,7 +348,8 @@
     p
       | この端末は特定端末です。「変更」や「解除」が必要な場合は、申請画面から申請を行ってください。
     = link_to "特定端末申請画面へ",
-      new_node_specific_node_application_path(node), class: "btn btn-secondary"
+      new_node_specific_node_application_path(node),
+      class: "btn btn-secondary", data: {turbo: false}
   - elsif node.confirmation&.status != :approved
     p
       | この端末は「確認」が「承認済み」ではないため、特定端末として申請することはできません。
