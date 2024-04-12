@@ -45,7 +45,7 @@ class HostsController < ApplicationController
   private def set_node
     @node =
       if params[:node_id] == "new"
-        Node.new
+        Node.new(user: current_user)
       else
         Node.find(params[:node_id])
       end
