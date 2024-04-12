@@ -84,7 +84,8 @@
                 td = nic.mac_address
                 td
                   - if nic.network
-                    = link_to nic.network.name, nic.network
+                    = link_to nic.network.name, nic.network,
+                      data: {turbo: false}
                 td
                   = badge_for(nic.ipv4_config,
                     scope: "activerecord.enums.ipv4_configs")
