@@ -291,10 +291,13 @@ export default class NodeNicController < Controller<HTMLElement>
     else
       target.value = ""
 
-    @[`${ip}HelpTarget`].innerText = ```
-      ${@network[ip].network}/${@network[ip].prefix_length}
-      ${@messageStore?.get(config, scope: "config_helps", default: "")}
-    ```
+    ip_text := if @network.has(ip)
+      `${@network[ip].network}/${@network[ip].prefix_length}`
+    else
+      ""
+    help_text := @messageStore?.get(config, scope: "config_helps", default: "")
+
+    @[`${ip}HelpTarget`].innerText = [ip_text, help_text].join("\n")
 
     switch config
       when "manual"

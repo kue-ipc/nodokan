@@ -119,5 +119,8 @@ class Network extends ApplicationRecord
       configs.add(pool.ip_config)
     configs.add("manual") if @current_user.manageable
     [...configs]
+  
+  has(ip: "ipv4" | "ipv6"): boolean
+    @[ip].network?
 
 export default Network
