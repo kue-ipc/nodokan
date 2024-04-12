@@ -7,7 +7,7 @@
       = form.collection_select :interface_type,
         t_enums(:interface_types, Nic), :first, :second,
         {floating: true, prompt: t("messages.prompt_required_selection")},
-        required: true, data: {node_nic_target: "interfaceType"}
+        data: {node_nic_target: "interfaceType"}
     .col-md-8
       = form.text_field :name, floating: true, data: {node_nic_target: "name"}
 
@@ -17,7 +17,6 @@
         - nic_networks << nic.network
       = form.collection_select :network_id, nic_networks, :id, :name,
         {floating: true, prompt: t("messages.prompt_required_selection")},
-        required: true,
         data: {node_nic_target: "networkId", action: "node-nic#change"}
 
     .col-md-4
