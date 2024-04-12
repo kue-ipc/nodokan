@@ -20,7 +20,8 @@
       = dt_dd_for network, :manage_users
 
     = dt_dd_for network, :nodes do |value|
-      = link_to nodes_path(condition: {network_id: network.id}) do
+      = link_to nodes_path(condition: {nics_network_id: network.id}),
+        data: {turbo: false} do
         span.badge.bg-primary
           = value.count
 
