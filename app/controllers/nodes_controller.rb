@@ -238,8 +238,10 @@ class NodesController < ApplicationController
 
   private def normalize_params(permitted_params)
     delete_unchangable_params(permitted_params) unless current_user.admin?
+    number = 1
     permitted_params[:nics_attributes]&.each do |key, nic_params|
-      nic_params[:number] = key.to_i + 1
+      nic_params[:number] = number
+      number += 1
     end
 
     if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
