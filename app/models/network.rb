@@ -45,14 +45,15 @@ class Network < ApplicationRecord
   validates :ipv6_network_address, allow_blank: true, ipv6_address: true
   validates :ipv6_gateway_address, allow_blank: true, ipv6_address: true
 
-  validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
+  validates :ipv4_network_data, allow_nil: true, uniqueness: true
+  validates :ipv6_network_data, allow_nil: true, uniqueness: true
 
+  validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
   validates :ipv4_prefix_length, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: 32,
   }
-
   validates :ipv6_prefix_length, allow_blank: true, numericality: {
     only_integer: true,
     greater_than_or_equal_to: 0,
