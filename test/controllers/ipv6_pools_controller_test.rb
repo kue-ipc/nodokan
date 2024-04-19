@@ -5,9 +5,8 @@ class Ipv6PoolsControllerTest < ActionDispatch::IntegrationTest
 
   test "should NOT get new" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get new_ipv6_pool_url, as: :turbo_stream
-    end
+    get new_ipv6_pool_url, as: :turbo_stream
+    assert_response :forbidden
   end
 
   test "admin should get new" do

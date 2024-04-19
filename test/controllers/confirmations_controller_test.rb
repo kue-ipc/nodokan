@@ -51,11 +51,10 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     other_node = nodes(:other_desktop)
     assert_no_difference("Confirmation.count") do
-      assert_raises(Pundit::NotAuthorizedError) do
-        post node_confirmation_url(other_node),
-          params: {confirmation: confirmation_to_params(@confirmation)}
-      end
+      post node_confirmation_url(other_node),
+        params: {confirmation: confirmation_to_params(@confirmation)}
     end
+    assert_response :forbidden
   end
 
   test "redirect to login INSTEAD OF create confirmation" do

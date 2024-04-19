@@ -45,44 +45,38 @@ class ManageControllerTest < ActionDispatch::IntegrationTest
 
   test "user should get places" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get manage_places_url
-    end
+    get manage_places_url
+    assert_response :forbidden
   end
 
   test "user should get hardwares" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get manage_hardwares_url
-    end
+    get manage_hardwares_url
+    assert_response :forbidden
   end
 
   test "user should get operating_systems" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get manage_operating_systems_url
-    end
+    get manage_operating_systems_url
+    assert_response :forbidden
   end
 
   test "user should get security_softwares" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get manage_security_softwares_url
-    end
+    get manage_security_softwares_url
+    assert_response :forbidden
   end
 
   test "user should get device_types" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get manage_device_types_url
-    end
+    get manage_device_types_url
+    assert_response :forbidden
   end
 
   test "user should get os_categories" do
     sign_in users(:user)
-    assert_raises(Pundit::NotAuthorizedError) do
-      get manage_os_categories_url
-    end
+    get manage_os_categories_url
+    assert_response :forbidden
   end
 
   # no login
