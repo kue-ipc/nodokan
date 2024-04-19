@@ -7,7 +7,7 @@ module Kea
     belongs_to :dhcp4_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
     def ipv4
-      IPAddr.new(address, Scoket::AF_INET)
+      IPAddr.new(address, Socket::AF_INET)
     end
 
     def ipv4_address
