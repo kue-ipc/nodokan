@@ -239,7 +239,7 @@ class NodesController < ApplicationController
   private def normalize_params(permitted_params)
     delete_unchangable_params(permitted_params) unless current_user.admin?
     number = 1
-    permitted_params[:nics_attributes]&.each do |key, nic_params|
+    permitted_params[:nics_attributes]&.each_value do |nic_params|
       nic_params[:number] = number
       number += 1
     end

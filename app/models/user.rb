@@ -211,7 +211,7 @@ class User < ApplicationRecord
   def usable_networks
     @usable_networks ||=
       if admin?
-        Network.all.readonly
+        Network.readonly
       else
         use_networks
       end
@@ -220,7 +220,7 @@ class User < ApplicationRecord
   def manageable_networks
     @manageable_networks ||=
       if admin?
-        Network.all.readonly
+        Network.readonly
       else
         manage_networks
       end

@@ -17,7 +17,7 @@ class ApplicationJob < ActiveJob::Base
   # idを設定する必要がる
   def update_radius_user(model_class, username:, **params)
     primary_key = model_class.primary_key&.intern || :id
-    record = model_class.find_by_username(username)
+    record = model_class.find_by(username: username)
     if record
       # 重複するデータがある場合は事前に削除しておく。
       model_class.where(username: username).where.not(primary_key => record.__send__(primary_key)).destroy_all

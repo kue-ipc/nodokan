@@ -20,7 +20,7 @@ module Kea
 
     def duid_str
       duid.unpack("C*")
-        .map { |i| format("%02X", i) }
+        .map { |i| "%02X" % i }
         .join("-")
     end
 

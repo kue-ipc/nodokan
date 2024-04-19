@@ -119,7 +119,7 @@ class Nic < ApplicationRecord
       nil
     when "reserved", "static", "manual"
       if manageable && send(version).present?
-        send("#{version}")
+        send(version.to_s)
       elsif same_old_nic?(:network_id, ip_config_key)
         old_nic.send(version)
       elsif ip_config != "manual"
@@ -285,7 +285,7 @@ class Nic < ApplicationRecord
             "%02x"
           else
             raise ArgumentError, "invalid char_case: #{char_case}"
-          end
+    end
     format_str = [[hex] * list.size].join(sep || "")
     format_str % list
   end

@@ -1,7 +1,9 @@
 def create_models(model_class)
   return unless model_class.count.zero?
 
-  puts "model: #{model_class.name}"
+  Rails.logger.debug do
+    "model: #{model_class.name}"
+  end
 
   seeds_path = Rails.root / "db" / "seeds"
   file_name = "#{model_class.name.underscore.pluralize}.yml"
@@ -17,9 +19,11 @@ def create_models(model_class)
     symbolize_names: false).each do |data|
     model = model_class.new(data)
     if model.save
-      puts "succeeded to create: #{model.name}"
+      Rails.logger.debug { "succeeded to create: #{model.name}" }
     else
-      puts "faild to create: #{model.name}: #{model.errors.to_json}"
+      Rails.logger.debug {
+        "faild to create: #{model.name}: #{model.errors.to_json}"
+      }
     end
   end
 end

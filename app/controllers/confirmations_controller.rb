@@ -60,7 +60,7 @@ class ConfirmationsController < ApplicationController
     return if list.nil?
 
     result = 0
-    bitwises.slice(*list).each do |_, value|
+    bitwises.slice(*list).each_value do |value|
       if value.positive?
         result |= value
       else

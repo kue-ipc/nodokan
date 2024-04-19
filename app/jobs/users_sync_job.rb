@@ -19,7 +19,7 @@ class UsersSyncJob < ApplicationJob
     }
 
     # 既存ユーザーの確認
-    User.where(deleted: false).each do |user|
+    User.where(deleted: false).find_each do |user|
       if user.authorizable?
         logger.debug("Update, sync LDAP: #{user.username}")
         user.sync_ldap!
