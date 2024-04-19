@@ -1,4 +1,4 @@
-# devise_ldap_authenticatable_ex/check_group_policy.rb v1.0.0 2024-01-30
+# devise_ldap_authenticatable_ex/check_group_policy.rb v1.0.1 2024-04-16
 
 # check group membersip policy
 # setting
@@ -16,15 +16,20 @@ require "devise_ldap_authenticatable"
 module DeviseLdapAuthenticatableEx
   module CheckGroupPolicy
     def self.load
-      Devise.mattr_accessor :ldap_check_group_policy
-      Devise.class_variable_set(:@@ldap_check_group_policy, :and) # rubocop:disable Style/ClassVars
+      create_devise_mattr
+      create_devise_ldap_connection_instance_methods
+      refine_devise_ldap_connection_in_required_groups
+    end
 
+    def self.create_devise_mattr
+      Devise.mattr_accessor :ldap_check_group_policy
+      # rubocop: disable Style/ClassVars
+      Devise.class_variable_set(:@@ldap_check_group_policy, :and)
+      # rubocop: enable Style/ClassVars
+    end
+
+    def self.create_devise_ldap_connection_instance_methods
       Devise::LDAP::Connection.attr_reader :in_groups
-      unless Devise::LDAP::Connection.instance_methods
-          .include?(:in_required_groups_and?)
-        Devise::LDAP::Connection.alias_method :in_required_groups_and?,
-          :in_required_groups?
-      end
 
       Devise::LDAP::Connection.class_eval do
         def in_required_groups_or?
@@ -46,7 +51,17 @@ module DeviseLdapAuthenticatableEx
           end
           !@in_groups.empty?
         end
+      end
+    end
 
+    # rubocop: disable Metrics/MethodLength
+    def self.refine_devise_ldap_connection_in_required_groups
+      unless Devise::LDAP::Connection.method_defined?(:in_required_groups_and?)
+        Devise::LDAP::Connection.alias_method :in_required_groups_and?,
+          :in_required_groups?
+      end
+
+      Devise::LDAP::Connection.class_eval do
         # overwrite in_required_groups?
         def in_required_groups?
           return true unless @check_group_membership ||
@@ -76,5 +91,6 @@ module DeviseLdapAuthenticatableEx
         end
       end
     end
+    # rubocop: enable Metrics/MethodLength
   end
 end
