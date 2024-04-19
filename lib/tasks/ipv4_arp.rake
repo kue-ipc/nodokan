@@ -19,7 +19,7 @@ namespace :ipv4_arp do
 
         mac_address_data = [row["mac"].delete("-:")].pack("H12")
         time = Time.zone.at(row["time"].to_i)
-        ipv4_arp = Ipv4Arp.find_or_initialize_by(ipv4_address: ipv4.hton,
+        ipv4_arp = Ipv4Arp.find_or_initialize_by(ipv4_data: ipv4.hton,
           mac_address_data: mac_address_data)
         if ipv4_arp.resolved_at.nil? || time > ipv4_arp.resolved_at
           ipv4_arp.resolved_at = time
