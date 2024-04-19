@@ -90,7 +90,8 @@ class Network < ApplicationRecord
 
   # readonly
   def ipv4_network
-    ipv4_network_data && IPAddr.new_ntoh(ipv4_network_data).mask(ipv4_prefix_length)
+    ipv4_network_data &&
+      IPAddr.new_ntoh(ipv4_network_data).mask(ipv4_prefix_length)
   end
 
   def ipv4_network_address
@@ -118,7 +119,8 @@ class Network < ApplicationRecord
 
   # value allow blank
   def ipv4_netmask=(value)
-    self.ipv4_prefix_length = value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
+    self.ipv4_prefix_length =
+      value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
   end
 
   # readonly
@@ -142,7 +144,8 @@ class Network < ApplicationRecord
 
   # readonly
   def ipv6_network
-    ipv6_network_data && IPAddr.new_ntoh(ipv6_network_data).mask(ipv6_prefix_length)
+    ipv6_network_data &&
+      IPAddr.new_ntoh(ipv6_network_data).mask(ipv6_prefix_length)
   end
 
   def ipv6_network_address
@@ -198,7 +201,8 @@ class Network < ApplicationRecord
   def next_ipv4(ipv4_config)
     return unless ipv4_network
 
-    selected_ipv4_pools = ipv4_pools.where(ipv4_config: ipv4_config).order(:ipv4_first_data)
+    selected_ipv4_pools = ipv4_pools.where(ipv4_config: ipv4_config)
+      .order(:ipv4_first_data)
     return if selected_ipv4_pools.empty?
 
     nics_ipv4_set = nics.map(&:ipv4).compact.to_set

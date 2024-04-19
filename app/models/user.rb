@@ -55,7 +55,8 @@ class User < ApplicationRecord
   def allocate_network
     return true if @allocate_network_config.blank?
 
-    logger.debug "User #{username} is allocate: #{@allocate_network_config.to_json}"
+    logger.debug(
+      "User #{username} is allocate: #{@allocate_network_config.to_json}")
 
     self.auth_network =
       if @allocate_network_config[:auth_network] == "free"
@@ -173,7 +174,8 @@ class User < ApplicationRecord
         return
       end
 
-      auth_assignments.where.not(network_id: network.id).find_each do |assignment|
+      auth_assignments.where.not(network_id: network.id)
+        .find_each do |assignment|
         assignment.update(auth: false)
       end
 

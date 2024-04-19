@@ -20,7 +20,8 @@ class ApplicationJob < ActiveJob::Base
     record = model_class.find_by(username: username)
     if record
       # 重複するデータがある場合は事前に削除しておく。
-      model_class.where(username: username).where.not(primary_key => record.__send__(primary_key)).destroy_all
+      model_class.where(username: username).where
+        .not(primary_key => record.__send__(primary_key)).destroy_all
       record.update!(**params)
     else
       model_class.create!(primary_key => nil, username: username, **params)

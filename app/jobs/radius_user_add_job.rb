@@ -3,7 +3,8 @@ class RadiusUserAddJob < ApplicationJob
 
   def perform(username, vlan)
     if username =~ /\A[0-9a-f]{12}\z/
-      raise "Cannot add a user name in MAC address format to RADIUS: #{username}"
+      raise "Cannot add a user name in MAC address format to " \
+            "RADIUS: #{username}"
     end
 
     # Auth-Typeを設定

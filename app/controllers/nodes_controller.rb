@@ -253,7 +253,8 @@ class NodesController < ApplicationController
         hardware: nil,
         operating_system: nil,
       })
-    elsif ActiveRecord::Type::Boolean.new.cast(permitted_params[:virtual_machine])
+    elsif ActiveRecord::Type::Boolean.new
+        .cast(permitted_params[:virtual_machine])
       permitted_params[:component_ids] = []
       permitted_params[:place] = nil
     else
@@ -309,7 +310,8 @@ class NodesController < ApplicationController
 
     network =
       if nic_params.key?(:network_id)
-        nic_params[:network_id].presence && Network.find(nic_params[:network_id])
+        nic_params[:network_id].presence &&
+          Network.find(nic_params[:network_id])
       else
         nic.network
       end

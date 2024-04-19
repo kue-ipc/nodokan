@@ -1,4 +1,5 @@
-class AddSoftwareAndSecurityHardwareToConfirmations < ActiveRecord::Migration[7.0]
+class AddSoftwareAndSecurityHardwareToConfirmations <
+  ActiveRecord::Migration[7.0]
   def change
     add_column :confirmations, :software, :integer, limit: 1, null: false,
       default: -1

@@ -15,8 +15,8 @@ def create_models(model_class)
     else
       ERB.new(yaml_erb_file.read).result
     end
-  YAML.safe_load(yaml_data, permitted_classes: [Symbol, Time, Date], aliases: true,
-    symbolize_names: false).each do |data|
+  YAML.safe_load(yaml_data, permitted_classes: [Symbol, Time, Date],
+    aliases: true, symbolize_names: false).each do |data|
     model = model_class.new(data)
     if model.save
       Rails.logger.debug { "succeeded to create: #{model.name}" }

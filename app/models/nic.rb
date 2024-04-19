@@ -174,7 +174,8 @@ class Nic < ApplicationRecord
       end
     end
 
-    if old_nic&.mac_address_data.present? && old_nic.mac_address_data != mac_address_data
+    if old_nic&.mac_address_data.present? &&
+        old_nic.mac_address_data != mac_address_data
       RadiusMacDelJob.perform_later(old_nic.mac_address_raw)
     end
   end

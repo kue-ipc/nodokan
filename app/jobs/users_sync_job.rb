@@ -31,7 +31,8 @@ class UsersSyncJob < ApplicationJob
       end
       user.save!
     rescue StandardError => e
-      logger.error("Failed to check an existing user: #{user.username} - #{e.message}")
+      logger.error(
+        "Failed to check an existing user: #{user.username} - #{e.message}")
       logger.error(e.full_message)
       list[:error].add(user.username)
       list[:update].delete(user.username)

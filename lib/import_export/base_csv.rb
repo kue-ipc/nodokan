@@ -39,7 +39,8 @@ module ImportExport
           row["message"] = e.message
           @logger.error(e.full_message)
         ensure
-          @logger.info("#{count}: [#{row['result']}] #{row['id']}: #{row['message']}")
+          @logger.info(
+            "#{count}: [#{row['result']}] #{row['id']}: #{row['message']}")
           results[row["result"]] += 1
           io.puts row.to_csv
         end

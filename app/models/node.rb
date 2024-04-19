@@ -38,7 +38,8 @@ class Node < ApplicationRecord
   validates :domain, allow_nil: true, format: {
     with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
   }
-  validates :hostname, presence: true, uniqueness: {scope: :domain, case_sensitive: true},
+  validates :hostname, presence: true,
+    uniqueness: {scope: :domain, case_sensitive: true},
     if: ->(node) { node.domain.present? }
   validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: true
 

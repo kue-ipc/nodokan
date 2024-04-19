@@ -15,7 +15,8 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
       security_scan: confirmation.security_scan,
       security_software: {
         os_category: confirmation.security_software&.os_category,
-        installation_method: @confirmation.security_software&.installation_method,
+        installation_method:
+          @confirmation.security_software&.installation_method,
         name: @confirmation.security_software&.name,
       },
     }

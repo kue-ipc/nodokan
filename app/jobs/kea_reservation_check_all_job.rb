@@ -12,7 +12,8 @@ class KeaReservationCheckAllJob < ApplicationJob
       .map(&:mac_address_data)
 
     Kea::Host
-      .where(dhcp_identifier_type: Kea::HostIdentifierType.hw_address.identifier_type)
+      .where(dhcp_identifier_type:
+        Kea::HostIdentifierType.hw_address.identifier_type)
       .where.not(dhcp_identifier: mac_address_list)
       .destroy_all
   end

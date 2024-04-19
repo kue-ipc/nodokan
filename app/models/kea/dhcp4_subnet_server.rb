@@ -5,7 +5,7 @@ module Kea
 
     belongs_to :dhcp4_server, foreign_key: "server_id",
       inverse_of: :dhcp4_subnet_servers
-    belongs_to :dhcp4_subnet, foreign_key: "subnet_id", primary_key: "subnet_id",
-      inverse_of: :dhcp4_subnet_servers
+    belongs_to :dhcp4_subnet, foreign_key: "subnet_id",
+      primary_key: "subnet_id", inverse_of: :dhcp4_subnet_servers
   end
 end
