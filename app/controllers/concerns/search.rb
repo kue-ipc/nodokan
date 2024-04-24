@@ -128,9 +128,8 @@ module Search
           association.classify.constantize, exclude_association: true)
           .each do |type, attributes|
           attributes_by_type[type] ||= []
-          attributes_by_type[type].concat(attributes.map { |name|
-                                            [association, name].join("_")
-                                          })
+          attributes_by_type[type].concat(
+            attributes.map { |name| [association, name].join("_") })
         end
       end
     end
