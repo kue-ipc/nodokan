@@ -71,10 +71,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-3.0.3.tgz#208a3929ee614967a1fc8cd6cb758d9fcbf0caae"
   integrity sha512-KEPNw4+WW5AVEIyzC80rTbWEUatTW2lXpN8+8ILC8PiPeWPjwUzrPZDIOZ2wwqDmeqOYTdSGyL3+vE5GC3FB3Q==
 
-"@danielx/civet@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@danielx/civet/-/civet-0.7.1.tgz#b12f5268cb9f4336fa342ae551e18b3989900c6c"
-  integrity sha512-CpgSIsvP8ZboPFVVXmClCFFg6ar2ohwL7wJW6KdfAcwCrdKM41P0XuQ2Bt2L0CO+Q0ewG9F+fcgIJ3WMdWxgYQ==
+"@danielx/civet@^0.6.93":
+  version "0.6.93"
+  resolved "https://registry.yarnpkg.com/@danielx/civet/-/civet-0.6.93.tgz#7ebdc5bbbd433c49542c6c46fb3084636fa2841d"
+  integrity sha512-hmWorDeYy1InkoRMVsJeg2Ni5D4Q4IHfb50/SQxx1rSCFUc1g9ZA71WDky49if+3mdMtbBUllBEo7vxqT4I34A==
   dependencies:
     "@cspotcode/source-map-support" "^0.8.1"
     "@typescript/vfs" "^1.5.0"
