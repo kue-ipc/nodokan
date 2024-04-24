@@ -35,25 +35,26 @@ export default class NodeNicController < Controller<HTMLElement>
   @targets := [...@names, "destroy", "ipv4Help", "ipv6Help",
     "messages", "messageTemplate"]
 
-  // TODO: 下記のようにすべきだが、Civetがうまく動かない
+  // TODO: 本来はdelareをつけるべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
-  // declare readonly lockedTarget: HTMLInputElement // checkbox
-  // declare readonly interfaceTypeTarget: HTMLSelectElement
-  // declare readonly nameTarget: HTMLInputElement // text
-  // declare readonly networkIdTarget: HTMLSelectElement
-  // declare readonly macAddressTarget: HTMLInputElement // text
-  // declare readonly authTarget: HTMLInputElement // checkbox
-  // declare readonly ipv4ConfigTarget: HTMLSelectElement
-  // declare readonly ipv4AddressTarget: HTMLInputElement // text
-  // declare readonly ipv6ConfigTarget: HTMLSelectElement
-  // declare readonly ipv6AddressTarget: HTMLInputElement // text
+  // 初期化なしだが自動設定されるため、readonlyが正しい
+  readonly lockedTarget: HTMLInputElement // checkbox
+  readonly interfaceTypeTarget: HTMLSelectElement
+  readonly nameTarget: HTMLInputElement // text
+  readonly networkIdTarget: HTMLSelectElement
+  readonly macAddressTarget: HTMLInputElement // text
+  readonly authTarget: HTMLInputElement // checkbox
+  readonly ipv4ConfigTarget: HTMLSelectElement
+  readonly ipv4AddressTarget: HTMLInputElement // text
+  readonly ipv6ConfigTarget: HTMLSelectElement
+  readonly ipv6AddressTarget: HTMLInputElement // text
 
-  // declare readonly destroyTarget: HTMLInputElement // checkbox
-  // declare readonly ipv4HelpTarget: HTMLDivElement // checkbox
-  // declare readonly ipv6HelpTarget: HTMLDivElement // checkbox
+  readonly destroyTarget: HTMLInputElement // checkbox
+  readonly ipv4HelpTarget: HTMLDivElement // checkbox
+  readonly ipv6HelpTarget: HTMLDivElement // checkbox
 
-  // declare readonly messagesTarget: HTMLDivElement
-  // declare readonly messageTemplateTarget: HTMLTemplateElement
+  readonly messagesTarget: HTMLDivElement
+  readonly messageTemplateTarget: HTMLTemplateElement
 
   network?: Network
   messageStore?: MessageStore
@@ -73,8 +74,8 @@ export default class NodeNicController < Controller<HTMLElement>
       auth: @authTarget.checked
       ipv4Config: @ipv4ConfigTarget.selectedIndex
       ipv4Address: @ipv4AddressTarget.value
-      ipv6Config: if @hasIpv6ConfigTarget then @ipv6ConfigTarget.selectedIndex
-      ipv6Address: if @hasIpv6AddressTarget then @ipv6AddressTarget.value
+      ipv6Config: @ipv6ConfigTarget.selectedIndex
+      ipv6Address: @ipv6AddressTarget.value
     }
     @change()
 
@@ -136,10 +137,10 @@ export default class NodeNicController < Controller<HTMLElement>
     @adjustConfig("ipv6")
     @requireMacAddress()
     @requireDuid()
-  
+
   changeAuth(): void
     @requireMacAddress()
-  
+
   changeIpv4(): void
     @adjustAddress("ipv4")
 
@@ -185,7 +186,7 @@ export default class NodeNicController < Controller<HTMLElement>
     unless message
       console.warn "[NodeNicController] no message"
       return
-    
+
     currentMessageElement := @getMessageElement(key)
     if currentMessageElement?
       currentMessageElement.textContent = message
@@ -204,7 +205,7 @@ export default class NodeNicController < Controller<HTMLElement>
     messageElement.dataset.messageKey = key
     messageElement.textContent = message
     @messagesTarget.appendChild(clone)
-  
+
   removeMessage(key: string): void
     currentMessageElement := @getMessageElement(key)
 
@@ -268,7 +269,7 @@ export default class NodeNicController < Controller<HTMLElement>
     else if selectedOption !<? HTMLOptionElement or
         selectedOption.disabled or
         selectedOption.value is "disabled"
-      target.selectedIndex = 
+      target.selectedIndex =
         ([...target.options].findIndex (el) -> !el.disabled) ??
         ([...target.options].findIndex (el) -> el.value is "disabled") ??
         -1
@@ -328,7 +329,7 @@ export default class NodeNicController < Controller<HTMLElement>
       console.warn "[NodeNicController] node duid not found"
       return
 
-    if @hasIpv6ConfigTarget and @ipv6ConfigTarget.value is "reserved"
+    if @ipv6ConfigTarget.value is "reserved"
       duidNode.required = true
       @addMessage("helps.require_duid")
     else

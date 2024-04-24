@@ -19,10 +19,28 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     "collapseAppUpdateSecured"
   ]
 
-  // declare readonly existencTargets: HTMLInputElement[] // radio
-  // ...
-  // declare readonly collapseTarget: HTMLDivElement
-  
+  // TODO: 本来はdelareをつけるべきだが、Civetがうまく動かない
+  // https://stimulus.hotwired.dev/reference/using-typescript
+  // 初期化なしだが自動設定されるため、readonlyが正しい
+  readonly existenceTargets: HTMLInputElement[] // radio list
+  readonly contentTargets: HTMLInputElement[] // radio list
+  readonly osUpdateTargets: HTMLInputElement[] // radio list
+  readonly appUpdateTargets: HTMLInputElement[] // radio list
+  readonly softwareTargets: HTMLInputElement[] // radio list
+  readonly securityHardwaresTargets: HTMLInputElement[] // checkbox list
+  readonly securityUpdateTargets: HTMLInputElement[] // radio list
+  readnoly securityScanTargets: HTMLInputElement[] // radio list
+
+  readonly securitySoftwareInstallationMethodTarget: HTMLSelectElement
+  readonly securitySoftwareNameTarget: HTMLInputElement // text
+
+  readonly collapseTarget: HTMLDivElement
+  readonly collapseOsUpdateSecuredTarget: HTMLDivElement
+  readonly collapseAppUpdateSecuredTarget: HTMLDivElement
+
+  readonly hasCollapseOsUpdateSecuredTarget: boolean
+  readonly hasCollapseAppUpdateSecuredTarget: boolean
+
   collapse?: Collapse
   collapseOsUpdateSecured?: Collapse
   collapseAppUpdateSecured?: Collapse
@@ -36,17 +54,17 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
       @collapseAppUpdateSecured = new Collapse(@collapseAppUpdateSecuredTarget,
         toggle: false)
 
-    if @existenceTargets.find((e) -> e.value is "existing").checked
+    if @existenceTargets.find((e) -> e.value is "existing")?.checked
       @collapse?.show()
       @setRequiredAll(true)
     else
       @collapse?.hide()
       @setRequiredAll(false)
 
-    if @osUpdateTargets.find((e) -> e.value is "secured").checked
+    if @osUpdateTargets.find((e) -> e.value is "secured")?.checked
       @collapseOsUpdateSecured?.show()
 
-    if @appUpdateTargets.find((e) -> e.value is "secured").checked
+    if @appUpdateTargets.find((e) -> e.value is "secured")?.checked
       @collapseAppUpdateSecured?.show()
 
   setRequiredAll(required: boolean): void
@@ -105,7 +123,7 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     unless target <? HTMLInputElement
       console.warn `target is not HTMLInptuElement: ${target}`
       return
-    
+
     // "none", "unkonwn" のみ排他
     exclusiveValues := ["none", "unknown"]
     if target.checked

@@ -8,7 +8,7 @@ export default class ModalController < Controller
   connect()
     @modal = new Modal(@element)
     @modal.show()
-  
+
   close(event: CustomEvent)
     console.log event
     if event.detail.success
