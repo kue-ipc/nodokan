@@ -23,7 +23,7 @@ export default class MessageStore
     {scope?: string | string[], default?: string} = {}): string
     scope = [] if not scope?
     scope = scope.split('.') if scope <? "string"
-    list := [...scope, ...key.split('.')].filter .#
+    list := [...scope, ...key.split('.')].filter &.#
     msg: MessageMap | string | undefined .= #messageMap
     for name of list
       break if not msg? or msg <? "string"
