@@ -78,6 +78,8 @@ class User < ApplicationRecord
         end
       add_use_network(network) if network
     end
+
+    self.limit = @allocate_network_config[:limit]
   end
 
   def ldap_before_save
@@ -93,6 +95,7 @@ class User < ApplicationRecord
         @allocate_network_config = {
           auth_network: net_config[:auth_network],
           networks: net_config[:networks],
+          limit: net_config[:limit],
         }
         break
       end

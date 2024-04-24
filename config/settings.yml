@@ -32,6 +32,7 @@ ldap:
     # If only a group name is given, membership will be checked against "uniqueMember"
     - cn=admin,ou=groups,dc=example,dc=jp
     - cn=staff,ou=groups,dc=example,dc=jp
+    - cn=user,ou=groups,dc=example,dc=jp
     # If an array is given, the first element will be the attribute to check against, the second the group name
     # - ["moreMembers", "cn=users,ou=groups,dc=test,dc=com"]
   ## Requires config.ldap_check_attributes in devise.rb to be true
@@ -50,6 +51,11 @@ user_networks:
     auth_network: v102
     networks:
       - auth
+  - group: cn=user,ou=groups,dc=example,dc=jp
+    auth_network: free
+    networks:
+      - auth
+    limit: 1
 additional_messages:
   nic_setting: null
 specific_node_application:
@@ -63,7 +69,7 @@ specific_node_application:
       external: nat
       list:
         - in 80/tcp
-        - in 443/tcp 
+        - in 443/tcp
         - in 443/udp
     - name: 外部Web直接アクセス (外部へのHTTP/HTTPS/QUIK)
       dns: false
