@@ -29,7 +29,7 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
   readonly softwareTargets: HTMLInputElement[] // radio list
   readonly securityHardwaresTargets: HTMLInputElement[] // checkbox list
   readonly securityUpdateTargets: HTMLInputElement[] // radio list
-  readnoly securityScanTargets: HTMLInputElement[] // radio list
+  readonly securityScanTargets: HTMLInputElement[] // radio list
 
   readonly securitySoftwareInstallationMethodTarget: HTMLSelectElement
   readonly securitySoftwareNameTarget: HTMLInputElement // text
