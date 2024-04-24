@@ -220,8 +220,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name"}}
     end
-    assert_equal @messages[:unauthenticated], flash[:alert]
     assert_redirected_to new_user_session_path
+    assert_equal @messages[:unauthenticated], flash[:alert]
   end
 
   test "should create node all attributes" do

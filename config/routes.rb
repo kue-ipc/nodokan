@@ -42,13 +42,7 @@ Rails.application.routes.draw do
     collection do
       put "sync"
     end
-    # resources :networks, only: [:create, :destroy], controller: 'user_networks'
-
     resources :use_networks, only: [:create, :update, :destroy]
-    # member do
-    #   post 'networks', to: 'users#create_network', as: 'networks'
-    #   delete 'networks/:network_id', to: 'users#delete_network', as: 'network'
-    # end
   end
 
   resource :user, only: [:show]

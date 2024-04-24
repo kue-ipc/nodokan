@@ -29,26 +29,17 @@ class UsersController < ApplicationController
   def show
   end
 
-  def create
-    @user = User.new(user_params)
-
-    if @user.authorizable? && @user.sync_ldap! && @user.save
-      redirect_to users_path, notice: "成功"
-    else
-      redirect_to users_path, alert: "失敗"
-    end
-  end
-
   def update
     respond_to do |format|
       if @user.update(user_params)
         format.html do
-          redirect_to @user, notice: "ユーザーを更新しました。"
+          redirect_to @user, notice: t_success(@user, :update)
         end
         format.json { render :show, status: :ok, location: @user }
       else
         format.html do
-          render @user
+          flash.now.alert = t_failure(@user, :update)
+          render :show
         end
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end

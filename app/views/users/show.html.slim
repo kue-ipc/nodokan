@@ -26,8 +26,8 @@ dl
         .row.row-cols-md-auto.g-3.align-items-center
           .col-12
             = f.collection_select :role, t_enums(:roles), :first, :second,
-                                  {hide_label: true, wrapper: false},
-                                  disabled: current_user == @user
+              {hide_label: true, wrapper: false},
+              disabled: current_user == @user
           .col-12
             = f.submit "変更", class: "btn btn-warning",
               disabled: current_user == @user

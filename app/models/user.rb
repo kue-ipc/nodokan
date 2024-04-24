@@ -10,11 +10,11 @@ class User < ApplicationRecord
   # :registerable, :recoverable, :rememberable, :validatable
   devise :ldap_authenticatable, :lockable, :rememberable
 
-  enum role: {
+  enum :role, {
     user: 0,
     admin: 1,
     guest: 2,
-  }
+  }, validate: true
 
   has_many :nodes, dependent: :restrict_with_error
 
