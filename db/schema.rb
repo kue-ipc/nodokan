@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_09_001156) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_24_051033) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -288,6 +288,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_001156) do
     t.datetime "updated_at", null: false
     t.datetime "remember_created_at", precision: nil
     t.string "remember_token"
+    t.integer "limit"
     t.index ["remember_token"], name: "index_users_on_remember_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
