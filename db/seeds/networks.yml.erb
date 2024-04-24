@@ -1,0 +1,71 @@
+- name: 'サーバー'
+  vlan: 101
+  auth: false
+  ipv4_network_address: '192.168.1.0'
+  ipv4_netmask: '255.255.255.0'
+  ipv4_gateway_address: '192.168.1.254'
+  ipv6_network_address: 'fd00:ab12:cd34:1::'
+  ipv6_prefix_length: 64
+  ipv6_gateway_address: 'fd00:ab12:cd34:1::1'
+  ipv6_pools_attributes:
+  - ipv6_config: :mapped
+    ipv6_first_address: 'fd00:ab12:cd34:1::'
+    ipv6_last_address: 'fd00:ab12:cd34:1::ffff:ffff'
+  note: サーバー用ネットワークのサンプル
+
+- name: 'クライアント'
+  vlan: 102
+  auth: true
+  dhcp: true
+  ipv4_network_address: '192.168.2.0'
+  ipv4_netmask: '255.255.255.0'
+  ipv4_gateway_address: '192.168.2.254'
+  ipv4_pools_attributes:
+  - ipv4_config: :dynamic
+    ipv4_first_address: '192.168.2.1'
+    ipv4_last_address: '192.168.2.99'
+  - ipv4_config: :reserved
+    ipv4_first_address: '192.168.2.100'
+    ipv4_last_address: '192.168.2.199'
+  - ipv4_config: static
+    ipv4_first_address: '192.168.2.200'
+    ipv4_last_address: '192.168.2.240'
+  ipv6_network_address: 'fd00:ab12:cd34:2::'
+  ipv6_prefix_length: 64
+  ipv6_gateway_address: 'fd00:ab12:cd34:2::1'
+  ipv6_pools_attributes:
+  - ipv6_config: :mapped
+    ipv6_first_address: 'fd00:ab12:cd34:2::'
+    ipv6_last_address: 'fd00:ab12:cd34:2::ffff:ffff'
+  note: クライアント用ネットワークのサンプル
+
+<% 100.times do |i| %>
+- name: '認証ネットワーク<%= i %>'
+  vlan: <%= 2000 + i %>
+  auth: true
+  dhcp: true
+  ipv4_network_address: '172.16.<%= i %>.0'
+  ipv4_netmask: '255.255.255.0'
+  ipv4_gateway_address: '172.16.<%= i %>.254'
+  ipv4_pools_attributes:
+  - ipv4_config: :dynamic
+    ipv4_first_address: '172.16.<%= i %>.1'
+    ipv4_last_address: '172.16.<%= i %>.100'
+  - ipv4_config: :reserved
+    ipv4_first_address: '172.16.<%= i %>.101'
+    ipv4_last_address: '172.16.<%= i %>.200'
+  - ipv4_config: static
+    ipv4_first_address: '172.16.<%= i %>.201'
+    ipv4_last_address: '172.16.<%= i %>.240'
+  ipv6_network_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::'
+  ipv6_prefix_length: 64
+  ipv6_gateway_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::1'
+  ipv6_pools_attributes:
+  - ipv6_config: :mapped
+    ipv6_first_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::'
+    ipv6_last_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::ffff:ffff'
+  - ipv6_config: :static
+    ipv6_first_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::1:0:0'
+    ipv6_last_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::2:ffff:ffff'
+  note: クライアント用ネットワークのサンプル
+<% end %>
