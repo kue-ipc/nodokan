@@ -178,6 +178,7 @@ GEM
     matrix (0.4.2)
     mini_mime (1.1.5)
     minitest (5.22.3)
+    minitest-stub-const (0.6)
     msgpack (1.7.2)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
@@ -379,6 +380,7 @@ DEPENDENCIES
   ipaddr (>= 1.2.3)
   jbuilder
   jsbundling-rails
+  minitest-stub-const
   mysql2 (~> 0.5)
   paper_trail
   paper_trail-association_tracking
