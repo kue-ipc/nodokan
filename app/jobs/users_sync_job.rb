@@ -6,6 +6,9 @@ class UsersSyncJob < ApplicationJob
   def perform(*_args)
     list = sync_users
     logger.info("Result: #{list.transform_values(&:size).to_json}")
+    return if list[:error].empty?
+
+    raise "error occured during users sync job: #{list[:error].size}"
   end
 
   private def sync_users
