@@ -50,7 +50,8 @@ user_networks:
   - group: cn=staff,ou=groups,dc=example,dc=jp
     auth_network: v102
     networks:
-      - auth
+      - v101
+      - v102
   - group: cn=user,ou=groups,dc=example,dc=jp
     auth_network: free
     networks:

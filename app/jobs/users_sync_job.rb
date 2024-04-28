@@ -72,6 +72,7 @@ class UsersSyncJob < ApplicationJob
       list[:create].add(username)
     rescue StandardError => e
       logger.error("Failed to create a user: #{username} - #{e.message}")
+      logger.error(e.full_message)
       list[:error].add(username)
       list[:create].delete(username)
       list[:return].delete(username)

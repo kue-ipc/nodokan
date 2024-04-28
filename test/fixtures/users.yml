@@ -32,4 +32,11 @@ guest:
   username: guest
   email: guest@example.jp
   fullname: ゲスト　花子
+  role: :guest
+
+deleted:
+  username: deleted
+  email: deleted@example.jp
+  fullname: 削除　ユーザー
   role: :user
+  deleted: true
