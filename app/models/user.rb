@@ -253,4 +253,8 @@ class User < ApplicationRecord
   def unlimited
     limit.nil?
   end
+
+  def node_creatable?
+    admin? || limit.nil? || limit > nodes_count
+  end
 end

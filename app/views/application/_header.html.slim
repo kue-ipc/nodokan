@@ -15,7 +15,10 @@ header.mb-2
         #navbar-menu.collapse.navbar-collapse
           ul.navbar-nav.me-auto.mb-1.mb-md-0
             li.nav-item
-              = link_to "端末登録", new_node_path, class: "nav-link"
+              - if current_user.node_creatable?
+                = link_to "端末登録", new_node_path, class: "nav-link"
+              - else
+                = link_to "端末登録", new_node_path, class: "nav-link disabled"
             li.nav-item
               = link_to "端末一覧", nodes_path, class: "nav-link"
             - if current_user.admin?

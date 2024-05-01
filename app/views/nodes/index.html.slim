@@ -21,10 +21,11 @@
       = link_to t("actions.download_csv"), nodes_path(format: :csv),
           class: "btn btn-primary",
           download: "nodes_#{Time.current.strftime('%Y%m%d')}.csv"
-    .col-12.mb-3
-      = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
-p
-  | 1年に1度、端末の確認を行ってください。
+    - if current_user.node_creatable?
+      .col-12.mb-3
+        = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
+
+p 1年に1度、端末の確認を行ってください。
 
 hr
 
