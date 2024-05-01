@@ -169,6 +169,26 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
+  test "other should get new" do
+    sign_in users(:other)
+    get new_node_url
+    assert_response :success
+    assert_select "div#node_nics_attributes_0"
+  end
+
+  test "less should NOT get new" do
+    sign_in users(:less)
+    get new_node_url
+    assert_response :forbidden
+  end
+
+  test "other should NOT get new after create" do
+    users(:other).nodes << nodes(:desktop)
+    sign_in users(:other)
+    get new_node_url
+    assert_response :forbidden
+  end
+
   # edit
 
   test "should get edit" do
@@ -222,6 +242,33 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to new_user_session_path
     assert_equal @messages[:unauthenticated], flash[:alert]
+  end
+
+  test "other should create node" do
+    sign_in users(:other)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name"}}
+    end
+    assert_equal @messages[:create_success], flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal users(:other).id, Node.last.user_id
+  end
+
+  test "less should NOT create node" do
+    sign_in users(:less)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name"}}
+    end
+    assert_response :forbidden
+  end
+
+  test "other should NOT create node after adding node" do
+    users(:other).nodes << nodes(:desktop)
+    sign_in users(:other)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name"}}
+    end
+    assert_response :forbidden
   end
 
   test "should create node all attributes" do

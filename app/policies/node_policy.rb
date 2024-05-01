@@ -14,7 +14,10 @@ class NodePolicy < ApplicationPolicy
   end
 
   def create?
-    user.admin? || record.user == user
+    user.admin? || (
+      record.user == user &&
+      (user.limit.nil? || user.limit > user.nodes_count)
+    )
   end
 
   def update?

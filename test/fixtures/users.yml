@@ -21,13 +21,16 @@ other:
   email: other@example.jp
   fullname: 亜座　次郎
   role: :user
-  limit: 1
+  nodes_count: 1
+  limit: 2
 
 less:
   username: less
   email: less@example.jp
   fullname: 何もない　ユーザー
   role: :user
+  nodes_count: 0
+  limit: 0
 
 guest:
   username: guest
