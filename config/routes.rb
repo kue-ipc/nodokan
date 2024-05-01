@@ -38,7 +38,7 @@ Rails.application.routes.draw do
     get "os_categories"
   end
 
-  resources :users, only: [:index, :show, :update] do
+  resources :users, only: [:index, :show, :edit, :update] do
     collection do
       put "sync"
     end

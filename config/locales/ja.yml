@@ -534,6 +534,8 @@ ja:
         auth_network: 認証ネットワーク
         admin?: 管理者権限
         nodes_count: 端末数
+        limit: 制限
+        unlimited: 無制限
       ipv4_pool:
         ipv4_config: IPv4設定
         ipv4_first_address: 最初のアドレス
@@ -750,6 +752,7 @@ ja:
   values:
     none: (無し)
     empty: (空)
+    unlimited: (無制限)
 
   errors:
     format: "%{attribute}は%{message}"

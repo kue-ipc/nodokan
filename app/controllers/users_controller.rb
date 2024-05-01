@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   include Page
   include Search
 
-  before_action :set_user, only: [:show, :update]
+  before_action :set_user, only: [:show, :edit, :update]
   before_action :authorize_user, only: [:index]
 
   search_for User
@@ -27,6 +27,9 @@ class UsersController < ApplicationController
   end
 
   def show
+  end
+
+  def edit
   end
 
   def update

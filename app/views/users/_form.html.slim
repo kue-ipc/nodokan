@@ -1,0 +1,36 @@
+= turbo_frame_tag user do
+  = bootstrap_form_with model: user, data: {turbo: false} do |f|
+    dl
+      = dt_dd_for user, :username do |username|
+        = username
+        - if user.deleted
+          = badge_for(:deleted, scope: "activerecord.attributes.user",
+            badge_class: "ms-1")
+      = dt_dd_for user, :email
+      = dt_dd_for user, :fullname
+      = dt_dd_tag "#{User.human_attribute_name(:nodes_count)} / " \
+        "#{User.human_attribute_name(:limit)}" do
+        .row
+          .col-auto
+            = user.nodes_count
+          .col-auto
+            | /
+          .col-auto
+            = f.number_field :limit, hide_label: true, wrapper: false,
+              min: 0, step: 1
+          = f.check_box :unlimited,
+            wrapper: {class: "col-auto", style: "margin-bottom: 0 !important;"}
+      = dt_dd_for user, :role do |role|
+        .row: .col-auto
+          = f.collection_select :role, t_enums(:roles), :first, :second,
+            {hide_label: true, wrapper: false},
+            disabled: current_user == user
+      = dt_dd_for user, :auth_network do |auth_network|
+        .row: .col-auto
+          = f.collection_select :auth_network_id, Network.where(auth: true),
+            :id, :name_vlan,
+            {include_blank: t("values.none"), hide_label: true, wrapper: false}
+
+    = f.submit class: "btn btn-primary"
+    =< link_to t("actions.cancel"), user, class: "btn btn-dark",
+      data: {turbo: user.id.present?}

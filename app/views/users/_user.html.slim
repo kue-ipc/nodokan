@@ -1,0 +1,26 @@
+= turbo_frame_tag user do
+  dl
+    = dt_dd_for user, :username do |username|
+      = username
+      - if user.deleted
+        = badge_for(:deleted, scope: "activerecord.attributes.user",
+          badge_class: "ms-1")
+    = dt_dd_for user, :email
+    = dt_dd_for user, :fullname
+    = dt_dd_tag "#{User.human_attribute_name(:nodes_count)} / " \
+      "#{User.human_attribute_name(:limit)}" do
+      => link_to nodes_path(condition: {user_id: user.id}),
+        data: {turbo: false} do
+        = user.nodes_count
+      | /
+      - if user.limit
+        =< user.limit
+      - else
+        =< t("values.unlimited")
+    = dt_dd_for user, :role do |role|
+      = t_enum(role, :roles)
+    = dt_dd_for user, :auth_network do |auth_network|
+      = auth_network&.name_vlan || t("values.none")
+  - if current_user.admin?
+    =< link_to t("actions.edit"), edit_user_path(user),
+      class: "btn btn-warning"

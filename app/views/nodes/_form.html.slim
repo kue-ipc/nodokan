@@ -59,6 +59,8 @@
               :id, :name, floating: true
 
     = f.submit class: "btn btn-primary"
+    =< link_to t("actions.cancel"), node, class: "btn btn-dark",
+      data: {turbo: node.id.present?}
 
   hr
 

@@ -247,4 +247,8 @@ class User < ApplicationRecord
   def flag=(str)
     FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
+
+  def unlimited
+    limit.nil?
+  end
 end
