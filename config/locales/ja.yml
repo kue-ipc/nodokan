@@ -42,7 +42,6 @@ ja:
     upload_csv: CSVアップロード
     change: 変更
     release: 解除
-    cancel: キャンセル
     select: 選択
 
   do_actions:
@@ -72,7 +71,6 @@ ja:
     fail: 失敗する
     error: エラーになる
     start: 開始する
-    cancel: キャンセルする
 
   with_actions:
     close: "%{name}を閉じる"
@@ -360,6 +358,20 @@ ja:
       assignment: ユーザーネットワーク割り当て
     attributes:
       user:
+        username: ユーザー名
+        password: パスワード
+        fullname: フルネーム
+        role: 役割
+        deleted: 削除済み
+        networks: ネットワーク
+        use_networks: 利用可能ネットワーク
+        manage_networks: 管理可能ネットワーク
+        auth_networks: 認証ネットワーク
+        auth_network: 認証ネットワーク
+        admin?: 管理者権限
+        nodes_count: 端末数
+        limit: 制限
+        unlimited: 無制限
         confirmation_sent_at: パスワード確認送信時刻
         confirmation_token: パスワード確認用トークン
         confirmed_at: パスワード確認時刻
@@ -373,14 +385,12 @@ ja:
         last_sign_in_at: 最終ログイン時刻
         last_sign_in_ip: 最終ログインIPアドレス
         locked_at: ロック時刻
-        password: パスワード
         password_confirmation: パスワード（確認用）
         remember_created_at: ログイン記憶時刻
         remember_me: ログインを記憶する
         reset_password_sent_at: パスワードリセット送信時刻
         reset_password_token: パスワードリセット用トークン
         sign_in_count: ログイン回数
-        username: ユーザー名
         unconfirmed_email: 未確認Eメール
         unlock_token: ロック解除用トークン
         updated_at: 更新日
@@ -521,21 +531,6 @@ ja:
         approved: 承認済
         confirmed: 確認済
         config: 設定
-      user:
-        username: ユーザー名
-        password: パスワード
-        fullname: フルネーム
-        role: 役割
-        deleted: 削除済み
-        networks: ネットワーク
-        use_networks: 利用可能ネットワーク
-        manage_networks: 管理可能ネットワーク
-        auth_networks: 認証ネットワーク
-        auth_network: 認証ネットワーク
-        admin?: 管理者権限
-        nodes_count: 端末数
-        limit: 制限
-        unlimited: 無制限
       ipv4_pool:
         ipv4_config: IPv4設定
         ipv4_first_address: 最初のアドレス
@@ -856,13 +851,13 @@ ja:
         title: 設置場所
         help: |
           前の項目を埋めると候補が表示されます。
-          候補にない場合は、そのまま名称を入力して登録できます。 
+          候補にない場合は、そのまま名称を入力して登録できます。
           管理者によって名称が統合される場合があります。
       hardware:
         title: 機器情報
         help: |
           前の項目を埋めると候補が表示されます。
-          候補にない場合は、そのまま名称を入力して登録できます。 
+          候補にない場合は、そのまま名称を入力して登録できます。
           管理者によって名称が統合される場合があります。
       operating_system:
         title: OS(オペレーティングシステム)情報
