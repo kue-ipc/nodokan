@@ -21,6 +21,7 @@ other:
   email: other@example.jp
   fullname: 亜座　次郎
   role: :user
+  limit: 1
 
 less:
   username: less

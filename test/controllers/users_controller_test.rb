@@ -79,6 +79,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     patch user_url(@user), params: {user: {role: "user"}}
     assert_redirected_to user_url(@user)
     assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
   end
 
   test "other should NOT update" do
@@ -98,6 +102,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     patch user_url(@user), params: {user: {role: "super"}}
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
   end
 
   test "admin should update auth_network_id" do
@@ -106,6 +114,101 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       params: {user: {auth_network_id: networks(:client).id}}
     assert_redirected_to user_url(@user)
     assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
+  end
+
+  test "admin should update unlmitied" do
+    sign_in users(:admin)
+    patch user_url(@user),
+      params: {user: {unlimited: true, limit: 0}}
+    assert_redirected_to user_url(@user)
+    assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
+  end
+
+  test "admin should update limit" do
+    sign_in users(:admin)
+    patch user_url(@user),
+      params: {user: {unlimited: false, limit: 1}}
+    assert_redirected_to user_url(@user)
+    assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_equal 1, user.limit
+  end
+
+  test "admin should NOT update negative limit" do
+    sign_in users(:admin)
+    patch user_url(@user),
+      params: {user: {unlimited: false, limit: -1}}
+    assert_response :success
+    assert_equal get_message(:update_failure), flash[:alert]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
+  end
+
+  test "admin should NOT update floating limit" do
+    sign_in users(:admin)
+    patch user_url(@user),
+      params: {user: {unlimited: false, limit: 3.14}}
+    assert_response :success
+    assert_equal get_message(:update_failure), flash[:alert]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
+  end
+
+  test "admin should update all change" do
+    sign_in users(:admin)
+    patch user_url(@user),
+      params: {user: {
+        role: "admin",
+        auth_network_id: networks(:free).id,
+        unlimited: false,
+        limit: 1,
+      }}
+    assert_redirected_to user_url(@user)
+    assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "admin", user.role
+    assert_equal networks(:free), user.auth_network
+    assert_equal 1, user.limit
+  end
+
+  test "admin should update unlmitied for other" do
+    sign_in users(:admin)
+    @user = users(:other)
+    patch user_url(@user),
+      params: {user: {unlimited: true, limit: 0}}
+    assert_redirected_to user_url(@user)
+    assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_nil user.limit
+  end
+
+  test "admin should update limit for other" do
+    sign_in users(:admin)
+    @user = users(:other)
+    patch user_url(@user),
+      params: {user: {unlimited: false, limit: 1}}
+    assert_redirected_to user_url(@user)
+    assert_equal get_message(:update_success), flash[:notice]
+    user = User.find(@user.id)
+    assert_equal "user", user.role
+    assert_equal networks(:client), user.auth_network
+    assert_equal 1, user.limit
   end
 
   # TODO: 認証ネットワーク以外の場合は弾くべき？

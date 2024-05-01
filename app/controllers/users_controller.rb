@@ -69,8 +69,14 @@ class UsersController < ApplicationController
   end
 
   private def user_params
-    params.require(:user).permit(
+    permitted_params = params.require(:user).permit(
+      :limit,
+      :unlimited,
       :role,
       :auth_network_id)
+    if ActiveRecord::Type::Boolean.new.cast(permitted_params.delete(:unlimited))
+      permitted_params[:limit] = nil
+    end
+    permitted_params
   end
 end

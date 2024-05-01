@@ -37,6 +37,8 @@ class User < ApplicationRecord
   validates :email, presence: true,
     length: {maximum: 255}
   validates :fullname, allow_blank: true, length: {maximum: 255}
+  validates :limit, allow_nil: true,
+    numericality: {only_integer: true, greater_than_or_equal_to: 0}
 
   after_save :allocate_network
 
