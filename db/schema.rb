@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_24_051033) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_01_074046) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -155,6 +155,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_24_051033) do
     t.integer "assignments_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "ra", default: -1, null: false
     t.index ["ipv4_network_data"], name: "index_networks_on_ipv4_network_data", unique: true
     t.index ["ipv6_network_data"], name: "index_networks_on_ipv6_network_data", unique: true
     t.index ["name"], name: "index_networks_on_name", unique: true
