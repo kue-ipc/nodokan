@@ -6,12 +6,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   def get_message(key)
     model_name = User.model_name.human
     case key
+    when :create_success
+      I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.create"))
+    when :create_failure
+      I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.create"))
     when :update_success
       I18n.t("messages.success_action", model: model_name,
         action: I18n.t("actions.update"))
     when :update_failure
       I18n.t("messages.failure_action", model: model_name,
         action: I18n.t("actions.update"))
+    when :destroy_success
+      I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.delete"))
+    when :destroy_failure
+      I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.delete"))
     when :unauthenticated
       I18n.t("devise.failure.unauthenticated")
     end

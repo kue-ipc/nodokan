@@ -4,9 +4,10 @@ extra:
   name: 外部ネットワーク
   vlan: 99
   auth: false
-  dhcp: false
   locked: true
   specific: true
+  dhcp: false
+  ra: disabled
   ipv4_network_data: <%= ipv4_address('192.0.2.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.0.2.254') %>
@@ -19,9 +20,10 @@ server:
   name: サーバーネットワーク
   vlan: 101
   auth: false
-  dhcp: false
   locked: false
   specific: false
+  dhcp: false
+  ra: router
   ipv4_network_data: <%= ipv4_address('192.168.1.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.1.254') %>
@@ -34,9 +36,10 @@ client:
   name: クライアントネットワーク
   vlan: 102
   auth: true
-  dhcp: true
   locked: false
   specific: false
+  dhcp: true
+  ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.2.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.2.254') %>
@@ -49,9 +52,10 @@ free:
   name: 空いているネットワーク
   vlan: 103
   auth: true
-  dhcp: true
   locked: false
   specific: false
+  dhcp: true
+  ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.3.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.3.254') %>
@@ -64,9 +68,10 @@ ipv4only:
   name: IPv4のみのネットワーク
   vlan: 110
   auth: false
-  dhcp: false
   locked: false
   specific: false
+  dhcp: false
+  ra: disabled
   ipv4_network_data: <%= ipv4_address('192.168.10.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.10.254') %>
@@ -78,9 +83,10 @@ ipv6only:
   name: IPv6のみのネットワーク
   vlan: 120
   auth: false
-  dhcp: false
   locked: false
   specific: false
+  dhcp: false
+  ra: stateless
   ipv4_network_data:
   ipv4_prefix_length: 24
   ipv4_gateway_data:
@@ -92,9 +98,10 @@ noip:
   name: IP無しネットワーク
   vlan: 130
   auth: false
-  dhcp: false
   locked: false
   specific: false
+  dhcp: false
+  ra: disabled
   ipv4_network_data:
   ipv4_prefix_length: 24
   ipv4_gateway_data:
@@ -106,9 +113,10 @@ last:
   name: 最後のネットワーク
   vlan: 200
   auth: true
-  dhcp: true
   locked: false
   specific: false
+  dhcp: true
+  ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.100.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.100.254') %>

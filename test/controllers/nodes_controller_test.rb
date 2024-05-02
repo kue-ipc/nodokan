@@ -4,6 +4,32 @@ require "securerandom"
 class NodesControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
+  def get_message(key)
+    model_name = Node.model_name.human
+    case key
+    when :create_success
+      I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.register"))
+    when :create_failure
+      I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.register"))
+    when :update_success
+      I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.update"))
+    when :update_failure
+      I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.update"))
+    when :destroy_success
+      I18n.t("messages.success_action", model: model_name,
+        action: I18n.t("actions.delete"))
+    when :destroy_failure
+      I18n.t("messages.failure_action", model: model_name,
+        action: I18n.t("actions.delete"))
+    when :unauthenticated
+      I18n.t("devise.failure.unauthenticated")
+    end
+  end
+
   def hex_to_binary(str)
     [str.delete("-:")].pack("H*")
   end
@@ -74,22 +100,6 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @node = nodes(:desktop)
-    model_name = Node.model_name.human
-    @messages = {
-      create_success: I18n.t("messages.success_action", model: model_name,
-        action: I18n.t("actions.register")),
-      create_failure: I18n.t("messages.failure_action", model: model_name,
-        action: I18n.t("actions.register")),
-      update_success: I18n.t("messages.success_action", model: model_name,
-        action: I18n.t("actions.update")),
-      update_failure: I18n.t("messages.failure_action", model: model_name,
-        action: I18n.t("actions.update")),
-      destroy_success: I18n.t("messages.success_action", model: model_name,
-        action: I18n.t("actions.delete")),
-      destroy_failure: I18n.t("messages.failure_action", model: model_name,
-        action: I18n.t("actions.delete")),
-      unauthenticated: I18n.t("devise.failure.unauthenticated"),
-    }
   end
 
   # index
@@ -221,7 +231,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name"}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal users(:user).id, Node.last.user_id
   end
@@ -231,7 +241,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name"}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.user_id
   end
@@ -241,7 +251,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       post nodes_url, params: {node: {name: "name"}}
     end
     assert_redirected_to new_user_session_path
-    assert_equal @messages[:unauthenticated], flash[:alert]
+    assert_equal get_message(:unauthenticated), flash[:alert]
   end
 
   test "other should create node" do
@@ -249,7 +259,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name"}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal users(:other).id, Node.last.user_id
   end
@@ -286,7 +296,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal @node.name, Node.last.name
     assert_equal new_node[:hostname], Node.last.hostname
@@ -325,7 +335,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {hostname: "hostname"}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -338,7 +348,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         domain: @node.domain,
       }}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -351,7 +361,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         domain: "test.example.jp",
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal "hostname", Node.last.hostname
     assert_equal "test.example.jp", Node.last.domain
@@ -366,7 +376,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         domain: @node.domain,
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal "hostname", Node.last.hostname
     assert_equal @node.domain, Node.last.domain
@@ -381,7 +391,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         domain: "test.example.jp",
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal @node.hostname, Node.last.hostname
     assert_equal "test.example.jp", Node.last.domain
@@ -397,7 +407,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         domain: nil,
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal nodes(:note).hostname, Node.last.hostname
     assert_nil Node.last.domain
@@ -419,7 +429,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", duid: @node.duid}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -437,7 +447,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         operating_system: operating_system_to_params(@node.operating_system),
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.logical
     assert_equal [@node.id], Node.last.component_ids
@@ -463,7 +473,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         operating_system: operating_system_to_params(@node.operating_system),
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_not Node.last.logical
     assert Node.last.virtual_machine
@@ -482,7 +492,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         name: "name", specific: true, public: true, dns: true,
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     # ignore attributes
     assert_not Node.last.specific
@@ -497,7 +507,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         name: "name", specific: true, public: true, dns: true,
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.specific
     assert Node.last.public
@@ -509,7 +519,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", user_id: users(:other).id}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal users(:user).id, Node.last.user_id
   end
@@ -519,7 +529,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", user_id: users(:other).id}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal users(:other).id, Node.last.user_id
   end
@@ -534,7 +544,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }}
       end
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_not_equal @node.place_id, Node.last.place_id
   end
@@ -552,7 +562,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }}
       end
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_not_equal @node.hardware_id, Node.last.hardware_id
   end
@@ -570,7 +580,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }}
       end
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_not_equal @node.operating_system_id, Node.last.operating_system_id
   end
@@ -583,7 +593,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         network_id: @node.nics.first.network_id,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal 1, Node.last.nics.count
   end
@@ -596,7 +606,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         network_id: @node.nics.first.network_id,
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -608,7 +618,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         # network_id: @node.nics.first.network_id,
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -626,7 +636,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         },
       },}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal 2, Node.last.nics.count
   end
@@ -640,7 +650,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         network_id: @node.nics.first.network_id,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal 0, Node.last.nics.count
   end
@@ -678,7 +688,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         mac_address: @node.nics.first.mac_address,
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -692,7 +702,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         mac_address: "00-11-22-33-44-FF",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.auth
     assert_equal hex_to_binary("00-11-22-33-44-FF"),
@@ -708,7 +718,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         auth: true,
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -721,7 +731,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         locked: true,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_not Node.last.nics.first.locked
   end
@@ -735,7 +745,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         locked: true,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.locked
   end
@@ -756,7 +766,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "dynamic",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -775,7 +785,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6_address,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -798,7 +808,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4_data
     assert Node.last.nics.first.ipv6_data
@@ -822,7 +832,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4
     assert Node.last.nics.first.ipv6
@@ -843,7 +853,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -857,7 +867,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "reserved",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -873,7 +883,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "static",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4_data
     assert Node.last.nics.first.ipv6_data
@@ -891,7 +901,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6_address,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4_data
     assert Node.last.nics.first.ipv6_data
@@ -910,7 +920,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv4_config: "manual",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -924,7 +934,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv4_address: "192.168.2.241",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -937,7 +947,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "manual",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -951,7 +961,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: "fd00:2::4001",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -967,7 +977,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "disabled",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -986,7 +996,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6_address,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -1007,7 +1017,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "dynamic",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -1026,7 +1036,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6_address,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -1049,7 +1059,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4_data
     assert Node.last.nics.first.ipv6_data
@@ -1073,7 +1083,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal @node.nics.first.ipv4.succ.hton, Node.last.nics.first.ipv4_data
     assert_equal @node.nics.first.ipv6.succ.hton, Node.last.nics.first.ipv6_data
@@ -1095,7 +1105,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -1115,7 +1125,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         }},
       }}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -1131,7 +1141,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "static",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert Node.last.nics.first.ipv4_data
     assert Node.last.nics.first.ipv6_data
@@ -1150,7 +1160,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6.succ.to_s,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal @node.nics.first.ipv4.succ.hton, Node.last.nics.first.ipv4_data
     assert_equal @node.nics.first.ipv6.succ.hton, Node.last.nics.first.ipv6_data
@@ -1167,7 +1177,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv4_address: @node.nics.first.ipv4_address,
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -1182,7 +1192,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6_address,
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -1200,7 +1210,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: "fd00:2::4001",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal "192.168.2.241", Node.last.nics.first.ipv4_address
     assert_equal "fd00:2::4001", Node.last.nics.first.ipv6_address
@@ -1215,7 +1225,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv4_config: "manual",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -1228,7 +1238,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "manual",
       }},}}
     end
-    assert_equal @messages[:create_failure], flash[:alert]
+    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
   end
 
@@ -1244,7 +1254,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_config: "disabled",
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -1263,7 +1273,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv6_address: @node.nics.first.ipv6_address,
       }},}}
     end
-    assert_equal @messages[:create_success], flash[:notice]
+    assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_nil Node.last.nics.first.ipv4_data
     assert_nil Node.last.nics.first.ipv6_data
@@ -1275,14 +1285,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {name: "name"}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "admin should update node" do
     sign_in users(:admin)
     patch node_url(@node), params: {node: {name: "name"}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "other should NOT update node" do
@@ -1294,21 +1304,21 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "guest redirect to login INSTEAD OF update node" do
     patch node_url(@node), params: {node: {name: "name"}}
     assert_redirected_to new_user_session_path
-    assert_equal @messages[:unauthenticated], flash[:alert]
+    assert_equal get_message(:unauthenticated), flash[:alert]
   end
 
   test "should update node all attributes" do
     sign_in users(:user)
     patch node_url(@node), params: {node: node_to_params(@node)}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "should update node without name" do
     sign_in users(:user)
     patch node_url(@node), params: {node: {hostname: "hostname"}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "should NOT update node with same hostname and same domain" do
@@ -1318,7 +1328,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       domain: nodes(:server).domain,
     }}
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
     assert_equal @node.hostname, Node.find(@node.id).hostname
     assert_equal @node.domain, Node.find(@node.id).domain
   end
@@ -1330,7 +1340,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       domain: nodes(:server).domain,
     }}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_equal "hostname", Node.find(@node.id).hostname
     assert_equal nodes(:server).domain, Node.find(@node.id).domain
   end
@@ -1342,7 +1352,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       domain: "test.example.jp",
     }}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_equal nodes(:server).hostname, Node.find(@node.id).hostname
     assert_equal "test.example.jp", Node.find(@node.id).domain
   end
@@ -1354,7 +1364,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       domain: nil,
     }}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_equal nodes(:note).hostname, Node.find(@node.id).hostname
     assert_nil Node.find(@node.id).domain
   end
@@ -1363,7 +1373,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {hostname: nil, domain: @node.domain}}
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
     assert_equal @node.hostname, Node.find(@node.id).hostname
     assert_equal @node.domain, Node.find(@node.id).domain
   end
@@ -1372,7 +1382,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {hostname: nil, domain: nil}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_nil Node.find(@node.id).hostname
     assert_nil Node.find(@node.id).domain
   end
@@ -1381,7 +1391,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {duid: nodes(:note).duid}}
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
     assert_equal @node.duid, Node.find(@node.id).duid
   end
 
@@ -1392,7 +1402,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       component_ids: [nodes(:note).id],
     }}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert Node.find(@node.id).logical
     assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
     # reset attributes
@@ -1409,7 +1419,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node),
       params: {node: {logical: true, component_ids: [nodes(:note).id]}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert Node.find(@node.id).logical
     assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
     # reset attributes
@@ -1425,7 +1435,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {logical: false}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_not Node.find(@node.id).logical
     # reset attributes
     assert_empty Node.find(@node.id).component_ids
@@ -1436,7 +1446,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node),
       params: {node: {virtual_machine: true, host_id: nodes(:server).id}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert Node.find(@node.id).virtual_machine
     assert_equal nodes(:server).id, Node.find(@node.id).host_id
     # reset attributes
@@ -1447,7 +1457,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {virtual_machine: false}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_not Node.find(@node.id).virtual_machine
     # reset attributes
     assert_nil Node.find(@node.id).host_id
@@ -1458,7 +1468,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node),
       params: {node: {specific: true, public: true, dns: true}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
     assert_not Node.find(@node.id).specific
     assert_not Node.find(@node.id).public
@@ -1471,7 +1481,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node),
       params: {node: {specific: false, public: false, dns: false}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
     assert Node.find(@node.id).specific
     assert Node.find(@node.id).public
@@ -1483,7 +1493,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node),
       params: {node: {specific: true, public: true, dns: true}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
     assert Node.find(@node.id).specific
     assert Node.find(@node.id).public
@@ -1496,7 +1506,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node),
       params: {node: {specific: false, public: false, dns: false}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
     assert_not Node.find(@node.id).specific
     assert_not Node.find(@node.id).public
@@ -1507,7 +1517,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:user)
     patch node_url(@node), params: {node: {user_id: users(:other).id}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
     assert_equal @node.user_id, Node.find(@node.id).user_id
   end
@@ -1516,7 +1526,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:admin)
     patch node_url(@node), params: {node: {user_id: users(:other).id}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
     assert_equal users(:other).id, Node.find(@node.id).user_id
   end
@@ -1541,7 +1551,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       end
     end
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_not_equal @node.place_id, Node.find(@node.id).place_id
     assert_not_equal @node.hardware_id, Node.find(@node.id).hardware_id
     assert_not_equal @node.operating_system_id,
@@ -1560,7 +1570,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       }}}
     end
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_equal 2, Node.find(@node.id).nics.count
   end
 
@@ -1576,7 +1586,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       }}}
     end
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
     assert_equal 1, Node.find(@node.id).nics.count
   end
 
@@ -1592,7 +1602,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       }}}
     end
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
     assert_equal 1, Node.find(@node.id).nics.count
   end
 
@@ -1605,7 +1615,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       }}}}
     end
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     assert_equal 0, Node.find(@node.id).nics.count
   end
 
@@ -1632,7 +1642,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       mac_address: nodes(:note).nics.first.mac_address,
     }}}}
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
     new_nic = Node.find(@node.id).nics.first
     assert_equal @node.nics.first.mac_address_data, new_nic.mac_address_data
   end
@@ -1644,7 +1654,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       locked: true,
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_not new_nic.locked
   end
@@ -1657,7 +1667,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       locked: false,
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert new_nic.locked
   end
@@ -1669,7 +1679,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       locked: true,
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert new_nic.locked
   end
@@ -1682,7 +1692,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       locked: false,
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_not new_nic.locked
   end
@@ -1698,7 +1708,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "dynamic",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert new_nic.locked
     assert_equal old_nic.network_id, new_nic.network_id
@@ -1718,7 +1728,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "dynamic",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert new_nic.locked
     assert_equal networks(:client).id, new_nic.network_id
@@ -1740,7 +1750,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       network_id: networks(:server).id,
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
@@ -1762,7 +1772,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "dynamic",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "dynamic", new_nic.ipv4_config
     assert_equal "dynamic", new_nic.ipv6_config
@@ -1781,7 +1791,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "reserved",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
@@ -1801,7 +1811,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "reserved",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
@@ -1823,7 +1833,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "static",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
@@ -1843,7 +1853,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "static",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
@@ -1863,7 +1873,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "manual",
     }}}}
     assert_response :success
-    assert_equal @messages[:update_failure], flash[:alert]
+    assert_equal get_message(:update_failure), flash[:alert]
   end
 
   #### disabled
@@ -1876,7 +1886,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "disabled",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "disabled", new_nic.ipv4_config
     assert_equal "disabled", new_nic.ipv6_config
@@ -1900,7 +1910,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "reserved",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
@@ -1920,7 +1930,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_address: "fd00:2::1010",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
@@ -1939,7 +1949,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv6_config: "manual",
     }}}}
     assert_redirected_to node_url(@node)
-    assert_equal @messages[:update_success], flash[:notice]
+    assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
     assert_equal "manual", new_nic.ipv4_config
     assert_equal "manual", new_nic.ipv6_config
