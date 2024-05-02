@@ -7,12 +7,68 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     @network = networks(:client)
   end
 
-  # admin
+  # index
+
+  test "should get index" do
+    sign_in users(:user)
+    get networks_url
+    assert_response :success
+    assert_select "a[href=\"#{network_path(@network)}\"]"
+    assert_select "a[href=\"#{network_path(networks(:extra))}\"]", false
+  end
 
   test "admin should get index" do
     sign_in users(:admin)
     get networks_url
     assert_response :success
+    assert_select "a[href=\"#{network_path(@network)}\"]"
+    assert_select "a[href=\"#{network_path(networks(:extra))}\"]"
+  end
+
+  test "less should get index" do
+    sign_in users(:less)
+    get networks_url
+    assert_response :success
+    assert_select "a[href=\"#{network_path(@network)}\"]", false
+    assert_select "a[href=\"#{network_path(networks(:extra))}\"]", false
+  end
+
+  test "guest redirect to login INSTEAD OF get index" do
+    get networks_url
+    assert_redirected_to new_user_session_path
+  end
+
+  # show
+
+  test "should show network" do
+    sign_in users(:user)
+    get network_url(@network)
+    assert_response :success
+  end
+
+  test "admin should show network" do
+    sign_in users(:admin)
+    get network_url(@network)
+    assert_response :success
+  end
+
+  test "less should NOT show network" do
+    sign_in users(:less)
+    get network_url(@network)
+    assert_response :not_found
+  end
+
+  test "guest redirect to login INSTEAD OF show network" do
+    get network_url(@network)
+    assert_redirected_to new_user_session_path
+  end
+
+  # new
+
+  test "should NOT get new" do
+    sign_in users(:user)
+    get new_network_url
+    assert_response :forbidden
   end
 
   test "admin should get new" do
@@ -21,7 +77,57 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  # test 'should create network' do
+  test "guest redirect to login INSTEAD OF get new" do
+    get new_network_url
+    assert_redirected_to new_user_session_path
+  end
+
+  # edit
+
+  test "should NOT get edit" do
+    sign_in users(:user)
+    get edit_network_url(@network)
+    assert_response :forbidden
+  end
+
+  test "admin should get edit" do
+    sign_in users(:admin)
+    get edit_network_url(@network)
+    assert_response :success
+  end
+
+  test "guest redirect to login INSTEAD OF get edit" do
+    get edit_network_url(@network)
+    assert_redirected_to new_user_session_path
+  end
+
+  # create
+
+  test "should NOT create network" do
+    sign_in users(:user)
+    assert_no_difference("Network.count") do
+      post networks_url, params: {network: {name: "name"}}
+    end
+    assert_response :forbidden
+  end
+
+  test "admin should create network" do
+    sign_in users(:admin)
+    assert_difference("Network.count") do
+      post networks_url, params: {network: {name: "name"}}
+    end
+    assert_redirected_to network_url(Network.last)
+  end
+
+  test "guest redirect to login INSTEAD OF create network" do
+    assert_no_difference("Network.count") do
+      post networks_url, params: {network: {name: "name"}}
+    end
+    assert_redirected_to new_user_session_path
+  end
+
+  # test 'admin should create network' do
+  #   sign_in users(:admin)
   #   assert_difference('Network.count') do
   #     post networks_url,
   #       params: { network: {
@@ -35,16 +141,23 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   #   assert_redirected_to network_url(Network.last)
   # end
 
-  test "admin should show network" do
-    sign_in users(:admin)
-    get network_url(@network)
-    assert_response :success
+  # udpate
+
+  test "should NOT update network" do
+    sign_in users(:user)
+    patch network_url(@network), params: {network: {name: "name"}}
+    assert_response :forbidden
   end
 
-  test "admin should get edit" do
+  test "admin should update network" do
     sign_in users(:admin)
-    get edit_network_url(@network)
-    assert_response :success
+    patch network_url(@network), params: {network: {name: "name"}}
+    assert_redirected_to network_url(@network)
+  end
+
+  test "guest redirect to login INSTEAD OF update network" do
+    patch network_url(@network), params: {network: {name: "name"}}
+    assert_redirected_to new_user_session_path
   end
 
   # test 'should update network' do
@@ -59,15 +172,28 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   #   assert_redirected_to network_url(@network)
   # end
 
-  # test 'should destroy network' do
-  #   assert_difference('Network.count', -1) do
-  #     delete network_url(@network)
-  #   end
+  # destroy
 
-  #   assert_redirected_to networks_url
-  # end
+  test "should NOT destroy network" do
+    sign_in users(:user)
+    assert_no_difference("Network.count") do
+      delete network_url(networks(:noip))
+    end
+    assert_response :forbidden
+  end
 
-  # user
+  test "admin should destroy network" do
+    sign_in users(:admin)
+    assert_difference("Network.count", -1) do
+      delete network_url(networks(:noip))
+    end
+    assert_redirected_to networks_url
+  end
 
-  # no login
+  test "guest redirect to login INSTEAD OF destroy network" do
+    assert_no_difference("Network.count") do
+      delete network_url(networks(:noip))
+    end
+    assert_redirected_to new_user_session_path
+  end
 end

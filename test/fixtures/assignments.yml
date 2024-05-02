@@ -32,7 +32,7 @@ user_ipv6only:
 
 user_noip:
   user: user
-  network: no_ip
+  network: noip
   auth: false
   use: true
   manage: false
