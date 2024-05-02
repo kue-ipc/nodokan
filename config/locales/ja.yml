@@ -701,7 +701,7 @@ ja:
         not_installed: 未インストール
         unknown: 不明
     bitwises:
-      security_hardware:
+      security_hardwares:
         encrypted: 全てのデータを暗号化しています。
         zero_client: ゼロクライアント等の仕組みを用いており、端末内にデータが保存されません。
         remote_wipe: |

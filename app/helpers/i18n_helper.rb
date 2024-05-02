@@ -1,4 +1,5 @@
 module I18nHelper
+  # 単数形
   def t_enums(attr, model = nil, keys: nil)
     keys ||= model_class(model).__send__(attr.to_s.pluralize).keys
     keys.index_with { |key| t_enum(key, attr) }
@@ -8,8 +9,9 @@ module I18nHelper
     t(value, scope: [:activerecord, :enums, attr])
   end
 
+  # 複数形
   def t_bitwises(attr, model = nil, keys: nil)
-    keys ||= model_class(model).__send__(attr.to_s.pluralize).keys
+    keys ||= model_class(model).__send__(attr).keys
     keys.index_with { |key| t_bitwise(key, attr) }
   end
 
