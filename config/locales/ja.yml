@@ -411,10 +411,11 @@ ja:
         name: ネットワーク名
         vlan: VLAN番号
         auth: 認証
-        dhcp: DHCP
         locked: ロック
         specific: 特定
         global: 外部
+        dhcp: DHCP
+        ra: ルーター広告
         ipv4_network_address: IPv4ネットワークアドレス
         ipv4_netmask: IPv4サブネットマスク
         ipv4_prefix_length: IPv4プレフィックス長
@@ -637,6 +638,13 @@ ja:
         mapped: 写像
         manual: 手動
         disabled: 無効
+      ra:
+        disabled: 無効
+        router: ルーターのみ
+        unmanaged: 非管理(A)
+        managed: 管理(M+O)
+        assist: 支援(M+O+A)
+        stateless: ステートレス(O+A)
       existence:
         existing: 存在します。
         abandoned: 廃棄しました。(借用機器の返却、個人所有物の撤去等を含む)
