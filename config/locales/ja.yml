@@ -27,7 +27,7 @@ ja:
     withdraw: 取下げ
     approve: 受付け
     reject: 拒否
-    cancel: 中止
+    cancel: キャンセル
     reserve: 予約
     deliver: 配信
     redilver: 再配信
@@ -63,7 +63,7 @@ ja:
     withdraw: 取り下げる
     approve: 受け付ける
     reject: 拒否する
-    cancel: 中止する
+    cancel: キャンセルする
     reserve: 予約する
     deliver: 配信する
     redilver: 再配信する
