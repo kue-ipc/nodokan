@@ -16,7 +16,7 @@ class Network < ApplicationRecord
     managed: 0b011, # M+O
     assist: 0b111, # M+O+A
     stateless: 0b110, # O+A
-  }, _prefix: :ra, validate: true
+  }, prefix: true, validates: true
 
   has_many :nics, dependent: :nullify
   has_many :nodes, through: :nics
