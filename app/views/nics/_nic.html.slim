@@ -14,8 +14,8 @@
     - else
       = dt_dd_for nic, :network, &:name
     = dt_dd_for nic, :ipv4 do |ipv4|
+      = badge_for(nic, :ipv4_config, disabled_show: true, class: "me-1")
       = span_value_for(ipv4, hide_blank: true)
-      = badge_for(nic, :ipv4_config)
     = dt_dd_for nic, :ipv6 do |ipv6|
+      = badge_for(nic, :ipv6_config, disabled_show: true, class: "me-1")
       = span_value_for(ipv6, hide_blank: true)
-      = badge_for(nic, :ipv6_config)

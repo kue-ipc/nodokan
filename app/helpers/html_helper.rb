@@ -156,6 +156,7 @@ module HtmlHelper
     **opts, &block)
     opts = opts.dup
     badge_classes = opts.delete(:class) || []
+    badge_classes = badge_classes.to_s.split unless badge_classes.is_a?(Array)
 
     badge_classes << "badge"
     if disbaled
