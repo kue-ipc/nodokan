@@ -1,14 +1,12 @@
 = turbo_frame_tag nic, autoscroll: true, data: {autoscroll_block: "start"}
   dl
     = dt_dd_for nic, :interface_type do |value|
-      = t_enum(value, :interface_types)
+      = t_enum(value, :interface_type)
     = dt_dd_tag \
       [:name, :flags].map { |k| Nic.human_attribute_name(k) }.join("/")
       = span_value_for(nic.name)
       - [:locked, :auth, :global].each do |attr|
-        - if nic.__send__(attr)
-          = badge_for(attr, scope: "activerecord.attributes.nic",
-            badge_class: "ms-1")
+        = badge_for(nic, attr)
     = dt_dd_for nic, :mac_address
     = dt_dd_for nic.node, :duid
     - if current_user.admin?
@@ -16,8 +14,8 @@
     - else
       = dt_dd_for nic, :network, &:name
     = dt_dd_for nic, :ipv4 do |ipv4|
-      = badge_for(nic.ipv4_config, scope: "activerecord.enums.ipv4_configs")
-      =< span_value_for(ipv4, hide_blank: true)
+      = span_value_for(ipv4, hide_blank: true)
+      = badge_for(nic, :ipv4_config)
     = dt_dd_for nic, :ipv6 do |ipv6|
-      = badge_for(nic.ipv6_config, scope: "activerecord.enums.ipv6_configs")
-      =< span_value_for(ipv6, hide_blank: true)
+      = span_value_for(ipv6, hide_blank: true)
+      = badge_for(nic, :ipv6_config)

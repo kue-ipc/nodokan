@@ -3,9 +3,7 @@
     dl
       = dt_dd_for user, :username do |username|
         = username
-        - if user.deleted
-          = badge_for(:deleted, scope: "activerecord.attributes.user",
-            badge_class: "ms-1")
+        = badge_for(user, :deleted)
       = dt_dd_for user, :email
       = dt_dd_for user, :fullname
       = dt_dd_tag "#{User.human_attribute_name(:nodes_count)} / " \
@@ -22,7 +20,7 @@
             wrapper: {class: "col-auto", style: "margin-bottom: 0 !important;"}
       = dt_dd_for user, :role do |role|
         .row: .col-auto
-          = f.collection_select :role, t_enums(:roles), :first, :second,
+          = f.collection_select :role, t_enums(:role), :first, :second,
             {hide_label: true, wrapper: false},
             disabled: current_user == user
       = dt_dd_for user, :auth_network do |auth_network|

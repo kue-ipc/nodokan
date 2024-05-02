@@ -5,7 +5,7 @@
   .row
     .col-md-4
       = form.collection_select :interface_type,
-        t_enums(:interface_types, Nic), :first, :second,
+        t_enums(:interface_type, Nic), :first, :second,
         {floating: true, prompt: t("messages.prompt_required_selection")},
         data: {node_nic_target: "interfaceType"}
     .col-md-8
@@ -31,7 +31,7 @@
           data: {node_nic_target: "auth", action: "node-nic#changeAuth"}
 
     .col-md-4
-      = form.collection_select :ipv4_config, t_enums(:ipv4_configs, Nic),
+      = form.collection_select :ipv4_config, t_enums(:ipv4_config, Nic),
         :first, :second, {floating: true},
         data: {node_nic_target: "ipv4Config", action: "node-nic#changeIpv4"}
 
@@ -43,7 +43,7 @@
       .form-text data-node-nic-target="ipv4Help"
 
     .col-md-4
-      = form.collection_select :ipv6_config, t_enums(:ipv6_configs, Nic),
+      = form.collection_select :ipv6_config, t_enums(:ipv6_config, Nic),
         :first, :second, {floating: true},
         data: {node_nic_target: "ipv6Config", action: "node-nic#changeIpv6"}
 

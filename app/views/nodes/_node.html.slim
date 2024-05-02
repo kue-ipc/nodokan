@@ -4,9 +4,7 @@
     = dt_dd_for node, :name do |name|
       = name
       - node_flag_attributes.each do |attr|
-        - if node.__send__(attr)
-          = badge_for(attr, scope: "activerecord.attributes.node",
-            badge_class: "ms-1")
+        = badge_for(node, attr)
     = dt_dd_for node, :fqdn
     - if node.logical?
       = dt_dd_for node, :components do |components|
@@ -73,27 +71,22 @@
                   - else
                     = nic.number
                 td
-                  = t(nic.interface_type,
-                    scope: "activerecord.enums.interface_types")
+                  = t_enum(nic.interface_type, :interface_type)
                 td
                   = nic.name
                   - [:locked, :auth, :global].each do |attr|
-                    - if nic.__send__(attr)
-                      = badge_for(attr, scope: "activerecord.attributes.nic",
-                        badge_class: "ms-1")
+                    = badge_for(nic, attr)
                 td = nic.mac_address
                 td
                   - if nic.network
                     = link_to nic.network.name, nic.network,
                       data: {turbo: false}
                 td
-                  = badge_for(nic.ipv4_config,
-                    scope: "activerecord.enums.ipv4_configs")
-                  =< span_value_for(nic.ipv4, hide_blank: true)
+                  = span_value_for(nic.ipv4, hide_blank: true)
+                  = badge_for(nic, :ipv4_config)
                 td
-                  = badge_for(nic.ipv6_config,
-                    scope: "activerecord.enums.ipv6_configs")
-                  =< span_value_for(nic.ipv6, hide_blank: true)
+                  = span_value_for(nic.ipv6, hide_blank: true)
+                  = badge_for(nic, :ipv6_config)
     = dt_dd_for node, :duid
     = dt_dd_for node, :confirmation do |confirmation|
       - case confirmation&.status
@@ -255,7 +248,7 @@
       h3
         = nic.number
         | 番目のネットワーク [
-        = t(nic.interface_type, scope: "activerecord.enums.interface_types")
+        = t_enum(nic.interface_type, :interface_type)
         | ]
         - if nic.name.present?
           | (

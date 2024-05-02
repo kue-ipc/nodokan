@@ -85,11 +85,12 @@ class Network < ApplicationRecord
   end
   # rubocop: enable Lint/UnusedMethodArgument
 
-  def global?
+  attribute :global, :boolean
+  def global
     (ipv4_network_data.present? && !ipv4_network.private?) ||
       (ipv6_network_data.present? && !ipv6_network.private?)
   end
-  alias global global?
+  alias global? global
 
   # IPv4
 

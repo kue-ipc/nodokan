@@ -2,9 +2,7 @@
   dl
     = dt_dd_for user, :username do |username|
       = username
-      - if user.deleted
-        = badge_for(:deleted, scope: "activerecord.attributes.user",
-          badge_class: "ms-1")
+      = badge_for(user, :deleted)
     = dt_dd_for user, :email
     = dt_dd_for user, :fullname
     = dt_dd_tag "#{User.human_attribute_name(:nodes_count)} / " \
@@ -18,7 +16,7 @@
       - else
         =< t("values.unlimited")
     = dt_dd_for user, :role do |role|
-      = t_enum(role, :roles)
+      = t_enum(role, :role)
     = dt_dd_for user, :auth_network do |auth_network|
       = auth_network&.name_vlan || t("values.none")
   - if current_user.admin?

@@ -32,7 +32,7 @@
       = confirmation_question_enum(f, :software, count: count)
       - count += 1
 
-      = confirmation_question_bitwise(f, :security_hardwares,
+      = confirmation_question_bitwise(f, :security_hardware,
         count: count, required: true, action: "changeSecurityHardwares")
       - count += 1
 
@@ -47,7 +47,7 @@
               - name = "security_software_installation_method"
               .col-md-4
                 = security_software_f.collection_select :installation_method,
-                  t_enums(:installation_methods, SecuritySoftware,
+                  t_enums(:installation_method, SecuritySoftware,
                     keys: installation_methods(node)),
                   :first, :second,
                   {floating: true,

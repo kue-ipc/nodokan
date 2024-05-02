@@ -2,8 +2,7 @@ module ConfirmationsHelper
   # for enum
   def confirmation_question_enum(form, name, count: nil, excludes: [],
     action: nil, **opts)
-    pluralized_name = name.to_s.pluralize.intern
-    list = t_enums(pluralized_name, Confirmation).except(*excludes).to_a
+    list = t_enums(name, Confirmation).except(*excludes).to_a
     form.collection_radio_buttons(name, list, :first, :second,
       label: {text: confirmation_question_label(name, count: count)},
       help: raw(t(name, scope: "messages.node_confirm_helps", default: nil)),

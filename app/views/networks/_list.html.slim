@@ -29,9 +29,7 @@
         .col-2 = network.name
         .col-2
           - [:auth, :dhcp, :locked, :specific, :global].each do |attr|
-            - if network.__send__(attr)
-              = badge_for(attr, scope: "activerecord.attributes.network",
-                badge_class: "ms-1")
+            = badge_for(network, attr)
         .col-1 = network.vlan
         .col-2 = span_value_for(network.ipv4_network, hide_blank: true)
         .col-2 = span_value_for(network.ipv6_network, hide_blank: true)

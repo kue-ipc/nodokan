@@ -30,7 +30,7 @@
         .col-2 = user.username
         .col-2 = user.email
         .col-2 = user.fullname
-        .col-1 = t(user.role, scope: "activerecord.enums.roles")
+        .col-1 = t_enum(user.role, :role)
         .col-1 = i_bool_tag(user.deleted)
         .col-1 = user.auth_network&.identifier
         .col-2 = user.use_networks.map(&:identifier).join(", ")

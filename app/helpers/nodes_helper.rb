@@ -89,16 +89,14 @@ module NodesHelper
   end
 
   def node_name_decorated(node)
-    node_flag_attributes.select { |attr| node.__send__(attr) }.map { |attr|
-      badge_for(attr, scope: "activerecord.attributes.node",
-        badge_class: "ms-1")
-    }.inject(h(node.name), :+)
+    node_flag_attributes.map { |attr| badge_for(node, attr) }
+      .inject(h(node.name), :+)
   end
 
   def node_ipv4_address_decorated(node)
     node.nics.map { |nic|
       if nic.ipv4_dynamic?
-        tag.span(t_enum(:dynamic, :ipv4_configs), class: "text-success")
+        tag.span(t_enum(:dynamic, :ipv4_config), class: "text-success")
       else
         span_value_for(nic.ipv4, blank_alt: "")
       end
@@ -108,7 +106,7 @@ module NodesHelper
   def node_ipv6_address_decorated(node)
     node.nics.map { |nic|
       if nic.ipv6_dynamic?
-        tag.span(t_enum(:dynamic, :ipv6_configs), class: "text-success")
+        tag.span(t_enum(:dynamic, :ipv6_config), class: "text-success")
       else
         span_value_for(nic.ipv6, blank_alt: "")
       end

@@ -18,6 +18,10 @@ module HtmlHelper
     virtual_machine: "info",
   }.freeze
 
+  def name_color(value)
+    NAME_COLORS[value.intern] || "primary"
+  end
+
   def dt_col
     %w(col-sm-6 col-md-4 col-lg-3 col-xl-2 col-print-full)
   end
@@ -148,39 +152,52 @@ module HtmlHelper
     time.xmlschema
   end
 
-  def badge(name, id: nil, level: :primary, enabled: true, hidden: false)
-    return if hidden
+  def badge_tag(value, color: :primary, disbaled: false, hidden: false,
+    **opts, &block)
+    opts = opts.dup
+    badge_classes = opts.delete(:class) || []
 
-    badge_classes = ["badge"]
-    if enabled
-      badge_classes << "bg-#{level}"
-    else
+    badge_classes << "badge"
+    if disbaled
       badge_classes << "bg-light" << "text-muted"
+    else
+      badge_classes << "text-bg-#{color}"
     end
-    tag.span(name, class: badge_classes, id: id)
+    badge_classes << "d-none" if hidden
+
+    tag.span(value, **opts, class: badge_classes, &block)
   end
 
-  def badge_boolean(model, attr, id: nil, level: :primary, disabled_show: false)
-    enabled = model.__send__(attr)
-    return if !disabled_show && !enabled
-
-    name = model.class.human_attribute_name(attr)
-    badge_classes = ["badge"]
-    if enabled
-      badge_classes << "bg-#{level}"
+  def badge_for(record, attr, disabled_show: false, **opts)
+    opts = opts.dup
+    opts[:class] ||= ["ms-1"]
+    case record.class.type_for_attribute(attr)
+    when ActiveRecord::Enum::EnumType
+      value = record.__send__(attr)
+      name = t_enum(value, attr)
+      opts[:color] ||= name_color(value)
+      if value == "disabled"
+        opts[:disabled] ||= true
+        opts[:hidden] ||= !disabled_show
+      end
+    when ActiveModel::Type::Boolean
+      name = record.class.human_attribute_name(attr)
+      opts[:color] ||= name_color(attr)
+      unless record.__send__(attr)
+        opts[:disabled] ||= true
+        opts[:hidden] ||= !disabled_show
+      end
+    when ActiveModel::Type::Integer
+      name = record.__send__(attr)
+      opts[:color] ||= name_color(attr)
+      if name.nil?
+        opts[:disabled] ||= true
+        opts[:hidden] ||= !disabled_show
+      end
     else
-      badge_classes << "bg-light" << "text-muted"
+      raise "unsupported type: #{attr}"
     end
-    tag.span(name, class: badge_classes, id: id)
-  end
-
-  def badge_for(value, scope: "", badge_class: [])
-    badge_class = badge_class.to_s.split unless badge_class.is_a?(Array)
-    badge_class << "badge"
-    NAME_COLORS[value.intern]&.then do |color|
-      badge_class << "bg-#{color}"
-    end
-    tag.span(t(value, scope: scope), class: badge_class)
+    badge_tag(name, **opts)
   end
 
   def sp(number = 1)

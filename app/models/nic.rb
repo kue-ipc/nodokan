@@ -84,11 +84,12 @@ class Nic < ApplicationRecord
   end
   # rubocop: enable Lint/UnusedMethodArgument
 
-  def global?
+  attribute :global, :boolean
+  def global
     (ipv4_data.present? && !ipv4.private?) ||
       (ipv6_data.present? && !ipv6.private?)
   end
-  alias global global?
+  alias global? global
 
   def old_nic
     if persisted?

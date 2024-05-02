@@ -36,15 +36,13 @@
         div class=(node_hosts_list_col_classes(:name))
           = host.name
           - node_flag_attributes.each do |attr|
-            - if host.__send__(attr)
-              = badge_for(attr, scope: "activerecord.attributes.node",
-                badge_class: "ms-1")
+            = badge_for(host, attr)
         div class=(node_hosts_list_col_classes(:hostname)) = host.hostname
         div class=(node_hosts_list_col_classes(:ipv4_address))
           - host.nics.each do |nic|
             - if nic.ipv4_dynamic?
               span.text-success
-                = t_enum(:dynamic, :ipv4_configs)
+                = t_enum(:dynamic, :ipv4_config)
             - else
               = span_value_for(nic.ipv4, hide_blank: true)
             br
@@ -52,7 +50,7 @@
           - host.nics.each do |nic|
             - if nic.ipv6_dynamic?
               span.text-primary
-                = t_enum(:dynamic, :ipv6_configs)
+                = t_enum(:dynamic, :ipv6_config)
             - else
               = span_value_for(nic.ipv6, hide_blank: true)
             br

@@ -38,9 +38,7 @@ p
     | )
 
     - node_flag_attributes.each do |attr|
-      - if @node.__send__(attr)
-        = badge_for(attr, scope: "activerecord.attributes.node",
-          badge_class: "ms-1")
+      = badge_for(@node, attr)
 
 = bootstrap_form_with model: @specific_node_application,
   url: node_specific_node_application_path(@node),

@@ -3,14 +3,17 @@
   dl
     = dt_dd_for network, :name do |value|
       = value
-      - [:auth, :dhcp, :locked, :specific, :global].each do |attr|
-        - if network.__send__(attr)
-          = badge_for(attr, scope: "activerecord.attributes.network",
-            badge_class: "ms-1")
+      - [:auth, :locked, :specific, :global].each do |attr|
+        = badge_for(network, attr)
     = dt_dd_for network, :vlan
-    = dt_dd_for network, :ipv4_network
+    = dt_dd_for network, :ipv4_network do |value|
+      = span_value_for(value)
+      = badge_for(network, :dhcp)
     = dt_dd_for network, :ipv4_gateway
-    = dt_dd_for network, :ipv6_network
+    = dt_dd_for network, :ipv6_network do |value|
+      = span_value_for(value)
+      / - unless network.ra_disabled?
+      /   | TODO
     = dt_dd_for network, :ipv6_gateway
     = dt_dd_for network, :note, line_break: true
 
@@ -49,7 +52,7 @@
       tbody
         - network.ipv4_pools.each do |ipv4_pool|
           tr
-            td = t_enum(ipv4_pool.ipv4_config, :ipv4_configs)
+            td = t_enum(ipv4_pool.ipv4_config, :ipv4_config)
             td = ipv4_pool.ipv4_first_address
             td = ipv4_pool.ipv4_last_address
 
@@ -68,6 +71,6 @@
       tbody
         - network.ipv6_pools.each do |ipv6_pool|
           tr
-            td = t_enum(ipv6_pool.ipv6_config, :ipv6_configs)
+            td = t_enum(ipv6_pool.ipv6_config, :ipv6_config)
             td = ipv6_pool.ipv6_first_address
             td = ipv6_pool.ipv6_last_address

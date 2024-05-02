@@ -67,10 +67,11 @@ class Node < ApplicationRecord
   end
   # rubocop: enable Lint/UnusedMethodArgument
 
-  def global?
-    nics.any?(&:global?)
+  attribute :global, :boolean
+  def global
+    nics.any?(&:global)
   end
-  alias global global?
+  alias global? global
 
   def fqdn
     return if hostname.blank?

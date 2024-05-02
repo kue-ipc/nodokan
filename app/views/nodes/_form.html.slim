@@ -26,13 +26,13 @@
         = tag.div class: {collapse: true, "#{name}-show": true,
           show: node.send(name),}
           .row: .col
-            = badge_for(name, scope: "activerecord.attributes.node")
+            = badge_for(node, name)
             small.text-secondary< = t("enabled", scope: ["forms", "node", name])
 
     / show if logical is enabled
     = tag.div class: {collapse: true, "logical-show": true, show: node.logical}
       = render "form_components", form: f
- 
+
     / hide if logical is enabled
     = tag.div class: {collapse: true, "logical-hide": true, show: !node.logical}
       = tag.div class: {collapse: true, "virtual_machine-show": true,

@@ -1,6 +1,6 @@
 module I18nHelper
   def t_enums(attr, model = nil, keys: nil)
-    keys ||= model_class(model).__send__(attr).keys
+    keys ||= model_class(model).__send__(attr.to_s.pluralize).keys
     keys.index_with { |key| t_enum(key, attr) }
   end
 
@@ -9,7 +9,7 @@ module I18nHelper
   end
 
   def t_bitwises(attr, model = nil, keys: nil)
-    keys ||= model_class(model).__send__(attr).keys
+    keys ||= model_class(model).__send__(attr.to_s.pluralize).keys
     keys.index_with { |key| t_bitwise(key, attr) }
   end
 
