@@ -123,6 +123,10 @@ class Network < ApplicationRecord
     ipv4_network_data.present?
   end
 
+  def dhcpv4?
+    dhcp
+  end
+
   # readonly
   def ipv4_network
     ipv4_network_data &&
@@ -175,6 +179,14 @@ class Network < ApplicationRecord
 
   def has_ipv6?
     ipv6_network_data.present?
+  end
+
+  def dhcpv6?
+    ["managed", "assist", "stateless"].include?(ra)
+  end
+
+  def slaac?
+    ["assist", "stateless"].include?(ra)
   end
 
   # readonly

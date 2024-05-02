@@ -6,13 +6,11 @@ class KeaReservation4AddJob < ApplicationJob
       host = Kea::Host.find_or_initialize_by(
         dhcp_identifier: mac_address_binary,
         host_identifier_type: Kea::HostIdentifierType.hw_address)
-      if host.ipv4_address == ipv4_u32 && host.dhcp4_subnet_id == network_id
-        return
+      unless host.ipv4_address == ipv4_u32 && host.dhcp4_subnet_id == network_id
+        host.ipv4_address = ipv4_u32
+        host.dhcp4_subnet_id = network_id
+        host.save!
       end
-
-      host.ipv4_address = ipv4_u32
-      host.dhcp4_subnet_id = network_id
-      host.save!
     end
   end
 end
