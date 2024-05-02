@@ -12,12 +12,13 @@ class Ipv6Pool < ApplicationRecord
   validates :ipv6_last, comparison: {equal_to: :ipv6_mapped_last_from_first},
     if: :ipv6_mapped?
 
-  # TODO: ipv6の機能をつけてから
-  # validates :ipv6_config, exclusion: {in: %w(dynamic reserved)},
-  #   if: -> { !network. ... }
+  validates :ipv6_config, exclusion: {in: ["dynamic", "reserved"]},
+    unless: -> { network.ra_managed? || network.ra_assist? }
+  validates :ipv6_config, exclusion: {in: ["mapped"]},
+    unless: -> { network.has_ipv4? }
 
   validates_each :ipv6_first, :ipv6_last do |record, attr, value|
-    # IPv6では最初の最後のアドレスもホストに設定可能
+    # IPv6では全てのアドレスもホストに設定可能
     unless record.network.ipv6_network.include?(value)
       record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
     end

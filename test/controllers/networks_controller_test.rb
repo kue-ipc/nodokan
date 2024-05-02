@@ -312,7 +312,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
 
   test "admin should NOT create network ra without ipv6" do
     sign_in users(:admin)
-    Network.ras.reject { |v| v == "disabled" }.each do |v|
+    Network.ras.keys.reject { |v| v == "disabled" }.each do |v|
       assert_no_difference("Network.count") do
         post networks_url, params: {network: {
           name: "name",
@@ -533,7 +533,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
         ipv6_pools_attributes: {
-          0 => pool_params(6, "resered", "fd01:1::1:0", "fd01:1::1:ffff"),
+          0 => pool_params(6, "reserved", "fd01:1::1:0", "fd01:1::1:ffff"),
         },
       }}
     end

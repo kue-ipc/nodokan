@@ -56,6 +56,11 @@ class Network < ApplicationRecord
 
   validates :ipv4_network_data, allow_nil: true, uniqueness: true
   validates :ipv6_network_data, allow_nil: true, uniqueness: true
+  validates :ipv4_network_data, presence: true, if: :dhcp
+  validates :ipv6_network_data, presence: true, unless: :ra_disabled?
+
+  validates :ipv4_gateway_data, absence: true, unless: :ipv4_network_data
+  validates :ipv6_gateway_data, absence: true, unless: :ipv6_network_data
 
   validates :ipv4_netmask, allow_blank: true, inclusion: {in: IP_MASKS}
   validates :ipv4_prefix_length, allow_blank: true, numericality: {
@@ -69,8 +74,28 @@ class Network < ApplicationRecord
     less_than_or_equal_to: 128,
   }
 
-  validates :ipv4_pools, absence: true, if: -> { !has_ipv4? }
-  validates :ipv6_pools, absence: true, if: -> { !has_ipv6? }
+  validates :ipv4_pools, absence: true, unless: :has_ipv4?
+  validates :ipv6_pools, absence: true, unless: :has_ipv6?
+
+  validates_each :ipv4_gateway do |record, attr, value|
+    if value && record.has_ipv4?
+      network_range = record.ipv4_network.to_range
+      if !network_range.cover?(value)
+        record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
+      elsif network_range.begin == value
+        record.errors.add(attr, I18n.t("errors.messages.network_address"))
+      elsif network_range.end == value
+        record.errors.add(attr, I18n.t("errors.messages.broadcast_address"))
+      end
+    end
+  end
+
+  validates_each :ipv6_gateway do |record, attr, value|
+    # IPv6では全てのアドレスもホストに設定可能
+    if value && record.has_ipv6? && !record.ipv6_network.include?(value)
+      record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
+    end
+  end
 
   after_commit :kea_subnet4, :kea_subnet6
 

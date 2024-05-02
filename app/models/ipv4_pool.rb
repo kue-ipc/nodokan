@@ -9,8 +9,8 @@ class Ipv4Pool < ApplicationRecord
 
   validates :ipv4_last, comparison: {greater_than: :ipv4_first}
 
-  validates :ipv4_config, exclusion: {in: %w(dynamic reserved)},
-    if: -> { !network.dhcp }
+  validates :ipv4_config, exclusion: {in: ["dynamic", "reserved"]},
+    unless: -> { network.dhcp }
 
   validates_each :ipv4_first, :ipv4_last do |record, attr, value|
     network_range = record.network.ipv4_network.to_range
