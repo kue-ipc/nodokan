@@ -1,5 +1,7 @@
 module Kea
   class Host < KeaRecord
+    # https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/host-reservation
+
     self.primary_key = "host_id"
 
     belongs_to :dhcp4_subnet, primary_key: "subnet_id", optional: true
