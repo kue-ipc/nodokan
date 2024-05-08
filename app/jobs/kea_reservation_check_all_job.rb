@@ -12,9 +12,20 @@ class KeaReservationCheckAllJob < ApplicationJob
       .map(&:mac_address_data)
 
     Kea::Host
-      .where(dhcp_identifier_type:
-        Kea::HostIdentifierType.hw_address.identifier_type)
+      .where(dhcp_identifier_type: Kea::HostIdentifierType.hw_address)
       .where.not(dhcp_identifier: mac_address_list)
+      .destroy_all
+
+    # IPv6
+    duid_list = Nic.includes(:network, :node)
+      .where(network: {ra: ["managed", "assist"]})
+      .where(ipv6_config: :reserved)
+      .where.not(node: {duid_data: nil})
+      .map { |nic| nic.node.duid_data }
+
+    Kea::Host
+      .where(dhcp_identifier_type: Kea::HostIdentifierType.duid)
+      .where.not(dhcp_identifier: duid_list)
       .destroy_all
   end
 end
