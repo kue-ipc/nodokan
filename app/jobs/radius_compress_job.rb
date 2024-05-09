@@ -1,7 +1,7 @@
 class RadiusCompressJob < ApplicationJob
   queue_as :default
 
-  def perform(*_args)
+  def perform
     limit_size = 1000
     total = 0
     Radius::Radpostauth.group(:username).count.filter { |_k, v| v > 1 }
