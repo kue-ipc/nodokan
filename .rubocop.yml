@@ -134,6 +134,9 @@ Style/EmptyMethod:
 Style/FormatString:
   EnforcedStyle: percent
 
+Style/FormatStringToken:
+  MaxUnannotatedPlaceholdersAllowed: 3
+
 Style/FrozenStringLiteralComment:
   EnforcedStyle: never
 

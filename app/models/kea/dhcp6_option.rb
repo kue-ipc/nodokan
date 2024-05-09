@@ -60,9 +60,10 @@ module Kea
       ["s46-cont-lw", 96, "empty", false],
       ["v6-captive-portal", 103, "string", false],
       ["ipv6-address-andsf", 143, "ipv6-address", true],
-
-    ]
+    ].map { |opt| DhcpOptionType.new(*opt)}
     # rubocop: enable Layout/LineLength
+    OPTIONS_NAME_MAP = OPTIONS.index_by { |opt| opt.name }
+    OPTIONS_CODE_MAP = OPTIONS.index_by { |opt| opt.code }
 
     self.primary_key = "option_id"
 
@@ -72,11 +73,11 @@ module Kea
 
     validates :code, presence: true, numericality: {only_integer: true}
 
-    attrubite :name, :string
+    attribute :name, :string
     def name
       return if code.nil?
 
-      OPTIONS.find { |opt| opt[1] == code }&.[](0)
+      OPTIONS_CODE_MAP[code]&.name
     end
 
     def name=(value)
@@ -85,101 +86,16 @@ module Kea
         return
       end
 
-      normalized_name = name.to_s.downcase.gsub("_", "-")
-      self.code = OPTIONS.find { |opt| opt[0] == normalized_name }
+      normalized_name = value.to_s.downcase.gsub("_", "-")
+      option = OPTIONS_NAME_MAP[normalized_name]
+      raise ArgumentError, "Invalid name: #{value}" if option.nil?
+
+      self.code = option.code
+      option.name
     end
 
     def data=(value)
-      self.formatted_value = to_formatted_value(value)
-    end
-
-    class Option
-      attr_reader :name, :code, :type
-
-      def initialize(name, code, type, array)
-        @name = name
-        @code = code
-        @type = type
-        @array = array
-      end
-
-      def array?
-        @array
-      end
-
-      def to_value(_value)
-        raise "Conversion to value is not implemented"
-      end
-
-      def to_formatted_value(value)
-        if arary?
-          value = Array(value)
-          return if value.blank?
-
-          value.map { |_v| _to_formatted_value(value) }.join(",")
-        else
-          _to_formatted_value(value)
-        end
-      end
-
-      private def _to_formatted_value(value)
-        case type
-        when "binary"
-          value.unpack1("H*")
-        when "boolean"
-          if value
-            "true"
-          else
-            "false"
-          end
-        when "empty"
-          ""
-        when "fqdn"
-          value
-        when "ipv4-address"
-          to_ip(value, version: 4).to_s
-          to_ip(value, version: 6).to_s
-        when "ipv6-prefix"
-          ip = to_ip(value, version: 6)
-          "#{ip}/#{ip.prefix}"
-        when "psid"
-          raise "Conversion is not implemented: #{type}"
-        when "record"
-          raise "Conversion is not implemented: #{type}"
-        when "string"
-          value.to_s
-        when "tuple"
-          raise "Conversion is not implemented: #{type}"
-        when "uint8", "uint16", "uint32", "int8", "int16", "int32"
-          # FIXME: チェックしていない
-          value.to_i.to_s
-        else
-          raise "Unknown type: #{type}"
-        end
-      end
-    end
-
-    private def to_ip(value, version: 4)
-      family =
-        case version
-        when 4
-          Socket::AF_INET
-        when 6
-          Socket::AF_INET6
-        else
-          raise ArgumentError, "IP version must be 4 or 6"
-        end
-      ip =
-        case value
-        when IPAddr then value
-        when Integer then IPAddr.new(value, family)
-        when String then IPAddr.new(value)
-        else
-          raise ArgumentError, "Cannot convert to IP Address"
-        end
-      raise ArgumentError, "IP Address family mismatch" if ip.family != family
-
-      ip
+      self.formatted_value = OPTIONS_CODE_MAP[code]&.to_formatted_value(value)
     end
   end
 end

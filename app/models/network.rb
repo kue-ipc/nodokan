@@ -142,8 +142,8 @@ class Network < ApplicationRecord
     self.ipv4_network_data = value.presence && IPAddr.new(value).hton
   end
 
-  # address/prefix
-  def ipv4_network_address_prefix
+  # cdir = address/prefix
+  def ipv4_network_cidr
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_prefix_length}"
   end
 
@@ -204,8 +204,8 @@ class Network < ApplicationRecord
     self.ipv6_network_data = value.presence && IPAddr.new(value).hton
   end
 
-  # address/prefix
-  def ipv6_network_address_prefix
+  # cidr = address/prefix
+  def ipv6_network_cidr
     ipv6_network_data && "#{ipv6_network_address}/#{ipv6_prefix_length}"
   end
 
@@ -337,15 +337,29 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet4
-    if !destroyed? && dhcp && ipv4_network
-      KeaSubnet4AddJob.perform_later(self)
+    if !destroyed? && has_ipv4? && dhcpv4?
+      KeaSubnet4AddJob.perform_later(id, ipv4_network,
+        {routers: ipv4_gateway_address},
+        ipv4_pools.where(ipv4_config: "dynamic").map { |pool|
+          pool.ipv4_range
+          (pool.ipv4_first_address..pool.ipv4_last_address)
+        })
     else
-      KeaSubnet4DelJob.perform_later(self)
+      KeaSubnet4DelJob.perform_later(id)
     end
   end
 
   def kea_subnet6
-    # TODO
+    if !destroyed? && has_ivp6? && dhcpv6?
+      KeaSubnet6AddJob.perform_later(id, ipv6_network,
+        {},
+        ipv6_pools.where(ipv6_config: "dynamic").map { |pool|
+          pool.ipv6_range
+          (pool.ipv6_first_address..pool.ipv6_last_address)
+        })
+    else
+      KeaSubnet6DelJob.perform_later(id)
+    end
   end
 
   def to_s
