@@ -61,7 +61,6 @@ class Nic < ApplicationRecord
 
   before_validation :auto_assign_ipv4, :auto_assign_ipv6
   after_validation :replace_errors
-  before_update :old_nic
   after_commit :radius_mac, :kea_reservation
 
   attr_accessor :skip_after_job
@@ -91,81 +90,9 @@ class Nic < ApplicationRecord
   end
   alias global? global
 
-  def old_nic
-    if persisted?
-      @old_nic ||= Nic.find(id)
-    else
-      @old_nic
-    end
-  end
-
-  def same_old_nic?(*list)
-    return false if old_nic.nil?
-
-    list.all? do |name|
-      __send__(name) == old_nic.__send__(name)
-    end
-  end
-
-  private def adjust_ip!(version, user)
-    return if network.nil?
-
-    manageable = network.manageable?(user)
-    ip_config_key = :"#{version}_config"
-    ip_config = send(ip_config_key)
-
-    case ip_config
-    when "dynamic", "disabled"
-      # ignore ip address
-      nil
-    when "reserved", "static", "manual"
-      if manageable && send(version).present?
-        send(version.to_s)
-      elsif same_old_nic?(:network_id, ip_config_key)
-        old_nic.send(version)
-      elsif ip_config != "manual"
-        next_ip = network.send(:"next_#{version}", ip_config)
-        errors.add(ip_config_key, :no_free) unless next_ip
-        next_ip
-      else
-        errors.add(ip_config_key, :invalid_config)
-        nil
-      end
-    when "mapped"
-      if version == "ipv4"
-        errors.add(ip_config_key, :invalid_config)
-        nil
-      elsif !has_ipv4? || ["static", "reserved"].exclude?(ipv4_config)
-        errors.add(ip_config_key, :need_ipv4_address)
-        nil
-      elsif ["static", "reserved"].exclude?(ipv4_config)
-        errors.add(ip_config_key, :need_ipv4_config)
-        nil
-      else
-        mapped_pool = network.ipv6_pools.find(&:ipv6_mapped?)
-        if mapped_pool
-          IPAddr.new(mapped_pool.ipv6_first.to_i + ipv4.to_i, Socket::AF_INET6)
-        else
-          errors.add(ip_config_key, :invalid_config)
-          nil
-        end
-      end
-    else
-      errors.add(ip_config_key, :invalid_config)
-      nil
-    end
-  end
-
-  def adjust_ipv4!(user)
-    self.ipv4 = adjust_ip("ipv4", user)
-  end
-
-  def adjust_ipv6!(user)
-    self.ipv6 = adjust_ip("ipv6", user)
-  end
-
   def radius_mac
     return if skip_after_job
+    return if network.nil?
 
     if mac_address_data.present?
       if !destroyed? && auth
@@ -174,44 +101,27 @@ class Nic < ApplicationRecord
         RadiusMacDelJob.perform_later(mac_address_raw)
       end
     end
-
-    if old_nic&.mac_address_data.present? &&
-        old_nic.mac_address_data != mac_address_data
-      RadiusMacDelJob.perform_later(old_nic.mac_address_raw)
-    end
   end
 
   def kea_reservation
     return if skip_after_job
+    return if network.nil?
 
     if mac_address_data.present?
-      if !destroyed? && ipv4_reserved? && ipv4_data.present? && network&.dhcp
-        KeaReservation4AddJob.perform_later(mac_address_data, ipv4.to_i,
-          network.id)
+      if !destroyed? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
+        KeaReservation4AddJob.perform_later(network.id, mac_address_data, ipv4)
       else
-        KeaReservation4DelJob.perform_later(mac_address_data)
+        KeaReservation4DelJob.perform_later(network.id, mac_address_data)
       end
-    end
-
-    if old_nic&.mac_address_data.present? &&
-        old_nic.mac_address_data != mac_address_data
-      KeaReservation4DelJob.perform_later(old_nic.mac_address_data)
     end
 
     if node.duid_data.present?
-      if !destroyed? && ipv6_reserved? && ipv6_data.present? && network&.dhcp
-        KeaReservation6AddJob.perform_later(node.duid_data, ipv6_address,
-          network.id)
+      if !destroyed? && has_ipv6? && ipv6_reserved? && network&.dhcpv6?
+        KeaReservation6AddJob.perform_later(network.id, node.duid_data, ipv6)
       else
-        # FIXME: 複数のNIC登録の場合、同じDUIDがあるので、削除できない？
-        # KeaReservation6DelJob.perform_later(node.duid_data)
+        KeaReservation6DelJob.perform_later(network.id, node.duid_data)
       end
     end
-
-    # FIXME: old_nicにはduid_dataはない？
-    # if old_nic&.duid_data.present? && old_nic.duid_data != duid_data
-    #   KeaReservation6DelJob.perform_later(old_nic.duid_data)
-    # end
   end
 
   def flag
