@@ -42,7 +42,7 @@ table.table.table-sm.mb-0
       - else
         td colspan="4" = span_value_for(nil)
     tr
-      td scope="row" = Nic.human_attribute_name(:ivp4_lease)
+      td scope="row" = Nic.human_attribute_name(:ipv4_lease)
       - if @lease4
         td = @lease4.leased_at
         td = @lease4.ipv4_address
@@ -51,7 +51,7 @@ table.table.table-sm.mb-0
       - else
         td colspan="4" = span_value_for(nil)
     tr
-      td scope="row" = Nic.human_attribute_name(:ivp6_lease)
+      td scope="row" = Nic.human_attribute_name(:ipv6_lease)
       - if @lease6
         td = @lease6.leased_at
         td = @lease6.ipv6_address

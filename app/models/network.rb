@@ -350,7 +350,7 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet6
-    if !destroyed? && has_ivp6? && dhcpv6?
+    if !destroyed? && has_ipv6? && dhcpv6?
       KeaSubnet6AddJob.perform_later(id, ipv6_network,
         {},
         ipv6_pools.where(ipv6_config: "dynamic").map { |pool|
