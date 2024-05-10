@@ -4,6 +4,14 @@ module Kea
     self.abstract_class = true
     connects_to database: {writing: :kea}
 
+    def to_s
+      if respond_to?(:name)
+        name
+      else
+        super
+      end
+    end
+
     def self.no_audit
       connection.execute("SET @disable_audit = 1;")
     end

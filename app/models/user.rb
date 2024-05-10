@@ -148,10 +148,6 @@ class User < ApplicationRecord
     deleted
   end
 
-  def to_s
-    name
-  end
-
   def authorizable?
     Devise::LDAP::Adapter.authorizable?(username)
   end

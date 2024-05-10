@@ -362,10 +362,6 @@ class Network < ApplicationRecord
     end
   end
 
-  def to_s
-    name
-  end
-
   # class methods
 
   def self.find_identifier(str)
