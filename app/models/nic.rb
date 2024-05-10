@@ -61,9 +61,14 @@ class Nic < ApplicationRecord
 
   before_validation :auto_assign_ipv4, :auto_assign_ipv6
   after_validation :replace_errors
-  after_commit :radius_mac, :kea_reservation
+  after_commit :radius_mac, :kea_reservation4, :kea_reservation6,
+    unless: :skip_after_job?
 
   attr_accessor :skip_after_job
+
+  def skip_after_job?
+    skip_after_job.present?
+  end
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
@@ -103,24 +108,27 @@ class Nic < ApplicationRecord
     end
   end
 
-  def kea_reservation
+  def kea_reservation4
     return if skip_after_job
     return if network.nil?
+    return if mac_address_data.blank?
 
-    if mac_address_data.present?
-      if !destroyed? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
-        KeaReservation4AddJob.perform_later(network.id, mac_address_data, ipv4)
-      else
-        KeaReservation4DelJob.perform_later(network.id, mac_address_data)
-      end
+    if !destroyed? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
+      KeaReservation4AddJob.perform_later(network.id, mac_address_data, ipv4)
+    else
+      KeaReservation4DelJob.perform_later(network.id, mac_address_data)
     end
+  end
 
-    if node.duid_data.present?
-      if !destroyed? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
-        KeaReservation6AddJob.perform_later(network.id, node.duid_data, ipv6)
-      else
-        KeaReservation6DelJob.perform_later(network.id, node.duid_data)
-      end
+  def kea_reservation6
+    return if skip_after_job
+    return if network.nil?
+    return if node.duid_data.blank?
+
+    if !destroyed? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
+      KeaReservation6AddJob.perform_later(network.id, node.duid_data, ipv6)
+    else
+      KeaReservation6DelJob.perform_later(network.id, node.duid_data)
     end
   end
 

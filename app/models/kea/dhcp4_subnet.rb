@@ -23,5 +23,9 @@ module Kea
     end
 
     alias to_s name
+
+    def ipv4
+      IPAddr.new(subnet_prefix)
+    end
   end
 end

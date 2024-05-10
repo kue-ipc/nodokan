@@ -22,9 +22,7 @@ class KeaReservationCheckAllJob < ApplicationJob
       .find_each do |nic|
         key = [nic.network.id, nic.mac_address_data]
         host_ip = host_hash.delete(key)
-        if nic.ipv4 != host_ip
-          KeaReservation4AddJob.perform_later(*key, nic.ipv4)
-        end
+        nic.kea_reservation4 if nic.ipv4 != host_ip
       end
 
     host_hash.each_key do |key|
@@ -46,9 +44,7 @@ class KeaReservationCheckAllJob < ApplicationJob
       .find_each do |nic|
         key = [nic.network.id, nic.node.duid_data]
         host_ip = host_hash.delete(key)
-        if nic.ipv6 != host_ip
-          KeaReservation6AddJob.perform_later(*key, nic.ipv6)
-        end
+        nic.kea_reservation6 if nic.ipv6 != host_ip
       end
 
     host_hash.each_key do |key|
