@@ -3,6 +3,6 @@ module Kea
     self.table_name = "dhcp6_pool"
 
     belongs_to :dhcp6_subnet, foreign_key: "subnet_id",
-      primary_key: "subnet_id", inverse_of: :dhcp6_pool
+      primary_key: "subnet_id", inverse_of: :dhcp6_pools
   end
 end

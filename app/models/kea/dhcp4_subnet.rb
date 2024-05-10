@@ -15,14 +15,11 @@ module Kea
       primary_key: "subnet_id",
       dependent: :destroy, inverse_of: :dhcp4_subnet
 
-    has_many :dhcp4_servers,
-      through: :dhcp4_subnet_servers
+    has_many :dhcp4_servers, through: :dhcp4_subnet_servers
 
     def name
       subnet_prefix
     end
-
-    alias to_s name
 
     def ipv4
       IPAddr.new(subnet_prefix)
