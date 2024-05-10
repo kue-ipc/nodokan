@@ -8,7 +8,7 @@ class KeaReservation6AddJob < ApplicationJob
         host_identifier_type: Kea::HostIdentifierType.duid,
         dhcp6_subnet_id: network_id)
 
-      # reservation_idにnilを入れる必要がある
+      # view経由のため、reservation_idにnilを入れる必要がある
       reservation = Kea::Ipv6Reservation.find_by(host: host)
       if reservation.nil?
         reservaiton = Kea::Ipv6Reservation.new(reservation_id: nil, host: host)

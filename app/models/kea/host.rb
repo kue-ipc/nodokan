@@ -18,5 +18,9 @@ module Kea
     def ipv4
       ipv4_address && IPAddr.new(ipv4_address, Socket::AF_INET)
     end
+
+    def ipv6
+      ipv6_reservation&.ipv6
+    end
   end
 end

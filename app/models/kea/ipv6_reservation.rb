@@ -13,5 +13,9 @@ module Kea
     }, _prefix: :type
 
     belongs_to :host, primary_key: "host_id"
+
+    def ipv6
+      address && IPAddr.new(address)
+    end
   end
 end
