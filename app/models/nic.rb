@@ -116,7 +116,7 @@ class Nic < ApplicationRecord
     end
 
     if node.duid_data.present?
-      if !destroyed? && has_ipv6? && ipv6_reserved? && network&.dhcpv6?
+      if !destroyed? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
         KeaReservation6AddJob.perform_later(network.id, node.duid_data, ipv6)
       else
         KeaReservation6DelJob.perform_later(network.id, node.duid_data)

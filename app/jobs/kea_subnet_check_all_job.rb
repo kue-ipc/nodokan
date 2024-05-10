@@ -9,7 +9,7 @@ class KeaSubnetCheckAllJob < ApplicationJob
       Kea::Dhcp4Subnet.where.not(subnet_id: network4_ids).destroy_all
     end
 
-    network6_ids = Network..where(network: {ra: ["managed", "assist"]})
+    network6_ids = Network.where(ra: ["managed", "assist"])
       .where.not(ipv6_network_data: nil).ids
     Kea::Dhcp6Subnet.transaction do
       Kea::Dhcp6Subnet.dhcp6_audit
