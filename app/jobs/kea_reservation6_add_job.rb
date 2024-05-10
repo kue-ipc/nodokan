@@ -9,11 +9,9 @@ class KeaReservation6AddJob < ApplicationJob
         dhcp6_subnet_id: network_id)
 
       # view経由のため、reservation_idにnilを入れる必要がある
-      reservation = Kea::Ipv6Reservation.find_by(host: host)
-      if reservation.nil?
-        reservaiton = Kea::Ipv6Reservation.new(reservation_id: nil, host: host)
-      end
-      reservaiton.update!(address: ip.to_s)
+      reservation = Kea::Ipv6Reservation.find_by(host: host) ||
+        Kea::Ipv6Reservation.new(reservation_id: nil, host: host)
+      reservation.update!(address: ip.to_s)
     end
   end
 end

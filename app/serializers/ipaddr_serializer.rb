@@ -14,7 +14,7 @@ class IpaddrSerializer < ActiveJob::Serializers::ObjectSerializer
   end
 
   def deserialize(hash)
-    ip = IPaddr.new(hash["addr"], hash["family"])
+    ip = IPAddr.new(hash["addr"], hash["family"])
     ip.prefix = hash["prefix"]
     ip.zone_id = hash["zone_id"] if hash["zone_id"]
     ip
