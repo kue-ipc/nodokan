@@ -732,6 +732,8 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
+  # TODO: 細かいテストの追加
+
   # destroy
 
   test "should NOT destroy network" do
