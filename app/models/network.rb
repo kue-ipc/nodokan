@@ -339,11 +339,8 @@ class Network < ApplicationRecord
   def kea_subnet4
     if !destroyed? && has_ipv4? && dhcpv4?
       KeaSubnet4AddJob.perform_later(id, ipv4_network,
-        {routers: ipv4_gateway_address},
-        ipv4_pools.where(ipv4_config: "dynamic").map { |pool|
-          pool.ipv4_range
-          (pool.ipv4_first_address..pool.ipv4_last_address)
-        })
+        {routers: ipv4_gateway},
+        ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
     else
       KeaSubnet4DelJob.perform_later(id)
     end
@@ -353,10 +350,7 @@ class Network < ApplicationRecord
     if !destroyed? && has_ipv6? && dhcpv6?
       KeaSubnet6AddJob.perform_later(id, ipv6_network,
         {},
-        ipv6_pools.where(ipv6_config: "dynamic").map { |pool|
-          pool.ipv6_range
-          (pool.ipv6_first_address..pool.ipv6_last_address)
-        })
+        ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
     else
       KeaSubnet6DelJob.perform_later(id)
     end

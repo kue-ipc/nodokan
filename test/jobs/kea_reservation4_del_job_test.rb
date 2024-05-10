@@ -6,7 +6,6 @@ class KeaReservation4DelJobTest < ActiveJob::TestCase
   end
 
   test "del reservation" do
-    @nic = nics(:note)
     perform_enqueued_jobs do
       KeaReservation4AddJob.perform_later(@nic.network.id,
         @nic.mac_address_data, @nic.ipv4)
@@ -20,7 +19,6 @@ class KeaReservation4DelJobTest < ActiveJob::TestCase
   end
 
   test "del reservation not exist" do
-    @nic = nics(:note)
     assert_no_difference("Kea::Host.count") do
       perform_enqueued_jobs do
         KeaReservation4DelJob.perform_later(@nic.network.id,

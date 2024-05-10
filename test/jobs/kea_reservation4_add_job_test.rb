@@ -6,7 +6,6 @@ class KeaReservation4AddJobTest < ActiveJob::TestCase
   end
 
   test "add reservation" do
-    @nic = nics(:note)
     assert_difference("Kea::Host.count") do
       perform_enqueued_jobs do
         KeaReservation4AddJob.perform_later(@nic.network.id,
@@ -21,7 +20,6 @@ class KeaReservation4AddJobTest < ActiveJob::TestCase
   end
 
   test "add reservation update" do
-    @nic = nics(:note)
     perform_enqueued_jobs do
       KeaReservation4AddJob.perform_later(@nic.network.id,
         @nic.mac_address_data, @nic.ipv4)

@@ -8,22 +8,16 @@ class KeaSubnet6AddJob < ApplicationJob
       subnet6 = Kea::Dhcp6Subnet.find_or_initialize_by(subnet_id: id)
       subnet6.update!(subnet_prefix: "#{ip}/#{ip.prefix}")
 
-      if subnet6.dhcp6_servers.count.zero?
-        subnet6.dhcp6_subnet_servers
-          .create!(dhcp6_server: Kea::Dhcp6Server.default)
-      end
-
-      subnet6.dhcp6_options = options.map { |name, data|
-        subnet6.dhcp6_options
-          .build(name: name, space: "dhcp6")
+      subnet6.dhcp6_servers = [Kea::Dhcp6Server.default]
+      subnet6.dhcp6_options = options.compact.map { |name, data|
+        subnet6.dhcp6_options.build(name: name, space: "dhcp6")
           .tap { |option| option.data = data }
       }
-
       subnet6.dhcp6_pools = pools.map { |pool|
-        subnet6.dhcp6_pools.build(
-          start_address: pool.first.to_s,
-          end_address: pool.last.to_s)
+        subnet6.dhcp6_pools
+          .build(start_address: pool.first.to_s, end_address: pool.last.to_s)
       }
+      subnet6.save!
     end
   end
 end
