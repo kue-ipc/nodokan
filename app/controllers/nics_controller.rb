@@ -25,7 +25,7 @@ class NicsController < ApplicationController
       end
     end
     if @nic.node.has_duid?
-      @lease6 = Kea::Lease6.where(duid: @nic.node.duid)
+      @lease6 = Kea::Lease6.where(duid: @nic.node.duid_data)
         .order(:expire).last
     end
   end

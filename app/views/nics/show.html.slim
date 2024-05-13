@@ -55,10 +55,7 @@ table.table.table-sm.mb-0
       - if @lease6
         td = @lease6.leased_at
         td = @lease6.ipv6_address
-        td
-          = @lease6&.mac_address
-          | /
-          = @lease6&.duid_str
+        td = @lease6&.duid_str
         td = @lease6&.hostname
       - else
         td colspan="4" = span_value_for(nil)
