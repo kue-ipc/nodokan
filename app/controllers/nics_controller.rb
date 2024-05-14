@@ -7,12 +7,12 @@ class NicsController < ApplicationController
     @connections = []
     Ipv4Arp.where(mac_address_data: @nic.mac_address_data)
       .or(Ipv4Arp.where(ipv4_data: @nic.ipv4_data)).find_each do |ipv4_arp|
-        @connections << [ipv4_arp.end_at, ipv4_arp]
+        @connections << [ipv4_arp.resolved_at, ipv4_arp]
       end
     Ipv6Neighbor.where(mac_address_data: @nic.mac_address_data)
       .or(Ipv6Neighbor.where(ipv6_data: @nic.ipv6_data))
       .find_each do |ipv6_neighbor|
-        @connections << [ipv6_neighbor.end_at, ipv6_neighbor]
+        @connections << [ipv6_neighbor.discovered_at, ipv6_neighbor]
       end
     Kea::Lease4.where(hwaddr: @nic.mac_address_data).find_each do |lease4|
       @connections << [lease4.leased_at, lease4]
