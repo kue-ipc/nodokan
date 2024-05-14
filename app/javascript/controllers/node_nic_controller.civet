@@ -143,9 +143,11 @@ export default class NodeNicController < Controller<HTMLElement>
 
   changeIpv4(): void
     @adjustAddress("ipv4")
+    @requireMacAddress()
 
   changeIpv6(): void
     @adjustAddress("ipv6")
+    @requireDuid()
 
   enableInputs(names: string[]): void
     for name of names

@@ -67,6 +67,6 @@
     .col-md-4
       - if current_user.admin?
         = form.check_box :locked,
-          data: {node_nic_target: "locked", action: "node-nic#change"}
+          data: {node_nic_target: "locked"}
 
     .col-md-4
