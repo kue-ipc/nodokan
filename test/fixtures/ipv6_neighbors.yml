@@ -3,9 +3,11 @@
 one:
   ipv6_data: <%= ipv6_address('fd00:2::1010') %>
   mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
-  discovered_at: 2021-08-26 16:58:35
+  begin_at: 2021-08-26 16:58:35
+  end_at: 2021-08-26 16:58:35
 
 two:
   ipv6_data: <%= ipv6_address('fd00:2::1020') %>
   mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
-  discovered_at: 2021-08-26 16:58:35
+  begin_at: 2021-08-26 16:58:35
+  end_at: 2021-08-26 16:58:35

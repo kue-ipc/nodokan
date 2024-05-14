@@ -3,9 +3,11 @@
 one:
   ipv4_data: <%= ipv4_address('192.168.2.10') %>
   mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
-  resolved_at: 2021-08-26 16:58:10
+  begin_at: 2021-08-26 16:58:10
+  end_at: 2021-08-26 16:58:10
 
 two:
   ipv4_data: <%= ipv4_address('192.168.2.110') %>
   mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
-  resolved_at: 2021-08-26 16:58:10
+  begin_at: 2021-08-26 16:58:10
+  end_at: 2021-08-26 16:58:10
