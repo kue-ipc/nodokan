@@ -91,8 +91,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_045442) do
     t.binary "mac_address_data", limit: 6, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "end_to", null: false
     t.datetime "begin_at", null: false
-    t.datetime "end_at", null: false
     t.index ["ipv4_data"], name: "index_ipv4_arps_on_ipv4_data"
     t.index ["mac_address_data"], name: "index_ipv4_arps_on_mac_address_data"
   end
@@ -112,8 +112,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_045442) do
     t.binary "mac_address_data", limit: 6, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "end_to", null: false
     t.datetime "begin_at", null: false
-    t.datetime "end_at", null: false
     t.index ["ipv6_data"], name: "index_ipv6_neighbors_on_ipv6_data"
     t.index ["mac_address_data"], name: "index_ipv6_neighbors_on_mac_address_data"
   end
