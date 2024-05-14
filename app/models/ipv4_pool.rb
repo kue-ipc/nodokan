@@ -37,6 +37,8 @@ class Ipv4Pool < ApplicationRecord
 
   def ipv4_first_address=(value)
     self.ipv4_first = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv4_first = nil
   end
 
   def ipv4_last
@@ -53,6 +55,8 @@ class Ipv4Pool < ApplicationRecord
 
   def ipv4_last_address=(value)
     self.ipv4_last = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv4_last = nil
   end
 
   def ipv4_range

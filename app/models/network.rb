@@ -127,19 +127,36 @@ class Network < ApplicationRecord
     dhcp
   end
 
-  # readonly
+  # network with prefix
   def ipv4_network
     ipv4_network_data &&
       IPAddr.new_ntoh(ipv4_network_data).mask(ipv4_prefix_length)
   end
 
-  def ipv4_network_address
-    ipv4_network&.to_s
+  def ipv4_network=(value)
+    self.ipv4_network_data = value&.hton
+    self.ipv4_prefix_length = value&.prefix || 0
   end
 
-  # value allow blank
+  attribute :ipv4_network_address, :string
+  def ipv4_network_address
+    ipv4_network&.to_s || @ipv4_network_address
+  end
+
   def ipv4_network_address=(value)
+    @ipv4_network_address = value
     self.ipv4_network_data = value.presence && IPAddr.new(value).hton
+  rescue IPAddr::InvalidAddressError
+    self.ipv4_network_data = nil
+  end
+
+  def ipv4_netmask
+    ipv4_prefix_length && IPAddr.new("0.0.0.0").mask(ipv4_prefix_length).netmask
+  end
+
+  def ipv4_netmask=(value)
+    self.ipv4_prefix_length =
+      value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
   end
 
   # cdir = address/prefix
@@ -147,32 +164,29 @@ class Network < ApplicationRecord
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_prefix_length}"
   end
 
-  def ipv4_netmask
-    ipv4_prefix_length && IPAddr.new("0.0.0.0").mask(ipv4_prefix_length).netmask
-  end
-
   # address/netmask
   def ipv4_network_address_netmask
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
   end
 
-  # value allow blank
-  def ipv4_netmask=(value)
-    self.ipv4_prefix_length =
-      value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
-  end
-
-  # readonly
   def ipv4_gateway
     ipv4_gateway_data && IPAddr.new_ntoh(ipv4_gateway_data)
   end
 
+  def ipv4_gateway=(value)
+    self.ipv4_gateway_data = value&.hton
+  end
+
+  attribute :ipv4_gateway_address, :string
   def ipv4_gateway_address
-    ipv4_gateway&.to_s
+    ipv4_gateway&.to_s || @ipv4_gateway_address
   end
 
   def ipv4_gateway_address=(value)
-    self.ipv4_gateway_data = value.presence && IPAddr.new(value).hton
+    @ipv4_gateway_address = value
+    self.ipv4_gateway = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv4_gateway = nil
   end
 
   # Ipv6
@@ -189,19 +203,27 @@ class Network < ApplicationRecord
     ["assist", "stateless"].include?(ra)
   end
 
-  # readonly
+  # network with prefix
   def ipv6_network
     ipv6_network_data &&
       IPAddr.new_ntoh(ipv6_network_data).mask(ipv6_prefix_length)
   end
 
-  def ipv6_network_address
-    ipv6_network&.to_s
+  def ipv6_network=(value)
+    self.ipv6_network_data = value&.hton
+    self.ipv6_prefix_length = value&.prefix || 0
   end
 
-  # vaule allow blank
+  attribute :ipv6_network_address, :string
+  def ipv6_network_address
+    ipv6_network&.to_s || @ipv6_network_address
+  end
+
   def ipv6_network_address=(value)
+    @ipv6_network_address = value
     self.ipv6_network_data = value.presence && IPAddr.new(value).hton
+  rescue IPAddr::InvalidAddressError
+    self.ipv6_network = nil
   end
 
   # cidr = address/prefix
@@ -209,18 +231,24 @@ class Network < ApplicationRecord
     ipv6_network_data && "#{ipv6_network_address}/#{ipv6_prefix_length}"
   end
 
-  # readonly
   def ipv6_gateway
     ipv6_gateway_data && IPAddr.new_ntoh(ipv6_gateway_data)
   end
 
-  def ipv6_gateway_address
-    ipv6_gateway&.to_s
+  def ipv6_gateway=(value)
+    self.ipv6_gateway_data = value&.hton
   end
 
-  # value allow blank
+  attribute :ipv6_gateway_address, :string
+  def ipv6_gateway_address
+    ipv6_gateway&.to_s || @ipv6_gateway_address
+  end
+
   def ipv6_gateway_address=(value)
-    self.ipv6_gateway_data = value.presence && IPAddr.new(value).hton
+    @ipv6_gateway_address = value
+    self.ipv6_gateway = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv6_gateway = nil
   end
 
   # string

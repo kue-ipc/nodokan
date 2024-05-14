@@ -38,6 +38,8 @@ class Ipv6Pool < ApplicationRecord
 
   def ipv6_first_address=(value)
     self.ipv6_first = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv6_first = nil
   end
 
   def ipv6_last
@@ -54,6 +56,8 @@ class Ipv6Pool < ApplicationRecord
 
   def ipv6_last_address=(value)
     self.ipv6_last = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv6_last = nil
   end
 
   def ipv6_mapped_last_from_first
