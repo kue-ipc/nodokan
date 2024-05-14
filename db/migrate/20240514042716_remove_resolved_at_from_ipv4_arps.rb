@@ -5,7 +5,7 @@ class RemoveResolvedAtFromIpv4Arps < ActiveRecord::Migration[7.1]
     reversible do |direction|
       direction.down do
         Ipv4Arp.find_each do |ipv4_arp|
-          ipv4_arp.update!(resolved_at: ipv4_arp.last_at)
+          ipv4_arp.update!(resolved_at: ipv4_arp.end_at)
         end
       end
     end
