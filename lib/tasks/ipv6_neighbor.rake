@@ -5,11 +5,13 @@ namespace :ipv6_neighbor do
     csv_file = Rails.root / "data" / "ipv6_neighbor_register.csv"
     puts "register from csv ..."
     results = {
-      success: 0,
+      create: 0,
+      update: 0,
       skip: 0,
-      failure: 0,
       error: 0,
     }
+    null_mac_address_data = ["00" * 6].pack("H12")
+
     CSV.open(csv_file, "rb:BOM|UTF-8", headers: :first_row) do |csv|
       csv.each do |row|
         ipv6 = IPAddr.new(row["ip"])
@@ -18,17 +20,19 @@ namespace :ipv6_neighbor do
         next if ipv6.link_local?
 
         mac_address_data = [row["mac"].delete("-:")].pack("H12")
+        next if mac_address_data == null_mac_address_data
+
         time = Time.zone.at(row["time"].to_i)
-        ipv6_neighbor = Ipv6Neighbor.find_or_initialize_by(
-          ipv6_data: ipv6.hton, mac_address_data: mac_address_data)
-        if ipv6_neighbor.discovered_at.nil? ||
-            time > ipv6_neighbor.discovered_at
-          ipv6_neighbor.discovered_at = time
-          if ipv6_neighbor.save
-            results[:success] += 1
-          else
-            results[:failure] += 1
-          end
+        ipv6_neighbor = Ipv6Neighbor.where(ipv6_data: ipv6.hton)
+          .order(:discovered_at).last
+        if ipv6_neighbor.nil? ||
+            ipv6_neighbor.mac_address_data != mac_address_data
+          Ipv6Neighbor.create!(ipv6_data: ipv6.hton,
+            mac_address_data: mac_address_data, discovered_at: time)
+          results[:create] += 1
+        elsif time > ipv6_neighbor.discovered_at
+          ipv6_neighbor.update!(discovered_at: time)
+          results[:update] += 1
         else
           results[:skip] += 1
         end
