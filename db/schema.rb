@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_14_045442) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_14_062851) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -33,7 +33,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_045442) do
     t.integer "app_update", limit: 1, default: -1, null: false
     t.integer "security_update", limit: 1, default: -1, null: false
     t.integer "security_scan", limit: 1, default: -1, null: false
-    t.timestamp "confirmed_at", default: -> { "current_timestamp()" }, null: false
+    t.timestamp "confirmed_at", default: -> { "current_timestamp() ON UPDATE current_timestamp()" }, null: false
     t.timestamp "expiration", null: false
     t.boolean "approved", default: false, null: false
     t.datetime "created_at", null: false
@@ -89,9 +89,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_045442) do
   create_table "ipv4_arps", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.binary "ipv4_data", limit: 4, null: false
     t.binary "mac_address_data", limit: 6, null: false
+    t.datetime "end_at", precision: nil, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "end_to", null: false
     t.datetime "begin_at", null: false
     t.index ["ipv4_data"], name: "index_ipv4_arps_on_ipv4_data"
     t.index ["mac_address_data"], name: "index_ipv4_arps_on_mac_address_data"
@@ -110,9 +110,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_14_045442) do
   create_table "ipv6_neighbors", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.binary "ipv6_data", limit: 16, null: false
     t.binary "mac_address_data", limit: 6, null: false
+    t.datetime "end_at", precision: nil, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "end_to", null: false
     t.datetime "begin_at", null: false
     t.index ["ipv6_data"], name: "index_ipv6_neighbors_on_ipv6_data"
     t.index ["mac_address_data"], name: "index_ipv6_neighbors_on_mac_address_data"

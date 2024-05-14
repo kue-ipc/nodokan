@@ -5,7 +5,7 @@ class AddBeginAtToIpv6Neighbors < ActiveRecord::Migration[7.1]
     reversible do |direction|
       direction.up do
         Ipv6Neighbor.find_each do |ipv6_neighbor|
-          ipv6_neighbor.update!(begin_at: ipv6_neighbor.discovered_at)
+          ipv6_neighbor.update!(begin_at: ipv6_neighbor.end_at)
         end
       end
     end

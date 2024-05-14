@@ -5,7 +5,7 @@ class AddBeginAtToIpv4Arps < ActiveRecord::Migration[7.1]
     reversible do |direction|
       direction.up do
         Ipv4Arp.find_each do |ipv4_arp|
-          ipv4_arp.update!(begin_at: ipv4_arp.resolved_at)
+          ipv4_arp.update!(begin_at: ipv4_arp.end_at)
         end
       end
     end
