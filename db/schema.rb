@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_01_074046) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_14_044244) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -89,10 +89,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_01_074046) do
   create_table "ipv4_arps", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.binary "ipv4_data", limit: 4, null: false
     t.binary "mac_address_data", limit: 6, null: false
-    t.datetime "resolved_at", precision: nil, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ipv4_data", "mac_address_data"], name: "index_ipv4_arps_on_ipv4_data_and_mac_address_data", unique: true
+    t.datetime "begin_at", null: false
+    t.datetime "end_at", null: false
     t.index ["ipv4_data"], name: "index_ipv4_arps_on_ipv4_data"
     t.index ["mac_address_data"], name: "index_ipv4_arps_on_mac_address_data"
   end
