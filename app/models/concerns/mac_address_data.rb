@@ -9,6 +9,10 @@ module MacAddressData
     validates :mac_address, allow_blank: true, mac_address: true
   end
 
+  def has_mac_address?
+    mac_address_data.present?
+  end
+
   def mac_address_gl
     !((mac_address_list.first || 0) & 0x02).zero?
   end

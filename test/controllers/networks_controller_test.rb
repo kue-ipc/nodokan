@@ -1,6 +1,7 @@
 require "test_helper"
 
 class NetworksControllerTest < ActionDispatch::IntegrationTest
+  include ActiveJob::TestHelper
   include Devise::Test::IntegrationHelpers
 
   def get_message(key)
@@ -579,6 +580,139 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     assert_equal get_message(:create_failure), flash[:alert]
   end
 
+  test "admin should create network add subnet4" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet4AddJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        dhcp: true,
+        ipv4_network_address: "10.10.10.0",
+        ipv4_prefix_length: 24,
+        ipv4_gateway_address: "10.10.10.254",
+        ipv4_pools_attributes: {
+          0 => pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
+          1 => pool_params(4, "reserved", "10.10.10.11", "10.10.10.20"),
+          2 => pool_params(4, "static", "10.10.10.21", "10.10.10.30"),
+        },
+      }}
+    end
+    perform_enqueued_jobs
+    kea_subnet = Kea::Dhcp4Subnet.last
+    assert_equal Network.last.id, kea_subnet.subnet_id
+    assert_equal "10.10.10.0/24", kea_subnet.subnet_prefix
+    assert_equal "10.10.10.254", kea_subnet.dhcp4_options.first.formatted_value
+    assert_equal IPAddr.new("10.10.10.1").to_i,
+      kea_subnet.dhcp4_pools.first.start_address
+  end
+
+  test "admin should create network del subnet4 without dhcp" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet4DelJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        dhcp: false,
+        ipv4_network_address: "10.10.10.0",
+        ipv4_prefix_length: 24,
+      }}
+    end
+  end
+
+  test "admin should create network ipv6 add subnet6" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6AddJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "managed",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+        ipv6_gateway_address: "fd01:1::1",
+        ipv6_pools_attributes: {
+          0 => pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
+          1 => pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
+          2 => pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
+        },
+      }}
+    end
+    perform_enqueued_jobs
+    kea_subnet = Kea::Dhcp6Subnet.last
+    assert_equal Network.last.id, kea_subnet.subnet_id
+    assert_equal "fd01:1::/64", kea_subnet.subnet_prefix
+    assert_equal 0, kea_subnet.dhcp6_options.count
+    assert_equal "fd01:1::1:0:0", kea_subnet.dhcp6_pools.first.start_address
+  end
+
+  test "admin should create network ipv6 del subnet6 ra disabled" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6DelJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "disabled",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+      }}
+    end
+  end
+
+  test "admin should create network ipv6 del subnet6 ra router" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6DelJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "router",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+      }}
+    end
+  end
+
+  test "admin should create network ipv6 del subnet6 ra unmanaged" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6DelJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "unmanaged",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+      }}
+    end
+  end
+
+  test "admin should create network ipv6 add subnet6 ra managed" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6AddJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "managed",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+      }}
+    end
+  end
+
+  test "admin should create network ipv6 add subnet6 ra assist" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6AddJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "assist",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+      }}
+    end
+  end
+
+  test "admin should create network ipv6 add subnet6 ra stateless" do
+    sign_in users(:admin)
+    assert_enqueued_with(job: KeaSubnet6AddJob) do
+      post networks_url, params: {network: {
+        name: "name",
+        ra: "stateless",
+        ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
+      }}
+    end
+  end
+
   # udpate
 
   test "should NOT update network" do
@@ -598,17 +732,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
-  # test 'should update network' do
-  #   patch network_url(@network),
-  #     params: { network: {
-  #       auth: @network.auth, closed: @network.closed, dhcp: @network.dhcp,
-  #       ipv6_address: @network.ipv6_address, ipv6_gateway: @network.ipv6_gateway,
-  #       ipv6_prefix: @network.ipv6_prefix,
-  #       ipv4_address: @network.ipv4_address, ipv4_gateway: @network.ipv4_gateway, ipv4_mask: @network.ipv4_mask,
-  #       name: @network.name, vlan: @network.vlan,
-  #     } }
-  #   assert_redirected_to network_url(@network)
-  # end
+  # TODO: 細かいテストの追加
 
   # destroy
 
@@ -622,8 +746,10 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
 
   test "admin should destroy network" do
     sign_in users(:admin)
-    assert_difference("Network.count", -1) do
-      delete network_url(networks(:noip))
+    assert_enqueued_with(job: KeaSubnet6DelJob) do
+      assert_difference("Network.count", -1) do
+        delete network_url(networks(:noip))
+      end
     end
     assert_redirected_to networks_url
   end

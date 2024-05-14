@@ -15,7 +15,14 @@ module Kea
       primary_key: "subnet_id",
       dependent: :destroy, inverse_of: :dhcp6_subnet
 
-    has_many :dhcp6_servers,
-      through: :dhcp6_subnet_servers
+    has_many :dhcp6_servers, through: :dhcp6_subnet_servers
+
+    def name
+      subnet_prefix
+    end
+
+    def ipv6
+      IPAddr.new(subnet_prefix)
+    end
   end
 end

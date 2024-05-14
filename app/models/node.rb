@@ -108,8 +108,4 @@ class Node < ApplicationRecord
     @connected_at_checked = true
     @connected_at
   end
-
-  def to_s
-    name
-  end
 end

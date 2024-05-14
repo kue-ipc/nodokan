@@ -12,10 +12,6 @@ module Kea
       scope_name
     end
 
-    def to_s
-      scope_name
-    end
-
     def readonly?
       true
     end

@@ -6,6 +6,10 @@ module Kea
       dependent: :destroy, inverse_of: :dhcp6_server
     has_many :dhcp6_subnets, through: :dhcp6_subnet_servers
 
+    def name
+      tag
+    end
+
     def self.default
       find(1)
     end

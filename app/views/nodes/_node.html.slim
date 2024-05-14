@@ -306,7 +306,7 @@
                 prefix_length: "-",
                 gateway: "-",
               }
-            - when "static", "manual"
+            - when "static", "manual", "mapped"
               - ip_data = { \
                 setting: "手動",
                 address: nic.ipv6_address.presence || sp,

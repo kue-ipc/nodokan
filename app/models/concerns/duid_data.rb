@@ -6,6 +6,10 @@ module DuidData
     validates :duid, allow_blank: true, duid: true
   end
 
+  def has_duid?
+    duid_data.present?
+  end
+
   def duid_raw
     duid(char_case: :lower, sep: "")
   end
