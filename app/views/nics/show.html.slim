@@ -8,8 +8,8 @@ h3 = Nic.human_attribute_name(:connection_info)
 table.table.table-sm.mb-0
   thead
     tr
-      th scope="col" = Nic.human_attribute_name(:connection_info)
       th scope="col" = Nic.human_attribute_name(:connected_at)
+      th scope="col" = Nic.human_attribute_name(:connection_info)
       th scope="col"
         = Nic.human_attribute_name(:ipv4)
         | /
@@ -23,50 +23,32 @@ table.table.table-sm.mb-0
         | /
         = Network.human_attribute_name(:vlan)
   tbody
-    tr
-      td scope="row" = Ipv4Arp.model_name.human
-      - if @ipv4_arp
-        td = @ipv4_arp.resolved_at
-        td = @ipv4_arp.ipv4_address
-        td = @ipv4_arp.mac_address
-        td
-      - else
-        td colspan="4" = span_value_for(nil)
-    tr
-      td scope="row" = Ipv6Neighbor.model_name.human
-      - if @ipv6_neighbor
-        td = @ipv6_neighbor.discovered_at
-        td = @ipv6_neighbor.ipv6_address
-        td = @ipv6_neighbor.mac_address
-        td
-      - else
-        td colspan="4" = span_value_for(nil)
-    tr
-      td scope="row" = Nic.human_attribute_name(:ipv4_lease)
-      - if @lease4
-        td = @lease4.leased_at
-        td = @lease4.ipv4_address
-        td = @lease4.mac_address
-        td = @lease4.hostname
-      - else
-        td colspan="4" = span_value_for(nil)
-    tr
-      td scope="row" = Nic.human_attribute_name(:ipv6_lease)
-      - if @lease6
-        td = @lease6.leased_at
-        td = @lease6.ipv6_address
-        td = @lease6&.duid_str
-        td = @lease6&.hostname
-      - else
-        td colspan="4" = span_value_for(nil)
-    tr
-      td scope="row" = Nic.human_attribute_name(:auth)
-      - if @radpostauth
-        td = @radpostauth&.authdate
-        td
-        td
-          = @radpostauth&.username&.upcase&.each_char&.each_slice(2) \
-            &.map(&:join)&.join("-")
-        td = @radpostauth&.pass
-      - else
-        td colspan="4" = span_value_for(nil)
+    - @connections.each do |time, conn|
+      tr
+        td = time
+        - case conn
+        - when Ipv4Arp
+          td scope="row" = Ipv4Arp.model_name.human
+          td = conn.ipv4_address
+          td = conn.mac_address
+          td
+        - when Ipv6Neighbor
+          td scope="row" = Ipv6Neighbor.model_name.human
+          td = conn.ipv6_address
+          td = conn.mac_address
+        - when Kea::Lease4
+          td scope="row" = Nic.human_attribute_name(:ipv4_lease)
+          td = conn.ipv4_address
+          td = conn.mac_address
+          td = conn.hostname
+        - when Kea::Lease6
+          td scope="row" = Nic.human_attribute_name(:ipv6_lease)
+          td = conn.ipv6_address
+          td = conn.duid_str
+          td = conn.hostname
+        - when Radius::Radpostauth
+          td scope="row" = Nic.human_attribute_name(:auth)
+          td
+          td
+            = conn.username.upcase.each_char.each_slice(2).map(&:join).join("-")
+          td = conn.pass

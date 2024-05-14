@@ -4,30 +4,28 @@ class NicsController < ApplicationController
   # GET /nics/1
   # GET /nics/1.json
   def show
-    if @nic.mac_address_data
-      @ipv4_arp = Ipv4Arp.where(mac_address_data: @nic.mac_address_data)
-        .order(:resolved_at).last
-      @ipv6_neighbor = Ipv6Neighbor
-        .where(mac_address_data: @nic.mac_address_data)
-        .order(:discovered_at).last
-      @lease4 = Kea::Lease4.where(hwaddr: @nic.mac_address_data)
-        .order(:expire).last
-      @radpostauth = Radius::Radpostauth.where(username: @nic.mac_address_raw)
-        .order(:authdate).last
-    else
-      if @nic.has_ipv4?
-        @ipv4_arp = Ipv4Arp.where(ipv4_data: @nic.ipv4_data)
-          .order(:resolved_at).last
+    @connections = []
+    Ipv4Arp.where(mac_address_data: @nic.mac_address_data)
+      .or(Ipv4Arp.where(ipv4_data: @nic.ipv4_data)).find_each do |ipv4_arp|
+        @connections << [ipv4_arp.end_at, ipv4_arp]
       end
-      if @nic.has_ivp6?
-        @ipv6_neighbor = Ipv6Neighbor.where(ipv6_data: @nic.ipv6_data)
-          .order(:discovered_at).last
+    Ipv6Neighbor.where(mac_address_data: @nic.mac_address_data)
+      .or(Ipv6Neighbor.where(ipv6_data: @nic.ipv6_data))
+      .find_each do |ipv6_neighbor|
+        @connections << [ipv6_neighbor.end_at, ipv6_neighbor]
       end
+    Kea::Lease4.where(hwaddr: @nic.mac_address_data).find_each do |lease4|
+      @connections << [lease4.leased_at, lease4]
     end
-    if @nic.node.has_duid?
-      @lease6 = Kea::Lease6.where(duid: @nic.node.duid_data)
-        .order(:expire).last
+    Kea::Lease6.where(duid: @nic.node.duid_data).find_each do |lease6|
+      @connections << [lease6.leased_at, lease6]
     end
+    Radius::Radpostauth.where(username: @nic.mac_address_raw)
+      .find_each do |radpostauth|
+      @connections << [radpostauth.authdate, radpostauth]
+    end
+    @connections.sort_by!(&:first)
+    @connections.reverse!
   end
 
   # GET /nics/new
