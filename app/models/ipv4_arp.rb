@@ -17,6 +17,10 @@ class Ipv4Arp < ApplicationRecord
     self.begin_at = end_at_was || end_at
   end
 
+  def name
+    "#{ipv4_address} #{mac_address}"
+  end
+
   def range
     if begin_at
       (begin_at..end_at)

@@ -17,6 +17,10 @@ class Ipv6Neighbor < ApplicationRecord
     self.begin_at = end_at_was || end_at
   end
 
+  def name
+    "#{ipv6_address} #{mac_address}"
+  end
+
   def range
     if begin_at
       (begin_at..end_at)
