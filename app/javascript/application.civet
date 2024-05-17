@@ -9,8 +9,8 @@ import {loadDatalistCandidate} from "./views/datalist_candidate.coffee"
 import {loadManageTable} from "./views/manage_table.coffee"
 
 import {loadApplySpecifiNode} from "./views/apply_specific_node.civet"
-import {loadNodeFlags} from "./views/node_flags.civet"
-import {loadNodeNics} from "./views/node_nics.civet"
+// import {loadNodeFlags} from "./views/node_flags.civet"
+// import {loadNodeNics} from "./views/node_nics.civet"
 
 
 document.addEventListener "turbo:load", (_e)->
@@ -19,8 +19,8 @@ document.addEventListener "turbo:load", (_e)->
   loadBootstrapComponents()
   loadDatalistCandidate()
   loadManageTable()
-  loadNodeFlags()
-  loadNodeNics()
+  // loadNodeFlags()
+  // loadNodeNics()
 
 document.addEventListener "turbo:frame-load", (e)->
   unless e.target <? Element
@@ -32,5 +32,5 @@ document.addEventListener "turbo:frame-load", (e)->
   loadBootstrapComponents(e.target)
   loadDatalistCandidate(e.target)
   loadManageTable(e.target)
-  loadNodeFlags(e.target)
-  loadNodeNics(e.target)
+  // loadNodeFlags(e.target)
+  // loadNodeNics(e.target)

@@ -4,7 +4,7 @@
 
   p = t("forms.common.required_input")
 
-  = bootstrap_form_with model: node do |f|
+  = bootstrap_form_with model: node, data: {controller: "node"} do |f|
     .rounded.border.p-2.mb-2
       h4 = t("forms.node.base.title")
       .mb-2: small.text-muted = t("forms.node.base.help")
@@ -16,35 +16,52 @@
         .col-md-5
           = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*", floating: true
       .row
-        .col = f.check_box :logical
-        .col = f.check_box :virtual_machine
-        - if current_user.admin?
-          .col = f.check_box :specific
-          .col = f.check_box :public
-          .col = f.check_box :dns
-      - node_flag_attributes.each do |name|
-        = tag.div class: {collapse: true, "#{name}-show": true,
-          show: node.send(name),}
-          .row: .col
-            = badge_for(node, name)
-            small.text-secondary< = t("enabled", scope: ["forms", "node", name])
+        .col-md-2
+          = f.collection_select :node_type, t_enums(:node_type, Node),
+            :first, :second, {floating: true, data: {node_target: "node_type"}}
+        .col-md-2
+          = f.check_box :specific, readonly: !current_user.admin?,
+            data: {node_target: "specific", action: "node#changeFlag"}
+        .col-md-2
+          = f.check_box :public, readonly: !current_user.admin?,
+            data: {node_target: "public", action: "node#changeFlag"}
+        .col-md-2
+          = f.check_box :dns, readonly: !current_user.admin?,
+            data: {node_target: "dns", action: "node#changeFlag"}
 
-    / show if logical is enabled
-    = tag.div class: {collapse: true, "logical-show": true, show: node.logical}
+      .row data-node-target="messages"
+      template data-node-target="messageTemplate"
+        .col-12.form-text.message
+
+      script#node-messages type="application/json"
+        == {helps: t("messages.node_helps")}.to_json
+
+
+      / - node_flag_attributes.each do |name|
+      /   = tag.div class: {collapse: true, "#{name}-show": true,
+      /     show: node.send(name),}
+      /     .row: .col
+      /       = badge_for(node, name)
+      /       small.text-secondary< = t("enabled", scope: ["forms", "node", name])
+
+    = tag.div class: {collapse: true, show: node.normal?},
+      data: {node_target: "collapsePlace"}
+      = render "form_place", form: f
+
+    = tag.div class: {collapse: true, show: node.virtual?},
+      data: {node_target: "collapseHost"}
+      = render "form_host", form: f
+
+    = tag.div class: {collapse: true, show: node.logical?},
+      data: {node_target: "collapseComponents"}
       = render "form_components", form: f
 
-    / hide if logical is enabled
-    = tag.div class: {collapse: true, "logical-hide": true, show: !node.logical}
-      = tag.div class: {collapse: true, "virtual_machine-show": true,
-        show: node.virtual_machine,}
-        = render "form_host", form: f
-
-      = tag.div class: {collapse: true, "virtual_machine-hide": true,
-        show: !node.virtual_machine,}
-        = render "form_place", form: f
-
+    = tag.div class: {collapse: true, show: !node.logical?},
+      data: {node_target: "collapseHardware"}
       = render "form_hardware", form: f
 
+    = tag.div class: {collapse: true, show: !node.logical?},
+      data: {node_target: "collapseOperatingSystem"}
       = render "form_operating_system", form: f
 
     = render "form_nics", form: f

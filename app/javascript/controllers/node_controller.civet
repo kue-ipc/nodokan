@@ -1,6 +1,60 @@
 import { Controller } from "@hotwired/stimulus"
 
+import MessageStore from "../utils/message_store.civet"
+
+// TODO: 全体で管理するようなものに変えるべきかと
+messageStore: MessageStore? .= undefined
+
+getMessageStore := ->
+  return messageStore if messageStore?
+
+  messagesNode := document.getElementById("node-messages")
+  if messagesNode?
+    messages := JSON.parse(messagesNode.textContent || "{}")
+    messageStore = new MessageStore(messages)
+  messageStore
+
 // Connects to data-controller="node"
-export default class NodeController < Controller
+export default class NodeController < Controller<HTMLFormElement>
+  @targets := [
+    "node_type"
+    "specific"
+    "public"
+    "dns"
+
+    "software"
+    "securityHardwares"
+    "securitySoftwareInstallationMethod"
+    "securitySoftwareName"
+    "securityUpdate"
+    "securityScan"
+    "collapse"
+    "collapseOsUpdateSecured"
+    "collapseAppUpdateSecured"
+  ]
+
+  // TODO: 下記のようにすべきだが、Civetがうまく動かない
+  // https://stimulus.hotwired.dev/reference/using-typescript
+
+  // declare readonly existenceTargets: HTMLInputElement[] // radio list
+  // declare readonly contentTargets: HTMLInputElement[] // radio list
+  // declare readonly osUpdateTargets: HTMLInputElement[] // radio list
+  // declare readonly appUpdateTargets: HTMLInputElement[] // radio list
+  // declare readonly softwareTargets: HTMLInputElement[] // radio list
+  // declare readonly securityHardwaresTargets: HTMLInputElement[] // checkbox list
+  // declare readonly securityUpdateTargets: HTMLInputElement[] // radio list
+  // declare readonly securityScanTargets: HTMLInputElement[] // radio list
+
+  // declare readonly securitySoftwareInstallationMethodTarget: HTMLSelectElement
+  // declare readonly securitySoftwareNameTarget: HTMLInputElement // text
+
+  // declare readonly collapseTarget: HTMLDivElement
+  // declare readonly collapseOsUpdateSecuredTarget: HTMLDivElement
+  // declare readonly collapseAppUpdateSecuredTarget: HTMLDivElement
+
+  // declare readonly hasCollapseOsUpdateSecuredTarget: boolean
+  // declare readonly hasCollapseAppUpdateSecuredTarget: boolean
+
+
   connect(): void
     // do nothing
