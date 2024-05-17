@@ -490,11 +490,10 @@ ja:
         user: 所有者
         user_id: 所有者
         specific: 特定
-        logical: 論理
         global: 外部
         public: 公開
         dns: DNS
-        virtual_machine: 仮想マシン
+        node_type: タイプ
         connected_at: 接続日時
         components: 構成端末
         component: 構成端末
@@ -708,6 +707,11 @@ ja:
         pre_installed: プレインストール
         not_installed: 未インストール
         unknown: 不明
+      node_type:
+        normal: 標準
+        mobile: 携帯
+        virtual: 仮想
+        logical: 論理
     bitwises:
       security_hardwares:
         encrypted: 全てのデータを暗号化しています。
@@ -838,14 +842,21 @@ ja:
         enabled: |
           この端末はDNSに登録されています。
           (DNSに登録されているIPアドレスはロックされています。)
+      normal:
+        enabled: |
+          標準的なタイプの端末です。物理的に存在します。
+      mobile:
+        enabled: |
+          常に携帯する端末であり、特定の場所に設置せずに使用します。
+          (携帯しない時は、自宅にあるもとして登録されます。)
+      virtual:
+        enabled: |
+          仮想マシンであり、物理的には存在しません。
+          (VMwareやHyper-V等を用いて別の機器上の仮想的な機器として登録されます。)
       logical:
         enabled: |
-          この端末は論理上の端末であり、実際には存在しません。
+          論理上の端末であり、実際には存在しません。
           (複数端末をまとめたクラスタやIPアドレスの仮割り当て等の目的で登録されます。)
-      virtual_machine:
-        enabled: |
-          この端末は仮想マシンであり、物理的には存在しません。
-          (VMwareやHyper-V等を用いて別の機器上の仮想的な機器として登録されます。)
       components:
         title: 構成端末
         help: |

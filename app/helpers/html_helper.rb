@@ -53,13 +53,13 @@ module HtmlHelper
     case value
     when nil
       unless opts[:hide_blank]
-        tag.span(opts[:blank_alt] || t("values.none"),
-          class: "font-italic text-muted")
+        tag.span(opts.fetch(:blank_alt, t("values.none")),
+          class: opts.fetch(:blank_class, "font-italic text-muted"))
       end
     when "", [], {}
       unless opts[:hide_blank]
-        tag.span(opts[:blank_alt] || t("values.empty"),
-          class: "font-italic text-muted")
+        tag.span(opts.fetch(:blank_alt, t("values.empty")),
+          class: opts.fetch(:blank_class, "font-italic text-muted"))
       end
     when String
       case opts[:format]
@@ -93,7 +93,11 @@ module HtmlHelper
       end
       span_text_tag(str, **opts)
     when ApplicationRecord
-      link_to(value.to_s, value, data: {turbo: false})
+      if policy(value).show?
+        link_to(span_text_tag(value.to_s, **opts), value, data: {turbo: false})
+      else
+        span_text_tag(value.to_s, **opts)
+      end
     when ActiveRecord::Associations::CollectionProxy
       span_value_for(value.to_a, **opts)
     else

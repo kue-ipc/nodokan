@@ -1,12 +1,19 @@
 = turbo_frame_tag node, autoscroll: true,
   data: {autoscroll_block: "start", turbo_action: :advance} do
   dl
-    = dt_dd_for node, :name do |name|
-      = name
-      - node_flag_attributes.each do |attr|
-        = badge_for(node, attr)
+    = dt_dd_for node, :name do |_name|
+      = node_name_decorated(node)
     = dt_dd_for node, :fqdn
-    - if node.logical?
+    - case node.node_type
+    - when "normal"
+      = dt_dd_for node, :place,
+        blank_alt: t("messages.node_unregistered_place"),
+        blank_class: "text-warning"
+    - when "virtual"
+      = dt_dd_for node, :host,
+        blank_alt: t("messages.node_unregistered_host"),
+        blank_class: "text-warning"
+    - when "logical"
       = dt_dd_for node, :components do |components|
         - components.each do |component|
           - if current_user.admin? || component.user.id == current_user.id
@@ -14,22 +21,7 @@
           - else
             = component.name
           br
-    - else
-      - if node.virtual_machine?
-        = dt_dd_for node, :host do |host|
-          - if host
-            - if current_user.admin? || host.user.id == current_user.id
-              = span_value_for(host)
-            - else
-              = host.name
-          - else
-            .text-warning = t("messages.node_unregistered_host")
-      - else
-        = dt_dd_for node, :place do |place|
-          - if place&.name.present?
-            = place.name
-          - else
-            .text-warning = t("messages.node_unregistered_place")
+    - unless node.logical?
       = dt_dd_for node, :hardware do |hardware|
         - if hardware&.name.present?
           - if hardware.device_type

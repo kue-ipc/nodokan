@@ -9,10 +9,6 @@ module HostsHelper
   }.freeze
   # rubocop: enable Layout
 
-  def node_flag_attributes
-    [:logical, :virtual_machine, :specific, :global, :public, :dns]
-  end
-
   def node_hosts_list_col_classes(name)
     NODE_HOSTS_LIST_COL_CLASSES[name]
   end

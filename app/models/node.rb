@@ -3,7 +3,6 @@ class Node < ApplicationRecord
 
   FLAGS = {
     specific: "s",
-    logical: "l",
     public: "p",
     dns: "d",
   }.freeze
@@ -81,10 +80,6 @@ class Node < ApplicationRecord
     return hostname if domain.blank?
 
     "#{hostname}.#{domain}"
-  end
-
-  def logical?
-    logical
   end
 
   def flag

@@ -42,7 +42,7 @@ module NodesHelper
   }.freeze
 
   def node_flag_attributes
-    [:logical, :virtual_machine, :specific, :global, :public, :dns]
+    [:specific, :global, :public, :dns]
   end
 
   def list_col_classes(name, cols: NODE_LIST_COLS)
@@ -89,8 +89,9 @@ module NodesHelper
   end
 
   def node_name_decorated(node)
+    type_badge = badge_for(node, :node_type, hidden: node.normal?)
     node_flag_attributes.map { |attr| badge_for(node, attr) }
-      .inject(h(node.name), :+)
+      .inject(h(node.name) + type_badge, :+)
   end
 
   def node_ipv4_address_decorated(node)
