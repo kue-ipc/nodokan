@@ -10,6 +10,7 @@ const esbuildOptions = {
   outdir: 'app/assets/builds',
   publicPath: '/assets',
   plugins: [coffeeScriptPlugin(), civetPlugin()],
+  define: {RAILS_ENV: `"${process.env.RAILS_ENV ?? "development"}"`}
 }
 
 if (process.argv.includes('--watch')) {

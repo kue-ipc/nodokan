@@ -1,0 +1,6 @@
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="node"
+export default class NodeController < Controller
+  connect(): void
+    // do nothing

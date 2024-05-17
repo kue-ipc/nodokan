@@ -2,13 +2,16 @@
 // Run that command whenever you add a new controller or create them with
 // ./bin/rails generate stimulus controllerName
 
-import { application } from "./application"
+import { application } from "./application.civet"
 
 import ModalController from "./modal_controller.civet"
 application.register("modal", ModalController)
 
 import NodeConfirmationController from "./node_confirmation_controller.civet"
 application.register("node-confirmation", NodeConfirmationController)
+
+import NodeController from "./node_controller.civet"
+application.register("node", NodeController)
 
 import NodeNicController from "./node_nic_controller.civet"
 application.register("node-nic", NodeNicController)
