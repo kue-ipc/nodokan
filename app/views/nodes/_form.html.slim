@@ -18,31 +18,32 @@
       .row
         .col-md-2
           = f.collection_select :node_type, t_enums(:node_type, Node),
-            :first, :second, {floating: true, data: {node_target: "node_type"}}
-        .col-md-2
+            :first, :second, {floating: true},
+            data: {node_target: "nodeType", action: "node#changeNodeType"}
+        .col-md-2.d-flex.align-items-center
           = f.check_box :specific, readonly: !current_user.admin?,
             data: {node_target: "specific", action: "node#changeFlag"}
-        .col-md-2
+        .col-md-2.d-flex.align-items-center
           = f.check_box :public, readonly: !current_user.admin?,
             data: {node_target: "public", action: "node#changeFlag"}
-        .col-md-2
+        .col-md-2.d-flex.align-items-center
           = f.check_box :dns, readonly: !current_user.admin?,
             data: {node_target: "dns", action: "node#changeFlag"}
 
-      .row data-node-target="messages"
-      template data-node-target="messageTemplate"
-        .col-12.form-text.message
+      - Node.node_types.each_key do |name|
+        = tag.div class: {collapse: true, show: node.node_type == name},
+          data: {node_target: "collapseHelp#{name.to_s.camelize}"}
+          .row: .col-12
+            = badge_tag(t_enum(name, :node_type), color: name_color(name),
+              class: "ms-1")
+            small.text-body< = t(name, scope: "messages.node_helps")
 
-      script#node-messages type="application/json"
-        == {helps: t("messages.node_helps")}.to_json
-
-
-      / - node_flag_attributes.each do |name|
-      /   = tag.div class: {collapse: true, "#{name}-show": true,
-      /     show: node.send(name),}
-      /     .row: .col
-      /       = badge_for(node, name)
-      /       small.text-secondary< = t("enabled", scope: ["forms", "node", name])
+      - node_flag_attributes.each do |name|
+        = tag.div class: {collapse: true, show: node.send(name)},
+          data: {node_target: "collapseHelp#{name.to_s.camelize}"}
+          .row: .col-12
+            = badge_for(node, name)
+            small.text-secondary< = t(name, scope: "messages.node_helps")
 
     = tag.div class: {collapse: true, show: node.normal?},
       data: {node_target: "collapsePlace"}

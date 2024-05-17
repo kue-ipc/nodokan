@@ -1,4 +1,4 @@
-import { Application } from "@hotwired/stimulus"
+import {Application} from "@hotwired/stimulus"
 
 const application = Application.start()
 
@@ -11,4 +11,4 @@ declare global
   var Stimulus: Application
 window.Stimulus = application
 
-export { application }
+export {application}

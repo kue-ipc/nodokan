@@ -9,13 +9,15 @@ module HtmlHelper
     locked: "dark",
     auth: "primary",
     global: "danger",
+    normal: "light",
+    mobile: "dark",
     logical: "secondary",
+    virtual: "info",
     specific: "warning",
     public: "primary",
     dns: "success",
     dhcp: "secondary",
     deleted: "danger",
-    virtual_machine: "info",
   }.freeze
 
   def name_color(value)

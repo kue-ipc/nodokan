@@ -1,4 +1,5 @@
-import { Controller } from "@hotwired/stimulus"
+import {Controller} from "@hotwired/stimulus"
+import {Collapse} from "bootstrap"
 
 import MessageStore from "../utils/message_store.civet"
 
@@ -17,44 +18,96 @@ getMessageStore := ->
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
   @targets := [
-    "node_type"
+    "nodeType"
     "specific"
     "public"
     "dns"
-
-    "software"
-    "securityHardwares"
-    "securitySoftwareInstallationMethod"
-    "securitySoftwareName"
-    "securityUpdate"
-    "securityScan"
-    "collapse"
-    "collapseOsUpdateSecured"
-    "collapseAppUpdateSecured"
+    "collapseHelpNormal"
+    "collapseHelpMobile"
+    "collapseHelpVirtual"
+    "collapseHelpLogical"
+    "collapseHelpSpecific"
+    "collapseHelpPublic"
+    "collapseHelpDns"
+    "collapsePlace"
+    "collapseHost"
+    "collapseComponents"
+    "collapseHardware"
+    "collapseOperatingSystem"
   ]
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
 
-  // declare readonly existenceTargets: HTMLInputElement[] // radio list
-  // declare readonly contentTargets: HTMLInputElement[] // radio list
-  // declare readonly osUpdateTargets: HTMLInputElement[] // radio list
-  // declare readonly appUpdateTargets: HTMLInputElement[] // radio list
-  // declare readonly softwareTargets: HTMLInputElement[] // radio list
-  // declare readonly securityHardwaresTargets: HTMLInputElement[] // checkbox list
-  // declare readonly securityUpdateTargets: HTMLInputElement[] // radio list
-  // declare readonly securityScanTargets: HTMLInputElement[] // radio list
+  // declare readonly nodeTypeTarget: HTMLSelectElement
+  // ...
 
-  // declare readonly securitySoftwareInstallationMethodTarget: HTMLSelectElement
-  // declare readonly securitySoftwareNameTarget: HTMLInputElement // text
-
-  // declare readonly collapseTarget: HTMLDivElement
-  // declare readonly collapseOsUpdateSecuredTarget: HTMLDivElement
-  // declare readonly collapseAppUpdateSecuredTarget: HTMLDivElement
-
-  // declare readonly hasCollapseOsUpdateSecuredTarget: boolean
-  // declare readonly hasCollapseAppUpdateSecuredTarget: boolean
-
+  collapseHelpNormal?: Collapse
+  collapseHelpMobile?: Collapse
+  collapseHelpVirtual?: Collapse
+  collapseHelpLogical?: Collapse
+  collapseHelpSpecific?: Collapse
+  collapseHelpPublic?: Collapse
+  collapseHelpDns?: Collapse
+  collapsePlace?: Collapse
+  collapseHost?: Collapse
+  collapseComponents?: Collapse
+  collapseHardware?: Collapse
+  collapseOperatingSystem?: Collapse
 
   connect(): void
-    // do nothing
+    @collapseHelpNormal = new Collapse(@collapseHelpNormalTarget, toggle: false)
+    @collapseHelpMobile = new Collapse(@collapseHelpMobileTarget, toggle: false)
+    @collapseHelpVirtual = new Collapse(@collapseHelpVirtualTarget, toggle: false)
+    @collapseHelpLogical = new Collapse(@collapseHelpLogicalTarget, toggle: false)
+    @collapseHelpSpecific = new Collapse(@collapseHelpSpecificTarget, toggle: false)
+    @collapseHelpPublic = new Collapse(@collapseHelpPublicTarget, toggle: false)
+    @collapseHelpDns = new Collapse(@collapseHelpDnsTarget, toggle: false)
+    @collapsePlace = new Collapse(@collapsePlaceTarget, toggle: false)
+    @collapseHost = new Collapse(@collapseHostTarget, toggle: false)
+    @collapseComponents = new Collapse(@collapseComponentsTarget, toggle: false)
+    @collapseHardware = new Collapse(@collapseHardwareTarget, toggle: false)
+    @collapseOperatingSystem = new Collapse(@collapseOperatingSystemTarget, toggle: false)
+
+  changeNodeType(_event?: Event): void
+    switch @nodeTypeTarget.value
+      when "normal"
+        @collapseHelpNormal?.show()
+        @collapseHelpMobile?.hide()
+        @collapseHelpVirtual?.hide()
+        @collapseHelpLogical?.hide()
+        @collapsePlace?.show()
+        @collapseHost?.hide()
+        @collapseComponents?.hide()
+        @collapseHardware?.show()
+        @collapseOperatingSystem?.show()
+      when "mobile"
+        @collapseHelpNormal?.hide()
+        @collapseHelpMobile?.show()
+        @collapseHelpVirtual?.hide()
+        @collapseHelpLogical?.hide()
+        @collapsePlace?.hide()
+        @collapseHost?.hide()
+        @collapseComponents?.hide()
+        @collapseHardware?.show()
+        @collapseOperatingSystem?.show()
+      when "virtual"
+        @collapseHelpNormal?.hide()
+        @collapseHelpMobile?.hide()
+        @collapseHelpVirtual?.show()
+        @collapseHelpLogical?.hide()
+        @collapsePlace?.hide()
+        @collapseHost?.show()
+        @collapseComponents?.hide()
+        @collapseHardware?.show()
+        @collapseOperatingSystem?.show()
+      when "logical"
+        @collapseHelpNormal?.hide()
+        @collapseHelpMobile?.hide()
+        @collapseHelpVirtual?.hide()
+        @collapseHelpLogical?.show()
+        @collapsePlace?.hide()
+        @collapseHost?.hide()
+        @collapseComponents?.show()
+        @collapseHardware?.hide()
+        @collapseOperatingSystem?.hide()
