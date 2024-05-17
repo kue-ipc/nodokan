@@ -17,6 +17,16 @@ getMessageStore := ->
 
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
+  // @helps := [
+  //   "normal"
+  //   "mobile"
+  //   "virtual"
+  //   "logical"
+  //   "specific"
+  //   "public"
+  //   "dns"
+  // ]
+
   @targets := [
     "nodeType"
     "specific"
@@ -111,3 +121,21 @@ export default class NodeController < Controller<HTMLFormElement>
         @collapseComponents?.show()
         @collapseHardware?.hide()
         @collapseOperatingSystem?.hide()
+
+  chackCollapsing(): boolean
+    [
+      "collapseHelpNormal"
+      "collapseHelpMobile"
+      "collapseHelpVirtual"
+      "collapseHelpLogical"
+      "collapseHelpSpecific"
+      "collapseHelpPublic"
+      "collapseHelpDns"
+      "collapsePlace"
+      "collapseHost"
+      "collapseComponents"
+      "collapseHardware"
+      "collapseOperatingSystem"
+    ].any?
+    ?.getInstance().classList.contains("collapsing")
+
