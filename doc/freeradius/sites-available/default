@@ -306,7 +306,7 @@ authorize {
 	#  attributes in the request, and turning them into attributes
 	#  which are more standard.
 	#
-	#  It takes care of processing the 'raddb/mods-config/preprocess/hints' 
+	#  It takes care of processing the 'raddb/mods-config/preprocess/hints'
 	#  and the 'raddb/mods-config/preprocess/huntgroups' files.
 	preprocess
 
@@ -694,6 +694,11 @@ session {
 #  Once we KNOW that the user has been authenticated, there are
 #  additional steps we can take.
 post-auth {
+	# User-Password is replaced Tunnel-Private-Group-Id for sql log.
+	update request {
+		User-Password := "%{reply:Tunnel-Private-Group-Id}"
+	}
+
 	#
 	#  If you need to have a State attribute, you can
 	#  add it here.  e.g. for later CoA-Request with

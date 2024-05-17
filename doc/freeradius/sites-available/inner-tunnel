@@ -90,7 +90,7 @@ authorize {
 
 	#
 	#  Look for realms in user@domain format
-	# 
+	#
 	#  Note that proxying the inner tunnel authentication means
 	#  that the user MAY use one identity in the outer session
 	#  (e.g. "anonymous", and a different one here
@@ -281,6 +281,11 @@ session {
 #  the ONLY safe way is to set "use_tunneled_reply = yes", and
 #  then update the inner-tunnel reply.
 post-auth {
+	# User-Password is replaced Tunnel-Private-Group-Id for sql log.
+	update request {
+		User-Password := "%{reply:Tunnel-Private-Group-Id}"
+	}
+
 	#  If you want privacy to remain, see the
 	#  Chargeable-User-Identity attribute from RFC 4372.
 	#  If you want to use it just uncomment the line below.

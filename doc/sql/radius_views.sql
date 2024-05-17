@@ -1,5 +1,16 @@
 -- sql views for freeradius
 
+CREATE OR REPLACE VIEW nas_alt AS SELECT
+  id,
+  nasname,
+  shortname,
+  type AS nas_type,
+  ports,
+  secret,
+  server,
+  community,
+  description FROM nas;
+
 CREATE OR REPLACE VIEW radcheck_alt AS SELECT
   id,
   username,

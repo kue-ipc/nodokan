@@ -2,4 +2,13 @@
 
 バージョン 3 以上
 
-デフォルトではパスワードがDB上にそのまま入るため、queries.confを参考に書き換えること。
+デフォルトではUser-PasswordまたはChap-PasswordがDBのradostauthにそのまま入るため、サイトの設定でpost-authに次を追加すること
+
+```unlang
+post-auth {
+	# User-Password is replaced Tunnel-Private-Group-Id for sql log.
+	update request {
+		User-Password := "%{reply:Tunnel-Private-Group-Id}"
+	}
+    ...
+```
