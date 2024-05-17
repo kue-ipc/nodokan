@@ -8,8 +8,7 @@ class Node < ApplicationRecord
     dns: "d",
   }.freeze
 
-  enum :node_type, [:normal, :mobile, :virtual, :logical], prefix: true,
-    validates: true
+  enum :node_type, [:normal, :mobile, :virtual, :logical], validates: true
 
   belongs_to :user, optional: true, counter_cache: true
 

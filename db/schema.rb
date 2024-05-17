@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_17_022852) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_17_031500) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -203,11 +203,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_17_022852) do
     t.integer "nics_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "logical", default: false, null: false
     t.boolean "public", default: false, null: false
     t.boolean "dns", default: false, null: false
     t.binary "duid_data", limit: 130
-    t.boolean "virtual_machine", default: false, null: false
     t.bigint "host_id"
     t.integer "node_type", default: 0, null: false
     t.index ["duid_data"], name: "index_nodes_on_duid_data", unique: true
