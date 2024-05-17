@@ -1,6 +1,20 @@
 namespace :radius do
   desc "Migrate radisu database"
   task migrate: :environment do
+    puts "create or replace view nas_alt on radius"
+    Radius::RadiusRecord.connection.execute <<-SQL.squish
+      CREATE OR REPLACE VIEW nas_alt AS SELECT
+        id,
+        nasname,
+        shortname,
+        type AS nas_type,
+        ports,
+        secret,
+        server,
+        community,
+        description FROM nas;
+    SQL
+
     puts "create or replace view radcheck_alt on radius"
     Radius::RadiusRecord.connection.execute <<-SQL.squish
       CREATE OR REPLACE VIEW radcheck_alt AS SELECT
