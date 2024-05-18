@@ -30,6 +30,7 @@
   - ipv4_config: static
     ipv4_first_address: '192.168.2.200'
     ipv4_last_address: '192.168.2.240'
+  ra: assist
   ipv6_network_address: 'fd00:ab12:cd34:2::'
   ipv6_prefix_length: 64
   ipv6_gateway_address: 'fd00:ab12:cd34:2::1'
@@ -37,6 +38,15 @@
   - ipv6_config: :mapped
     ipv6_first_address: 'fd00:ab12:cd34:2::'
     ipv6_last_address: 'fd00:ab12:cd34:2::ffff:ffff'
+  - ipv6_config: :static
+    ipv6_first_address: 'fd00:ab12:cd34:2::1:0:0'
+    ipv6_last_address: 'fd00:ab12:cd34:2:3fff:ffff:ffff:ffff'
+  - ipv6_config: :dynamic
+    ipv6_first_address: 'fd00:ab12:cd34:2:4000::'
+    ipv6_last_address: 'fd00:ab12:cd34:2:5fff:ffff:ffff:ffff'
+  - ipv6_config: :reserved
+    ipv6_first_address: 'fd00:ab12:cd34:2:6000::'
+    ipv6_last_address: 'fd00:ab12:cd34:2:7fff:ffff:ffff:ffff'
   note: クライアント用ネットワークのサンプル
 
 <% 100.times do |i| %>
@@ -57,6 +67,7 @@
   - ipv4_config: static
     ipv4_first_address: '172.16.<%= i %>.201'
     ipv4_last_address: '172.16.<%= i %>.240'
+  ra: managed
   ipv6_network_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::'
   ipv6_prefix_length: 64
   ipv6_gateway_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::1'
@@ -66,6 +77,15 @@
     ipv6_last_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::ffff:ffff'
   - ipv6_config: :static
     ipv6_first_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::1:0:0'
-    ipv6_last_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>::2:ffff:ffff'
+    ipv6_last_address:
+      'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>:3fff:ffff:ffff:ffff'
+  - ipv6_config: :dynamic
+    ipv6_first_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>:4000::'
+    ipv6_last_address:
+      'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>:5fff:ffff:ffff:ffff'
+  - ipv6_config: :reserved
+    ipv6_first_address: 'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>:6000::'
+    ipv6_last_address:
+      'fd00:ab12:cd34:<%= (0x2000 + i).to_s(16) %>:7fff:ffff:ffff:ffff'
   note: クライアント用ネットワークのサンプル
 <% end %>

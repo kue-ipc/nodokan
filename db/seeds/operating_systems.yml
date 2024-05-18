@@ -1,4 +1,16 @@
 - os_category_name: Windowsクライアント
+  name: Windows 11 Home
+
+- os_category_name: Windowsクライアント
+  name: Windows 11 Pro
+
+- os_category_name: Windowsクライアント
+  name: Windows 11 Enterprise
+
+- os_category_name: Windowsクライアント
+  name: Windows 11 Education
+
+- os_category_name: Windowsクライアント
   name: Windows 10 Home
 
 - os_category_name: Windowsクライアント
@@ -90,6 +102,15 @@
   eol: 2015-07-14
 
 - os_category_name: Mac
+  name: macOS 14 Sonoma
+
+- os_category_name: Mac
+  name: macOS 13 Ventura
+
+- os_category_name: Mac
+  name: macOS 12 Monterey
+
+- os_category_name: Mac
   name: macOS 11 Big Sur
 
 - os_category_name: Mac
@@ -114,6 +135,15 @@
   eol: 2017-07-19
 
 - os_category_name: Apple系
+  name: iOS 17
+
+- os_category_name: Apple系
+  name: iOS 16
+
+- os_category_name: Apple系
+  name: iOS 15
+
+- os_category_name: Apple系
   name: iOS 14
 
 - os_category_name: Apple系
@@ -125,6 +155,15 @@
 - os_category_name: Apple系
   name: iOS 11
   eol: 2018-07-09
+
+- os_category_name: Apple系
+  name: iPadOS 17
+
+- os_category_name: Apple系
+  name: iPadOS 16
+
+- os_category_name: Apple系
+  name: iPadOS 15
 
 - os_category_name: Apple系
   name: iPadOS 14

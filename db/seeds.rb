@@ -36,3 +36,4 @@ create_models(OperatingSystem)
 create_models(SecuritySoftware)
 
 create_models(Network) if Rails.env.development?
+create_models(Node) if Rails.env.development?

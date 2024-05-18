@@ -1,0 +1,103 @@
+- name: デスクトップパソコン
+  hostname: desktop
+  domain: clients.example.jp
+  node_type: normal
+  operating_system_id: <%= OperatingSystem.find_by(name: "Windows 11 Pro").id %>
+  note: 備考
+  duid: 00-04-3b6e47ff-4e2a-4e2e-9243-af3f80452d96
+  nics_attributes:
+  - network_id: <%= Network.find_by(vlan: 102).id %>
+    number: 1
+    name: ""
+    interface_type: wired
+    auth: true
+    locked: false
+    mac_address: 02-12-23-45-67-89
+    ipv4_config: static
+    ipv4_address: "192.168.2.200"
+    ipv6_config: static
+    ipv6_address: "fd00:ab12:cd34:2::1:0:0"
+
+- name: ノートパソコン
+  hostname: note
+  node_type: mobile
+  operating_system_id:
+    <%= OperatingSystem.find_by(name: "macOS 14 Sonoma").id %>
+  duid: 00-04-5ae25b1e-b7be-463c-a1a6-a45795dd289a
+  nics_attributes:
+  - network_id: <%= Network.find_by(vlan: 102).id %>
+    number: 1
+    name: ""
+    interface_type: wireless
+    auth: true
+    locked: false
+    mac_address: 02-23-45-67-89-AB
+    ipv4_config: reserved
+    ipv4_address: "192.168.2.100"
+    ipv6_config: reserved
+    ipv6_address: "fd00:ab12:cd34:2:6000::"
+
+- name: タブレット
+  node_type: mobile
+  operating_system_id: <%= OperatingSystem.find_by(name: "iPadOS 17").id %>
+  duid: 00-04-06dec5d2-c8ea-4fc7-ab8d-16d9fbbe43ba
+  nics_attributes:
+  - network_id: <%= Network.find_by(vlan: 102).id %>
+    number: 1
+    name: ""
+    interface_type: wireless
+    auth: true
+    locked: false
+    mac_address: 02-45-67-89-AB-CD
+    ipv4_config: dynamic
+    ipv6_config: dynamic
+
+- name: サーバー
+  hostname: sever
+  domain: example.jp
+  node_type: normal
+  specific: true
+  public: true
+  dns: true
+  operating_system_id:
+    <%= OperatingSystem.find_by(name: "Windows Server SAC").id %>
+  nics_attributes:
+  - network_id: <%= Network.find_by(vlan: 101).id %>
+    number: 1
+    name: ""
+    interface_type: wired
+    locked: true
+    ipv4_config: manual
+    ipv4_address: "192.168.1.1"
+    ipv6_config: mapped
+    ipv6_address: "fd00:ab12:cd34:1::c0a8:101"
+
+- name: 仮想サーバー
+  hostname: vm
+  domain: example.jp
+  node_type: virtual
+  operating_system_id:
+    <%= OperatingSystem.find_by(name: "Windows Server SAC").id %>
+  nics_attributes:
+  - network_id: <%= Network.find_by(vlan: 101).id %>
+    number: 1
+    name: ""
+    interface_type: virtual
+    locked: true
+    ipv4_config: manual
+    ipv4_address: "192.168.1.2"
+    ipv6_config: mapped
+    ipv6_address: "fd00:ab12:cd34:1::c0a8:102"
+
+- name: 論理端末
+  node_type: logical
+  nics_attributes:
+  - network_id: <%= Network.find_by(vlan: 101).id %>
+    number: 1
+    name: ""
+    interface_type: shared
+    locked: true
+    ipv4_config: manual
+    ipv4_address: "192.168.1.3"
+    ipv6_config: mapped
+    ipv6_address: "fd00:ab12:cd34:1::c0a8:103"
