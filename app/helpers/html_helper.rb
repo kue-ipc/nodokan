@@ -18,6 +18,11 @@ module HtmlHelper
     specific: "warning",
     public: "primary",
     dns: "success",
+    router: "dark",
+    unmanaged: "warning",
+    managed: "success",
+    assist: "info",
+    stateless: "primary",
   }.freeze
 
   def name_color(value)
