@@ -1,37 +1,16 @@
 import {Controller} from "@hotwired/stimulus"
 import {Collapse} from "bootstrap"
 
-import MessageStore from "../utils/message_store.civet"
-
-// TODO: 全体で管理するようなものに変えるべきかと
-messageStore: MessageStore? .= undefined
-
-getMessageStore := ->
-  return messageStore if messageStore?
-
-  messagesNode := document.getElementById("node-messages")
-  if messagesNode?
-    messages := JSON.parse(messagesNode.textContent || "{}")
-    messageStore = new MessageStore(messages)
-  messageStore
-
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
-  // @helps := [
-  //   "normal"
-  //   "mobile"
-  //   "virtual"
-  //   "logical"
-  //   "specific"
-  //   "public"
-  //   "dns"
-  // ]
-
-  @targets := [
-    "nodeType"
+  @selectTargets = ["nodeType"] as const
+  @flagTargets = [
     "specific"
     "public"
     "dns"
+  ] as const
+
+  @collapseHelpTargets := [
     "collapseHelpNormal"
     "collapseHelpMobile"
     "collapseHelpVirtual"
@@ -39,11 +18,21 @@ export default class NodeController < Controller<HTMLFormElement>
     "collapseHelpSpecific"
     "collapseHelpPublic"
     "collapseHelpDns"
-    "collapsePlace"
-    "collapseHost"
-    "collapseComponents"
-    "collapseHardware"
-    "collapseOperatingSystem"
+  ] as const
+
+  @collapseSubFormTargets := [
+    "collapseSubFormPlace"
+    "collapseSubFormHost"
+    "collapseSubFormComponents"
+    "collapseSubFormHardware"
+    "collapseSubFormOperatingSystem"
+  ] as const
+
+  @targets := [
+    ...@selectTargets
+    ...@flagTargets
+    ...@collapseHelpTargets
+    ...@collapseSubFormTargets
   ]
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
@@ -59,83 +48,78 @@ export default class NodeController < Controller<HTMLFormElement>
   collapseHelpSpecific?: Collapse
   collapseHelpPublic?: Collapse
   collapseHelpDns?: Collapse
-  collapsePlace?: Collapse
-  collapseHost?: Collapse
-  collapseComponents?: Collapse
-  collapseHardware?: Collapse
-  collapseOperatingSystem?: Collapse
+  collapseSubFormPlace?: Collapse
+  collapseSubFormHost?: Collapse
+  collapseSubFormComponents?: Collapse
+  collapseSubFormHardware?: Collapse
+  collapseSubFormOperatingSystem?: Collapse
 
   connect(): void
-    @collapseHelpNormal = new Collapse(@collapseHelpNormalTarget, toggle: false)
-    @collapseHelpMobile = new Collapse(@collapseHelpMobileTarget, toggle: false)
-    @collapseHelpVirtual = new Collapse(@collapseHelpVirtualTarget, toggle: false)
-    @collapseHelpLogical = new Collapse(@collapseHelpLogicalTarget, toggle: false)
-    @collapseHelpSpecific = new Collapse(@collapseHelpSpecificTarget, toggle: false)
-    @collapseHelpPublic = new Collapse(@collapseHelpPublicTarget, toggle: false)
-    @collapseHelpDns = new Collapse(@collapseHelpDnsTarget, toggle: false)
-    @collapsePlace = new Collapse(@collapsePlaceTarget, toggle: false)
-    @collapseHost = new Collapse(@collapseHostTarget, toggle: false)
-    @collapseComponents = new Collapse(@collapseComponentsTarget, toggle: false)
-    @collapseHardware = new Collapse(@collapseHardwareTarget, toggle: false)
-    @collapseOperatingSystem = new Collapse(@collapseOperatingSystemTarget, toggle: false)
+    for each name of NodeController.collapseHelpTargets
+      @[name] = new Collapse(@[`${name}Target`], toggle: false)
+    for each name of NodeController.collapseSubFormTargets
+      @[name] = new Collapse(@[`${name}Target`], toggle: false)
 
-  changeNodeType(_event?: Event): void
-    switch @nodeTypeTarget.value
+  changeNodeType(event?: Event): Promise<void>
+    return unless event?.target <? HTMLSelectElement
+
+    await @waitCollapsing()
+
+    switch event.target.value
       when "normal"
         @collapseHelpNormal?.show()
         @collapseHelpMobile?.hide()
         @collapseHelpVirtual?.hide()
         @collapseHelpLogical?.hide()
-        @collapsePlace?.show()
-        @collapseHost?.hide()
-        @collapseComponents?.hide()
-        @collapseHardware?.show()
-        @collapseOperatingSystem?.show()
+        @collapseSubFormPlace?.show()
+        @collapseSubFormHost?.hide()
+        @collapseSubFormComponents?.hide()
+        @collapseSubFormHardware?.show()
+        @collapseSubFormOperatingSystem?.show()
       when "mobile"
         @collapseHelpNormal?.hide()
         @collapseHelpMobile?.show()
         @collapseHelpVirtual?.hide()
         @collapseHelpLogical?.hide()
-        @collapsePlace?.hide()
-        @collapseHost?.hide()
-        @collapseComponents?.hide()
-        @collapseHardware?.show()
-        @collapseOperatingSystem?.show()
+        @collapseSubFormPlace?.hide()
+        @collapseSubFormHost?.hide()
+        @collapseSubFormComponents?.hide()
+        @collapseSubFormHardware?.show()
+        @collapseSubFormOperatingSystem?.show()
       when "virtual"
         @collapseHelpNormal?.hide()
         @collapseHelpMobile?.hide()
         @collapseHelpVirtual?.show()
         @collapseHelpLogical?.hide()
-        @collapsePlace?.hide()
-        @collapseHost?.show()
-        @collapseComponents?.hide()
-        @collapseHardware?.show()
-        @collapseOperatingSystem?.show()
+        @collapseSubFormPlace?.hide()
+        @collapseSubFormHost?.show()
+        @collapseSubFormComponents?.hide()
+        @collapseSubFormHardware?.show()
+        @collapseSubFormOperatingSystem?.show()
       when "logical"
         @collapseHelpNormal?.hide()
         @collapseHelpMobile?.hide()
         @collapseHelpVirtual?.hide()
         @collapseHelpLogical?.show()
-        @collapsePlace?.hide()
-        @collapseHost?.hide()
-        @collapseComponents?.show()
-        @collapseHardware?.hide()
-        @collapseOperatingSystem?.hide()
+        @collapseSubFormPlace?.hide()
+        @collapseSubFormHost?.hide()
+        @collapseSubFormComponents?.show()
+        @collapseSubFormHardware?.hide()
+        @collapseSubFormOperatingSystem?.hide()
+
+  waitCollapsing(delay: number = 200): Promise<void>
+    new Promise (resolve) =>
+      check := =>
+        if @chackCollapsing()
+          console.info `wating ${delay} ms`
+          setTimeout check, delay
+        else
+          resolve()
+      check()
 
   chackCollapsing(): boolean
-    [
-      "collapseHelpNormal"
-      "collapseHelpMobile"
-      "collapseHelpVirtual"
-      "collapseHelpLogical"
-      "collapseHelpSpecific"
-      "collapseHelpPublic"
-      "collapseHelpDns"
-      "collapsePlace"
-      "collapseHost"
-      "collapseComponents"
-      "collapseHardware"
-      "collapseOperatingSystem"
-    ].any?
-    ?.getInstance().classList.contains("collapsing")
-
+      [
+        ...NodeController.collapseHelpTargets
+        ...NodeController.collapseSubFormTargets
+      ].some (name) =>
+        @[`${name}Target`].classList.contains("collapsing")

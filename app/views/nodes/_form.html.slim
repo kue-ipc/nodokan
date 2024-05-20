@@ -46,23 +46,23 @@
             small.text-secondary< = t(name, scope: "messages.node_helps")
 
     = tag.div class: {collapse: true, show: node.normal?},
-      data: {node_target: "collapsePlace"}
+      data: {node_target: "collapseSubFormPlace"}
       = render "form_place", form: f
 
     = tag.div class: {collapse: true, show: node.virtual?},
-      data: {node_target: "collapseHost"}
+      data: {node_target: "collapseSubFormHost"}
       = render "form_host", form: f
 
     = tag.div class: {collapse: true, show: node.logical?},
-      data: {node_target: "collapseComponents"}
+      data: {node_target: "collapseSubFormComponents"}
       = render "form_components", form: f
 
     = tag.div class: {collapse: true, show: !node.logical?},
-      data: {node_target: "collapseHardware"}
+      data: {node_target: "collapseSubFormHardware"}
       = render "form_hardware", form: f
 
     = tag.div class: {collapse: true, show: !node.logical?},
-      data: {node_target: "collapseOperatingSystem"}
+      data: {node_target: "collapseSubFormOperatingSystem"}
       = render "form_operating_system", form: f
 
     = render "form_nics", form: f
