@@ -23,7 +23,7 @@ note:
 tablet:
   name: タブレット
   hostname: tablet
-  place: two
+  node_type: mobile
   hardware: tablet
   operating_system: android
   duid_data: <%= duid("00-04-06dec5d2-c8ea-4fc7-ab8d-16d9fbbe43ba") %>
@@ -60,7 +60,7 @@ admin_desktop:
 
 virtual_desktop:
   name: 仮想のデスクトップパソコン
-  virtual_machine: true
+  node_type: virtual
   host_id: 42
   hardware: virtual
   operating_system: win
@@ -78,8 +78,8 @@ router:
 
 cluster:
   name: クラスター
+  node_type: logical
   id: 42
-  logical: true
   user: user
 
 child1:
