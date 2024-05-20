@@ -55,13 +55,12 @@ class Node < ApplicationRecord
       name
       hostname
       domain
+      node_type
       specific
-      logical
       pubilc
       dns
       duid_data
       user_id
-      virtual_machine
     )
   end
 
