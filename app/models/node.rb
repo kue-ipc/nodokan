@@ -47,6 +47,8 @@ class Node < ApplicationRecord
   normalizes :hostname, with: ->(str) { str.presence&.strip&.downcase }
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
 
+  before_save :reset_attributes_for_node_type
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(
@@ -104,5 +106,27 @@ class Node < ApplicationRecord
     }.compact.max
     @connected_at_checked = true
     @connected_at
+  end
+
+  private def reset_attributes_for_node_type
+    case node_type
+    when "normal"
+      self.host = nil
+      components.clear
+    when "mobile"
+      self.place = nil
+      self.host = nil
+      components.clear
+    when "virtual"
+      self.place = nil
+      components.clear
+    when "logical"
+      self.host = nil
+      self.place =  nil
+      self.hardware = nil
+      self.operating_system = nil
+    else
+      raise "unknown node type: #{node_type}"
+    end
   end
 end

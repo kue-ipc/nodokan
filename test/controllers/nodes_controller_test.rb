@@ -298,7 +298,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal new_node[:hostname], Node.last.hostname
     assert_equal @node.domain, Node.last.domain
     assert_equal hex_to_binary(new_node[:duid]), Node.last.duid_data
-    assert_equal "nomarl", Node.last.node_type
+    assert_equal "normal", Node.last.node_type
     assert_not Node.last.specific
     assert_not Node.last.public
     assert_not Node.last.dns
@@ -1433,21 +1433,22 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @node.duid, Node.find(@node.id).duid
   end
 
-  test "should update node set mobile" do
+  test "should update normal node to mobile" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {node_type: "mboile"}}
+    patch node_url(@node), params: {node: {node_type: "mobile"}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "mobile", Node.find(@node.id).node_type
-    assert_equal nodes(:server).id, Node.find(@node.id).host_id
     # reset attributes
     assert_nil Node.find(@node.id).place
   end
 
-  test "should update node set virtual" do
+  test "should update normal node to virtual" do
     sign_in users(:user)
-    patch node_url(@node),
-      params: {node: {node_type: "mobile", host_id: nodes(:server).id}}
+    patch node_url(@node), params: {node: {
+      node_type: "virtual",
+      host_id: nodes(:server).id,
+    }}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "virutal", Node.find(@node.id).node_type
@@ -1456,7 +1457,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Node.find(@node.id).place
   end
 
-  test "should update node set logical" do
+  test "should update normal node to logical" do
     sign_in users(:user)
     patch node_url(@node), params: {node: {
       node_type: "logical",
@@ -1472,7 +1473,45 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Node.find(@node.id).operating_system
   end
 
-  test "should update virtual node set normal" do
+  test "should update mobile node to normal" do
+    sign_in users(:user)
+    @node = nodes(:tablet)
+    patch node_url(@node), params: {node: {node_type: "normal"}}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "mobile", Node.find(@node.id).node_type
+  end
+
+  test "should update mobile node to virtual" do
+    sign_in users(:user)
+    @node = nodes(:tablet)
+    patch node_url(@node), params: {node: {
+      node_type: "virtual",
+      host_id: nodes(:server).id,
+    }}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "virutal", Node.find(@node.id).node_type
+    assert_equal nodes(:server).id, Node.find(@node.id).host_id
+  end
+
+  test "should update mobile node to logical" do
+    sign_in users(:user)
+    @node = nodes(:tablet)
+    patch node_url(@node), params: {node: {
+      node_type: "logical",
+      component_ids: [nodes(:note).id],
+    }}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "logical", Node.find(@node.id).node_type
+    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
+    # reset attributes
+    assert_nil Node.find(@node.id).hardware
+    assert_nil Node.find(@node.id).operating_system
+  end
+
+  test "should update virtual node to normal" do
     sign_in users(:user)
     @node = nodes(:virtual_desktop)
     patch node_url(@node), params: {node: {node_type: "normal"}}
@@ -1483,13 +1522,65 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_nil Node.find(@node.id).host_id
   end
 
-  test "should update logical node set normal" do
+  test "should update virtual node to mobile" do
+    sign_in users(:user)
+    @node = nodes(:virtual_desktop)
+    patch node_url(@node), params: {node: {node_type: "mobile"}}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "mobile", Node.find(@node.id).node_type
+    # reset attributes
+    assert_nil Node.find(@node.id).host_id
+  end
+
+  test "should update virtual node to logical" do
+    sign_in users(:user)
+    @node = nodes(:virtual_desktop)
+    patch node_url(@node), params: {node: {
+      node_type: "logical",
+      component_ids: [nodes(:note).id],
+    }}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "logical", Node.find(@node.id).node_type
+    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
+    # reset attributes
+    assert_nil Node.find(@node.id).host_id
+  end
+
+  test "should update logical node to normal" do
     sign_in users(:user)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {node_type: "normal"}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "normal", Node.find(@node.id).node_type
+    # reset attributes
+    assert_empty Node.find(@node.id).component_ids
+  end
+
+  test "should update logical node to mobile" do
+    sign_in users(:user)
+    @node = nodes(:cluster)
+    patch node_url(@node), params: {node: {node_type: "mobile"}}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "mobile", Node.find(@node.id).node_type
+    # reset attributes
+    assert_empty Node.find(@node.id).component_ids
+  end
+
+  test "should update logical node to virutal" do
+    sign_in users(:user)
+    @node = nodes(:cluster)
+    patch node_url(@node), params: {node: {
+      node_type: "virtual",
+      host_id: nodes(:server).id,
+    }}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "virutal", Node.find(@node.id).node_type
+    assert_equal nodes(:server).id, Node.find(@node.id).host_id
     # reset attributes
     assert_empty Node.find(@node.id).component_ids
   end

@@ -206,8 +206,7 @@ class NodesController < ApplicationController
       :hostname,
       :domain,
       :duid,
-      :logical,
-      :virtual_machine,
+      :node_type,
       :specific,
       :public,
       :dns,
@@ -244,33 +243,21 @@ class NodesController < ApplicationController
       number += 1
     end
 
-    if ActiveRecord::Type::Boolean.new.cast(permitted_params[:logical])
-      permitted_params[:component_ids] = permitted_params[:component_ids]&.uniq
-      permitted_params.merge!({
-        virtual_machine: false,
-        host_id: nil,
-        place: nil,
-        hardware: nil,
-        operating_system: nil,
-      })
-    elsif ActiveRecord::Type::Boolean.new
-        .cast(permitted_params[:virtual_machine])
-      permitted_params[:component_ids] = []
-      permitted_params[:place] = nil
-    else
-      permitted_params[:component_ids] = []
-      permitted_params[:host_id] = nil
-    end
     if permitted_params.key?(:place)
       permitted_params[:place] = find_or_new_place(permitted_params[:place])
     end
+
+    if permitted_params.key?(:component_ids)
+      permitted_params[:component_ids] = permitted_params[:component_ids]&.uniq
+    end
+
     if permitted_params.key?(:hardware)
-      permitted_params[:hardware] = find_or_new_hardware(
-        permitted_params[:hardware])
+      permitted_params[:hardware] =
+        find_or_new_hardware(permitted_params[:hardware])
     end
     if permitted_params.key?(:operating_system)
-      permitted_params[:operating_system] = find_or_new_operating_system(
-        permitted_params[:operating_system])
+      permitted_params[:operating_system] =
+        find_or_new_operating_system(permitted_params[:operating_system])
     end
     permitted_params
   end
