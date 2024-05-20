@@ -40,8 +40,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       hostname: node.hostname,
       domain: node.domain,
       duid: node.duid,
-      logical: node.logical,
-      virtual_machine: node.virtual_machine,
+      node_type: node.node_type,
       specific: node.specific,
       public: node.public,
       dns: node.dns,
@@ -290,9 +289,6 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
     new_node[:nics_attributes][0][:ipv4_address] = nil
     new_node[:nics_attributes][0][:ipv6_address] = nil
-
-    new_node[:logical] = false
-    new_node[:virtual_machine] = false
     assert_difference("Node.count") do
       post nodes_url, params: {node: new_node}
     end
@@ -302,9 +298,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal new_node[:hostname], Node.last.hostname
     assert_equal @node.domain, Node.last.domain
     assert_equal hex_to_binary(new_node[:duid]), Node.last.duid_data
-    # @node not logical and virtual_machine
-    assert_not Node.last.logical
-    assert_not Node.last.virtual_machine
+    assert_equal "nomarl", Node.last.node_type
     assert_not Node.last.specific
     assert_not Node.last.public
     assert_not Node.last.dns
@@ -433,13 +427,12 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should create node with logical" do
+  test "should create node with normal" do
     sign_in users(:user)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
-        logical: true,
-        virtual_machine: true,
+        node_type: "normal",
         component_ids: [@node.id],
         host_id: @node.id,
         place: place_to_params(@node.place),
@@ -449,23 +442,21 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
-    assert Node.last.logical
-    assert_equal [@node.id], Node.last.component_ids
+    assert_equal "normal", Node.last.node_type
+    assert_equal @node.place, Node.last.place
+    assert_equal @node.hardware_id, Node.last.hardware_id
+    assert_equal @node.operating_system_id, Node.last.operating_system_id
     # ignore attributes
-    assert_not Node.last.virtual_machine
     assert_nil Node.last.host_id
-    assert_nil Node.last.place
-    assert_nil Node.last.hardware
-    assert_nil Node.last.operating_system
+    assert_empty Node.last.component_ids
   end
 
-  test "should create node with virtual_machine" do
+  test "should create node with mobile" do
     sign_in users(:user)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
-        logical: false,
-        virtual_machine: true,
+        node_type: "mobile",
         component_ids: [@node.id],
         host_id: @node.id,
         place: place_to_params(@node.place),
@@ -475,14 +466,61 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
-    assert_not Node.last.logical
-    assert Node.last.virtual_machine
+    assert_equal "mobile", Node.last.node_type
+    assert_equal @node.hardware_id, Node.last.hardware_id
+    assert_equal @node.operating_system_id, Node.last.operating_system_id
+    # ignore attributes
+    assert_nil Node.last.place
+    assert_nil Node.last.host_id
+    assert_empty Node.last.component_ids
+  end
+
+  test "should create node with virtual" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        node_type: "virtual",
+        component_ids: [@node.id],
+        host_id: @node.id,
+        place: place_to_params(@node.place),
+        hardware: hardware_to_params(@node.hardware),
+        operating_system: operating_system_to_params(@node.operating_system),
+      }}
+    end
+    assert_equal get_message(:create_success), flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal "virtual", Node.last.node_type
     assert_equal @node.id, Node.last.host_id
     assert_equal @node.hardware_id, Node.last.hardware_id
     assert_equal @node.operating_system_id, Node.last.operating_system_id
     # ignore attributes
     assert_nil Node.last.place
     assert_empty Node.last.component_ids
+  end
+
+  test "should create node with logical" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {
+        name: "name",
+        node_type: "logical",
+        component_ids: [@node.id],
+        host_id: @node.id,
+        place: place_to_params(@node.place),
+        hardware: hardware_to_params(@node.hardware),
+        operating_system: operating_system_to_params(@node.operating_system),
+      }}
+    end
+    assert_equal get_message(:create_success), flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal "logical", Node.last.node_type
+    assert_equal [@node.id], Node.last.component_ids
+    # ignore attributes
+    assert_nil Node.last.host_id
+    assert_nil Node.last.place
+    assert_nil Node.last.hardware
+    assert_nil Node.last.operating_system
   end
 
   test "should create node with flags, but ignored" do
@@ -1395,72 +1433,65 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @node.duid, Node.find(@node.id).duid
   end
 
-  test "should update node set logical" do
+  test "should update node set mobile" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {
-      logical: true,
-      component_ids: [nodes(:note).id],
-    }}
+    patch node_url(@node), params: {node: {node_type: "mboile"}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
-    assert Node.find(@node.id).logical
-    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
-    # reset attributes
-    assert_not Node.find(@node.id).virtual_machine
-    assert_nil Node.find(@node.id).host_id
-    assert_nil Node.find(@node.id).place
-    assert_nil Node.find(@node.id).hardware
-    assert_nil Node.find(@node.id).operating_system
-  end
-
-  test "should update virtual node set logical" do
-    sign_in users(:user)
-    @node = nodes(:virtual_desktop)
-    patch node_url(@node),
-      params: {node: {logical: true, component_ids: [nodes(:note).id]}}
-    assert_redirected_to node_url(@node)
-    assert_equal get_message(:update_success), flash[:notice]
-    assert Node.find(@node.id).logical
-    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
-    # reset attributes
-    assert_not Node.find(@node.id).virtual_machine
-    assert_nil Node.find(@node.id).host_id
-    assert_nil Node.find(@node.id).place
-    assert_nil Node.find(@node.id).hardware
-    assert_nil Node.find(@node.id).operating_system
-  end
-
-  test "should update logical node unset logical" do
-    sign_in users(:user)
-    @node = nodes(:cluster)
-    patch node_url(@node), params: {node: {logical: false}}
-    assert_redirected_to node_url(@node)
-    assert_equal get_message(:update_success), flash[:notice]
-    assert_not Node.find(@node.id).logical
-    # reset attributes
-    assert_empty Node.find(@node.id).component_ids
-  end
-
-  test "should update node set virtual_machine" do
-    sign_in users(:user)
-    patch node_url(@node),
-      params: {node: {virtual_machine: true, host_id: nodes(:server).id}}
-    assert_redirected_to node_url(@node)
-    assert_equal get_message(:update_success), flash[:notice]
-    assert Node.find(@node.id).virtual_machine
+    assert "mobile", Node.find(@node.id).node_type
     assert_equal nodes(:server).id, Node.find(@node.id).host_id
     # reset attributes
     assert_nil Node.find(@node.id).place
   end
 
-  test "should update virtual node unset virtual_machine" do
+  test "should update node set virtual" do
     sign_in users(:user)
-    patch node_url(@node), params: {node: {virtual_machine: false}}
+    patch node_url(@node),
+      params: {node: {node_type: "mobile", host_id: nodes(:server).id}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
-    assert_not Node.find(@node.id).virtual_machine
+    assert "virutal", Node.find(@node.id).node_type
+    assert_equal nodes(:server).id, Node.find(@node.id).host_id
+    # reset attributes
+    assert_nil Node.find(@node.id).place
+  end
+
+  test "should update node set logical" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {
+      node_type: "logical",
+      component_ids: [nodes(:note).id],
+    }}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "logical", Node.find(@node.id).node_type
+    assert_equal [nodes(:note).id], Node.find(@node.id).component_ids
+    # reset attributes
+    assert_nil Node.find(@node.id).place
+    assert_nil Node.find(@node.id).hardware
+    assert_nil Node.find(@node.id).operating_system
+  end
+
+  test "should update virtual node set normal" do
+    sign_in users(:user)
+    @node = nodes(:virtual_desktop)
+    patch node_url(@node), params: {node: {node_type: "normal"}}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "normal", Node.find(@node.id).node_type
     # reset attributes
     assert_nil Node.find(@node.id).host_id
+  end
+
+  test "should update logical node set normal" do
+    sign_in users(:user)
+    @node = nodes(:cluster)
+    patch node_url(@node), params: {node: {node_type: "normal"}}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert "normal", Node.find(@node.id).node_type
+    # reset attributes
+    assert_empty Node.find(@node.id).component_ids
   end
 
   test "should update node set flags, but ignore" do
