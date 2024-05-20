@@ -4,6 +4,7 @@ import {Collapse} from "bootstrap"
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
   @selectTargets = ["nodeType"] as const
+
   @flagTargets = [
     "specific"
     "public"
@@ -19,6 +20,13 @@ export default class NodeController < Controller<HTMLFormElement>
     "collapseHelpPublic"
     "collapseHelpDns"
   ] as const
+
+  @flagCollapseHelps := {
+    specific: "collapseHelpSpecific"
+    public: "collapseHelpPublic"
+    dns: "collapseHelpDns"
+  } as const
+
 
   @collapseSubFormTargets := [
     "collapseSubFormPlace"
@@ -123,3 +131,15 @@ export default class NodeController < Controller<HTMLFormElement>
         ...NodeController.collapseSubFormTargets
       ].some (name) =>
         @[`${name}Target`].classList.contains("collapsing")
+
+  changeFlag(event?: Event): Promise<void>
+    return unless event?.target <? HTMLInputElement
+
+    await @waitCollapsing()
+
+    for each name of NodeController.flagTargets
+      if @[`${name}Target`].checked
+        @[NodeController.flagCollapseHelps[name]]?.show()
+      else
+        @[NodeController.flagCollapseHelps[name]]?.hide()
+

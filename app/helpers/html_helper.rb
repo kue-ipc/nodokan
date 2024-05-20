@@ -180,12 +180,12 @@ module HtmlHelper
     tag.span(value, **opts, class: badge_classes, &block)
   end
 
-  def badge_for(record, attr, disabled_show: false, **opts)
+  def badge_for(record, attr, value = nil, disabled_show: false, **opts)
     opts = opts.dup
     opts[:class] ||= ["ms-1"]
     case record.class.type_for_attribute(attr)
     when ActiveRecord::Enum::EnumType
-      value = record.__send__(attr)
+      value = record.__send__(attr) if value.nil?
       name = t_enum(value, attr)
       opts[:color] ||= name_color(value)
       if value == "disabled"
@@ -193,16 +193,18 @@ module HtmlHelper
         opts[:hidden] ||= !disabled_show
       end
     when ActiveModel::Type::Boolean
+      value = record.__send__(attr) if value.nil?
       name = record.class.human_attribute_name(attr)
       opts[:color] ||= name_color(attr)
-      unless record.__send__(attr)
+      unless value
         opts[:disabled] ||= true
         opts[:hidden] ||= !disabled_show
       end
     when ActiveModel::Type::Integer
-      name = record.__send__(attr)
+      value = record.__send__(attr) if value.nil?
+      name = value
       opts[:color] ||= name_color(attr)
-      if name.nil?
+      if value.nil?
         opts[:disabled] ||= true
         opts[:hidden] ||= !disabled_show
       end
