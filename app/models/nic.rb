@@ -18,10 +18,8 @@ class Nic < ApplicationRecord
   enum interface_type: {
     wired: 0,
     wireless: 1,
-    bluetooth: 2,
-    dialup: 4,
-    vpn: 5,
     virtual: 8,
+    vpn: 9,
     nat: 16,
     shared: 17,
     reserved: 18,

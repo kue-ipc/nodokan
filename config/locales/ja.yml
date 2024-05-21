@@ -639,10 +639,8 @@ ja:
       interface_type:
         wired: 有線
         wireless: 無線
-        bluetooth: Bluetooth
-        dialup: ダイヤルアップ
-        vpn: VPN
         virtual: 仮想
+        vpn: VPN
         nat: NAT
         shared: 共有
         reserved: 予約
