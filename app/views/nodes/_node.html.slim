@@ -70,9 +70,7 @@
                     = badge_for(nic, attr)
                 td = nic.mac_address
                 td
-                  - if nic.network
-                    = link_to nic.network.name, nic.network,
-                      data: {turbo: false}
+                  = span_value_for(nic.network)
                 td
                   = badge_for(nic, :ipv4_config, disbaled_show: true,
                     class: "me-1")

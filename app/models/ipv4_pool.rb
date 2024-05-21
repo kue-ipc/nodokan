@@ -13,8 +13,8 @@ class Ipv4Pool < ApplicationRecord
     unless: -> { network.dhcp }
 
   validates_each :ipv4_first, :ipv4_last do |record, attr, value|
-    network_range = record.network.ipv4_network.to_range
-    if !network_range.cover?(value)
+    network_range = record.network.ipv4_network&.to_range
+    if !network_range&.cover?(value)
       record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
     elsif network_range.begin == value
       record.errors.add(attr, I18n.t("errors.messages.network_address"))

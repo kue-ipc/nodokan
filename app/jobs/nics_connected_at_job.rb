@@ -44,7 +44,7 @@ class NicsConnectedAtJob < ApplicationJob
   def ipv6_leased_at(nic)
     return unless nic.node.has_duid? && nic.network_id
 
-    Kea::Lease6.where(duid: nic.node.duid_data, subnet_id: nic.network.id)
+    Kea::Lease6.where(duid: nic.node.duid_data, subnet_id: nic.network_id)
       .order(:expire).last&.leased_at
   end
 

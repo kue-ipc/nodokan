@@ -20,7 +20,7 @@ class KeaReservationCheckAllJob < ApplicationJob
       .where(ipv4_config: :reserved)
       .where(network: {dhcp: true})
       .find_each do |nic|
-        key = [nic.network.id, nic.mac_address_data]
+        key = [nic.network_id, nic.mac_address_data]
         host_ip = host_hash.delete(key)
         nic.kea_reservation4 if nic.ipv4 != host_ip
       end
@@ -42,7 +42,7 @@ class KeaReservationCheckAllJob < ApplicationJob
       .where(ipv6_config: :reserved)
       .where(network: {ra: ["managed", "assist"]})
       .find_each do |nic|
-        key = [nic.network.id, nic.node.duid_data]
+        key = [nic.network_id, nic.node.duid_data]
         host_ip = host_hash.delete(key)
         nic.kea_reservation6 if nic.ipv6 != host_ip
       end
