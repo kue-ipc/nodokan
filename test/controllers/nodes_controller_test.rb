@@ -744,7 +744,20 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "should NOT create node with same mac_address" do
+  test "should NOT create node with same mac_address without network" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: nil,
+        mac_address: @node.nics.first.mac_address,
+      }},}}
+    end
+    assert_response :success
+    assert_equal get_message(:create_failure), flash[:alert]
+  end
+
+  test "should NOT create node with same mac_address and same network" do
     sign_in users(:user)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
@@ -753,8 +766,21 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         mac_address: @node.nics.first.mac_address,
       }},}}
     end
-    assert_equal get_message(:create_failure), flash[:alert]
     assert_response :success
+    assert_equal get_message(:create_failure), flash[:alert]
+  end
+
+  test "should NOT create node with same mac_address and different network" do
+    sign_in users(:user)
+    assert_no_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: networks(:server).id,
+        mac_address: @node.nics.first.mac_address,
+      }},}}
+    end
+    assert_response :success
+    assert_equal get_message(:create_failure), flash[:alert]
   end
 
   test "should create node with auth and mac_address" do
@@ -1813,16 +1839,86 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_nil nic.ipv6_data
   end
 
-  test "should NOT update node with same mac_address" do
+  test "should NOT update node with same mac_address other node" do
     sign_in users(:user)
     patch node_url(@node), params: {node: {nics_attributes: {0 => {
       **nic_to_params(@node.nics.first),
+      network_id: nil,
       mac_address: nodes(:note).nics.first.mac_address,
     }}}}
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
     new_nic = Node.find(@node.id).nics.first
     assert_equal @node.nics.first.mac_address_data, new_nic.mac_address_data
+  end
+
+  test "should update node with new nic same mac_address in no network" do
+    sign_in users(:user)
+    assert_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: nil,
+          mac_address: @node.nics.first.mac_address,
+        },
+      }}}
+    end
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+  end
+
+  test "should update node with new nic same mac_address in other network" do
+    sign_in users(:user)
+    assert_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: networks(:server).id,
+          mac_address: @node.nics.first.mac_address,
+        },
+      }}}
+    end
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+  end
+
+  test "should NOT update node with new nic same mac_address in same network" do
+    sign_in users(:user)
+    assert_no_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: @node.nics.first.mac_address,
+        },
+      }}}
+    end
+    assert_response :success
+    assert_equal get_message(:update_failure), flash[:alert]
+  end
+
+  test "should update node with new nic same mac_address changing network" do
+    sign_in users(:user)
+    assert_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => {
+          **nic_to_params(@node.nics.first),
+          network_id: nil,
+          ipv4_config: "disabled",
+          ipv6_config: "disabled",
+        },
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: @node.nics.first.network_id,
+          mac_address: @node.nics.first.mac_address,
+        },
+      }}}
+    end
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "should update node with nic set locked, but ignore" do

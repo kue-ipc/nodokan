@@ -29,13 +29,10 @@ class Nic < ApplicationRecord
     unknown: -1,
   }
 
-  validates :number,
-    numericality: {
-      only_integer: true,
-      greater_than: 0,
-      less_than_or_equal_to: 64,
-    },
-    uniqueness: {scope: :node}
+  validates :number, uniqueness: {scope: :node}, numericality: {
+    only_integer: true, greater_than: 0, less_than_or_equal_to: 64,
+  }
+
   validates :name, allow_blank: true, length: {maximum: 255}
   validates :interface_type, presence: true
 
@@ -46,16 +43,17 @@ class Nic < ApplicationRecord
   validates :ipv6_data, presence: true,
     if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
 
-  validates :mac_address_data, allow_nil: true, length: {is: 6},
-    uniqueness: true
+  validates :mac_address_data, allow_nil: true, length: {is: 6}
   validates :mac_address_data, presence: true, if: -> { auth }
+
   validates :ipv4_config, ip_config: true
   validates :ipv4_config, exclusion: ["reserved"],
     if: -> { mac_address_data.blank? }
-  # TODO: MACアドレスによる予約も許可するなら、その想定も必要かも。
   validates :ipv6_config, ip_config: true
   validates :ipv6_config, exclusion: ["reserved"],
     if: -> { node.duid_data.blank? }
+
+  validates_with UniqueMacAddressValidator
 
   normalizes :name, with: ->(str) { str.presence&.strip }
 
