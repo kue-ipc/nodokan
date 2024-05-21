@@ -16,7 +16,7 @@
       - if nic.network && nic_networks.exclude?(nic.network)
         - nic_networks << nic.network
       = form.collection_select :network_id, nic_networks, :id, :name,
-        {floating: true, prompt: t("messages.prompt_required_selection")},
+        {floating: true, prompt: t("messages.prompt_no_network")},
         data: {node_nic_target: "networkId", action: "node-nic#change"}
 
     .col-md-4

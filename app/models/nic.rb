@@ -13,7 +13,7 @@ class Nic < ApplicationRecord
   }.freeze
 
   belongs_to :node, counter_cache: true
-  belongs_to :network, counter_cache: true
+  belongs_to :network, counter_cache: true, optional: true
 
   enum interface_type: {
     wired: 0,
@@ -61,6 +61,7 @@ class Nic < ApplicationRecord
 
   before_validation :auto_assign_ipv4, :auto_assign_ipv6
   after_validation :replace_errors
+  before_save :clear_auth_without_network
   after_commit :radius_mac, :kea_reservation4, :kea_reservation6,
     unless: :skip_after_job?
 
@@ -96,7 +97,6 @@ class Nic < ApplicationRecord
   alias global? global
 
   def radius_mac
-    return if skip_after_job
     return if network.nil?
 
     if mac_address_data.present?
@@ -109,7 +109,6 @@ class Nic < ApplicationRecord
   end
 
   def kea_reservation4
-    return if skip_after_job
     return if network.nil?
     return if mac_address_data.blank?
 
@@ -121,7 +120,6 @@ class Nic < ApplicationRecord
   end
 
   def kea_reservation6
-    return if skip_after_job
     return if network.nil?
     return if node.duid_data.blank?
 
@@ -151,7 +149,10 @@ class Nic < ApplicationRecord
   end
 
   private def auto_assign_ipv4
-    return if network.nil?
+    if network.nil?
+      self.ipv4 = nil
+      return
+    end
 
     case ipv4_config
     when "dynamic", "disabled"
@@ -169,7 +170,10 @@ class Nic < ApplicationRecord
   end
 
   private def auto_assign_ipv6
-    return if network.nil?
+    if network.nil?
+      self.ipv6 = nil
+      return
+    end
 
     case ipv6_config
     when "dynamic", "disabled"
@@ -220,5 +224,11 @@ class Nic < ApplicationRecord
     errors[:ipv6_data].each do |msg|
       errors.add(:ipv6_address, msg)
     end
+  end
+
+  private def clear_auth_without_network
+    return if network&.auth
+
+    self.auth = false
   end
 end

@@ -114,6 +114,7 @@ export default class NodeNicController < Controller<HTMLElement>
       @removeMessage("helps.unconfigurable")
       @removeMessage("helps.no_network")
     else if networkId
+      // unconfigurable network
       @setInitInput("auth")
       @setInitInput("ipv4Config")
       @setInitInput("ipv4Address")
@@ -121,14 +122,15 @@ export default class NodeNicController < Controller<HTMLElement>
       @setInitInput("ipv6Config")
       @setInitInput("ipv6Address")
       @ipv6HelpTarget.textContent = ""
-      @disableInputs(["auth",
-        "ipv4Config", "ipv4Address", "ipv6Address", "ipv6Config"])
+      @disableInputs(["auth", "ipv4Config", "ipv4Address", "ipv6Config",
+        "ipv6Address"])
 
       @addMessage("helps.unconfigurable")
       @removeMessage("helps.no_network")
     else
       @authTarget.checked = false
-      @disableInputs(["auth", "ipv4Config", "ipv6Config"])
+      @disableInputs(["auth", "ipv4Config", "ipv4Address", "ipv6Config",
+        "ipv6Address"])
 
       @addMessage("helps.no_network")
       @removeMessage("helps.unconfigurable")
@@ -248,16 +250,13 @@ export default class NodeNicController < Controller<HTMLElement>
         false
 
   adjustConfig(ip: "ipv4" | "ipv6"): void
-    // networkがなければ、何もしない
-    return unless @network?
-    return unless @[`has${capitalize(ip)}ConfigTarget`]
-
     target := @[`${ip}ConfigTarget`]
     unless target <? HTMLSelectElement
       console.warn `[NodeNicController] not select element for ${ip}Config`
       return
 
-    list := @network[`${ip}_config_list`]
+    list := @network?[`${ip}_config_list`] ?? ["disabled"]
+
     for each el of target.options
       if list.includes(el.value)
         el.disabled = false
@@ -279,9 +278,6 @@ export default class NodeNicController < Controller<HTMLElement>
     @adjustAddress(ip)
 
   adjustAddress(ip: "ipv4" | "ipv6"): void
-    return unless @network?
-    return unless @[`has${capitalize(ip)}AddressTarget`]
-
     target := @[`${ip}AddressTarget`]
     unless target <? HTMLInputElement
       console.warn `[NodeNicController] not input element for ${ip}Address`
@@ -294,7 +290,7 @@ export default class NodeNicController < Controller<HTMLElement>
     else
       target.value = ""
 
-    ip_text := if @network.has(ip)
+    ip_text := if @network?.has(ip)
       `${@network[ip].network}/${@network[ip].prefix_length}`
     else
       ""

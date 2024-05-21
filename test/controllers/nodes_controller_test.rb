@@ -648,16 +648,43 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should NOT create node with nic without nework_id" do
+  test "should create node with nic without nework_id" do
     sign_in users(:user)
-    assert_no_difference("Node.count") do
+    assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
         interface_type: @node.nics.first.interface_type,
         # network_id: @node.nics.first.network_id,
       }},}}
     end
-    assert_equal get_message(:create_failure), flash[:alert]
-    assert_response :success
+    assert_equal get_message(:create_success), flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal 1, Node.last.nics.count
+  end
+
+  test "should create node with nic without nework_id with other ip" do
+    sign_in users(:user)
+    assert_difference("Node.count") do
+      post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
+        interface_type: @node.nics.first.interface_type,
+        network_id: nil,
+        mac_address: "00-11-22-33-44-FF",
+        auth: true,
+        ipv4_config: "disabled",
+        ipv4_address: "192.168.2.241",
+        ipv6_config: "disabled",
+        ipv6_address: "fd00:2::4001",
+      }},}}
+    end
+    assert_equal get_message(:create_success), flash[:notice]
+    assert_redirected_to node_url(Node.last)
+    assert_equal 1, Node.last.nics.count
+    nic = Node.last.nics.first
+    assert_equal "00-11-22-33-44-FF", nic.mac_address
+    assert_not nic.auth
+    assert_equal "disabled", nic.ipv4_config
+    assert_equal "disabled", nic.ipv6_config
+    assert_nil nic.ipv4_data
+    assert_nil nic.ipv6_data
   end
 
   test "should create node with two nics " do
@@ -1712,9 +1739,9 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, Node.find(@node.id).nics.count
   end
 
-  test "should NOT update node with new nic without network_id" do
+  test "should update node with new nic without network_id" do
     sign_in users(:user)
-    assert_no_difference("Nic.count") do
+    assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: {
         0 => nic_to_params(@node.nics.first),
         1 => {
@@ -1723,9 +1750,9 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         },
       }}}
     end
-    assert_response :success
-    assert_equal get_message(:update_failure), flash[:alert]
-    assert_equal 1, Node.find(@node.id).nics.count
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    assert_equal 2, Node.find(@node.id).nics.count
   end
 
   test "should update node with deleted nic" do
@@ -1755,6 +1782,35 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       id: 42,
     }}}}
     assert_response :not_found
+  end
+
+  test "should NOT update node delete network_id without configs" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      network_id: nil,
+    }}}}
+    assert_response :success
+    assert_equal get_message(:update_failure), flash[:alert]
+    assert_not_nil Node.find(@node.id).nics.first.network_id
+  end
+
+  test "should update node delete network_id with configs" do
+    sign_in users(:user)
+    patch node_url(@node), params: {node: {nics_attributes: {0 => {
+      **nic_to_params(@node.nics.first),
+      network_id: nil,
+      ipv4_config: "disabled",
+      ipv6_config: "disabled",
+    }}}}
+    assert_redirected_to node_url(@node)
+    assert_equal get_message(:update_success), flash[:notice]
+    nic = Node.find(@node.id).nics.first
+    assert_not nic.auth
+    assert_equal "disabled", nic.ipv4_config
+    assert_equal "disabled", nic.ipv6_config
+    assert_nil nic.ipv4_data
+    assert_nil nic.ipv6_data
   end
 
   test "should NOT update node with same mac_address" do

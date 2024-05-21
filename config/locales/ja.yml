@@ -324,6 +324,7 @@ ja:
     last_status: 前回のステータス
     prompt_required_selection: 【必須】(選択してください)
     prompt_selection: (選択してください)
+    prompt_no_network: (接続無し)
     register_auth_network: 認証ネットワーク登録
     update_secured: |
       【高度な技術的判断】が必要な項目が選択されています。
