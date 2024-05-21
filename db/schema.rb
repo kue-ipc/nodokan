@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_17_031500) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_20_234944) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -164,7 +164,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_17_031500) do
 
   create_table "nics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "node_id", null: false
-    t.bigint "network_id", null: false
+    t.bigint "network_id"
     t.integer "number", limit: 1, null: false
     t.string "name"
     t.integer "interface_type", limit: 1, null: false
@@ -184,7 +184,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_17_031500) do
     t.datetime "auth_at", precision: nil
     t.index ["ipv4_data"], name: "index_nics_on_ipv4_data", unique: true
     t.index ["ipv6_data"], name: "index_nics_on_ipv6_data", unique: true
-    t.index ["mac_address_data"], name: "index_nics_on_mac_address_data", unique: true
+    t.index ["mac_address_data"], name: "index_nics_on_mac_address_data"
+    t.index ["network_id", "mac_address_data"], name: "index_nics_on_network_id_and_mac_address_data", unique: true
     t.index ["network_id"], name: "index_nics_on_network_id"
     t.index ["node_id", "number"], name: "node_number", unique: true
     t.index ["node_id"], name: "index_nics_on_node_id"
