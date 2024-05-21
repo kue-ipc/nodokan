@@ -30,7 +30,7 @@ class NicsController < ApplicationController
 
   # GET /nics/new
   def new
-    @nic = Nic.new
+    @nic = Nic.new(network_id: current_user.use_network_ids.first)
     authorize @nic
   end
 

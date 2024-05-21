@@ -37,7 +37,7 @@ class NodesController < ApplicationController
       if current_user.usable_networks.count.zero?
         []
       else
-        [Nic.new]
+        [Nic.new(network_id: current_user.use_network_ids.first)]
       end
     @node = Node.new(
       place: Place.new,
