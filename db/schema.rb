@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_20_234944) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_21_000642) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -79,7 +79,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_20_234944) do
     t.integer "nodes_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["device_type_id", "maker", "product_name", "model_number"], name: "hardware_model", unique: true
+    t.index ["device_type_id", "maker", "product_name", "model_number"], name: "index_hardwares_on_hardware_model", unique: true
     t.index ["device_type_id"], name: "index_hardwares_on_device_type_id"
     t.index ["maker"], name: "index_hardwares_on_maker"
     t.index ["model_number"], name: "index_hardwares_on_model_number"
@@ -187,7 +187,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_20_234944) do
     t.index ["mac_address_data"], name: "index_nics_on_mac_address_data"
     t.index ["network_id", "mac_address_data"], name: "index_nics_on_network_id_and_mac_address_data", unique: true
     t.index ["network_id"], name: "index_nics_on_network_id"
-    t.index ["node_id", "number"], name: "node_number", unique: true
+    t.index ["node_id", "number"], name: "index_nics_on_node_id_and_number", unique: true
     t.index ["node_id"], name: "index_nics_on_node_id"
   end
 
@@ -212,7 +212,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_20_234944) do
     t.index ["duid_data"], name: "index_nodes_on_duid_data", unique: true
     t.index ["hardware_id"], name: "index_nodes_on_hardware_id"
     t.index ["host_id"], name: "index_nodes_on_host_id"
-    t.index ["hostname", "domain"], name: "fqdn", unique: true
+    t.index ["hostname", "domain"], name: "{:name=>:index_nodes_on_hostname_and_domain}", unique: true
     t.index ["operating_system_id"], name: "index_nodes_on_operating_system_id"
     t.index ["place_id"], name: "index_nodes_on_place_id"
     t.index ["user_id"], name: "index_nodes_on_user_id"
@@ -270,7 +270,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_20_234944) do
     t.datetime "updated_at", null: false
     t.index ["installation_method"], name: "index_security_softwares_on_installation_method"
     t.index ["name"], name: "index_security_softwares_on_name"
-    t.index ["os_category_id", "installation_method", "name"], name: "security_softoware_name", unique: true
+    t.index ["os_category_id", "installation_method", "name"], name: "index_security_softwares_on_security_softoware_name", unique: true
     t.index ["os_category_id"], name: "index_security_softwares_on_os_category_id"
   end
 
