@@ -1884,6 +1884,23 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal get_message(:update_success), flash[:notice]
   end
 
+  test "should NOT update node with new nic same mac_address auth on" do
+    sign_in users(:user)
+    assert_no_difference("Nic.count") do
+      patch node_url(@node), params: {node: {nics_attributes: {
+        0 => nic_to_params(@node.nics.first),
+        1 => {
+          interface_type: @node.nics.first.interface_type,
+          network_id: networks(:free).id,
+          mac_address: @node.nics.first.mac_address,
+          auth: true,
+        },
+      }}}
+    end
+    assert_response :success
+    assert_equal get_message(:update_failure), flash[:alert]
+  end
+
   test "should NOT update node with new nic same mac_address in same network" do
     sign_in users(:user)
     assert_no_difference("Nic.count") do
