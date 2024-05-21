@@ -9,7 +9,7 @@ module MacAddressData
     validates :mac_address, allow_blank: true, mac_address: true
   end
 
-  def has_mac_address?
+  def has_mac_address? # rubocop: disable Naming/PredicateName
     mac_address_data.present?
   end
 

@@ -6,7 +6,7 @@ module DuidData
     validates :duid, allow_blank: true, duid: true
   end
 
-  def has_duid?
+  def has_duid? # rubocop: disable Naming/PredicateName
     duid_data.present?
   end
 

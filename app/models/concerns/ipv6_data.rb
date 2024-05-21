@@ -8,7 +8,7 @@ module Ipv6Data
   # ipv6 ... IPAddr allow nil
   # ipv6_address ... String allow blank
 
-  def has_ipv6?
+  def has_ipv6? # rubocop: disable Naming/PredicateName
     ipv6_data.present?
   end
 

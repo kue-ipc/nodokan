@@ -8,7 +8,7 @@ module Ipv4Data
   # ipv4 ... IPAddr allow nil
   # ipv4_address ... String allow blank
 
-  def has_ipv4?
+  def has_ipv4? # rubocop: disable Naming/PredicateName
     ipv4_data.present?
   end
 
