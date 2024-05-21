@@ -1,13 +1,14 @@
 - nic = form.object
 .rounded.border.p-2.mb-2[id="node_nics_attributes_#{form.index}"
   data-controller="node-nic"]
+  div data-action="node:changeNodeType@window->node-nic#changeNodeType"
   = form.hidden_field :id
   .row
     .col-md-4
       = form.collection_select :interface_type,
-        t_enums(:interface_type, Nic), :first, :second,
-        {floating: true, prompt: t("messages.prompt_required_selection")},
+        t_enums(:interface_type, Nic), :first, :second, {floating: true},
         data: {node_nic_target: "interfaceType"}
+        / {floating: true, prompt: t("messages.prompt_required_selection")},
     .col-md-8
       = form.text_field :name, floating: true, data: {node_nic_target: "name"}
 

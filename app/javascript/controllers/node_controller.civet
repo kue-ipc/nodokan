@@ -69,11 +69,11 @@ export default class NodeController < Controller<HTMLFormElement>
       @[name] = new Collapse(@[`${name}Target`], toggle: false)
 
   changeNodeType(event?: Event): Promise<void>
-    return unless event?.target <? HTMLSelectElement
+    @dispatch("changeNodeType", {detail: {nodeType: @nodeTypeTarget.value}})
 
     await @waitCollapsing()
 
-    switch event.target.value
+    switch @nodeTypeTarget.value
       when "normal"
         @collapseHelpNormal?.show()
         @collapseHelpMobile?.hide()

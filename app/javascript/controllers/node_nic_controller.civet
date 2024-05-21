@@ -59,6 +59,7 @@ export default class NodeNicController < Controller<HTMLElement>
   network?: Network
   messageStore?: MessageStore
   initValue?: {
+    interfaceType: number
     networkId: number
     auth: boolean
     ipv4Config: number
@@ -70,6 +71,7 @@ export default class NodeNicController < Controller<HTMLElement>
   connect(): void
     @messageStore = getMessageStore()
     @initValue = {
+      interfaceType: @interfaceTypeTarget.selectedIndex
       networkId: @networkIdTarget.selectedIndex
       auth: @authTarget.checked
       ipv4Config: @ipv4ConfigTarget.selectedIndex
@@ -79,7 +81,14 @@ export default class NodeNicController < Controller<HTMLElement>
     }
     @change()
 
-  change(_event?: Event): Promise<void>
+    nodeTypeNode := document.getElementById("node_node_type")
+    unless nodeTypeNode <? HTMLSelectElement
+      console.warn "[NodeNicController] node type not found"
+      return
+
+    @changeNodeType({detail: {nodeType: nodeTypeNode.value}})
+
+  change(): Promise<void>
     if @destroyTarget.checked
       @disableInputs(NodeNicController.names)
       return
@@ -333,3 +342,21 @@ export default class NodeNicController < Controller<HTMLElement>
     else
       duidNode.required = false
       @removeMessage("helps.require_duid")
+
+  changeNodeType({detail: {nodeType}}: {detail: {nodeType: string}}): void
+    return if @interfaceTypeTarget[@initValue.interfaceType].value
+
+    options := [...@interfaceTypeTarget.options]
+    switch nodeType
+      when "normal"
+        @interfaceTypeTarget.selectedIndex =
+          options.findIndex (opt) -> opt.value == "wired"
+      when "mobile"
+        @interfaceTypeTarget.selectedIndex =
+          options.findIndex (opt) -> opt.value == "wireless"
+      when "virtual"
+        @interfaceTypeTarget.selectedIndex =
+          options.findIndex (opt) -> opt.value == "virtual"
+      when "logical"
+        @interfaceTypeTarget.selectedIndex =
+          options.findIndex (opt) -> opt.value == "shared"
