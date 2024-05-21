@@ -14,7 +14,7 @@ class Ipv6Neighbor < ApplicationRecord
     return if begin_at
 
     # アップデートされているときは、以前の値を優先して設定する
-    self.begin_at = end_at_was || end_at
+    self.begin_at = end_at_in_database || end_at
   end
 
   def name
