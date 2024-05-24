@@ -135,11 +135,16 @@ export default class NodeController < Controller<HTMLFormElement>
   changeFlag(event?: Event): Promise<void>
     return unless event?.target <? HTMLInputElement
 
+    name := event.target.dataset.nodeTarget ?? ""
+    if name is not in NodeController.flagTargets
+      console.warn `unknown flag name: ${name}`
+      return
+
     await @waitCollapsing()
 
-    for each name of NodeController.flagTargets
-      if @[`${name}Target`].checked
-        @[NodeController.flagCollapseHelps[name]]?.show()
-      else
-        @[NodeController.flagCollapseHelps[name]]?.hide()
+
+    if event.target.checked
+      @[NodeController.flagCollapseHelps[name]]?.show()
+    else
+      @[NodeController.flagCollapseHelps[name]]?.hide()
 

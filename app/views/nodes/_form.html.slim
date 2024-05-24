@@ -20,15 +20,16 @@
           = f.collection_select :node_type, t_enums(:node_type, Node),
             :first, :second, {floating: true},
             data: {node_target: "nodeType", action: "node#changeNodeType"}
-        .col-md-2.d-flex.align-items-center
-          = f.check_box :specific, readonly: !current_user.admin?,
-            data: {node_target: "specific", action: "node#changeFlag"}
-        .col-md-2.d-flex.align-items-center
-          = f.check_box :public, readonly: !current_user.admin?,
-            data: {node_target: "public", action: "node#changeFlag"}
-        .col-md-2.d-flex.align-items-center
-          = f.check_box :dns, readonly: !current_user.admin?,
-            data: {node_target: "dns", action: "node#changeFlag"}
+        - if current_user.admin?
+          .col-md-2.d-flex.align-items-center
+            = f.check_box :specific,
+              data: {node_target: "specific", action: "node#changeFlag"}
+          .col-md-2.d-flex.align-items-center
+            = f.check_box :public,
+              data: {node_target: "public", action: "node#changeFlag"}
+          .col-md-2.d-flex.align-items-center
+            = f.check_box :dns,
+              data: {node_target: "dns", action: "node#changeFlag"}
 
       - Node.node_types.each_key do |name|
         = tag.div class: {collapse: true, show: node.node_type == name},
