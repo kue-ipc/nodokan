@@ -17,7 +17,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
 
   test "redirect to login INSTEAD OF get index" do
     get places_url
-    assert_response 401
+    assert_response :unauthorized
   end
 
   # test "should get edit" do

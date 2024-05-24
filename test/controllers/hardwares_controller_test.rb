@@ -37,6 +37,6 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
 
   test "redirect to login INSTEAD OF get index" do
     get hardwares_url
-    assert_response 401
+    assert_response :unauthorized
   end
 end

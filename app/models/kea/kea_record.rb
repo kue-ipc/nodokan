@@ -53,8 +53,8 @@ module Kea
           return if value.blank?
 
           return value
-            .map { |v| to_formatted_value(v, type: type, array: false) }
-            .join(",")
+              .map { |v| to_formatted_value(v, type: type, array: false) }
+              .join(",")
         end
 
         case type

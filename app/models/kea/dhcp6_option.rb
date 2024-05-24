@@ -60,7 +60,7 @@ module Kea
       ["s46-cont-lw", 96, "empty", false],
       ["v6-captive-portal", 103, "string", false],
       ["ipv6-address-andsf", 143, "ipv6-address", true],
-    ].map { |opt| DhcpOptionType.new(*opt)}
+    ].map { |opt| DhcpOptionType.new(*opt) }
     # rubocop: enable Layout/LineLength
     OPTIONS_NAME_MAP = OPTIONS.index_by { |opt| opt.name }
     OPTIONS_CODE_MAP = OPTIONS.index_by { |opt| opt.code }

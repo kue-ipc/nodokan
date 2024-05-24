@@ -62,6 +62,5 @@ class NodeTest < ActiveSupport::TestCase
     assert @node.specific
     assert @node.public
     assert @node.dns
-
   end
 end
