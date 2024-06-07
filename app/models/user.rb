@@ -88,20 +88,18 @@ class User < ApplicationRecord
     if Settings.admin.username == username
       # Set admin, and not allocate networks.
       admin!
-    elsif Settings.user_networks.present?
-      Settings.user_networks.each do |net_config|
-        next unless ldap_groups.include?(net_config[:group])
+    elsif Settings.user_initial_configs.present?
+      Settings.user_initial_configs.each do |config|
+        next unless ldap_groups.include?(config[:group])
 
         @allocate_network_config = {
-          auth_network: net_config[:auth_network],
-          networks: net_config[:networks],
-          limit: net_config[:limit],
+          auth_network: config[:auth_network],
+          networks: config[:networks],
         }
+        self.limit = config[:limit] if config.key?(:limit)
+        self.role = config[:role] if config.key?(:role)
         break
       end
-    end
-    if @allocate_network_config&.[](:limit)
-      self.limit = @allocate_network_config[:limit]
     end
   end
 

@@ -17,6 +17,9 @@ database:
 config:
   # credentials
   radius_mac_password: null
+  node_require_nic: false
+  nic_require_network: false
+  nic_require_auth: false
 feature:
   confirmation: true
   specific_node: true
@@ -57,7 +60,7 @@ ldap:
     mail: true
     # telephoneNumber: true
     # serviceAccount: false
-user_networks:
+user_initial_configs:
   - group: cn=staff,ou=groups,dc=example,dc=jp
     auth_network: v102
     networks:
@@ -68,6 +71,7 @@ user_networks:
     networks:
       - auth
     limit: 1
+    role: guest
 additional_messages:
   nic_setting: null
 specific_node_application:
