@@ -7,7 +7,7 @@ default: &default
   password: <%= (Rails.application.credentials.dig(:database, :password) || Settings.database.password).to_json %>
   host: <%= (Settings.database.host || 'localhost').to_json %>
   <% [:port, :socket].select { |key| Settings.database.key?(key) }.each do |key| %>
-  <%= key.to_s %>: <% Settings.database[key].to_json %>
+  <%= key.to_s %>: <%= Settings.database[key].to_json %>
   <% end %>
 
 production:
