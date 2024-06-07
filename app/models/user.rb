@@ -57,28 +57,24 @@ class User < ApplicationRecord
   def allocate_network
     return true if @allocate_network_config.blank?
 
-    logger.debug(
-      "User #{username} is allocate: #{@allocate_network_config.to_json}")
-
-    self.auth_network =
-      if @allocate_network_config[:auth_network] == "free"
-        Network.next_free
-      else
-        Network.find_identifier(@allocate_network_config[:auth_network])
-      end
-
-    if auth_network
-      logger.debug "User #{username} is allocated auth network: #{auth_network}"
+    if Settings.feature.user_auth_network
+      self.auth_network = find_network(@allocate_network_config[:auth_network])
     end
 
     @allocate_network_config[:networks]&.each do |net|
-      network =
-        if net == "auth"
-          auth_network
-        else
-          Network.find_identifier(net)
-        end
+      network = find_network(net)
       add_use_network(network) if network
+    end
+  end
+
+  private def find_network(net)
+    case net
+    when "free"
+      Network.next_free
+    when "auth"
+      auth_network
+    else
+      Network.find_identifier(net)
     end
   end
 
