@@ -32,7 +32,7 @@ class ConfirmationsController < ApplicationController
 
   private def set_node
     @node = Node.find(params[:node_id])
-    authorize @node, :update?
+    authorize @node, :confirm?
   end
 
   # Only allow a list of trusted parameters through.

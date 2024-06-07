@@ -32,4 +32,12 @@ class NodePolicy < ApplicationPolicy
   def transfer?
     update?
   end
+
+  def confirm?
+    Settings.feature.confirmation && update?
+  end
+
+  def specific_apply?
+    Settings.feature.specific_node_application && update?
+  end
 end

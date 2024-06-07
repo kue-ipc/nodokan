@@ -10,6 +10,17 @@ module NodesHelper
     {name: :confirmation, grid: [0, 2, 2, 2, 1, 1]},
   ].freeze
 
+  # when confirmation feature is disabled
+  NODE_WITHOUT_CONFIRMATION_LIST_COLS = [
+    {name: :user,         grid: [0, 0, 2, 2, 1, 1], sort: :user_username},
+    {name: :name,         grid: [4, 4, 3, 3, 3, 2], sort: :name},
+    {name: :hostname,     grid: [3, 3, 3, 3, 2, 1], sort: :hostname},
+    {name: :place,        grid: [0, 0, 0, 0, 0, 1], sort: :place_room},
+    {name: :ipv4_address, grid: [5, 5, 4, 4, 2, 2], sort: :nics_ipv4},
+    {name: :ipv6_address, grid: [0, 0, 0, 0, 4, 3], sort: :nics_ipv6},
+    {name: :mac_address,  grid: [0, 0, 0, 0, 0, 2], sort: :nics_mac_address},
+  ].freeze
+
   NODE_ACTION_LIST_COLS = [
     {name: :user,         grid: [0, 0, 2, 2, 1, 1]},
     {name: :name,         grid: [6, 3, 3, 3, 3, 2]},
@@ -41,11 +52,20 @@ module NodesHelper
       col-xxl-1),
   }.freeze
 
+  def node_list_cols
+    if Settings.feature.confirmation
+      NODE_LIST_COLS
+    else
+      NODE_WITHOUT_CONFIRMATION_LIST_COLS
+    end
+  end
+
+
   def node_flag_attributes
     [:specific, :global, :public, :dns]
   end
 
-  def list_col_classes(name, cols: NODE_LIST_COLS)
+  def list_col_classes(name, cols: node_list_cols)
     grid_classes(cols.find { |col| col[:name] == name }[:grid])
   end
 
@@ -144,7 +164,7 @@ module NodesHelper
   end
 
   def node_list_for(nodes,
-    write_headers: true, pagination: :both, cols: NODE_LIST_COLS,
+    write_headers: true, pagination: :both, cols: node_list_cols,
     wrapper: {}, action: nil, &block)
     pagination = :both if pagination == true
     tag.div(**wrapper) do
@@ -158,7 +178,7 @@ module NodesHelper
     end
   end
 
-  def node_list_table_for(nodes, write_headers: true, cols: NODE_LIST_COLS,
+  def node_list_table_for(nodes, write_headers: true, cols: node_list_cols,
     action: nil)
     tag.div(class: "mb-2") do
       rows = []
@@ -175,7 +195,7 @@ module NodesHelper
     end
   end
 
-  def node_list_headers_for(cols: NODE_LIST_COLS)
+  def node_list_headers_for(cols: node_list_cols)
     tag.div(class: "row py-1 border-bottom fw-bold") do
       cols.map { |col|
         name = col[:name]
@@ -195,7 +215,7 @@ module NodesHelper
     end
   end
 
-  def node_list_col_for(node, cols: NODE_LIST_COLS, link: nil, action: nil)
+  def node_list_col_for(node, cols: node_list_cols, link: nil, action: nil)
     content = cols.map { |col|
       name = col[:name]
       opts = {class: node_col_grid_class!(col)}

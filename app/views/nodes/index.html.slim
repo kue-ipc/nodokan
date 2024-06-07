@@ -25,7 +25,8 @@
       .col-12.mb-3
         = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
 
-p 1年に1度、端末の確認を行ってください。
+- if Settings.feature.confirmation
+  p 1年に1度、端末の確認を行ってください。
 
 hr
 

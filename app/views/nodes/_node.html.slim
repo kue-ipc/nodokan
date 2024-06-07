@@ -80,94 +80,95 @@
                     class: "me-1")
                   = span_value_for(nic.ipv6, hide_blank: true)
     = dt_dd_for node, :duid
-    = dt_dd_for node, :confirmation do |confirmation|
-      - case confirmation&.status
-      - when nil, :unconfirmed
-        i.fas.fa-times-circle.text-danger
-        =< t("messages.unconfirmed")
-        .text-danger = t("messages.node_confirmation_unconfirmed")
+    - if Settings.feature.confirmation
+      = dt_dd_for node, :confirmation do |confirmation|
+        - case confirmation&.status
+        - when nil, :unconfirmed
+          i.fas.fa-times-circle.text-danger
+          =< t("messages.unconfirmed")
+          .text-danger = t("messages.node_confirmation_unconfirmed")
 
-      - when :expired
-        i.fas.fa-times-circle.text-danger
-        =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expired_date",
-          date: l(confirmation.expiration.to_date, format: :long))
-        - if confirmation.approved
-          =< t("messages.approved")
-        - else
+        - when :expired
+          i.fas.fa-times-circle.text-danger
+          =<> l(confirmation.confirmed_at.to_date, format: :long)
+          = t("messages.node_confirmation_expired_date",
+            date: l(confirmation.expiration.to_date, format: :long))
+          - if confirmation.approved
+            =< t("messages.approved")
+          - else
+            =< t("messages.unapproved")
+          .text-danger = t("messages.node_confirmation_expired")
+
+        - when :unapproved
+          i.fas.fa-exclamation-triangle.text-warning
+          =<> l(confirmation.confirmed_at.to_date, format: :long)
+          = t("messages.node_confirmation_expiration_date",
+            date: l(confirmation.expiration.to_date, format: :long))
           =< t("messages.unapproved")
-        .text-danger = t("messages.node_confirmation_expired")
 
-      - when :unapproved
-        i.fas.fa-exclamation-triangle.text-warning
-        =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expiration_date",
-          date: l(confirmation.expiration.to_date, format: :long))
-        =< t("messages.unapproved")
+        - when :expire_soon
+          i.fas.fa-exclamation-triangle.text-warning
+          =<> l(confirmation.confirmed_at.to_date, format: :long)
+          = t("messages.node_confirmation_expiration_date",
+            date: l(confirmation.expiration.to_date, format: :long))
+          =< t("messages.expire_soon")
+          .text-warning = t("messages.node_confirmation_expiring_soon")
 
-      - when :expire_soon
-        i.fas.fa-exclamation-triangle.text-warning
-        =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expiration_date",
-          date: l(confirmation.expiration.to_date, format: :long))
-        =< t("messages.expire_soon")
-        .text-warning = t("messages.node_confirmation_expiring_soon")
+        - when :approved
+          i.fas.fa-check.text-success
+          =<> l(confirmation.confirmed_at.to_date, format: :long)
+          = t("messages.node_confirmation_expiration_date",
+            date: l(confirmation.expiration.to_date, format: :long))
+          =< t("messages.approved")
 
-      - when :approved
-        i.fas.fa-check.text-success
-        =<> l(confirmation.confirmed_at.to_date, format: :long)
-        = t("messages.node_confirmation_expiration_date",
-          date: l(confirmation.expiration.to_date, format: :long))
-        =< t("messages.approved")
-
-      - if confirmation&.confirmed_at.present? && !confirmation.approved
-        - case confirmation.existence
-        - when "existing"
-          .text-warning = t("messages.node_confirmation_unapproved")
-          - if confirmation.content_problem?
-            .text-danger = t("messages.node_content_problem")
-          - unless node.logical?
-            - if node.operating_system.nil?
-              .text-danger = t("messages.node_no_operating_system")
-            - if confirmation.unknown?
-              .text-danger = t("messages.node_confirmation_unknown")
-            - if confirmation.os_update_problem?
-              - if confirmation.os_update_eol?
-                .text-danger = t("messages.node_os_eol")
-              - else
-                .text-danger = t("messages.node_os_update_problem")
-            - if confirmation.app_update_problem?
-              - if confirmation.app_update_eol?
-                .text-danger = t("messages.node_app_eol")
-              - else
-                .text-danger = t("messages.node_app_update_problem")
-            - if confirmation.software_problem?
-              .text-danger = t("messages.node_software_problem")
-            - if confirmation.security_hardware_problem?
-              .text-danger = t("messages.node_security_hardware_problem")
-            - if node.operating_system
-              - if confirmation.security_software_unknown?
-                .text-danger = t("messages.node_security_software_unknown")
-              - else
-                - if confirmation.security_software_problem?
-                  .text-danger = t("messages.node_security_software_problem")
-                - if confirmation.security_update_problem?
-                  - if confirmation.security_update_eol?
-                    .text-danger = t("messages.node_security_eol")
-                  - else
-                    .text-danger = t("messages.node_security_update_problem")
-                - if confirmation.security_scan_problem?
-                  .text-danger = t("messages.node_security_scan_problem")
-        - when "abandoned"
-          .text-danger = t("messages.node_abandoned")
-        - when "unnecessary"
-          .text-danger = t("messages.node_unnecessary")
-        - when "missing"
-          .text-danger = t("messages.node_missing")
-        - when "not_my_own"
-          .text-danger = t("messages.node_not_my_own")
-        - when "unknown"
-          .text-danger = t("messages.node_unknown")
+        - if confirmation&.confirmed_at.present? && !confirmation.approved
+          - case confirmation.existence
+          - when "existing"
+            .text-warning = t("messages.node_confirmation_unapproved")
+            - if confirmation.content_problem?
+              .text-danger = t("messages.node_content_problem")
+            - unless node.logical?
+              - if node.operating_system.nil?
+                .text-danger = t("messages.node_no_operating_system")
+              - if confirmation.unknown?
+                .text-danger = t("messages.node_confirmation_unknown")
+              - if confirmation.os_update_problem?
+                - if confirmation.os_update_eol?
+                  .text-danger = t("messages.node_os_eol")
+                - else
+                  .text-danger = t("messages.node_os_update_problem")
+              - if confirmation.app_update_problem?
+                - if confirmation.app_update_eol?
+                  .text-danger = t("messages.node_app_eol")
+                - else
+                  .text-danger = t("messages.node_app_update_problem")
+              - if confirmation.software_problem?
+                .text-danger = t("messages.node_software_problem")
+              - if confirmation.security_hardware_problem?
+                .text-danger = t("messages.node_security_hardware_problem")
+              - if node.operating_system
+                - if confirmation.security_software_unknown?
+                  .text-danger = t("messages.node_security_software_unknown")
+                - else
+                  - if confirmation.security_software_problem?
+                    .text-danger = t("messages.node_security_software_problem")
+                  - if confirmation.security_update_problem?
+                    - if confirmation.security_update_eol?
+                      .text-danger = t("messages.node_security_eol")
+                    - else
+                      .text-danger = t("messages.node_security_update_problem")
+                  - if confirmation.security_scan_problem?
+                    .text-danger = t("messages.node_security_scan_problem")
+          - when "abandoned"
+            .text-danger = t("messages.node_abandoned")
+          - when "unnecessary"
+            .text-danger = t("messages.node_unnecessary")
+          - when "missing"
+            .text-danger = t("messages.node_missing")
+          - when "not_my_own"
+            .text-danger = t("messages.node_not_my_own")
+          - when "unknown"
+            .text-danger = t("messages.node_unknown")
 
     = dt_dd_for node, :note, line_break: true
     - if current_user.admin?
@@ -175,18 +176,14 @@
     = dt_dd_for node, :connected_at, blank_alt: "-"
 
   p
-    - if node.confirmation
-      =< link_to t("actions.confirm"),
-        edit_node_confirmation_path(node),
-        class: "btn btn-primary",
-        data: {turbo_frame: "modal"}
-    - else
-      =< link_to t("actions.confirm"),
-        new_node_confirmation_path(node),
-        class: "btn btn-primary",
-        data: {turbo_frame: "modal"}
-    =< link_to t("actions.edit"), edit_node_path(node),
-      class: "btn btn-warning"
+    - if Settings.feature.confirmation
+      - if node.confirmation
+        =< link_to t("actions.confirm"), edit_node_confirmation_path(node),
+          class: "btn btn-primary", data: {turbo_frame: "modal"}
+      - else
+        =< link_to t("actions.confirm"), new_node_confirmation_path(node),
+          class: "btn btn-primary", data: {turbo_frame: "modal"}
+    =< link_to t("actions.edit"), edit_node_path(node), class: "btn btn-warning"
 
   p.text-muted
     small
@@ -195,7 +192,7 @@
       | 一部のネットワークは検知に対応してません。
       | 端末の実在確認の参考にしてください。
 
-  - if node.confirmation&.destroyable?
+  - if !Settings.feature.confirmation || node.confirmation&.destroyable?
     hr
     h3 端末の削除
     - if node.specific

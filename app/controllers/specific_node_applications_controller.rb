@@ -23,7 +23,7 @@ class SpecificNodeApplicationsController < ApplicationController
 
   private def set_node
     @node = Node.find(params[:node_id])
-    authorize @node, :update?
+    authorize @node, :specific_apply?
   end
 
   private def specific_node_application_params
