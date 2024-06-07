@@ -1,3 +1,4 @@
+# defalut settings
 site:
   title: null
 database:
@@ -6,7 +7,13 @@ database:
   # credentials
   password: admin_password
   host: localhost
-  # database: <same database in development and production>
+  # port: 3306
+  # socket: /var/lib/mysql/mysql.sock
+  database: nodokan
+  development_database_suffix: _development
+  test_database_suffix: _test
+  kea_database: kea
+  radius_database: radius
 config:
   # credentials
   radius_mac_password: null

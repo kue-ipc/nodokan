@@ -5,26 +5,53 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: <%= (Rails.application.credentials.dig(:database, :username) || Settings.database.username).to_json %>
   password: <%= (Rails.application.credentials.dig(:database, :password) || Settings.database.password).to_json %>
-  host: <%= Settings.database.host.to_json %>
-
-development:
-  <<: *default
-  database: <%= (Settings.database.database || 'nodokan_development').to_json %>
-
-test:
-  <<: *default
-  database: nodokan_test
+  host: <%= (Settings.database.host || 'localhost').to_json %>
+  <% [:port, :socket].select { |key| Settings.database.key?(key) }.each do |key| %>
+  <%= key.to_s %>: <% Settings.database[key].to_json %>
+  <% end %>
 
 production:
-  <<: *default
-  database: <%= (Settings.database.database || 'nodokan').to_json %>
+  primary:
+    <<: *default
+    database: <%= Settings.database.database.to_json %>
+  # ISC KEA Database (DHCP)
+  kea:
+    <<: *default
+    database: <%= Settings.database.kea_database.to_json %>
+    database_tasks: false
+  # FreeRADIUS Database (RADIUS)
+  radius:
+    <<: *default
+    database: <%= Settings.database.radius_database.to_json %>
+    database_tasks: false
 
-# FreeRADIUS Database (RADIUS)
-radius:
-  <<: *default
-  database: radius
+development:
+  primary:
+    <<: *default
+    database: <%= (Settings.database.database + Settings.database.development_database_suffix).to_json %>
+  # ISC KEA Database (DHCP)
+  kea:
+    <<: *default
+    database: <%= Settings.database.kea_database.to_json %>
+    database_tasks: false
+  # FreeRADIUS Database (RADIUS)
+  radius:
+    <<: *default
+    database: <%= Settings.database.radius_database.to_json %>
+    database_tasks: false
 
-# ISC KEA Database (DHCP)
-kea:
-  <<: *default
-  database: kea
+test:
+  primary:
+    <<: *default
+    database: <%= (Settings.database.database + Settings.database.test_database_suffix).to_json %>
+  # ISC KEA Database (DHCP)
+  kea:
+    <<: *default
+    database: <%= Settings.database.kea_database.to_json %>
+    database_tasks: false
+  # FreeRADIUS Database (RADIUS)
+  radius:
+    <<: *default
+    database: <%= Settings.database.radius_database.to_json %>
+    database_tasks: false
+
