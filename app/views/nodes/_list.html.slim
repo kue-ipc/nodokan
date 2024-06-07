@@ -1,9 +1,10 @@
 = turbo_frame_tag "nodes-list" do
   .mb-2
     .row.row-cols-md-auto.g-3
-      .col-12
-        => filter_link(:specific)
-        | 特定端末
+      - if Settings.feature.specific_node
+        .col-12
+          => filter_link(:specific)
+          | 特定端末
       .col-12
         = filter_collection_select(:nics_network_id,
           current_user.usable_networks.to_a, :id, :name)

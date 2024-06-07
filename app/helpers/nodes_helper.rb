@@ -62,7 +62,11 @@ module NodesHelper
 
 
   def node_flag_attributes
-    [:specific, :global, :public, :dns]
+    if Settings.feature.specific_node
+      [:specific, :global, :public, :dns]
+    else
+      [:global, :public, :dns]
+    end
   end
 
   def list_col_classes(name, cols: node_list_cols)

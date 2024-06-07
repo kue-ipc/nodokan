@@ -21,9 +21,10 @@
             :first, :second, {floating: true},
             data: {node_target: "nodeType", action: "node#changeNodeType"}
         - if current_user.admin?
-          .col-md-2.d-flex.align-items-center
-            = f.check_box :specific,
-              data: {node_target: "specific", action: "node#changeFlag"}
+          - if Settings.feature.specific_node
+            .col-md-2.d-flex.align-items-center
+              = f.check_box :specific,
+                data: {node_target: "specific", action: "node#changeFlag"}
           .col-md-2.d-flex.align-items-center
             = f.check_box :public,
               data: {node_target: "public", action: "node#changeFlag"}

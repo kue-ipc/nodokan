@@ -19,7 +19,7 @@ config:
   radius_mac_password: null
 feature:
   confirmation: true
-  specific_node_application: true
+  specific_node: true
   user_auth_network: true
 ## Authorizations LDAP
 # Uncomment out the merging for each environment that you'd like to include.

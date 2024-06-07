@@ -38,6 +38,6 @@ class NodePolicy < ApplicationPolicy
   end
 
   def specific_apply?
-    Settings.feature.specific_node_application && update?
+    Settings.feature.specific_node && update?
   end
 end
