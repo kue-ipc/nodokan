@@ -24,17 +24,18 @@ h3 利用者メニュー
     - else
       .card.border-primary.disabled
         .card-header.text-center
-          | 端末の新規登録(使用不可)
+          | 端末の新規登録
+          span.text-danger
+            | (使用不可)
         .card-body
-          - if current_user.limit == 0
-            | 端末を登録する権限がありません。
-
-          - elsif current_user.limit <= current_user.nodes_count
+          - if current_user.limit&.positive? && \
+              current_user.limit <= current_user.nodes_count
             | 登録できる端末台数が制限に達したため、
             | 新たな端末を登録することはできません。
             | 別の端末をネットワークに参加させたい場合は、
             | 登録済みの端末を削除してから新規に登録してください。
-
+          - else
+            | 端末を登録する権限がありません。
 
   .col-md-6.col-lg-4.my-1
     = link_to nodes_path, class: "card border-secondary" do

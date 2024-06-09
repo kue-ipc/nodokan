@@ -33,17 +33,11 @@ class NodesController < ApplicationController
 
   # GET /nodes/new
   def new
-    nics =
-      if current_user.usable_networks.count.zero?
-        []
-      else
-        [Nic.new(network_id: current_user.use_network_ids.first)]
-      end
     @node = Node.new(
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      nics: nics,
+      nics: [Nic.new(network_id: current_user.use_network_ids.first)],
       user: current_user)
     authorize @node
   end

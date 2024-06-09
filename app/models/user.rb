@@ -245,6 +245,13 @@ class User < ApplicationRecord
   end
 
   def node_creatable?
-    admin? || limit.nil? || limit > nodes_count
+    return true if admin?
+
+    return false if limit && limit <= nodes_count
+    return false if Settings.config.node_require_nic &&
+      Settings.config.nic_require_network &&
+      use_networks.count.zero?
+
+    true
   end
 end
