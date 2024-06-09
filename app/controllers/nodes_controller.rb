@@ -33,11 +33,21 @@ class NodesController < ApplicationController
 
   # GET /nodes/new
   def new
+    network = current_user.use_networks.first
+    nic =
+      if network
+        Nic.new(network_id: network.id, auth: network.auth,
+          ipv4_config: (Nic.ipv4_configs.keys & network.ipv4_configs).first,
+          ipv6_config: (Nic.ipv6_configs.keys & network.ipv6_configs).first)
+      else
+        Nic.new
+      end
+
     @node = Node.new(
       place: Place.new,
       hardware: Hardware.new,
       operating_system: OperatingSystem.new,
-      nics: [Nic.new(network_id: current_user.use_network_ids.first)],
+      nics: [nic],
       user: current_user)
     authorize @node
   end
@@ -276,8 +286,8 @@ class NodesController < ApplicationController
     network = nic_params[:network_id].presence &&
       Network.find(nic_params[:network_id])
 
+    # ゲストの制限
     if current_user.guest?
-      # ゲストはNICを削除できない
       nic_params.delete(:_destroy)
       nic_params[:auth] = network.auth if network
       if ["dynamic", "disabled"].exclude?(nic_params[:ipv4_config])
@@ -287,7 +297,6 @@ class NodesController < ApplicationController
         nic_params.delete(:ipv6_config)
       end
     end
-
 
     if nic_params[:id].blank?
       # new nic
@@ -299,7 +308,6 @@ class NodesController < ApplicationController
       end
       return
     end
-
 
     if nic.locked?
       # delete all except of :id for locked nic

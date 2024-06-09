@@ -31,13 +31,16 @@
 
     .col-md-4
       = form.form_group :auth,
-        label: {text: t("messages.register_auth_network")} do
+        label: {text: t("messages.register_auth_network")},
+        class: [current_user.guest? && "d-none"] do
         = form.check_box :auth, label: t("with_actions.register",
           name: Nic.human_attribute_name(:mac_address)),
           data: {node_nic_target: "auth", action: "node-nic#changeAuth"}
 
     .col-md-4
-      = form.collection_select :ipv4_config, t_enums(:ipv4_config, Nic),
+      - ipv4_configs = t_enums(:ipv4_config, Nic).dup
+      - ipv4_configs.slice!("dynamic", "disabled") if current_user.guest?
+      = form.collection_select :ipv4_config, ipv4_configs,
         :first, :second, {floating: true},
         data: {node_nic_target: "ipv4Config", action: "node-nic#changeIpv4"}
 
@@ -49,7 +52,9 @@
       .form-text data-node-nic-target="ipv4Help"
 
     .col-md-4
-      = form.collection_select :ipv6_config, t_enums(:ipv6_config, Nic),
+      - ipv6_configs = t_enums(:ipv6_config, Nic).dup
+      - ipv6_configs.slice!("dynamic", "disabled") if current_user.guest?
+      = form.collection_select :ipv6_config, ipv6_configs,
         :first, :second, {floating: true},
         data: {node_nic_target: "ipv6Config", action: "node-nic#changeIpv6"}
 
@@ -66,14 +71,14 @@
 
   .row
     .col-md-4
-      - unless current_user.guest?
-        = form.check_box :_destroy, label: t("with_actions.delete",
-          name: Node.human_attribute_name(:nic)),
-          data: {node_nic_target: "destroy", action: "node-nic#change"}
+      = form.check_box :_destroy,
+        label: t("with_actions.delete", name: Node.human_attribute_name(:nic)),
+        data: {node_nic_target: "destroy", action: "node-nic#change"},
+        wrapper_class: [current_user.guest? && "d-none"]
 
     .col-md-4
-      - if current_user.admin?
-        = form.check_box :locked,
-          data: {node_nic_target: "locked"}
+      = form.check_box :locked,
+        data: {node_nic_target: "locked"},
+        wrapper_class: [!current_user.admin? && "d-none"]
 
     .col-md-4
