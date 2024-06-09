@@ -17,8 +17,9 @@
         =< t("values.unlimited")
     = dt_dd_for user, :role do |role|
       = t_enum(role, :role)
-    = dt_dd_for user, :auth_network do |auth_network|
-      = auth_network&.name_vlan || t("values.none")
+    - if Settings.feature.user_auth_network
+      = dt_dd_for user, :auth_network do |auth_network|
+        = auth_network&.name_vlan || t("values.none")
   - if current_user.admin?
     =< link_to t("actions.edit"), edit_user_path(user),
       class: "btn btn-warning"

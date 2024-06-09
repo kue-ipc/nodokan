@@ -18,16 +18,18 @@
               min: 0, step: 1
           = f.check_box :unlimited,
             wrapper: {class: "col-auto", style: "margin-bottom: 0 !important;"}
-      = dt_dd_for user, :role do |role|
+      = dt_dd_for user, :role do |_role|
         .row: .col-auto
           = f.collection_select :role, t_enums(:role), :first, :second,
             {hide_label: true, wrapper: false},
             disabled: current_user == user
-      = dt_dd_for user, :auth_network do |auth_network|
-        .row: .col-auto
-          = f.collection_select :auth_network_id, Network.where(auth: true),
-            :id, :name_vlan,
-            {include_blank: t("values.none"), hide_label: true, wrapper: false}
+      - if Settings.feature.user_auth_network
+        = dt_dd_for user, :auth_network do |_auth_network|
+          .row: .col-auto
+            = f.collection_select :auth_network_id, Network.where(auth: true),
+              :id, :name_vlan,
+              {include_blank: t("values.none"), hide_label: true,
+                wrapper: false,}
 
     = f.submit class: "btn btn-primary"
     =< link_to t("actions.cancel"), user, class: "btn btn-dark",
