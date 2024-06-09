@@ -17,8 +17,9 @@
       .col-1
         = User.human_attribute_name(:deleted)
         =< filter_link(:deleted)
-      .col-1
-        = User.human_attribute_name(:auth_network)
+      - if Settings.feature.user_auth_network
+        .col-1
+          = User.human_attribute_name(:auth_network)
       .col-2
         = User.human_attribute_name(:use_networks)
       .col-1
@@ -32,7 +33,8 @@
         .col-2 = user.fullname
         .col-1 = t_enum(user.role, :role)
         .col-1 = i_bool_tag(user.deleted)
-        .col-1 = user.auth_network&.identifier
+        - if Settings.feature.user_auth_network
+          .col-1 = user.auth_network&.identifier
         .col-2 = user.use_networks.map(&:identifier).join(", ")
         .col-1 = user.nodes_count
 
