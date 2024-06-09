@@ -1,5 +1,5 @@
 namespace :ipv4_arp do
-  desc "register ipv4 arp"
+  desc "Register IPv4 ARP"
   task register: :environment do
     PaperTrail.request.disable_model(Ipv4Arp)
     csv_file = Rails.root / "data" / "ipv4_arp_register.csv"
@@ -40,5 +40,16 @@ namespace :ipv4_arp do
       end
     end
     puts results.to_json
+  end
+
+  desc "Clean IPv4 ARP"
+  task clean: :environment do
+    if Rails.env.production?
+      puts "add job queue clean ipv4_arp, please see log"
+      Ipv4ArpCleanJob.perform_later
+    else
+      puts "run job queue clean ipv4_arp, please wait..."
+      Ipv4ArpCleanJob.perform_now
+    end
   end
 end

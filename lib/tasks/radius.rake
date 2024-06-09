@@ -92,14 +92,14 @@ namespace :radius do
     end
   end
 
-  desc "Compress radpostauth"
-  task compress: :environment do
+  desc "Clean radius record"
+  task clean: :environment do
     if Rails.env.production?
-      puts "add job queue commpress radpostauths, please see log"
-      RadiusCompressJob.perform_later
+      puts "add job queue clean radius, please see log"
+      RadiusCleanJob.perform_later
     else
-      puts "run job queue commpress radpostauths, please wait..."
-      RadiusCompressJob.perform_now
+      puts "run job queue clean radius, please wait..."
+      RadiusCleanJob.perform_now
     end
   end
 end

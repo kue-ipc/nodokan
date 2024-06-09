@@ -1,5 +1,5 @@
 namespace :ipv6_neighbor do
-  desc "register ipv6 neighbor"
+  desc "Register IPv66 Neighbor"
   task register: :environment do
     PaperTrail.request.disable_model(Ipv6Neighbor)
     csv_file = Rails.root / "data" / "ipv6_neighbor_register.csv"
@@ -42,5 +42,16 @@ namespace :ipv6_neighbor do
       end
     end
     puts results.to_json
+  end
+
+  desc "Clean IPv6 Neighbor"
+  task clean: :environment do
+    if Rails.env.production?
+      puts "add job queue clean ipv6_neighbor, please see log"
+      Ipv6NeighborCleanJob.perform_later
+    else
+      puts "run job queue clean ipv6_neighbor, please wait..."
+      Ipv6NeighborCleanJob.perform_now
+    end
   end
 end

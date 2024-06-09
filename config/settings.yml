@@ -19,6 +19,9 @@ config:
   radius_mac_password: null
   node_require_nic: false
   nic_require_network: false
+  reteniton_period: nil # forever
+  # reteniton_period: 31622400 # 1 year
+  nocompress_period: 31622400 # 1 year
 feature:
   confirmation: true
   specific_node: true
