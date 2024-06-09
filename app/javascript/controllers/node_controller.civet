@@ -1,5 +1,6 @@
 import {Controller} from "@hotwired/stimulus"
 import {Collapse} from "bootstrap"
+import {capitalize} from "../utils/string_utils.civet"
 
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
@@ -36,12 +37,16 @@ export default class NodeController < Controller<HTMLFormElement>
     "collapseSubFormOperatingSystem"
   ] as const
 
+  @collapseTargets := [
+    ...@collapseHelpTargets
+    ...@collapseSubFormTargets
+  ] as const
+
   @targets := [
     ...@selectTargets
     ...@flagTargets
-    ...@collapseHelpTargets
-    ...@collapseSubFormTargets
-  ]
+    ...@collapseTargets
+  ] as const
 
   // TODO: 下記のようにすべきだが、Civetがうまく動かない
   // https://stimulus.hotwired.dev/reference/using-typescript
@@ -63,10 +68,9 @@ export default class NodeController < Controller<HTMLFormElement>
   collapseSubFormOperatingSystem?: Collapse
 
   connect(): void
-    for each name of NodeController.collapseHelpTargets
-      @[name] = new Collapse(@[`${name}Target`], toggle: false)
-    for each name of NodeController.collapseSubFormTargets
-      @[name] = new Collapse(@[`${name}Target`], toggle: false)
+    for each name of NodeController.collapseTargets
+      if @[`has${capitalize(name)}Target`]
+        @[name] = new Collapse(@[`${name}Target`], toggle: false)
 
   changeNodeType(event?: Event): Promise<void>
     @dispatch("changeNodeType", {detail: {nodeType: @nodeTypeTarget.value}})
@@ -126,11 +130,9 @@ export default class NodeController < Controller<HTMLFormElement>
       check()
 
   chackCollapsing(): boolean
-      [
-        ...NodeController.collapseHelpTargets
-        ...NodeController.collapseSubFormTargets
-      ].some (name) =>
-        @[`${name}Target`].classList.contains("collapsing")
+      NodeController.collapseTargets.some (name) =>
+        if @[`has${capitalize(name)}Target`]
+          @[`${name}Target`].classList.contains("collapsing")
 
   changeFlag(event?: Event): Promise<void>
     return unless event?.target <? HTMLInputElement
