@@ -212,7 +212,8 @@
         method: :delete,
         class: "btn btn-danger"
 
-  - if !Settings.feature.confirmation || node.confirmation&.transferable?
+  - if !current_user.guest? && \
+      (!Settings.feature.confirmation || node.confirmation&.transferable?)
     hr
     h3 管理の譲渡
     p

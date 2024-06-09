@@ -30,7 +30,7 @@ class NodePolicy < ApplicationPolicy
   end
 
   def transfer?
-    update?
+    !user.guest? && update?
   end
 
   def confirm?

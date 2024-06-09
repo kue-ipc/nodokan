@@ -230,12 +230,9 @@ class NodesController < ApplicationController
   end
 
   private def normalize_params(permitted_params)
-    delete_unchangable_params(permitted_params) unless current_user.admin?
-    number = 1
-    permitted_params[:nics_attributes]&.each_value do |nic_params|
-      nic_params[:number] = number
-      number += 1
-    end
+    delete_unchangable_params(permitted_params)
+
+    number_nics(permitted_params[:nics_attributes]&.values || [])
 
     if permitted_params.key?(:place)
       permitted_params[:place] = find_or_new_place(permitted_params[:place])
@@ -249,6 +246,7 @@ class NodesController < ApplicationController
       permitted_params[:hardware] =
         find_or_new_hardware(permitted_params[:hardware])
     end
+
     if permitted_params.key?(:operating_system)
       permitted_params[:operating_system] =
         find_or_new_operating_system(permitted_params[:operating_system])
@@ -257,6 +255,8 @@ class NodesController < ApplicationController
   end
 
   private def delete_unchangable_params(permitted_params)
+    return permitted_params if current_user.admin?
+
     permitted_params.delete(:specific)
     permitted_params.delete(:public)
     permitted_params.delete(:dns)
@@ -268,7 +268,26 @@ class NodesController < ApplicationController
   end
 
   private def delete_nic_params(nic_params)
+    return nic_params if current_user.admin?
+
     nic_params.delete(:locked)
+
+    nic = nic_params[:id].presence && Nic.find(nic_params[:id])
+    network = nic_params[:network_id].presence &&
+      Network.find(nic_params[:network_id])
+
+    if current_user.guest?
+      # ゲストはNICを削除できない
+      nic_params.delete(:_destroy)
+      nic_params[:auth] = network.auth if network
+      if ["dynamic", "disabled"].exclude?(nic_params[:ipv4_config])
+        nic_params.delete(:ipv4_config)
+      end
+      if ["dynamic", "disabled"].exclude?(nic_params[:ipv6_config])
+        nic_params.delete(:ipv6_config)
+      end
+    end
+
 
     if nic_params[:id].blank?
       # new nic
@@ -281,7 +300,6 @@ class NodesController < ApplicationController
       return
     end
 
-    nic = Nic.find(nic_params[:id])
 
     if nic.locked?
       # delete all except of :id for locked nic
@@ -319,6 +337,13 @@ class NodesController < ApplicationController
       nic_params[:ipv6_address] = nil
     end
     nic_params
+  end
+
+  private def number_nics(nics_params)
+    nics_params.each_with_index do |nic_params, idx|
+      nic_params[:number] = idx + 1
+    end
+    nics_params
   end
 
   private def find_or_new_place(place_params)

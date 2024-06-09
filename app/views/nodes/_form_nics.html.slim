@@ -4,10 +4,11 @@
   .row
     .col-md-4
       = form.text_field :duid, floating: true, pattern: duid_pattern
-    .col.text-end
-      = link_to t("with_actions.add", name: Nic.model_name.human),
-        new_nic_path, class: "btn btn-secondary",
-        data: {turbo: true, turbo_stream: true}
+    - if !current_user.guest!
+      .col.text-end
+        = link_to t("with_actions.add", name: Nic.model_name.human),
+          new_nic_path, class: "btn btn-secondary",
+          data: {turbo: true, turbo_stream: true}
 
   = turbo_frame_tag "nics"
     = form.fields_for :nics do |field|

@@ -66,9 +66,10 @@
 
   .row
     .col-md-4
-      = form.check_box :_destroy, label: t("with_actions.delete",
-        name: Node.human_attribute_name(:nic)),
-        data: {node_nic_target: "destroy", action: "node-nic#change"}
+      - unless current_user.guest?
+        = form.check_box :_destroy, label: t("with_actions.delete",
+          name: Node.human_attribute_name(:nic)),
+          data: {node_nic_target: "destroy", action: "node-nic#change"}
 
     .col-md-4
       - if current_user.admin?
