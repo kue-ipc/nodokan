@@ -44,6 +44,10 @@ class Node < ApplicationRecord
     if: ->(node) { node.domain.present? }
   validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: true
 
+  validates :nics,
+    length: {minimum: 1, too_short: I18n.t("errors.messages.item_too_short")},
+    if: -> { Settings.config.node_require_nic }
+
   normalizes :hostname, with: ->(str) { str.presence&.strip&.downcase }
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
 

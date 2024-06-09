@@ -51,6 +51,9 @@ class Nic < ApplicationRecord
   validates :ipv6_config, exclusion: ["reserved"],
     if: -> { node.duid_data.blank? }
 
+  validates :network, presence: true,
+    if: -> { Settings.config.nic_require_network }
+
   validates_with UniqueMacAddressValidator
 
   normalizes :name, with: ->(str) { str.presence&.strip }

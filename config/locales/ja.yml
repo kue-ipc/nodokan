@@ -815,6 +815,9 @@ ja:
       too_long: "%{count}文字以内で入力してください"
       too_short: "%{count}文字以上で入力してください"
       wrong_length: "%{count}文字で入力してください"
+      item_too_long: "%{count}個以内にしてください"
+      item_too_short: "%{count}個以上にしてください"
+      item_wrong_length: "%{count}個にしてください"
       exclusion: 設定できない値です。
       inclusion: 設定できる値の一覧にありません。
       invalid: 不正な値です。
