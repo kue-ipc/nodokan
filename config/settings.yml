@@ -19,11 +19,12 @@ config:
   radius_mac_password: null
   node_require_nic: false
   nic_require_network: false
-  nic_require_auth: false
 feature:
   confirmation: true
   specific_node: true
   user_auth_network: true
+  virtual_node: true
+  logical_node: true
 ## Authorizations LDAP
 # Uncomment out the merging for each environment that you'd like to include.
 # You can also just copy and paste the tree (do not include the "authorizations") to each

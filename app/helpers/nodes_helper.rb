@@ -60,6 +60,12 @@ module NodesHelper
     end
   end
 
+  def node_type_names
+    names = [:normal, :mobile]
+    names << :virtual if Settings.feature.virtual_node
+    names << :logical if Settings.feature.logical_node
+    names
+  end
 
   def node_flag_attributes
     if Settings.feature.specific_node

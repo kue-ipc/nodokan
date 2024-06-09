@@ -17,7 +17,8 @@
           = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*", floating: true
       .row
         .col-md-2
-          = f.collection_select :node_type, t_enums(:node_type, Node),
+          = f.collection_select :node_type,
+            t_enums(:node_type, Node).slice(*node_type_names.map(&:to_s)),
             :first, :second, {floating: true},
             data: {node_target: "nodeType", action: "node#changeNodeType"}
         - if current_user.admin?
