@@ -2,7 +2,7 @@ class CleanJob < ApplicationJob
   LIMIT_SIZE = 1000
 
   def delete_records(relation, size: LIMIT_SIZE, once: false)
-    if !size.positive
+    if !size.positive?
       relation.delete_all
     elsif once
       relation.limit(size).delete_all

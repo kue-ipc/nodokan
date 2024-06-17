@@ -21,7 +21,7 @@ class RadiusCleanJob < ApplicationJob
     Radius::Radacct.pluck(:username).each do |username|
       total +=
         compress_past_radacct(username,
-          now - (Settigs.config.nocompress_period || 0),
+          now - (Settings.config.nocompress_period || 0),
           limit_size: limit_size)
     end
     logger.info("Deleted radacct: #{total}")
@@ -75,7 +75,7 @@ class RadiusCleanJob < ApplicationJob
     Radius::Radpostauth.pluck(:username).each do |username|
       total +=
         compress_past_radpostauth(username,
-          now - Settigs.config.nocompress_period,
+          now - Settings.config.nocompress_period,
           limit_size: limit_size)
     end
     logger.info("Deleted radpostauth: #{total}")

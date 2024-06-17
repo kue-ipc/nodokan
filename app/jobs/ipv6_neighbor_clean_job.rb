@@ -16,8 +16,8 @@ class Ipv6NeighborCleanJob < CleanJob
 
       compress_relation = Ipv6Neighbor.where(ipv6_data: ipv6_data)
         .where.not(id: last_record.id)
-      if Settigs.config.nocompress_period
-        compress_date = now - Settigs.config.nocompress_period
+      if Settings.config.nocompress_period
+        compress_date = now - Settings.config.nocompress_period
         compress_relation = compress_relation.where(end_at: (...compress_date))
       end
       total += delete_records(compress_relation)

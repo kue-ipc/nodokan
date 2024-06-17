@@ -18,8 +18,8 @@ class RadiusRadacctCleanJob < CleanJob
 
       compress_relation = Radius::Radacct.where(username: username)
         .where.not(id: last_record.id)
-      if Settigs.config.nocompress_period
-        compress_date = now - Settigs.config.nocompress_period
+      if Settings.config.nocompress_period
+        compress_date = now - Settings.config.nocompress_period
         compress_relation =
           compress_relation.where(acctupdatetime: (...compress_date))
       end
