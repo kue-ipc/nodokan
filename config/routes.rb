@@ -1,3 +1,5 @@
+require "resque/server"
+
 Rails.application.routes.draw do
   root to: "pages#top"
   get "about", to: "pages#about"
@@ -53,5 +55,9 @@ Rails.application.routes.draw do
 
   authenticated :user, ->(user) { user.admin? } do
     mount DelayedJobWeb, at: "/delayed_job"
+  end
+
+  authenticated :user, ->(user) { user.admin? } do
+    mount Resque::Server, at: "/jobs"
   end
 end

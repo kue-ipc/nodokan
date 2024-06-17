@@ -94,6 +94,9 @@ gem "delayed_job_active_record"
 gem "delayed_job_web"
 gem "daemons"
 
+# Resque
+gem "resque"
+
 # Ransack
 gem "ransack"
 
