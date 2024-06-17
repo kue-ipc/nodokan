@@ -44,12 +44,11 @@ namespace :ipv4_arp do
 
   desc "Clean IPv4 ARP"
   task clean: :environment do
-    if Rails.env.production?
-      puts "add job queue clean ipv4_arp, please see log"
-      Ipv4ArpCleanJob.perform_later
-    else
-      puts "run job queue clean ipv4_arp, please wait..."
-      Ipv4ArpCleanJob.perform_now
+    if Rails.application.config.active_job.queue_adapter == :async
+      puts "run job with inline queue adapter"
+      Rails.application.config.active_job.queue_adapter = :inline
     end
+    puts "add job queue clean ipv4_arp, please see log"
+    Ipv4ArpCleanJob.perform_later
   end
 end

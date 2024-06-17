@@ -46,12 +46,11 @@ namespace :ipv6_neighbor do
 
   desc "Clean IPv6 Neighbor"
   task clean: :environment do
-    if Rails.env.production?
-      puts "add job queue clean ipv6_neighbor, please see log"
-      Ipv6NeighborCleanJob.perform_later
-    else
-      puts "run job queue clean ipv6_neighbor, please wait..."
-      Ipv6NeighborCleanJob.perform_now
+    if Rails.application.config.active_job.queue_adapter == :async
+      puts "run job with inline queue adapter"
+      Rails.application.config.active_job.queue_adapter = :inline
     end
+    puts "add job queue clean ipv6_neighbor, please see log"
+    Ipv6NeighborCleanJob.perform_later
   end
 end

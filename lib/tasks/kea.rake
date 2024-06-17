@@ -25,14 +25,12 @@ namespace :kea do
 
   desc "Check kea record"
   task check: :environment do
-    if Rails.env.production?
-      puts "add job queue kea check, please see log"
-      KeaReservationCheckAllJob.perform_later
-      KeaSubnetCheckAllJob.perform_later
-    else
-      puts "run job queue kea check, please wait..."
-      KeaReservationCheckAllJob.perform_now
-      KeaSubnetCheckAllJob.perform_now
+    if Rails.application.config.active_job.queue_adapter == :async
+      puts "run job with inline queue adapter"
+      Rails.application.config.active_job.queue_adapter = :inline
     end
+    puts "add job queue kea check, please see log"
+    KeaReservationCheckAllJob.perform_later
+    KeaSubnetCheckAllJob.perform_later
   end
 end

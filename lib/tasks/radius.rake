@@ -83,23 +83,21 @@ namespace :radius do
 
   desc "Check radius record"
   task check: :environment do
-    if Rails.env.production?
-      puts "add job queue radius check, please see log"
-      RadiusCheckAllJob.perform_later
-    else
-      puts "run job queue radius check, please wait..."
-      RadiusCheckAllJob.perform_now
+    if Rails.application.config.active_job.queue_adapter == :async
+      puts "run job with inline queue adapter"
+      Rails.application.config.active_job.queue_adapter = :inline
     end
+    puts "add job queue radius check, please see log"
+    RadiusCheckAllJob.perform_later
   end
 
   desc "Clean radius record"
   task clean: :environment do
-    if Rails.env.production?
-      puts "add job queue clean radius, please see log"
-      RadiusCleanJob.perform_later
-    else
-      puts "run job queue clean radius, please wait..."
-      RadiusCleanJob.perform_now
+    if Rails.application.config.active_job.queue_adapter == :async
+      puts "run job with inline queue adapter"
+      Rails.application.config.active_job.queue_adapter = :inline
     end
+    puts "add job queue clean radius, please see log"
+    RadiusCleanJob.perform_later
   end
 end
