@@ -11,7 +11,7 @@ class Ipv4ArpCleanJob < CleanJob
     end
 
     Ipv4Arp.pluck(:ipv4_data).each do |ipv4_data|
-      last_record = Ipv4Arp.where(ipv4_data: ipv4_data).order(:end_ta).last
+      last_record = Ipv4Arp.where(ipv4_data: ipv4_data).order(:end_at).last
       next if last_record.nil?
 
       compress_relation = Ipv4Arp.where(ipv4_data: ipv4_data)
