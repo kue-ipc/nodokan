@@ -54,10 +54,6 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => "/admin", as: "rails_admin"
 
   authenticated :user, ->(user) { user.admin? } do
-    mount DelayedJobWeb, at: "/delayed_job"
-  end
-
-  authenticated :user, ->(user) { user.admin? } do
     mount Resque::Server, at: "/jobs"
   end
 end

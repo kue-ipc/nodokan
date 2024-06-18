@@ -89,11 +89,6 @@ gem "rails_admin-i18n"
 # Bootstrap
 gem "bootstrap_form", "~> 5.3"
 
-# Delayed::Job
-gem "delayed_job_active_record"
-gem "delayed_job_web"
-gem "daemons"
-
 # Resque
 gem "resque"
 

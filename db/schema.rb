@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_21_055316) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_18_145557) do
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -42,21 +42,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_21_055316) do
     t.integer "security_hardware", default: -1, null: false
     t.index ["node_id"], name: "index_confirmations_on_node_id", unique: true
     t.index ["security_software_id"], name: "index_confirmations_on_security_software_id"
-  end
-
-  create_table "delayed_jobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.integer "priority", default: 0, null: false
-    t.integer "attempts", default: 0, null: false
-    t.text "handler", null: false
-    t.text "last_error"
-    t.datetime "run_at", precision: nil
-    t.datetime "locked_at", precision: nil
-    t.datetime "failed_at", precision: nil
-    t.string "locked_by"
-    t.string "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "device_types", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|

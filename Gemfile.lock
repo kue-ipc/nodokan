@@ -110,22 +110,11 @@ GEM
     cssbundling-rails (1.4.0)
       railties (>= 6.0.0)
     csv (3.3.0)
-    daemons (1.4.1)
     date (3.3.4)
     debug (1.9.2)
       irb (~> 1.10)
       reline (>= 0.3.8)
     deep_merge (1.2.2)
-    delayed_job (4.1.11)
-      activesupport (>= 3.0, < 8.0)
-    delayed_job_active_record (4.1.8)
-      activerecord (>= 3.0, < 8.0)
-      delayed_job (>= 3.0, < 5)
-    delayed_job_web (1.4.4)
-      activerecord (> 3.0.0)
-      delayed_job (> 2.0.3)
-      rack-protection (>= 1.5.5)
-      sinatra (>= 1.4.4)
     devise (4.9.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -388,10 +377,7 @@ DEPENDENCIES
   config
   cssbundling-rails
   csv
-  daemons
   debug
-  delayed_job_active_record
-  delayed_job_web
   devise
   devise-i18n
   devise_ldap_authenticatable
