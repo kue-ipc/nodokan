@@ -70,17 +70,12 @@ a.card.text-white
 a.card
   color: inherit
 
-  &:hover
-    text-decoration: none
-    background-color: $gray-700 !important
-    color: $white !important
-
 @each $color, $value in $theme-colors
   a.card.border-#{$color}
     &:hover
       text-decoration: none
-      background-color: darken($value, 15%) !important
-      color: $white !important
+      color: color-contrast($value) !important
+      background-color: rgba(var(--bs-#{$color}-rgb), var(--bs-bg-opacity, 1)) !important
 
 a.row
   color: inherit
