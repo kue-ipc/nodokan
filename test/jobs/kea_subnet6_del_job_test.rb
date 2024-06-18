@@ -3,7 +3,7 @@ require "test_helper"
 class KeaSubnet6DelJobTest < ActiveJob::TestCase
   setup do
     Kea::Dhcp6Subnet.transaction do
-      Kea::Dhcp6Subnet.dhcp6_audit
+      Kea::Dhcp6Subnet.dhcp6_audit(cascade_transaction: true)
       Kea::Dhcp6Subnet.destroy_all
     end
 

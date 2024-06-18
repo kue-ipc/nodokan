@@ -16,12 +16,23 @@ module Kea
       connection.execute("SET @disable_audit = 1;")
     end
 
-    def self.dhcp4_audit
-      connection.execute('CALL createAuditRevisionDHCP4(NOW(), "all", "", 0)')
+    # cascade_transaction
+    #   サブネットと一緒にオプションも追加する場合: true
+    #   既存のサブネットにオプションを追加する場合: false
+    def self.dhcp4_audit(cascade_transaction: false)
+      if cascade_transaction
+        connection.execute('CALL createAuditRevisionDHCP4(NOW(), "all", "", 1)')
+      else
+        connection.execute('CALL createAuditRevisionDHCP4(NOW(), "all", "", 0)')
+      end
     end
 
-    def self.dhcp6_audit
-      connection.execute('CALL createAuditRevisionDHCP6(NOW(), "all", "", 0)')
+    def self.dhcp6_audit(cascade_transaction: false)
+      if cascade_transaction
+        connection.execute('CALL createAuditRevisionDHCP6(NOW(), "all", "", 1)')
+      else
+        connection.execute('CALL createAuditRevisionDHCP6(NOW(), "all", "", 0)')
+      end
     end
 
     # https://kea.readthedocs.io/en/kea-2.2.0/arm/dhcp4-srv.html#id4

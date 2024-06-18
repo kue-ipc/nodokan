@@ -3,9 +3,10 @@ class KeaSubnet4AddJob < ApplicationJob
 
   def perform(id, ip, options, pools)
     Kea::Dhcp4Subnet.transaction do
-      Kea::Dhcp4Subnet.dhcp4_audit
-
       subnet4 = Kea::Dhcp4Subnet.find_or_initialize_by(subnet_id: id)
+
+      Kea::Dhcp4Subnet.dhcp4_audit(cascade_transaction: subnet4.new_record?)
+
       subnet4.update!(subnet_prefix: "#{ip}/#{ip.prefix}")
 
       subnet4.dhcp4_servers = [Kea::Dhcp4Server.default]
@@ -17,6 +18,7 @@ class KeaSubnet4AddJob < ApplicationJob
         subnet4.dhcp4_pools
           .build(start_address: pool.first.to_i, end_address: pool.last.to_i)
       }
+
       subnet4.save!
     end
   end

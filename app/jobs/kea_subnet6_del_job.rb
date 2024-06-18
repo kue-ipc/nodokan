@@ -3,7 +3,7 @@ class KeaSubnet6DelJob < ApplicationJob
 
   def perform(id)
     Kea::Dhcp6Subnet.transaction do
-      Kea::Dhcp6Subnet.dhcp6_audit
+      Kea::Dhcp6Subnet.dhcp6_audit(cascade_transaction: true)
       Kea::Dhcp6Subnet.destroy_by(subnet_id: id)
     end
   end
