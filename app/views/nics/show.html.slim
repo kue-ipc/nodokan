@@ -44,6 +44,12 @@ table.table.table-sm.mb-0
           td = conn.ipv6_address
           td = conn.duid_str
           td = conn.hostname
+        - when Radius::Radacct
+          td scope="row" = Nic.human_attribute_name(:acct)
+          td
+          td
+            = conn.username.upcase.each_char.each_slice(2).map(&:join).join("-")
+          td
         - when Radius::Radpostauth
           td scope="row" = Nic.human_attribute_name(:auth)
           td

@@ -6,7 +6,8 @@ class NicsController < ApplicationController
   def show
     @connections = []
     Ipv4Arp.where(mac_address_data: @nic.mac_address_data)
-      .or(Ipv4Arp.where(ipv4_data: @nic.ipv4_data)).find_each do |ipv4_arp|
+      .or(Ipv4Arp.where(ipv4_data: @nic.ipv4_data))
+      .find_each do |ipv4_arp|
         @connections << [ipv4_arp.resolved_at, ipv4_arp]
       end
     Ipv6Neighbor.where(mac_address_data: @nic.mac_address_data)
@@ -14,16 +15,23 @@ class NicsController < ApplicationController
       .find_each do |ipv6_neighbor|
         @connections << [ipv6_neighbor.discovered_at, ipv6_neighbor]
       end
+
     Kea::Lease4.where(hwaddr: @nic.mac_address_data).find_each do |lease4|
       @connections << [lease4.leased_at, lease4]
     end
     Kea::Lease6.where(duid: @nic.node.duid_data).find_each do |lease6|
       @connections << [lease6.leased_at, lease6]
     end
-    Radius::Radpostauth.where(username: @nic.mac_address_raw)
+
+    Radius::Radacct.where(username: @nic.mac_address_raw).find_each do |radacct|
+      @connections << [radacct.acctupdatetime, radacct]
+    end
+    Radius::Radpostauth
+      .where(username: @nic.mac_address_raw, reply: "Access-Accept")
       .find_each do |radpostauth|
       @connections << [radpostauth.authdate, radpostauth]
     end
+
     @connections.sort_by!(&:first)
     @connections.reverse!
   end

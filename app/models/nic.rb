@@ -137,16 +137,6 @@ class Nic < ApplicationRecord
     FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 
-  def last_radpostauths
-    @last_radpostauths ||= mac_address_data && Radius::Radpostauth
-      .where(username: mac_address_raw, reply: "Access-Accept")
-      .order(:authdate).last
-  end
-
-  def lease4
-    @lease4 ||= mac_address_data && Kea::Lease4.find(hwaddr: mac_address_data)
-  end
-
   private def auto_assign_ipv4
     if network.nil?
       self.ipv4 = nil

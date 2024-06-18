@@ -48,10 +48,18 @@ class NicsConnectedAtJob < ApplicationJob
       .order(:expire).last&.leased_at
   end
 
+  def acct_at(nic)
+    return unless nic.has_mac_address?
+
+    Radius::Radacct.where(username: nic.mac_address_raw)
+      .order(:acctupdatetime).last&.acctupdatetime
+  end
+
   def auth_at(nic)
     return unless nic.has_mac_address?
 
-    Radius::Radpostauth.where(username: nic.mac_address_raw)
+    Radius::Radpostauth
+      .where(username: nic.mac_address_raw, reply: "Access-Accept")
       .order(:authdate).last&.authdate
   end
 end
