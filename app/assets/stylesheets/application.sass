@@ -77,8 +77,6 @@ a.card
 
 @each $color, $value in $theme-colors
   a.card.border-#{$color}
-    color: $black
-
     &:hover
       text-decoration: none
       background-color: darken($value, 15%) !important
@@ -89,7 +87,7 @@ a.row
 
   &:hover
     text-decoration: none
-    background-color: $gray-300 !important
+    background-color: var(--bs-secondary-bg) !important
 
 dl.row.line
   dd
