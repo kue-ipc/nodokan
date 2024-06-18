@@ -20,8 +20,6 @@ table.table.table-sm.mb-0
         = Node.human_attribute_name(:duid)
       th scope="col"
         = Node.human_attribute_name(:hostname)
-        | /
-        = Network.human_attribute_name(:vlan)
   tbody
     - @connections.each do |time, conn|
       tr
@@ -51,4 +49,4 @@ table.table.table-sm.mb-0
           td
           td
             = conn.username.upcase.each_char.each_slice(2).map(&:join).join("-")
-          td = conn.pass
+          td
