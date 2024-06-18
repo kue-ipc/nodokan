@@ -1,0 +1,46 @@
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="theme"
+export default class ThemeController < Controller
+  @targets := ["icon", "button"]
+
+  // TODO: 下記のようにすべきだが、Civetがうまく動かない
+  // https://stimulus.hotwired.dev/reference/using-typescript
+
+  // declare readonly iconTarget: HTMLButtonElement[] // button
+  // declare readonly buttonTargets: HTMLButtonElement[] // button
+
+  connect(): void
+    name := localStorage.getItem("theme") || "auto"
+    @change(name)
+
+  select(event?: Event): void
+    return unless event?.target <? HTMLButtonElement
+
+    name := event.target.dataset.themeName
+    localStorage.setItem("theme", name)
+    @change(name)
+
+  change(name: string): void
+    // テーマ反映
+    theme :=
+      if name is not "auto"
+        name
+      else if window.matchMedia("(prefers-color-scheme: dark)")
+        "dark"
+      else
+        "light"
+    document.documentElement.setAttribute("data-bs-theme", theme)
+
+    // ボタンのアクティブ化とアインコん変更
+    for each button of @buttonTargets
+      if button.dataset.themeName is name
+        button.classList.add("active")
+
+        for each token of @iconTarget.classList
+          if /^bi-/.test(token)
+            @iconTarget.classList
+              .replace(token, `bi-${button.dataset.themeIcon}`)
+            break
+      else
+        button.classList.remove("active")

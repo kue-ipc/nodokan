@@ -337,6 +337,8 @@ ja:
         <li>他の機器やソフトウェアによる保護機能等により、既知の脆弱性の影響を受けないようにしている。</li>
         <li>その他の理由で、脆弱性が無いと判断できる。</li>
       </ul>
+    toggle_theme: テーマ切替
+    toggle_navigation: ナビ切替
 
   date:
     formats:
@@ -902,6 +904,11 @@ ja:
         help: IPv6ネットワークアドレスが空欄の場合、IPv4ネットワークは設定されていません。
       ipv6_pools:
         title: IPv6プール
+
+  themes:
+    light: ライト
+    dark: ダーク
+    auto: システム
 
   # mailer
   admin_mailer:
