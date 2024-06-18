@@ -127,7 +127,7 @@ module NodesHelper
   def node_ipv4_address_decorated(node)
     node.nics.map { |nic|
       if nic.ipv4_dynamic?
-        tag.span(t_enum(:dynamic, :ipv4_config), class: "text-success")
+        tag.span(t_enum(:dynamic, :ipv4_config), class: "text-success-emphasis")
       else
         span_value_for(nic.ipv4, blank_alt: "")
       end
@@ -137,7 +137,7 @@ module NodesHelper
   def node_ipv6_address_decorated(node)
     node.nics.map { |nic|
       if nic.ipv6_dynamic?
-        tag.span(t_enum(:dynamic, :ipv6_config), class: "text-success")
+        tag.span(t_enum(:dynamic, :ipv6_config), class: "text-success-emphasis")
       else
         span_value_for(nic.ipv6, blank_alt: "")
       end
@@ -147,20 +147,20 @@ module NodesHelper
   def node_confirmation_decorated(node)
     case node.confirmation&.status
     when nil, :unconfirmed
-      tag.i(class: "fas fa-times-circle text-danger") +
-        tag.span(t("messages.unconfirmed"), class: "text-danger")
+      tag.i(class: "fas fa-times-circle text-danger-emphasis") +
+        tag.span(t("messages.unconfirmed"), class: "text-danger-emphasis")
     when :expired
-      tag.i(class: "fas fa-times-circle text-danger") +
-        tag.span(t("messages.expired"), class: "text-danger")
+      tag.i(class: "fas fa-times-circle text-danger-emphasis") +
+        tag.span(t("messages.expired"), class: "text-danger-emphasis")
     when :unapproved
-      tag.i(class: "fas fa-exclamation-triangle text-warning") +
-        tag.span(t("messages.unapproved"), class: "text-warning")
+      tag.i(class: "fas fa-exclamation-triangle text-warning-emphasis") +
+        tag.span(t("messages.unapproved"), class: "text-warning-emphasis")
     when :expire_soon
-      tag.i(class: "fas fa-exclamation-triangle text-warning") +
-        tag.span(t("messages.expire_soon"), class: "text-warning")
+      tag.i(class: "fas fa-exclamation-triangle text-warning-emphasis") +
+        tag.span(t("messages.expire_soon"), class: "text-warning-emphasis")
     when :approved
-      tag.i(class: "fas fa-check text-success") +
-        tag.span(t("messages.approved"), class: "text-success")
+      tag.i(class: "fas fa-check text-success-emphasis") +
+        tag.span(t("messages.approved"), class: "text-success-emphasis")
     end
   end
 

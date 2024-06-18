@@ -41,7 +41,7 @@
         div class=(node_hosts_list_col_classes(:ipv4_address))
           - host.nics.each do |nic|
             - if nic.ipv4_dynamic?
-              span.text-success
+              span.text-success-emphasis
                 = t_enum(:dynamic, :ipv4_config)
             - else
               = span_value_for(nic.ipv4, hide_blank: true)
@@ -49,7 +49,7 @@
         div class=(node_hosts_list_col_classes(:ipv6_address))
           - host.nics.each do |nic|
             - if nic.ipv6_dynamic?
-              span.text-primary
+              span.text-success-emphasis
                 = t_enum(:dynamic, :ipv6_config)
             - else
               = span_value_for(nic.ipv6, hide_blank: true)

@@ -25,7 +25,7 @@
         .collapse[
           data-node-confirmation-target="collapse#{name.to_s.camelize}Secured"]
           .card
-            .card-body.text-danger
+            .card-body.text-danger-emphasis
               == t("messages.update_secured")
         - count += 1
 
@@ -90,7 +90,7 @@
             count: count, required: true)
           - count += 1
       - else
-        p.text-danger
+        p.text-danger-emphasis
           | OS情報が登録されていないため、
           | セキュリティソフトウェアに関する確認ができません。
           | OS情報を登録後に再度確認作業を実施してください。

@@ -92,7 +92,7 @@ module HtmlHelper
       end
     when IPAddr
       opts[:class] ||= []
-      opts[:class] << "text-danger" unless value.private?
+      opts[:class] << "text-danger-emphasis" unless value.private?
       str = value.to_s
       if (value.ipv4? && value.prefix < 32) ||
           (value.ipv6? && value.prefix < 128)

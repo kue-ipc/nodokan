@@ -25,7 +25,7 @@ h3 利用者メニュー
       .card.border-primary.disabled
         .card-header.text-center
           | 端末の新規登録
-          span.text-danger
+          span.text-danger-emphasis
             | (使用不可)
         .card-body
           - if current_user.limit&.positive? && \
