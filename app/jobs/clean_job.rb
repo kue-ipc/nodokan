@@ -1,3 +1,4 @@
+# abstract job class
 class CleanJob < ApplicationJob
   LIMIT_SIZE = 1000
 

@@ -1,4 +1,4 @@
-class RadiusMacAddJob < ApplicationJob
+class RadiusMacAddJob < RadiusJob
   queue_as :default
 
   def perform(mac_address, vlan)

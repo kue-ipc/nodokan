@@ -1,4 +1,4 @@
-class RadiusUserDelJob < ApplicationJob
+class RadiusUserDelJob < RadiusJob
   queue_as :default
 
   def perform(username)

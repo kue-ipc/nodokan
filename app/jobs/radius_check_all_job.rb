@@ -1,6 +1,6 @@
 require "set"
 
-class RadiusCheckAllJob < ApplicationJob
+class RadiusCheckAllJob < RadiusJob
   queue_as :default
 
   def perform
