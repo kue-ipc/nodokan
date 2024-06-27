@@ -3,11 +3,12 @@ default: &default
   adapter: mysql2
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= (Rails.application.credentials.dig(:database, :username) || Settings.database.username).to_json %>
-  password: <%= (Rails.application.credentials.dig(:database, :password) || Settings.database.password).to_json %>
-  host: <%= (Settings.database.host || 'localhost').to_json %>
-  <% [:port, :socket].select { |key| Settings.database.key?(key) }.each do |key| %>
-  <%= key.to_s %>: <%= Settings.database[key].to_json %>
+  username: <%= (Rails.application.credentials.dig(:database, :username) ||
+    Settings.database.username).to_json %>
+  password: <%= (Rails.application.credentials.dig(:database, :password) ||
+    Settings.database.password).to_json %>
+  <% Settings.database.option.each do |key, value| %>
+  <%= key.to_s %>: <%= value.to_json %>
   <% end %>
 
 production:
@@ -25,33 +26,41 @@ production:
     database: <%= Settings.database.radius_database.to_json %>
     database_tasks: false
 
+<%
+dev_suffix =
+  if Settings.database.development_use_production_database
+    ""
+  else
+    "_development"
+  end
+%>
 development:
   primary:
     <<: *default
-    database: <%= (Settings.database.database + Settings.database.development_database_suffix).to_json %>
+    database: <%= (Settings.database.database + dev_suffix).to_json %>
   # ISC KEA Database (DHCP)
   kea:
     <<: *default
-    database: <%= Settings.database.kea_database.to_json %>
+    database: <%= (Settings.database.kea_database + dev_suffix).to_json %>
     database_tasks: false
   # FreeRADIUS Database (RADIUS)
   radius:
     <<: *default
-    database: <%= Settings.database.radius_database.to_json %>
+    database: <%= (Settings.database.radius_database + dev_suffix).to_json %>
     database_tasks: false
 
 test:
   primary:
     <<: *default
-    database: <%= (Settings.database.database + Settings.database.test_database_suffix).to_json %>
+    database: <%= (Settings.database.database + "_test").to_json %>
   # ISC KEA Database (DHCP)
   kea:
     <<: *default
-    database: <%= Settings.database.kea_database.to_json %>
+    database: <%= (Settings.database.kea_database + "_test").to_json %>
     database_tasks: false
   # FreeRADIUS Database (RADIUS)
   radius:
     <<: *default
-    database: <%= Settings.database.radius_database.to_json %>
+    database: <%= (Settings.database.radius_database + "_test").to_json %>
     database_tasks: false
 

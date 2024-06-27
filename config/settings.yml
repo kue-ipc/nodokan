@@ -2,20 +2,20 @@
 site:
   title: null
 database:
-  # credentials
-  username: admin
-  # credentials
-  password: admin_password
-  # host: localhost
-  # port: 3306
-  # socket: /var/lib/mysql/mysql.sock
+  # overwritten with credentials
+  # username: nodokan
+  # overwritten with credentials
+  # password: ********
+  option:
+    host: localhost
+    # port: 3306
+    # socket: /var/lib/mysql/mysql.sock
   database: nodokan
-  development_database_suffix: _development
-  test_database_suffix: _test
   kea_database: kea
   radius_database: radius
+  development_use_production_database: false
 config:
-  # credentials
+  # overwritten with credentials
   radius_mac_password: null
   node_require_nic: false
   nic_require_network: false
@@ -28,18 +28,38 @@ feature:
   user_auth_network: true
   virtual_node: true
   logical_node: true
-## Authorizations LDAP
-# Uncomment out the merging for each environment that you'd like to include.
-# You can also just copy and paste the tree (do not include the "authorizations") to each
-# environment if you need something different per environment.
 ldap:
   host: localhost
   port: 389
+  # auth: anonymous
+  auth: simple
+  # overwritten with credentials
+  # username: cn=bind,dc=example,dc=jp
+  # overwritten with credentials
+  # passwrdo: ********
+  # base: dc=example,dc=jp
+  encryption: null
+  # encryption: simple_tls
+  # encryption: start_tls
+  user:
+    dn: cn
+    ou: ou=Users
+    classes:
+      - posixAccount
+  group:
+    dn: cn
+    ou: ou=Groups
+    classes:
+      - posixGroup
+  restrict:
+    auth:
+      groups:
+        - admin
+        - user
   attribute: uid
-  base: ou=people,dc=example,dc=jp
-  # credentials
+  # overwritten with credentials
   admin_user: cn=admin,dc=example,dc=jp
-  # credentials
+  # overwritten with credentials
   admin_password: admin_password
   ssl: false
   allow_unauthenticated_bind: false
