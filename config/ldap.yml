@@ -4,14 +4,27 @@
 <%= env %>:
   host: <%= Settings.ldap.host.to_json %>
   port: <%= Settings.ldap.port.to_json %>
-  attribute: <%= Settings.ldap.attribute.to_json %>
-  base: <%= Settings.ldap.base.to_json %>
-  admin_user: <%= (Rails.application.credentials.dig(:ldap, :admin_user) || Settings.ldap.admin_user).to_json %>
-  admin_password: <%= (Rails.application.credentials.dig(:ldap, :admin_password) || Settings.ldap.admin_password).to_json %>
-  ssl: <%= Settings.ldap.ssl.to_json %>
-  allow_unauthenticated_bind: <%= Settings.ldap.allow_unauthenticated_bind.to_json %>
-  group_base: <%= Settings.ldap.group_base.to_json %>
-  required_groups: <%= Settings.ldap.required_groups.to_json %>
-  require_attribute: <%= Settings.ldap.require_attribute.to_json %>
-  require_attribute_presence: <%= Settings.ldap.require_attribute_presence.to_json %>
+  attribute: <%= Settings.ldap.user.dn.to_json %>
+  base: <%= [Settings.ldap.user.ou, Settings.ldap.base].join(',').to_json %>
+<% if Settings.ldap.auth == 'simple' %>
+  allow_unauthenticated_bind: false
+  admin_user: <%= (Rails.application.credentials.dig(:ldap, :username) ||
+    Settings.ldap.username).to_json %>
+  admin_password: <%= (Rails.application.credentials.dig(:ldap, :password) ||
+    Settings.ldap.password).to_json %>
+<% elsif Settings.ldap.auth == 'anonymous' %>
+  allow_unauthenticated_bind: true
+<% end %>
+  encryption: <%= Settings.ldap.encryption.to_json %>
+  group_base: <%=
+    [Settings.ldap.group.ou, Settings.ldap.base].join(',').to_json %>
+  required_groups: <%=
+    Settings.ldap.restrict.auth.groups.map do |name|
+      ["#{Settings.ldap.group.dn}=#{name}", Settings.ldap.group.ou,
+        Settings.ldap.base].join(',')
+    end.to_json %>
+  require_attribute:
+    objectClass: <%= Settings.ldap.user.classes.to_json %>
+  require_attribute_presence:
+    <%= Settings.ldap.user.attribute.mail.to_s %>: true
 <% end %>
