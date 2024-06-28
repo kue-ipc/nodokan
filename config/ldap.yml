@@ -15,7 +15,7 @@
 <% elsif Settings.ldap.auth == 'anonymous' %>
   allow_unauthenticated_bind: true
 <% end %>
-  encryption: <%= Settings.ldap.encryption.to_json %>
+  ssl: <%= Settings.ldap.ssl.to_json %>
   group_base: <%=
     [Settings.ldap.group.ou, Settings.ldap.base].join(',').to_json %>
   required_groups: <%=

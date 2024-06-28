@@ -38,9 +38,9 @@ ldap:
   # overwritten with credentials
   # passwrdo: ********
   # base: dc=example,dc=jp
-  encryption: null
-  # encryption: simple_tls
-  # encryption: start_tls
+  ssl: null
+  # ssl: simple_tls
+  # ssl: start_tls
   user:
     # dn: cn
     # ou: ou=Users
