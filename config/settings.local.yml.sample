@@ -5,6 +5,9 @@ database:
 ldap:
   # username: (should be written in credentials)
   # password: (should be written in credentials)
+  host: ldap.example.jp
+  port: 389
+  encryption: start_tls
   base: dc=exmaple.jp
   user:
     dn: uid
