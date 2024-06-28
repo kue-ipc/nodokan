@@ -104,7 +104,10 @@ class User < ApplicationRecord
   end
 
   def ldap_groups
-    @ldap_groups ||= Devise::LDAP::Adapter.get_group_list(username)
+    @ldap_groups ||=
+      Devise::LDAP::Adapter.get_group_list(username).map { |name|
+        name.split(",").first.split("=").second
+      }
   end
 
   def ldap_mail
