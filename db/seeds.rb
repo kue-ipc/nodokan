@@ -36,7 +36,7 @@ def create_entities(model_class)
   end_time = Time.now
   end_msg = "create entities end: #{model_class.name} " \
             "[success: #{count[:success]}, failure: #{count[:failure]}] " \
-            "(#{'%.4f' % (end_time - start_time)})"
+            "(#{'%.4fs' % (end_time - start_time)})"
   puts end_msg
   Rails.logger.info("db:seed") { end_msg }
 end
