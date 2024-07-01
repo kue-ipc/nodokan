@@ -98,6 +98,9 @@ gem "ransack"
 # Whenever
 gem "whenever", require: false
 
+# Redis stores for ActionPack
+gem "redis-actionpack"
+
 # default gem and bundled gem target Ruby 3.1
 gem "psych", ">= 4.0.4"
 gem "ipaddr", ">= 1.2.3"

@@ -273,10 +273,19 @@ GEM
       psych (>= 4.0.0)
     redis (5.2.0)
       redis-client (>= 0.22.0)
+    redis-actionpack (5.4.0)
+      actionpack (>= 5, < 8)
+      redis-rack (>= 2.1.0, < 4)
+      redis-store (>= 1.1.0, < 2)
     redis-client (0.22.2)
       connection_pool
     redis-namespace (1.11.0)
       redis (>= 4)
+    redis-rack (3.0.0)
+      rack-session (>= 0.2.0)
+      redis-store (>= 1.2, < 2)
+    redis-store (1.10.0)
+      redis (>= 4, < 6)
     regexp_parser (2.9.2)
     reline (0.5.9)
       io-console (~> 0.5)
@@ -398,6 +407,7 @@ DEPENDENCIES
   rails_admin-i18n
   ransack
   redis (>= 4.0.1)
+  redis-actionpack
   resque
   rubocop
   rubocop-rails

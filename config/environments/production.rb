@@ -99,4 +99,7 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Use a different  store in production.
+  config.session_store = :redis_store
 end
