@@ -56,6 +56,9 @@ Rails.application.configure do
     config.logger = ActiveSupport::Logger.new(STDOUT)
       .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
       .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  else
+    # Use default logging formatter so that PID and timestamp are not suppressed.
+    config.log_formatter = Logger::Formatter.new
   end
 
   # Prepend all log lines with the following tags.
