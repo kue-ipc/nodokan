@@ -33,3 +33,10 @@ kea-shell は http_proxy の設定の影響を受けるので注意
 
 auditを無効にしないといけない。
 connection.execute('SET @disable_audit = 1;')
+
+# スキーマバージョンについて
+
+- epel kea-2.2.0 14.0
+- cloudsmith kea-2.2.1 14.0
+- cloudsmith kea-2.4.1 19.0
+- cloudsmith kea-2.6.0 22.0

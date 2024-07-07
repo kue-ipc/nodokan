@@ -2,11 +2,12 @@
 
 ## システム要件
 
-* Ruby 3.0
-* Node.js 18
-* MariaDB 10.3
-
-本番環境ではredisが必要
+* Ruby 3.0 以上
+* Node.js 18 以上
+* MariaDB 10.5 以上
+* Redis 6 以上
+* Kea 2.2 以上
+* FreeRADIUS 3.0 以上
 
 ## 開発環境
 
