@@ -366,6 +366,7 @@ ja:
       os_category: OS種別
       place: 設置場所
       security_software: セキュリティソフト
+      logical_composition: 論理構成
       assignment: 割当
       ipv4_arp: IPv4 ARP
       ipv6_neighbor: IPv6近隣
@@ -533,8 +534,11 @@ ja:
       os_category:
         name: 種別名
         icon: アイコン
+        order: 順序
         locked: ロック
         description: 説明
+        operating_systems: OS
+        security_softwares: セキュリティソフトウェア
       operating_system:
         os_category: OS種別
         os_category_id: OS種別
@@ -559,16 +563,20 @@ ja:
         approved: 承認済
         confirmed: 確認済
         config: 設定
+        confirmations: 確認
+        confirmations_count: 確認数
       ipv4_pool:
         ipv4_config: IPv4設定
         ipv4_first_address: 最初のアドレス
         ipv4_last_address: 最後のアドレス
         _destroy: 削除
+        network: ネットワーク
       ipv6_pool:
         ipv6_config: IPv6設定
         ipv6_first_address: 最初のアドレス
         ipv6_last_address: 最後のアドレス
         _destroy: 削除
+        network: ネットワーク
       assignment:
         user: ユーザー
         network: ネットワーク
@@ -577,7 +585,7 @@ ja:
         manage: 管理
       confirmation:
         node: 端末
-        security_software: セキュリティソフトウェア
+        security_software: セキュリティソフト
         existence: 存在確認
         content: 内容確認
         os_update: OSアップデート状況
@@ -621,6 +629,19 @@ ja:
         ipv6_lease: IPv6 DHCPリース
         connection_info: 接続情報
         connected_at: 接続日時
+      ipv4_arp:
+        ipv4: IPv4
+        mac_address: MACアドレス
+        begin_at: 最初日時
+        end_at: 最終日時
+      ipv6_neighbor:
+        ipv6: IPv6
+        mac_address: MACアドレス
+        begin_at: 最初日時
+        end_at: 最終日時
+      logical_composition:
+        node: 端末
+        component: 部品
     full_name_attributes:
       node:
         name: 端末名
