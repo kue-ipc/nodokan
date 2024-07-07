@@ -1,5 +1,9 @@
 module Kea
   class Lease6 < KeaRecord
+    # address NOT NULL PRIMARY KEY
+    #   schema_version < 19.0 VARCHAR(39)
+    #   scheam_version >= 19.0 BINARY(16)
+
     self.table_name = "lease6"
     self.primary_key = "address"
 
@@ -11,8 +15,11 @@ module Kea
     belongs_to :dhcp6_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
     def ipv6
-      # TODO: スキーマ19から
-      IPAddr.new_ntoh(address)
+      if Lease6.schema_major_version >= 19
+        IPAddr.new_ntoh(address)
+      else
+        IPaddr.new(address)
+      end
     end
 
     def ipv6_address

@@ -50,7 +50,7 @@ class UsersController < ApplicationController
   end
 
   def sync
-    # TODO
+    # TODO: 未実装
   end
 
   private def set_user
