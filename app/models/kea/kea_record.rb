@@ -12,6 +12,20 @@ module Kea
       end
     end
 
+    def self.schema_version
+      @schema_version ||=
+        connection.select_one("SELECT version,minor FROM schema_version")
+          .then { |record| [record["version"], record["minor"]] }
+    end
+
+    def self.schema_major_version
+      schema_version[0]
+    end
+
+    def self.schema_minor_version
+      schema_version[1]
+    end
+
     def self.no_audit
       connection.execute("SET @disable_audit = 1;")
     end
