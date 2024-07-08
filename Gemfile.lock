@@ -134,7 +134,7 @@ GEM
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
     ipaddr (1.2.6)
-    irb (1.13.2)
+    irb (1.14.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jbuilder (2.12.0)
@@ -167,7 +167,7 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     mini_mime (1.1.5)
-    minitest (5.24.0)
+    minitest (5.24.1)
     minitest-stub-const (0.6)
     mono_logger (1.1.2)
     msgpack (1.7.2)
@@ -177,7 +177,7 @@ GEM
     mutex_m (0.2.0)
     mysql2 (0.5.6)
     nested_form (0.3.2)
-    net-imap (0.4.13)
+    net-imap (0.4.14)
       date
       net-protocol
     net-ldap (0.19.0)
@@ -213,7 +213,7 @@ GEM
     pundit (2.3.2)
       activesupport (>= 3.0.0)
     racc (1.8.0)
-    rack (3.1.3)
+    rack (3.1.6)
     rack-protection (4.0.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0, < 4)
@@ -248,7 +248,7 @@ GEM
     rails-i18n (7.0.9)
       i18n (>= 0.7, < 2)
       railties (>= 6.0.0, < 8)
-    rails_admin (3.1.2)
+    rails_admin (3.1.3)
       activemodel-serializers-xml (>= 1.0)
       kaminari (>= 0.14, < 2.0)
       nested_form (~> 0.3)
@@ -394,7 +394,7 @@ DEPENDENCIES
   pundit
   rails (~> 7.1.3)
   rails-i18n (~> 7.0.0)
-  rails_admin (~> 3.0)
+  rails_admin (~> 3.1)
   rails_admin-i18n
   ransack
   redis (>= 4.0.1)
