@@ -27,9 +27,7 @@ module Kea
     end
 
     def duid_str
-      duid.unpack("C*")
-        .map { |i| "%02X" % i }
-        .join("-")
+      duid.unpack("C*").map { |i| "%02X" % i }.join("-")
     end
 
     def name

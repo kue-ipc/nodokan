@@ -4,7 +4,7 @@ class RadiusCleanJob < ApplicationJob
   LIMIT_SIZE = 1000
 
   def perform(now = Time.zone.now)
-    RadiusRadacctCleanJob.perform_later
-    RadiusRadpostauthCleanJob.perform_later
+    RadiusRadacctCleanJob.perform_later(now)
+    RadiusRadpostauthCleanJob.perform_later(now)
   end
 end

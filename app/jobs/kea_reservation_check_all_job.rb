@@ -22,11 +22,18 @@ class KeaReservationCheckAllJob < ApplicationJob
       .find_each do |nic|
         key = [nic.network_id, nic.mac_address_data]
         host_ip = host_hash.delete(key)
-        nic.kea_reservation4 if nic.ipv4 != host_ip
+        if nic.ipv4 != host_ip
+          logger.warn("Reserved IPv4 address is defferent for Nic##{nic.id}")
+          nic.kea_reservation4
+        end
       end
 
     host_hash.each_key do |key|
-      KeaReservation4DelJob.perform_later(*key)
+      network_id = key[0]
+      mac_address = key[1].unpack("C*").map { |i| "%02X" % i }.join("-")
+      logger.warn "Should delete DHCPv4 resevartion for " \
+                  "#{mac_adress} in Network##{network_id}"
+      KeaReservation4DelJob.perform_later(network_id, mac_address)
     end
   end
 
@@ -44,11 +51,18 @@ class KeaReservationCheckAllJob < ApplicationJob
       .find_each do |nic|
         key = [nic.network_id, nic.node.duid_data]
         host_ip = host_hash.delete(key)
-        nic.kea_reservation6 if nic.ipv6 != host_ip
+        if nic.ipv6 != host_ip
+          logger.warn("Reserved IPv6 address is defferent for Nic##{nic.id}")
+          nic.kea_reservation6
+        end
       end
 
     host_hash.each_key do |key|
-      KeaReservation6DelJob.perform_later(*key)
+      network_id = key[0]
+      duid = key[1].unpack("C*").map { |i| "%02X" % i }.join("-")
+      logger.warn "Should delete DHCPv6 resevartion for " \
+                  "#{duid} in Network##{network_id}"
+      KeaReservation6DelJob.perform_later(network_id, duid)
     end
   end
 

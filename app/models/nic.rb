@@ -112,9 +112,9 @@ class Nic < ApplicationRecord
     return if mac_address_data.blank?
 
     if !destroyed? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
-      KeaReservation4AddJob.perform_later(network.id, mac_address_data, ipv4)
+      KeaReservation4AddJob.perform_later(network.id, mac_address, ipv4)
     else
-      KeaReservation4DelJob.perform_later(network.id, mac_address_data)
+      KeaReservation4DelJob.perform_later(network.id, mac_address)
     end
   end
 
@@ -123,9 +123,9 @@ class Nic < ApplicationRecord
     return if node.duid_data.blank?
 
     if !destroyed? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
-      KeaReservation6AddJob.perform_later(network.id, node.duid_data, ipv6)
+      KeaReservation6AddJob.perform_later(network.id, node.duid, ipv6)
     else
-      KeaReservation6DelJob.perform_later(network.id, node.duid_data)
+      KeaReservation6DelJob.perform_later(network.id, node.duid)
     end
   end
 

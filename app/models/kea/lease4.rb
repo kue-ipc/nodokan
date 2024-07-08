@@ -15,9 +15,7 @@ module Kea
     end
 
     def mac_address
-      hwaddr.unpack("C6")
-        .map { |i| "%02X" % i }
-        .join("-")
+      hwaddr.unpack("C6").map { |i| "%02X" % i }.join("-")
     end
 
     def name

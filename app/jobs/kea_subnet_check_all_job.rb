@@ -15,11 +15,15 @@ class KeaSubnetCheckAllJob < ApplicationJob
       .where(dhcp: true)
       .find_each do |network|
         subnet_ip = subnet_hash.delete(network.id)
-        network.kea_subnet4 if network.ipv4_network != subnet_ip
+        if network.ipv4_network != subnet_ip
+          logger.warn "IPv4 subnet is defferent for Network##{network.id}"
+          network.kea_subnet4
+        end
       end
 
     subnet_hash.each_key do |id|
-      KeaReservation6DelJob.perform_later(id)
+      logger.warn "Should delete DHCPv4 subnet for Network##{id}"
+      KeaSubnet6DelJob.perform_later(id)
     end
   end
 
@@ -31,12 +35,16 @@ class KeaSubnetCheckAllJob < ApplicationJob
       .where.not(ipv6_network_data: nil)
       .where(ra: ["managed", "assist"])
       .find_each do |network|
-        subnet_ip = subnet_hash.delete(network.id)
-        network.kea_subnet6 if network.ipv6_network != subnet_ip
+      subnet_ip = subnet_hash.delete(network.id)
+      if network.ipv6_network != subnet_ip
+        logger.warn "IPv6 subnet is defferent for Network##{network.id}"
+        network.kea_subnet6
       end
+    end
 
     subnet_hash.each_key do |id|
-      KeaReservation6DelJob.perform_later(id)
+      logger.warn "Should delete DHCPv6 subnet for Network##{id}"
+      KeaSubnet6DelJob.perform_later(id)
     end
   end
 end
