@@ -83,7 +83,7 @@ gem "paper_trail"
 gem "paper_trail-association_tracking"
 
 # Rails Admin
-gem "rails_admin", "~> 3.0"
+gem "rails_admin", "~> 3.1"
 gem "rails_admin-i18n"
 
 # Bootstrap
