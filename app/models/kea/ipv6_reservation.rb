@@ -15,7 +15,9 @@ module Kea
     belongs_to :host, primary_key: "host_id"
 
     def ipv6
-      address && IPAddr.new(address)
+      # TODO: スキーマバージョン19から address が 文字列からバイナリ値に変更になった
+      # address && IPAddr.new(address)
+      address && IPAddr.new_ntoh(address)
     end
   end
 end

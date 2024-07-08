@@ -11,11 +11,12 @@ module Kea
     belongs_to :dhcp6_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
     def ipv6
-      IPAddr.new(address)
+      # TODO: スキーマ19から
+      IPAddr.new_ntoh(address)
     end
 
     def ipv6_address
-      address
+      ipv6.to_s
     end
 
     def duid_str

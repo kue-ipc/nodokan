@@ -11,7 +11,10 @@ class KeaReservation6AddJob < ApplicationJob
       # view経由のため、reservation_idにnilを入れる必要がある
       reservation = Kea::Ipv6Reservation.find_by(host: host) ||
         Kea::Ipv6Reservation.new(reservation_id: nil, host: host)
-      reservation.update!(address: ip.to_s)
+      # TODO: スキーマバージョン19未満で分岐
+      # reservation.update!(address: ip.to_s)
+      # TODO: スキーマバージョン19以降
+      reservation.update!(address: ip.hton)
     end
   end
 end
