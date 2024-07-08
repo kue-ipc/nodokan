@@ -15,7 +15,7 @@ module Kea
     belongs_to :dhcp6_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
 
     def ipv6
-      if Lease6.schema_major_version >= 19
+      if Kea::Lease6.schema_major_version >= 19
         IPAddr.new_ntoh(address)
       else
         IPaddr.new(address)

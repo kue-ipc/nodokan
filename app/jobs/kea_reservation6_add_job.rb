@@ -12,7 +12,7 @@ class KeaReservation6AddJob < ApplicationJob
       reservation = Kea::Ipv6Reservation.find_by(host: host) ||
         Kea::Ipv6Reservation.new(reservation_id: nil, host: host)
 
-      if Ipv6Reservation.schema_major_version >= 19
+      if Kea::Ipv6Reservation.schema_major_version >= 19
         reservation.update!(address: ip.hton)
       else
         reservation.update!(address: ip.to_s)

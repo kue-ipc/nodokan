@@ -18,7 +18,7 @@ module Kea
     belongs_to :host, primary_key: "host_id"
 
     def ipv6
-      if Ipv6Reservation.schema_major_version >= 19
+      if Kea::Ipv6Reservation.schema_major_version >= 19
         IPAddr.new_ntoh(address)
       else
         IPAddr.new(address)
