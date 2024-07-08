@@ -41,9 +41,8 @@ RailsAdmin.config do |config|
   # config.show_gravatar = true
 
   paper_trail_audit_model = %w(
-    Ipv4Arp Ipv6Neighbor
     Ipv4Pool Ipv6Pool
-    Node Confirmation
+    Node Confirmation LogicalComposition
     Nic Network Assignment
     Place DeviceType Hardware OsCategory OperatingSystem SecuritySoftware
     User
@@ -68,6 +67,4 @@ RailsAdmin.config do |config|
       only paper_trail_audit_model
     end
   end
-
-  config.label_methods << :address
 end
