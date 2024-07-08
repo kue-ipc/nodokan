@@ -6,7 +6,7 @@ class AdminMailerTest < ActionMailer::TestCase
       exception: "exception").job_failure
     assert_equal "【端末管理システム管理通知】ジョブ失敗", mail.subject
     assert_equal ["admin@example.jp"], mail.to
-    assert_equal ["no-reply@example.jp"], mail.from
+    assert_nil mail.from
 
     assert_equal <<~MESSAGE.gsub(/\R/, "\r\n"), mail.body.encoded
       端末管理システムで、下記のジョブが失敗しました。
