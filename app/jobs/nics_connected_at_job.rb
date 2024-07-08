@@ -1,7 +1,17 @@
+# 全てのNICについて接続日を更新する。
+# TODO: 更新中に削除された場合は、よくわからない。
+# NOTE: ジョブを分割すると遅くなるので、してはいけない。
+
 class NicsConnectedAtJob < ApplicationJob
   queue_as :default
 
-  def perform(nic)
+  def perform
+    Nic.find_each do |nic|
+      update_time(nic)
+    end
+  end
+
+  def update_time(nic)
     attributes = [
       :ipv4_resolved_at, :ipv6_discovered_at,
       :ipv4_leased_at, :ipv6_leased_at,

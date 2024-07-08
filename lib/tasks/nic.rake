@@ -6,8 +6,6 @@ namespace :nic do
       Rails.application.config.active_job.queue_adapter = :inline
     end
     puts "add job queue all nics check, please see log"
-    Nic.find_each do |nic|
-      NicsConnectedAtJob.perform_later(nic)
-    end
+    NicsConnectedAtJob.perform_later
   end
 end
