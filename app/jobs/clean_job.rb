@@ -35,17 +35,17 @@ class CleanJob < ApplicationJob
   end
 
   def compress_past_records(model, key_attr, date_attr, now = Time.zone.now)
-    model.pluck(key_attr).sum do |data|
+    model.distinct.pluck(key_attr).sum do |data|
       last_record = model.where({key_attr => data}).order(date_attr).last
       next 0 if last_record.nil?
 
+      compress_date = [
+        now - (Settings.config.nocompress_period || 0),
+        last_record.__send__(date_attr),
+      ].min
+
       compress_relation = model.where({key_attr => data})
-        .where.not(id: last_record.id)
-      if Settings.config.nocompress_period
-        compress_date = now - Settings.config.nocompress_period
-        compress_relation =
-          compress_relation.where({date_attr => (...compress_date)})
-      end
+        .where({date_attr => (...compress_date)})
       delete_records(compress_relation)
     end
   end
