@@ -2,24 +2,20 @@ class NicsConnectedAtJob < ApplicationJob
   queue_as :default
 
   def perform(nic)
-    current_times = [
-      :ipv4_resolved_at,
-      :ipv6_discovered_at,
-      :ipv4_leased_at,
-      :ipv6_leased_at,
+    attributes = [
+      :ipv4_resolved_at, :ipv6_discovered_at,
+      :ipv4_leased_at, :ipv6_leased_at,
       :auth_at,
-    ].to_h { |name| [name, nic.__send__(name)] }
-    new_times = {
-      ipv4_resolved_at: ipv4_resolved_at(nic),
-      ipv6_discovered_at: ipv6_discovered_at(nic),
-      ipv4_leased_at: ipv4_leased_at(nic),
-      ipv6_leased_at: ipv6_leased_at(nic),
-      auth_at: auth_at(nic),
-    }
+    ].map do |name|
+      time = __send__(name, nic)
+      if time != nic.__send__(name)
+        [name, time]
+      end
+    end.compact.to_h
 
-    if new_times != current_times
+    if attributes.present?
       # no verify nor callback nor versioning
-      nic.update_columns(new_times)
+      nic.update_columns(attributes)
     end
   end
 
