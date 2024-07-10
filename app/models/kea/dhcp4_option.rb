@@ -105,8 +105,8 @@ module Kea
       ["v4-access-domain", 213, "fqdn", false],
     ].map { |opt| DhcpOptionType.new(*opt) }
     # rubocop: enable Layout/LineLength
-    OPTIONS_NAME_MAP = OPTIONS.index_by { |opt| opt.name }
-    OPTIONS_CODE_MAP = OPTIONS.index_by { |opt| opt.code }
+    OPTIONS_NAME_MAP = OPTIONS.index_by(&:name)
+    OPTIONS_CODE_MAP = OPTIONS.index_by(&:code)
 
     self.primary_key = "option_id"
 

@@ -1,6 +1,6 @@
 # FIXME: ガイド記載の方法ではうまくいかないため、SOより
 #   https://stackoverflow.com/questions/66870657/
-Rails.autoloaders.main.ignore("#{Rails.root.join('app/serializers')}")
+Rails.autoloaders.main.ignore(Rails.root.join("app/serializers").to_s)
 Dir[Rails.root.join("app/serializers/**/*.rb")].each do |f|
   require f
 end

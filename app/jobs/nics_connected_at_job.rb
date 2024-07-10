@@ -16,17 +16,15 @@ class NicsConnectedAtJob < ApplicationJob
       :ipv4_resolved_at, :ipv6_discovered_at,
       :ipv4_leased_at, :ipv6_leased_at,
       :auth_at,
-    ].map do |name|
+    ].map { |name|
       time = __send__(name, nic)
-      if time != nic.__send__(name)
-        [name, time]
-      end
-    end.compact.to_h
+      [name, time] if time != nic.__send__(name)
+    }.compact.to_h
 
-    if attributes.present?
-      # no verify nor callback nor versioning
-      nic.update_columns(attributes)
-    end
+    return if attributes.blank?
+
+    # no verify nor callback nor versioning
+    nic.update_columns(attributes)
   end
 
   def ipv4_resolved_at(nic)
