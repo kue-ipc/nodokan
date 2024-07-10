@@ -37,5 +37,11 @@ module Kea
     def leased_at
       expire - valid_lifetime
     end
+
+    # FIXME: rails_adminで見えるようにするために設定
+    #   他に影響があるかは不明
+    def id
+      ipv6.to_i
+    end
   end
 end
