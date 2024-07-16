@@ -28,6 +28,9 @@ ldap:
         - admin
         - staff
         - user
+user_default_config:
+  auth_network: free
+  networks: [auth]
 user_initial_configs:
   - group: staff
     auth_network: v102

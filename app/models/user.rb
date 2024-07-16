@@ -78,25 +78,30 @@ class User < ApplicationRecord
     end
   end
 
+  # auto call this function before creat user by devise and user_sync
   def ldap_before_save
     sync_ldap!
 
     if Settings.admin.username == username
       # Set admin, and not allocate networks.
       admin!
-    elsif Settings.user_initial_configs.present?
-      Settings.user_initial_configs.each do |config|
-        next unless ldap_groups.include?(config[:group])
-
-        @allocate_network_config = {
-          auth_network: config[:auth_network],
-          networks: config[:networks],
-        }
-        self.limit = config[:limit] if config.key?(:limit)
-        self.role = config[:role] if config.key?(:role)
-        break
-      end
+      return
     end
+
+    config = {
+      auth_network: nil,
+      networks: [],
+      limit: nil,
+      role: "user",
+    }
+    config.merge!(
+      Settings.user_default_config || {},
+      Settings.user_initial_configs
+        &.find { |conf| ldap_groups.include?(conf[:group]) } || {})
+
+    @allocate_network_config = config.slice(:auth_network, :networks)
+    self.limit = config[:limit]
+    self.role = config[:role]
   end
 
   def ldap_entry
