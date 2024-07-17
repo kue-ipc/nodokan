@@ -92,7 +92,7 @@ class UsersSyncJob < ApplicationJob
   def destroy_deleted_users(stop_on_error: false)
     if Settings.config.destroy_deleted_user
       User.where(deleted: true).find_each.to_h do |user|
-        logger.info("Destroy: #{username}")
+        logger.info("Destroy: #{user.username}")
         Node.nodes.find_each do |node|
           if Settings.config.destroy_nodes_of_deleted_user
             logger.debug("Destroy node: #{node.id}")
