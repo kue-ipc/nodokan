@@ -113,7 +113,7 @@ class UsersSyncJob < ApplicationJob
       end
     elsif Settings.config.destroy_deleted_user_without_node
       User.where(deleted: true, nodes_count: 0).find_each.to_h do |user|
-        logger.info("Destroy, without node: #{username}")
+        logger.info("Destroy, without node: #{user.username}")
         user.destroy!
         [user.username, :destroy]
       rescue StandardError => e
