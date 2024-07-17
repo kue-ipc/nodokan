@@ -1,4 +1,4 @@
-# devise_ldap_authenticatable_ex/authorizable.rb v1.0.0 2024-01-30
+# devise_ldap_authenticatable_ex/authorizable.rb v1.0.1 2024-07-18
 
 # `authorizable?` is `authorized?` without `authenticated?`
 
@@ -16,7 +16,7 @@ module DeviseLdapAuthenticatableEx
 
       Devise::LDAP::Connection.class_eval do
         def authorizable?
-          !search_for_login.nil? &&
+          valid_login? &&
             in_required_groups? &&
             has_required_attribute? &&
             has_required_attribute_presence?

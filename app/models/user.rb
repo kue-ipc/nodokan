@@ -104,10 +104,12 @@ class User < ApplicationRecord
     self.role = config[:role]
   end
 
+  # TODO: devise_ldap_authenticatableのをそのまま使うのに変更予定
   def ldap_entry
     @ldap_entry ||= Devise::LDAP::Adapter.get_ldap_entry(username)
   end
 
+  # TODO: devise_ldap_authenticatableのをそのまま使うのに変更予定
   def ldap_groups
     @ldap_groups ||=
       Devise::LDAP::Adapter.get_group_list(username).map { |name|
