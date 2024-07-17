@@ -40,6 +40,12 @@ class User < ApplicationRecord
   validates :limit, allow_nil: true,
     numericality: {only_integer: true, greater_than_or_equal_to: 0}
 
+  validates_each :auth_network do |record, attr, value|
+    if value && !value.auth
+      record.errors.add(attr, I18n.t("errors.messages.not_auth_network"))
+    end
+  end
+
   after_save :allocate_network
 
   after_commit :radius_user
@@ -166,7 +172,7 @@ class User < ApplicationRecord
 
   def auth_network
     unless @auth_network_acquired
-      @auth_network = auth_networks&.first
+      @auth_network = auth_networks.first
       @auth_network_acquired = true
     end
 
@@ -174,13 +180,20 @@ class User < ApplicationRecord
   end
 
   def auth_network=(network)
-    if network
-      unless network&.auth
-        errors.add(:auth_network, "は認証ネットワークではありません。")
-        return
-      end
+    return if network == auth_network
 
-      auth_assignments.where.not(network_id: network.id)
+    @auth_network_change ||= [auth_network, nil]
+    @auth_network_change[1] = network
+    @auth_network_acquired = true
+    @auth_network = network
+  end
+
+  # TODO: 保存時のauth_networkの動作を実装すること
+  def save_auth_network
+    return unless auth_network_changed?
+
+    if auth_network
+      auth_assignments.where.not(network_id: auth_network.id)
         .find_each do |assignment|
         assignment.update(auth: false)
       end
@@ -193,9 +206,41 @@ class User < ApplicationRecord
         assignment.update(auth: false)
       end
     end
+  end
 
-    @auth_network_acquired = true
-    @auth_network = network
+  attr_reader :auth_network_change, :auth_network_previous_change
+
+  def auth_network_changed?
+    auth_network_change.present?
+  end
+
+  def auth_network_previously_changed?
+    auth_network_previous_change.present?
+  end
+
+  def auth_network_previously_was
+    auth_network_previous_change&.first
+  end
+
+  def auth_network_was
+    auth_network_change&.first
+  end
+
+  def auth_network_will_change!
+    return if auth_network_changed?
+
+    @auth_network_change = [auth_network, auth_network]
+  end
+
+  def clear_auth_network_change
+    @auth_network_change = nil
+  end
+
+  def restore_auth_network!
+    return unless auth_network_changed?
+
+    @auth_network = auth_network_was
+    clear_auth_network_change
   end
 
   def add_use_network(network, manage: false)
@@ -235,9 +280,19 @@ class User < ApplicationRecord
   end
 
   def radius_user
-    if !destroyed? && !deleted? && auth_network
-      RadiusUserAddJob.perform_later(username, auth_network.vlan)
-    else
+    return unless Settings.feature.user_auth_network
+
+    radius_auth = !deleted? && auth_network.present?
+    radius_auth_previously_was = !deleted_previously_was &&
+      auth_network_previously_was.present?
+
+    if radius_auth
+      if destroyed?
+        RadiusUserDelJob.perform_later(username)
+      elsif !radius_auth_previously_was
+        RadiusUserAddJob.perform_later(username, auth_network.vlan)
+      end
+    elsif radius_auth_previously_was
       RadiusUserDelJob.perform_later(username)
     end
   end
