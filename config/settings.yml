@@ -19,9 +19,20 @@ config:
   radius_mac_password: null
   node_require_nic: false
   nic_require_network: false
-  reteniton_period: null # forever
-  # reteniton_period: 31622400 # 1 year
-  nocompress_period: 31622400 # 1 year
+  retention_period:
+    ipv4_arp: null # forever
+    ipv6_neighbor: null # forever
+    radius_radacct: null # forever
+    radius_radpostauth: null # forever
+  nocompress_period:
+    ipv4_arp: 31622400 # 1 year
+    ipv6_neighbor: 31622400 # 1 year
+    radius_radacct: 2678400 # 1 month
+    radius_radpostauth: 0 # last
+
+
+
+
   destroy_deleted_user: false
   destroy_deleted_user_without_node: false
   destroy_nodes_of_deleted_user: false
