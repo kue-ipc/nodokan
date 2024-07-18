@@ -314,18 +314,16 @@ class User < ApplicationRecord
   def radius_user
     return unless Settings.feature.user_auth_network
 
-    radius_auth = !deleted? && auth_network.present?
-    radius_auth_previously_was = !deleted_previously_was &&
-      auth_network_previously_was.present?
-
-    if radius_auth
-      if destroyed?
+    if destroyed?
+      if !deleted? && auth_network.present?
         RadiusUserDelJob.perform_later(username)
-      elsif !radius_auth_previously_was
-        RadiusUserAddJob.perform_later(username, auth_network.vlan)
       end
-    elsif radius_auth_previously_was
-      RadiusUserDelJob.perform_later(username)
+    elsif deleted_previously_changed? || auth_network_previously_changed?
+      if !deleted? && auth_network.present?
+        RadiusUserAddJob.perform_later(username, auth_network.vlan)
+      else
+        RadiusUserDelJob.perform_later(username)
+      end
     end
   end
 
