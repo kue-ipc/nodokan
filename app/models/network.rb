@@ -9,6 +9,13 @@ class Network < ApplicationRecord
     specific: "s",
   }.freeze
 
+  IDENTIFIER_TYPES = {
+    vlan: "v",
+    ipv4: "i",
+    ipv6: "k",
+    id: "#",
+  }.freeze
+
   enum :ra, {
     disabled: -1,
     router: 0b000,
@@ -263,9 +270,9 @@ class Network < ApplicationRecord
   def identifier
     if vlan
       "v#{vlan}"
-    elsif ipv4_network
+    elsif has_ipv4?
       "i#{ipv4_network_address}"
-    elsif ipv6_network
+    elsif has_ipv6?
       "k#{ipv6_network_address}"
     else
       "##{id}"
@@ -387,22 +394,29 @@ class Network < ApplicationRecord
   # class methods
 
   def self.find_identifier(str)
-    case str.to_s.strip.downcase
-    when /^v(\d{1,4})$/
-      Network.find_by(vlan: Regexp.last_match(1).to_i)
-    when /^i([.\d]+)$/
-      Network.find_by(ipv4_network_data: IPAddr.new(Regexp.last_match(1)).hton)
-    when /^k([:\h]+)$/
-      Network.find_by(ipv6_network_data: IPAddr.new(Regexp.last_match(1)).hton)
-    when /^\#(\d+)$/
-      Network.find(Regexp.last_match(1).to_i)
+    m = /\A(?<type>.)(?<value>[\h]+)\z/.match(str.to_s.strip.downcase)
+    raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
+
+    case m[:type]
+    when "v"
+      Network.find_by(vlan: m[:value].to_i)
+    when "i", "k"
+      value = IPAddr.new(m[:value])
+      if value.ipv4?
+        Network.find_by(ipv4_network_data: value.hton)
+      elsif value.ivp6?
+        Network.find_by(ipv6_network_data: value.hton)
+      else
+        raise ArgumentError, "Unknown ip version #{str.inspect}"
+      end
+    when "#"
+      Network.find_by(id: m[:value].to_i)
     else
-      logger.warn "Invalid network identifier: #{str}"
-      nil
+      raise ArgumentError, "Unknown identifier type #{str.inspect}"
     end
   end
 
-  def self.next_free
+  def self.next_free_auth
     Network
       .where(auth: true, locked: false, nics_count: 0, assignments_count: 0)
       .order(:vlan)

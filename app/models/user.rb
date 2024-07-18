@@ -47,6 +47,7 @@ class User < ApplicationRecord
   end
 
   after_save :allocate_network
+  after_save :save_auth_network!
 
   after_commit :radius_user
 
@@ -61,22 +62,36 @@ class User < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   def allocate_network
-    return true if @allocate_network_config.blank?
+    return if @allocate_network_config.blank?
 
-    if Settings.feature.user_auth_network
-      self.auth_network = find_network(@allocate_network_config[:auth_network])
+    if Settings.feature.user_auth_network &&
+        @allocate_network_config[:auth_network]
+      network = find_network(@allocate_network_config[:auth_network])
+      unless network
+        errors.add(:auth_network, I18n.t("errors.messages.no_allocate"))
+        throw :abort
+      end
+
+      self.auth_network = network
+      # assgimentを作成しておくために、セーブしておく
+      save_auth_network!
     end
 
     @allocate_network_config[:networks]&.each do |net|
       network = find_network(net)
-      add_use_network(network) if network
+      unless network
+        errors.add(:use_networks, I18n.t("errors.messages.no_allocate"))
+        throw :abort
+      end
+
+      add_use_network(network) || throw(:abort)
     end
   end
 
   private def find_network(net)
     case net
     when "free"
-      Network.next_free
+      Network.next_free_auth
     when "auth"
       auth_network
     else
@@ -180,6 +195,13 @@ class User < ApplicationRecord
   end
 
   def auth_network=(network)
+    if network && !network.is_a?(Network)
+      raise ActiveRecord::AssociationTypeMismatch,
+        "Network expected, " \
+        "got #{network.inspect} which is an instance of #{network.class}"
+    end
+
+    # no change
     return if network == auth_network
 
     @auth_network_change ||= [auth_network, nil]
@@ -188,24 +210,34 @@ class User < ApplicationRecord
     @auth_network = network
   end
 
-  # TODO: 保存時のauth_networkの動作を実装すること
-  def save_auth_network
-    return unless auth_network_changed?
+  def save_auth_network!
+    return true unless auth_network_changed?
 
-    if auth_network
-      auth_assignments.where.not(network_id: auth_network.id)
-        .find_each do |assignment|
-        assignment.update(auth: false)
-      end
+    Assignment.transaction do
+      if auth_network
+        auth_assignments.where.not(network: auth_network)
+          .find_each do |assignment|
+          assignment.update!(auth: false)
+        end
 
-      @auth_network = network
-      assignment = assignments.find_or_initialize_by(network: network)
-      assignment.update(auth: true)
-    else
-      auth_assignments.find_each do |assignment|
-        assignment.update(auth: false)
+        assignment = assignments.find_or_initialize_by(network: auth_network)
+        assignment.update!(auth: true)
+      else
+        auth_assignments.find_each do |assignment|
+          assignment.update!(auth: false)
+        end
       end
     end
+
+    @auth_network_previous_change = auth_network_change
+    clear_auth_network_change
+    true
+  end
+
+  def save_auth_network
+    save_auth_network!
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
+    false
   end
 
   attr_reader :auth_network_change, :auth_network_previous_change
