@@ -93,14 +93,17 @@ class UsersSyncJob < ApplicationJob
     if Settings.config.destroy_deleted_user
       User.where(deleted: true).find_each.to_h do |user|
         logger.info("Destroy: #{user.username}")
-        user.nodes.find_each do |node|
-          if Settings.config.destroy_nodes_of_deleted_user
-            logger.debug("Destroy node: #{node.id}")
-            node.destroy!
-          else
-            logger.debug("Disassociate node: #{node.id}")
-            node.update!(user: nil)
+        if user.nodes_count.positive?
+          user.nodes.find_each do |node|
+            if Settings.config.destroy_nodes_of_deleted_user
+              logger.debug("Destroy node: #{node.id}")
+              node.destroy!
+            else
+              logger.debug("Disassociate node: #{node.id}")
+              node.update!(user: nil)
+            end
           end
+          user.reload
         end
         user.destroy!
         [user.username, :destroy]
