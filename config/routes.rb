@@ -1,7 +1,6 @@
 require "resque/server"
 
 Rails.application.routes.draw do
-  resources :bulks
   root to: "pages#top"
   get "about", to: "pages#about"
 
@@ -20,6 +19,8 @@ Rails.application.routes.draw do
   resources :networks
   resources :ipv4_pools, only: [:new]
   resources :ipv6_pools, only: [:new]
+
+  resources :bulks, only: [:index, :show, :new, :create, :destroy]
 
   defaults format: :json do
     resources :places, only: [:index, :show, :create, :update, :destroy]
