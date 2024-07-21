@@ -1214,10 +1214,10 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-rails_admin@3.2.0-beta:
-  version "3.2.0-beta"
-  resolved "https://registry.yarnpkg.com/rails_admin/-/rails_admin-3.2.0-beta.tgz#5b1a183df78d82687ea0924521f1053811610961"
-  integrity sha512-cjIuMZ9K3DmuywPfrTe7C70kosHyMZaSpIlKxG5VkcOcLbkVFhchnQA3AdIy643unw7sEMbzt8IwBTwag9OqdQ==
+rails_admin@3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/rails_admin/-/rails_admin-3.1.4.tgz#58c56bb73006c851141dedd6c29eda21be27df52"
+  integrity sha512-kZoTGOQZd8b4ONBoDWa6DJaeX/2vbMRD5GEXkvOBF55i9lpkcfqVoHek60h1FNZxzGFWeXpM1qUzYylfgNpK9w==
   dependencies:
     "@babel/runtime" "^7.16.7"
     "@fortawesome/fontawesome-free" ">=5.15.0 <7.0.0"
