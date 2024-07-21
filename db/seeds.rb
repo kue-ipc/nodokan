@@ -3,7 +3,9 @@ def create_entities(model_class)
 
   start_msg = "create entities start: #{model_class.name}"
   puts start_msg
-  Rails.logger.info("db:seed") { start_msg }
+  Rails.logger.info("db:seed") do
+    start_msg
+  end
   start_time = Time.now
   count = {success: 0, failure: 0}
 
