@@ -1,0 +1,11 @@
+p style="color: green" = notice
+
+h1 Bulks
+
+#bulks
+  - @bulks.each do |bulk|
+    == render bulk
+    p
+      = link_to "Show this bulk", bulk
+
+= link_to "New bulk", new_bulk_path

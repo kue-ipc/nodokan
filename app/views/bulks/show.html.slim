@@ -1,0 +1,10 @@
+p style="color: green" = notice
+
+== render @bulk
+
+div
+  => link_to "Edit this bulk", edit_bulk_path(@bulk)
+  '|
+  =< link_to "Back to bulks", bulks_path
+
+  = button_to "Destroy this bulk", @bulk, method: :delete

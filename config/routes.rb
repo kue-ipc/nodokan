@@ -1,6 +1,7 @@
 require "resque/server"
 
 Rails.application.routes.draw do
+  resources :bulks
   root to: "pages#top"
   get "about", to: "pages#about"
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_21_200839) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_21_210721) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -50,6 +50,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_21_200839) do
     t.index ["network_id"], name: "index_assignments_on_network_id"
     t.index ["user_id", "network_id"], name: "index_assignments_on_user_id_and_network_id", unique: true
     t.index ["user_id"], name: "index_assignments_on_user_id"
+  end
+
+  create_table "bulks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "model", null: false
+    t.integer "status", null: false
+    t.timestamp "started_at"
+    t.timestamp "stopped_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_bulks_on_user_id"
   end
 
   create_table "confirmations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -334,6 +345,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_21_200839) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assignments", "networks"
   add_foreign_key "assignments", "users"
+  add_foreign_key "bulks", "users"
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "hardwares", "device_types"

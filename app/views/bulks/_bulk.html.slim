@@ -1,0 +1,22 @@
+div id="#{dom_id bulk}"
+  p
+    strong User:
+    =< bulk.user_id
+  p
+    strong Model:
+    =< bulk.model
+  p
+    strong Status:
+    =< bulk.status
+  p
+    strong Started at:
+    =< bulk.started_at
+  p
+    strong Stopped at:
+    =< bulk.stopped_at
+  p
+    strong File:
+    = link_to bulk.file.filename, bulk.file if bulk.file.attached?
+  p
+    strong Result:
+    = link_to bulk.result.filename, bulk.result if bulk.result.attached?
