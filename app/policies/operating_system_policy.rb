@@ -1,5 +1,5 @@
 class OperatingSystemPolicy < ApplicationPolicy
-  class Scope < Scope
+  class Scope < ApplicationPolicy::Scope
   end
 
   def manage?
