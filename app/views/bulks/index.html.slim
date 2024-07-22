@@ -1,11 +1,39 @@
-p style="color: green" = notice
+- content_for :heading
+  h2
+    = Bulk.model_name.human
+    = t("actions.index")
 
-h1 Bulks
+= render "form", bulk: Bulk.new
 
-#bulks
+/ = link_to "New bulk", new_bulk_path
+
+= turbo_frame_tag "bulks-list" do
+  .mb-2
+    .row.row-cols-md-auto.g-3
+      / - if Settings.feature.specific_node
+      /   .col-12
+      /     => filter_link(:specific)
+      /     | 特定端末
+      / .col-12
+      /   = filter_collection_select(:nics_network_id,
+      /     current_user.usable_networks.to_a, :id, :name)
+      / - if current_user.admin?
+      /   .col-12
+      /     = filter_collection_select(:user_id, User.all, :id, :username)
+
+  / = paginate @bulks
+
+  .mb-2
+    .row.py-1.border-bottom.fw-bold
+      - bulk_list_cols.each do |col|
+        = tag.div class: col_grid_class(col) do
+          = Bulk.human_attribute_name(col[:name])
+          - if col[:sort]
+            =< sort_link(col[:sort])
+
   - @bulks.each do |bulk|
-    == render bulk
-    p
-      = link_to "Show this bulk", bulk
+    = render bulk
 
-= link_to "New bulk", new_bulk_path
+  = paginate @bulks
+  p
+    = page_entries_info @bulks

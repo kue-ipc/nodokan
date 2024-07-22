@@ -56,8 +56,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_21_210721) do
     t.bigint "user_id"
     t.string "model", null: false
     t.integer "status", null: false
-    t.timestamp "started_at"
-    t.timestamp "stopped_at"
+    t.integer "number", default: 0, null: false
+    t.integer "success", default: 0, null: false
+    t.integer "failure", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_bulks_on_user_id"

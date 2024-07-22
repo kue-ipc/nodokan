@@ -18,15 +18,11 @@ class BulksController < ApplicationController
   def show
   end
 
-  # GET /bulks/new
-  def new
-    @bulk = Bulk.new
-  end
-
   # POST /bulks or /bulks.json
   def create
     @bulk = Bulk.new(bulk_params)
-    @bulk.user = current_user unless current_user.admin?
+    @bulk.user = current_user
+    @bulk.status = 1
     authorize @bulk
 
     respond_to do |format|
@@ -75,8 +71,7 @@ class BulksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   private def bulk_params
-    params.require(:bulk).permit(:user_id, :model, :status, :started_at,
-      :stopped_at, :file, :result)
+    params.require(:bulk).permit(:model, :file)
   end
 
   private def authorize_bulk

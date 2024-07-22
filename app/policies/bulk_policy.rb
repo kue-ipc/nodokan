@@ -14,7 +14,7 @@ class BulkPolicy < ApplicationPolicy
   end
 
   def create?
-    !user.guest
+    !user.guest?
   end
 
   def update?

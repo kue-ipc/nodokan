@@ -4,8 +4,9 @@ class CreateBulks < ActiveRecord::Migration[7.1]
       t.references :user, foreign_key: true
       t.string :model, null: false
       t.integer :status, null: false
-      t.timestamp :started_at
-      t.timestamp :stopped_at
+      t.integer :number, null: false, default: 0
+      t.integer :success, null: false, default: 0
+      t.integer :failure, null: false, default: 0
 
       t.timestamps
     end
