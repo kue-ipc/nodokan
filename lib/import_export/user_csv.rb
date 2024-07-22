@@ -13,8 +13,10 @@ module ImportExport
         fullname
         role
         flag
+        limit
         auth_network
-        networks
+        use_networks
+        manage_networks
       )
     end
 
