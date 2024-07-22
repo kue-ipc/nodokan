@@ -11,72 +11,59 @@ module ImportExport
     # override methods
     # * record_to_row(record, row = empty_row)
 
-    def initialize(csv_file, logger: Logger.new($stderr))
-      @csv_file = csv_file
-      @tmp_file = "#{@csv_file}.tmp"
-      @logger = logger
+    def initialize(**opts)
+      @result = CSV.new("", headers: headers, write_headers: true, **opts)
     end
 
-    def import
-      results = {
-        success: 0,
-        failure: 0,
-        error: 0,
-        skip: 0,
-      }
-
-      csv = CSV.read(@csv_file, encoding: "BOM|UTF-8", headers: :first_row)
-
-      File.open(@tmp_file, "wb:UTF-8") do |io|
-        io.write "\u{feff}"
-        io.puts csv.headers.to_csv
-        count = 0
-        csv.each do |row|
-          count += 1
-          do_action(row)
-        rescue StandardError => e
-          row["result"] = :error
-          row["message"] = e.message
-          @logger.error(e.full_message)
-        ensure
-          @logger.info(
-            "#{count}: [#{row['result']}] #{row['id']}: #{row['message']}")
-          results[row["result"]] += 1
-          io.puts row.to_csv
-        end
-      end
-      @logger.info("Import CSV RESULTS: #{results.to_json}")
-
-      backup_file = "#{@csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
-      FileUtils.move(@csv_file, backup_file) if FileTest.exist?(@csv_file)
-      FileUtils.move(@tmp_file, @csv_file)
-
-      results
+    def output
+      @result.string
     end
 
-    def export
-      results = {
-        success: 0,
-        failure: 0,
-        error: 0,
-        skip: 0,
-      }
+    # data is a string or io formatted csv
+    def import(data)
+      counts = Hash.new(0)
 
-      File.open(@tmp_file, "wb:UTF-8") do |io|
-        io.write "\u{feff}"
-        io.puts header.to_csv
-        list.each do |row|
-          io.puts row.to_csv
-          results[:success] += 1
+      CSV.new(data, headers: :first_row).each_with_index do |row, idx|
+        do_action(row)
+      rescue StandardError => e
+        row["result"] = :error
+        row["message"] = e.message
+        Rails.logger.error("Import error occured: #{idx}")
+        Rails.logger.error(e.full_message)
+      ensure
+        Rails.logger.debug do
+          "#{idx}: [#{row['result']}] #{row['id']}: #{row['message']}"
         end
+        @result << row
+        counts[row["result"]] += 1
       end
-      @logger.info("Export CSV RESULTS: #{results.to_json}")
+      Rails.logger.info("Import CSV: #{counts.to_json}")
+      counts
+    end
 
-      backup_file = "#{@csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
-      FileUtils.move(@csv_file, backup_file) if FileTest.exist?(@csv_file)
-      FileUtils.move(@tmp_file, @csv_file)
+    def export(records = record_all)
+      counts = Hash.new(0)
 
-      results
+      records.find_each do |record|
+        row = nil
+        row = record_to_row_with_id(record)
+        row["result"] = :success
+      rescue StandardError => e
+        row ||= {"id" => record.id}
+        row["result"] = :error
+        row["message"] = e.message
+        Rails.logger.error("Export error occured: #{record.id}")
+        Rails.logger.error(e.full_message)
+      ensure
+        @result << row
+        counts[row["result"]] += 1
+      end
+      Rails.logger.info("Export CSV: #{counts.to_json}")
+      counts
+    end
+
+    def record_all
+      model_class.order(:id).all
     end
 
     def do_action(row)
@@ -113,7 +100,7 @@ module ImportExport
     end
 
     def headers
-      @headers ||= ["action", "id", *attrs, "result", "message"]
+      @headers ||= ["id", *attrs, "result", "message"]
     end
 
     def header
@@ -181,10 +168,6 @@ module ImportExport
       row = record_to_row(record, row)
       row["id"] = value_to_csv(record.id)
       row
-    end
-
-    def list
-      model_class.order(:id).all.map { |record| record_to_row_with_id(record) }
     end
 
     def create(row)

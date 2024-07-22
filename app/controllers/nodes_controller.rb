@@ -22,7 +22,11 @@ class NodesController < ApplicationController
       format.json do
         @nodes = paginate(@nodes)
       end
-      format.csv { @nodes }
+      format.csv do
+        node_csv = ImportExport::NodeCsv.new
+        node_csv.export(@nodes)
+        send_data "\u{feff}#{node_csv.output}"
+      end
     end
   end
 

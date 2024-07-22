@@ -22,7 +22,11 @@ class UsersController < ApplicationController
       format.json do
         @users = paginate(@users)
       end
-      format.csv { @users }
+      format.csv do
+        user_csv = ImportExport::UserCsv.new
+        user_csv.export(@users)
+        send_data "\u{feff}#{user_csv.output}"
+      end
     end
   end
 

@@ -70,7 +70,7 @@ module ImportExport
     end
 
     def record_to_row(node, row = empty_row)
-      row["user"] = node.user.username
+      row["user"] = node.user&.username
       row["name"] = node.name
       row["flag"] = node.flag
       row["hostname"] = node.hostname
