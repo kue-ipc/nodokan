@@ -3,69 +3,81 @@ module Bitwise
   extend ActiveSupport::Concern
 
   class_methods do
-    # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-    def bitwise(definitions)
-      bitwise_prefix = definitions.delete(:_prefix)
-      bitwise_suffix = definitions.delete(:_suffix)
-
-      definitions.each do |name, values|
-        name = name.intern
-        unless values.is_a?(Hash)
-          values = values.each_with_index
-            .to_h { |value, idx| [value, 1 << idx] }
+    def bitwise(name = nil, values = nil, **options)
+      if name
+        unless values
+          values = options
+          options = {}
         end
-        values = ActiveSupport::HashWithIndifferentAccess.new(values).freeze
+        return _bitwise(name, values, **options)
+      end
 
-        singleton_class.send(:define_method, name.to_s.pluralize) do
-          values
+      definitions = options.slice!(:_prefix, :_suffix, :_scopes, :_default,
+        :_instance_methods)
+      options.transform_keys! { |key| :"#{key[1..]}" }
+      definitions.each { |name, values| _bitwise(name, values, **options) }
+    end
+
+    # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
+    private def _bitwise(name, values, prefix: nil, suffix: nil, scopes: true,
+      instance_methods: true, validate: false, **options)
+
+      name = name.intern
+      unless values.is_a?(Hash)
+        values = values.each_with_index
+          .to_h { |value, idx| [value, 1 << idx] }
+      end
+      values = ActiveSupport::HashWithIndifferentAccess.new(values).freeze
+
+      singleton_class.send(:define_method, name.to_s.pluralize) do
+        values
+      end
+
+      define_method(name.to_s.pluralize) do
+        if self[name].nil?
+          nil
+        elsif self[name].positive?
+          values.select do |_, value|
+            value.positive? && (self[name] & value).positive?
+          end.keys
+        else
+          [values.key(self[name])].compact
+        end
+      end
+
+      attr_prefix =
+        if prefix == true
+          "#{name}_"
+        elsif prefix
+          "#{prefix}_"
         end
 
-        define_method(name.to_s.pluralize) do
-          if self[name].nil?
-            nil
-          elsif self[name].positive?
-            values.select { |_, value|
-              value.positive? && (self[name] & value).positive?
-            }.keys
-          else
-            [values.key(self[name])].compact
-          end
+      attr_suffix =
+        if suffix == true
+          "_#{name}"
+        elsif suffix
+          "_#{suffix}"
         end
 
-        prefix =
-          if bitwise_prefix == true
-            "#{name}_"
-          elsif bitwise_prefix
-            "#{bitwise_prefix}_"
+      values.each do |key, value|
+        attr_name = "#{attr_prefix}#{key}#{attr_suffix}"
+        if value.positive?
+          define_method("#{attr_name}?") do
+            self[name].positive? && (self[name] & value).positive?
           end
-
-        suffix =
-          if bitwise_suffix == true
-            "_#{name}"
-          elsif bitwise_suffix
-            "_#{bitwise_suffix}"
+          define_method("#{attr_name}!") do
+            update!(name => [self[name], 0].max ^ value)
           end
-
-        values.each do |key, value|
-          attr_name = "#{prefix}#{key}#{suffix}"
-          if value.positive?
-            define_method("#{attr_name}?") do
-              self[name].positive? && (self[name] & value).positive?
-            end
-            define_method("#{attr_name}!") do
-              update!(name => [self[name], 0].max ^ value)
-            end
-            scope(attr_name,
-              -> { where("#{name} > 0 AND #{name} & #{value} > 0") })
-          else
-            define_method("#{attr_name}?") do
-              self[name] == value
-            end
-            define_method("#{attr_name}!") do
-              update!(name => value)
-            end
-            scope(attr_name, -> { where(name => value) })
+          scope(attr_name,
+            -> { where("#{name} > 0 AND #{name} & #{value} > 0") })
+        else
+          define_method("#{attr_name}?") do
+            self[name] == value
           end
+          define_method("#{attr_name}!") do
+            update!(name => value)
+          end
+          scope(attr_name, -> { where(name => value) })
         end
       end
     end
