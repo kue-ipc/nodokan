@@ -51,6 +51,12 @@ class User < ApplicationRecord
 
   after_commit :radius_user
 
+  # class methods
+
+  def self.find_identifier(str)
+    find_by(username: str)
+  end
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(username email fullname role deleted nodes_count)
@@ -133,9 +139,9 @@ class User < ApplicationRecord
   # TODO: devise_ldap_authenticatableのをそのまま使うのに変更予定
   def ldap_groups
     @ldap_groups ||=
-      Devise::LDAP::Adapter.get_group_list(username).map { |name|
+      Devise::LDAP::Adapter.get_group_list(username).map do |name|
         name.split(",").first.split("=").second
-      }
+      end
   end
 
   def ldap_mail
@@ -348,5 +354,9 @@ class User < ApplicationRecord
       use_networks.count.zero?
 
     true
+  end
+
+  def identifier
+    username
   end
 end
