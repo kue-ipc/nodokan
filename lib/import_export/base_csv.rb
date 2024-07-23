@@ -7,9 +7,9 @@ module ImportExport
     # abstract methods
     # * model_class()
     # * attrs()
-    # * row_to_record(row, record = model_class.new)
+    # * row_to_record(row, record: model_class.new)
     # override methods
-    # * record_to_row(record, row = empty_row)
+    # * record_to_row(record, row: empty_row, keys: attrs)
 
     def initialize(**opts)
       @result = CSV.new("", headers: headers, write_headers: true, **opts)
@@ -45,18 +45,21 @@ module ImportExport
       counts = Hash.new(0)
 
       records.find_each do |record|
-        row = nil
-        row = record_to_row_with_id(record)
-        row["result"] = :success
-      rescue StandardError => e
-        row ||= {"id" => record.id}
-        row["result"] = :error
-        row["message"] = e.message
-        Rails.logger.error("Export error occured: #{record.id}")
-        Rails.logger.error(e.full_message)
-      ensure
-        @result << row
-        counts[row["result"]] += 1
+        split_row_record(record).each do |target|
+          row = nil
+          row = record_to_row_with_id(record, target: target)
+          row["result"] = :success
+        rescue StandardError => e
+          row ||= {"id" => record.id}
+          row["id"] ||= record.id
+          row["result"] = :error
+          row["message"] = e.message
+          Rails.logger.error("Export error occured: #{record.id} #{split_id}")
+          Rails.logger.error(e.full_message)
+        ensure
+          @result << row
+          counts[row["result"]] += 1
+        end
       end
       Rails.logger.info("Export CSV: #{counts.to_json}")
       counts
@@ -64,6 +67,10 @@ module ImportExport
 
     def record_all
       model_class.order(:id).all
+    end
+
+    def split_row_record(record)
+      [nil]
     end
 
     def do_action(row)
@@ -135,7 +142,9 @@ module ImportExport
     end
 
     def value_to_csv(value)
-      if value.is_a?(Enumerable)
+      if value.nil?
+        ""
+      elsif value.is_a?(Enumerable)
         value.map { |item| value_to_identifier(item) }.join(delimiter)
       else
         value_to_identifier(value)
@@ -143,7 +152,9 @@ module ImportExport
     end
 
     def value_to_identifier(value)
-      if value.respond_to?(:identifier)
+      if value.nil?
+        ""
+      elsif value.respond_to?(:identifier)
         value.identifier
       elsif value.respond_to?(:to_str)
         value.to_str
@@ -152,7 +163,7 @@ module ImportExport
       end
     end
 
-    def record_to_row(record, row = empty_row, keys = attrs)
+    def record_to_row(record, row: empty_row, keys: attrs, target: nil)
       keys.each do |key|
         value = record
         key_to_list(key).each do |attr|
@@ -164,9 +175,9 @@ module ImportExport
       row
     end
 
-    def record_to_row_with_id(record, row = empty_row)
-      row = record_to_row(record, row)
-      row["id"] = value_to_csv(record.id)
+    def record_to_row_with_id(record, **opts)
+      row = record_to_row(record, **opts)
+      row["id"] = record.id
       row
     end
 

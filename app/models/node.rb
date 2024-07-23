@@ -87,6 +87,17 @@ class Node < ApplicationRecord
     "#{hostname}.#{domain}"
   end
 
+  def fqdn=(str)
+    if str.blank?
+      self.hostname = nil
+      self.domain = nil
+    else
+      list = str.split(".", 2)
+      self.hostname = list[0]
+      self.domain = list[1]
+    end
+  end
+
   def flag
     FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
   end

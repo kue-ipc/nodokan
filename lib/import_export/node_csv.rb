@@ -7,13 +7,14 @@ module ImportExport
     end
 
     def attrs
-      %w[
+      %w(
         user
         name
+        fqdn
+        type
         flag
-        hostname
-        domain
-        duid
+        host
+        components
         place[area]
         place[building]
         place[floor]
@@ -24,6 +25,8 @@ module ImportExport
         hardware[model_number]
         operating_system[os_category]
         operating_system[name]
+        duid
+        nic[number]
         nic[name]
         nic[interface_type]
         nic[network]
@@ -33,9 +36,8 @@ module ImportExport
         nic[ipv4_address]
         nic[ipv6_config]
         nic[ipv6_address]
-        nics
         note
-      ]
+      )
     end
 
     def unique_attrs
@@ -43,16 +45,19 @@ module ImportExport
     end
 
     def nic_to_data(nic, data = {})
+      return data if nic.nil?
+
       data.update(
-        name: nic&.name,
-        interface_type: nic&.interface_type,
-        network: nic&.network&.identifier,
-        flag: nic&.flag,
-        mac_address: nic&.mac_address,
-        ipv4_config: nic&.ipv4_config,
-        ipv4_address: nic&.ipv4_address,
-        ipv6_config: nic&.ipv6_config,
-        ipv6_address: nic&.ipv6_address)
+        number: nic.number,
+        name: nic.name,
+        interface_type: nic.interface_type,
+        network: value_to_csv(nic.network),
+        flag: nic.flag,
+        mac_address: nic.mac_address,
+        ipv4_config: nic.ipv4_config,
+        ipv4_address: nic.ipv4_address,
+        ipv6_config: nic.ipv6_config,
+        ipv6_address: nic.ipv6_address)
     end
 
     def data_to_nic(data, nic = Nic.new)
@@ -69,33 +74,33 @@ module ImportExport
       nic
     end
 
-    def record_to_row(node, row = empty_row)
-      row["user"] = node.user&.username
-      row["name"] = node.name
-      row["flag"] = node.flag
-      row["hostname"] = node.hostname
-      row["domain"] = node.domain
-      row["duid"] = node.duid
-      row["place[area]"] = node.place&.area
-      row["place[building]"] = node.place&.building
-      row["place[floor]"] = node.place&.floor
-      row["place[room]"] = node.place&.room
-      row["hardware[device_type]"] = node.hardware&.device_type&.name
-      row["hardware[maker]"] = node.hardware&.maker
-      row["hardware[product_name]"] = node.hardware&.product_name
-      row["hardware[model_number]"] = node.hardware&.model_number
-      row["operating_system[os_category]"] =
-        node.operating_system&.os_category&.name
-      row["operating_system[name]"] = node.operating_system&.name
+    def split_row_record(record)
+      record.nic_ids.presence || [nil]
+    end
 
-      first_nic = node.nics.first
-      other_nics = node.nics - [first_nic]
-      nic_to_data(first_nic).each do |key, value|
-        row["nic[#{key}]"] = value
+    def record_to_row(node, target: nil, keys: attrs, **opts)
+      row = super(node,
+        keys: keys - %w(
+          type
+          nic[number]
+          nic[name]
+          nic[interface_type]
+          nic[network]
+          nic[flag]
+          nic[mac_address]
+          nic[ipv4_config]
+          nic[ipv4_address]
+          nic[ipv6_config]
+          nic[ipv6_address]
+        ), **opts)
+
+      row["type"] = node.node_type
+
+      if target
+        nic_to_data(Nic.find(target)).each do |key, value|
+          row["nic[#{key}]"] = value
+        end
       end
-      row["nics"] = other_nics.presence&.map { |nic| nic_to_data(nic) }&.to_json
-
-      row["note"] = node.note
 
       row
     end
