@@ -9,7 +9,7 @@ class Confirmation < ApplicationRecord
 
   ALL_ATTRS = (NUM_ATTRS + %w(security_hardware security_software)).freeze
 
-  bitwise security_hardware: {
+  bitwise :security_hardware, {
     encrypted: 0x1,
     zero_client: 0x2,
     remote_wipe: 0x4,
@@ -19,7 +19,7 @@ class Confirmation < ApplicationRecord
     safety_area: 0x40,
     none: 0,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true
 
   enum :existence, {
     existing: 0,

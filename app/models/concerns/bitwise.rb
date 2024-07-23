@@ -20,7 +20,7 @@ module Bitwise
 
     # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
     private def _bitwise(name, values, prefix: nil, suffix: nil, scopes: true,
-      instance_methods: true, validate: false, **options)
+      instance_methods: true, validate: false)
 
       name = name.intern
       unless values.is_a?(Hash)
@@ -62,24 +62,34 @@ module Bitwise
       values.each do |key, value|
         attr_name = "#{attr_prefix}#{key}#{attr_suffix}"
         if value.positive?
-          define_method("#{attr_name}?") do
-            self[name].positive? && (self[name] & value).positive?
+          if instance_methods
+            define_method("#{attr_name}?") do
+              self[name].positive? && (self[name] & value).positive?
+            end
+            define_method("#{attr_name}!") do
+              update!(name => [self[name], 0].max ^ value)
+            end
           end
-          define_method("#{attr_name}!") do
-            update!(name => [self[name], 0].max ^ value)
+          if scopes
+            scope(attr_name,
+              -> { where("#{name} > 0 AND #{name} & #{value} > 0") })
           end
-          scope(attr_name,
-            -> { where("#{name} > 0 AND #{name} & #{value} > 0") })
         else
-          define_method("#{attr_name}?") do
-            self[name] == value
+          if instance_methods
+            define_method("#{attr_name}?") do
+              self[name] == value
+            end
+            define_method("#{attr_name}!") do
+              update!(name => value)
+            end
           end
-          define_method("#{attr_name}!") do
-            update!(name => value)
-          end
-          scope(attr_name, -> { where(name => value) })
+          scope(attr_name, -> { where(name => value) }) if scopes
         end
       end
+
+      # TODO: valideteの実装
+      # if validate
+      # end
     end
   end
 end
