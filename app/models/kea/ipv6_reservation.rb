@@ -10,10 +10,10 @@ module Kea
     self.primary_key = "reservation_id"
 
     # type: Type of the reservation. A value of 0 is IPv6 address reservation, a value of 2 is IPv6 prefix reservation.
-    enum reservation_type: {
+    enum :reservation_type, {
       address: 0,
       prefix: 2,
-    }, _prefix: :type
+    }, prefix: :type
 
     belongs_to :host, primary_key: "host_id"
 

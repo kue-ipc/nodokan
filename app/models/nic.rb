@@ -15,7 +15,7 @@ class Nic < ApplicationRecord
   belongs_to :node, counter_cache: true
   belongs_to :network, counter_cache: true, optional: true
 
-  enum interface_type: {
+  enum :interface_type, {
     wired: 0,
     wireless: 1,
     virtual: 8,
@@ -25,7 +25,7 @@ class Nic < ApplicationRecord
     reserved: 18,
     other: 127,
     unknown: -1,
-  }
+  }, validates: true
 
   validates :number, uniqueness: {scope: :node}, numericality: {
     only_integer: true, greater_than: 0, less_than_or_equal_to: 64,

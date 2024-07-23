@@ -21,22 +21,22 @@ class Confirmation < ApplicationRecord
     unknown: -1,
   }, _prefix: true
 
-  enum existence: {
+  enum :existence, {
     existing: 0,
     abandoned: 16,
     unnecessary: 19,
     missing: 17,
     not_my_own: 18,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
-  enum content: {
+  enum :content, {
     correct: 0,
     incorrect: 16,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
-  enum os_update: {
+  enum :os_update, {
     auto: 0,
     manual: 1,
     updated: 2,
@@ -45,9 +45,9 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
-  enum app_update: {
+  enum :app_update, {
     auto: 0,
     manual: 1,
     updated: 2,
@@ -57,31 +57,31 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
-  enum software: {
+  enum :software, {
     trusted: 0,
     os_only: 9,
     untrusted: 16,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
-  enum security_update: {
+  enum :security_update, {
     auto: 0,
     built_in: 4,
     not_implemented: 9,
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
-  enum security_scan: {
+  enum :security_scan, {
     auto: 0,
     manual: 1,
     not_implemented: 9,
     not_do: 16,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
   validates :existence, presence: true
   validates :content, presence: true

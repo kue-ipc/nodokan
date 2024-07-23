@@ -3,7 +3,7 @@ class SecuritySoftware < ApplicationRecord
 
   has_many :confirmations
 
-  enum installation_method: {
+  enum :installation_method, {
     unnecessary: 8,
     built_in: 0,
     distributed: 1,
@@ -13,7 +13,7 @@ class SecuritySoftware < ApplicationRecord
     not_installed: 16,
     other: 127,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validates: true
 
   validates :installation_method, presence: true
 
