@@ -11,8 +11,9 @@ module ImportExport
     def attrs
       %w(
         name
-        flag
         vlan
+        flag
+        ra
         ipv4_network
         ipv4_gateway
         ipv4_pools

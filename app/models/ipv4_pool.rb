@@ -67,23 +67,7 @@ class Ipv4Pool < ApplicationRecord
   delegate :each, to: :ipv4_range
 
   def identifier
-    prefix =
-      case ipv4_config
-      when "dynamic"
-        "d"
-      when "reserved"
-        "r"
-      when "static"
-        "s"
-      when "manual"
-        "m"
-      when "disabled"
-        "!"
-      else
-        logger.error("Unknown ipv4_config: #{ipv4_config}")
-        "?"
-      end
-    "#{prefix}-#{ipv4_first_address}-#{ipv4_last_address}"
+    "#{ipv4_config_prefix}-#{ipv4_first_address}-#{ipv4_last_address}"
   end
 
   def to_s

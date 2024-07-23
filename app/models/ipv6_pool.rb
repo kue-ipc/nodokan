@@ -72,23 +72,7 @@ class Ipv6Pool < ApplicationRecord
   delegate :each, to: :ipv6_range
 
   def identifier
-    prefix =
-      case ipv6_config
-      when "dynamic"
-        "d"
-      when "reserved"
-        "r"
-      when "static"
-        "s"
-      when "manual"
-        "m"
-      when "disabled"
-        "!"
-      else
-        logger.error("Unknown ipv6_config: #{ipv6_config}")
-        "?"
-      end
-    "#{prefix}-#{ipv6_first_address}-#{ipv6_last_address}"
+    "#{ipv6_config_prefix}-#{ipv6_first_address}-#{ipv6_last_address}"
   end
 
   def to_s
