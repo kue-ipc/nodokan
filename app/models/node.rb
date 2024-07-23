@@ -53,6 +53,34 @@ class Node < ApplicationRecord
 
   before_save :reset_attributes_for_node_type
 
+  # class methods
+
+  def self.find_identifier(str)
+    m = /\A(?<type>.)(?<value>[\h]+)\z/.match(str.to_s.strip.downcase)
+    raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
+
+    case m[:type]
+    when "@"
+      hostname, domain = m[:value].split(".", 2)
+      raise ArgumentError, "No domain in fqdn #{str.inspect}" if domain.nil?
+
+      Node.find_by(hostname: hostname, domain: domain)
+    when "i", "k"
+      value = IPAddr.new(m[:value])
+      if value.ipv4?
+        Nic.find_by(ipv4_data: value.hton)&.host
+      elsif value.ivp6?
+        Nic.find_by(ipv6_data: value.hton)&.host
+      else
+        raise ArgumentError, "Unknown ip version #{str.inspect}"
+      end
+    when "#"
+      Node.find_by(id: m[:value].to_i)
+    else
+      raise ArgumentError, "Unknown identifier type #{str.inspect}"
+    end
+  end
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(
@@ -120,6 +148,18 @@ class Node < ApplicationRecord
     end.compact.max
     @connected_at_checked = true
     @connected_at
+  end
+
+  def identifier
+    if domain.present?
+      "@#{fqdn}"
+    elsif (nic = nics.find { |nic| nic.has_ipv4? })
+      "i#{nic.ipv4_address}"
+    elsif (nic = nics.find { |nic| nic.has_ivp6? })
+      "k#{nic.ipv6_address}"
+    else
+      "##{id}"
+    end
   end
 
   private def reset_attributes_for_node_type
