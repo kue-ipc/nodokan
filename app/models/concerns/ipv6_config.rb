@@ -18,7 +18,7 @@ module Ipv6Config
       mapped: 4,
       manual: 8,
       disabled: -1,
-    }, prefix: :ipv6, validates: true
+    }, prefix: :ipv6, validate: true
   end
 
   def ipv6_config_prefix

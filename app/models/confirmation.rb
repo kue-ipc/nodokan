@@ -28,13 +28,13 @@ class Confirmation < ApplicationRecord
     missing: 17,
     not_my_own: 18,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   enum :content, {
     correct: 0,
     incorrect: 16,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   enum :os_update, {
     auto: 0,
@@ -45,7 +45,7 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   enum :app_update, {
     auto: 0,
@@ -57,14 +57,14 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   enum :software, {
     trusted: 0,
     os_only: 9,
     untrusted: 16,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   enum :security_update, {
     auto: 0,
@@ -73,7 +73,7 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   enum :security_scan, {
     auto: 0,
@@ -81,7 +81,7 @@ class Confirmation < ApplicationRecord
     not_implemented: 9,
     not_do: 16,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   validates :existence, presence: true
   validates :content, presence: true

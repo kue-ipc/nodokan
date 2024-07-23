@@ -16,7 +16,7 @@ module Ipv4Config
       static: 2,
       manual: 8,
       disabled: -1,
-    }, prefix: :ipv4, validates: true
+    }, prefix: :ipv4, validate: true
   end
 
   def ipv4_config_prefix

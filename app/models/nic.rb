@@ -25,7 +25,7 @@ class Nic < ApplicationRecord
     reserved: 18,
     other: 127,
     unknown: -1,
-  }, validates: true
+  }, validate: true
 
   validates :number, uniqueness: {scope: :node}, numericality: {
     only_integer: true, greater_than: 0, less_than_or_equal_to: 64,

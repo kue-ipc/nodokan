@@ -7,7 +7,7 @@ class Node < ApplicationRecord
     dns: "d",
   }.freeze
 
-  enum :node_type, [:normal, :mobile, :virtual, :logical], validates: true
+  enum :node_type, [:normal, :mobile, :virtual, :logical], validate: true
 
   belongs_to :user, optional: true, counter_cache: true
 
@@ -98,7 +98,7 @@ class Node < ApplicationRecord
   def connected_at
     return @connected_at if @connected_at_checked
 
-    @connected_at = nics.flat_map { |nic|
+    @connected_at = nics.flat_map do |nic|
       [
         :ipv4_resolved_at,
         :ipv6_discovered_at,
@@ -106,7 +106,7 @@ class Node < ApplicationRecord
         :ipv6_leased_at,
         :auth_at,
       ].map { |name| nic[name] }
-    }.compact.max
+    end.compact.max
     @connected_at_checked = true
     @connected_at
   end

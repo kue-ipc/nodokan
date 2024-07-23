@@ -13,7 +13,7 @@ class SecuritySoftware < ApplicationRecord
     not_installed: 16,
     other: 127,
     unknown: -1,
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   validates :installation_method, presence: true
 
