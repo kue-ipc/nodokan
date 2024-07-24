@@ -13,8 +13,9 @@ class NodesController < ApplicationController
   def index
     set_page
     set_search
-    @nodes = search_and_sort(policy_scope(Node)).includes(:user,
-      :place, :hardware, :operating_system, :confirmation, nics: :network)
+    @nodes = search_and_sort(policy_scope(Node))
+      .includes(:user, :place, :hardware, :operating_system, :confirmation,
+        nics: :network)
     respond_to do |format|
       format.html do
         @nodes = paginate(@nodes)
@@ -23,7 +24,7 @@ class NodesController < ApplicationController
         @nodes = paginate(@nodes)
       end
       format.csv do
-        node_csv = ImportExport::NodeCsv.new
+        node_csv = ImportExport::NodeCsv.new(current_user)
         node_csv.export(@nodes)
         send_data "\u{feff}#{node_csv.output}"
       end

@@ -125,6 +125,7 @@ ja:
       other: "%{count}個のエラーにより%{model}を%{action}することができません。"
     success_action: "%{model}を%{action}しました。"
     failure_action: "%{model}を%{action}することができません。"
+    forbidden_action: "%{model}を%{action}する権限がありません。"
     dispaly_detail: "詳細を確認するには%{name}をクリックしてください。"
     cannot_modify_own: "自分自身の情報は変更できません。"
 

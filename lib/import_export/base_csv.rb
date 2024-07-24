@@ -11,7 +11,8 @@ module ImportExport
     # override methods
     # * record_to_row(record, row: empty_row, keys: attrs)
 
-    def initialize(**opts)
+    def initialize(user = nil, **opts)
+      @user = user
       @result = CSV.new("", headers: headers, write_headers: true, **opts)
     end
 
@@ -23,19 +24,17 @@ module ImportExport
     def import(data)
       counts = Hash.new(0)
 
+      # TODO: importを実装中
       CSV.new(data, headers: :first_row).each_with_index do |row, idx|
         do_action(row)
       rescue StandardError => e
-        row["result"] = :error
-        row["message"] = e.message
+        row["[result]"] = :error
+        row["[message]"] = e.message
         Rails.logger.error("Import error occured: #{idx}")
         Rails.logger.error(e.full_message)
       ensure
-        Rails.logger.debug do
-          "#{idx}: [#{row['result']}] #{row['id']}: #{row['message']}"
-        end
         @result << row
-        counts[row["result"]] += 1
+        counts[row["[result]"]] += 1
       end
       Rails.logger.info("Import CSV: #{counts.to_json}")
       counts
@@ -45,20 +44,34 @@ module ImportExport
       counts = Hash.new(0)
 
       records.find_each do |record|
-        split_row_record(record).each do |target|
-          row = nil
-          row = record_to_row_with_id(record, target: target)
-          row["result"] = :success
-        rescue StandardError => e
-          row ||= {"id" => record.id}
-          row["id"] ||= record.id
-          row["result"] = :error
-          row["message"] = e.message
-          Rails.logger.error("Export error occured: #{record.id} #{split_id}")
-          Rails.logger.error(e.full_message)
-        ensure
+        if @user.nil? || Pundit.policy(@user, record).show?
+          split_row_record(record).each do |target|
+            row = nil
+            row = record_to_row_with_id(record, target: target)
+            row["[result]"] = :read
+          rescue StandardError => e
+            row ||= {"id" => record.id}
+            row["id"] ||= record.id
+            row["[result]"] = :error
+            row["[message]"] = e.message
+            Rails.logger.error("Export error occured: #{record.id} #{split_id}")
+            Rails.logger.error(e.full_message)
+          ensure
+            @result << row
+            counts[row["[result]"]] += 1
+            yiled row["[result]"] if block_given?
+          end
+        else
+          row = {
+            "id" => record.id,
+            "[result]" => :failed,
+            "[message]" => I18n.t("messages.forbidden_action",
+              model: record.model_name.human,
+              action: I18n.t("actions.show")),
+          }
           @result << row
-          counts[row["result"]] += 1
+          counts[row["[result]"]] += 1
+          yiled row["[result]"] if block_given?
         end
       end
       Rails.logger.info("Export CSV: #{counts.to_json}")
@@ -76,7 +89,7 @@ module ImportExport
     def do_action(row)
       model_class.transaction do
         if row["action"].blank?
-          row["result"] = :skip
+          row["[result]"] = :skip
           return
         end
 
@@ -90,14 +103,14 @@ module ImportExport
           end
 
         unless success
-          row["result"] = :failure
-          row["message"] = message
+          row["[result]"] = :failure
+          row["[message]"] = message
           raise ActiveRecord::Rollback
         end
 
         row["action"] = nil
-        row["result"] = :success
-        row["message"] = nil
+        row["[result]"] = :success
+        row["[message]"] = nil
       end
       row
     end
@@ -107,7 +120,7 @@ module ImportExport
     end
 
     def headers
-      @headers ||= ["id", *attrs, "result", "message"]
+      @headers ||= ["id", *attrs, "[result]", "[message]"]
     end
 
     def header

@@ -23,7 +23,7 @@ class NetworksController < ApplicationController
         @networks = paginate(@networks)
       end
       format.csv do
-        network_csv = ImportExport::NetworkCsv.new
+        network_csv = ImportExport::NetworkCsv.new(current_user)
         network_csv.export(@networks)
         send_data "\u{feff}#{network_csv.output}"
       end

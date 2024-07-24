@@ -13,8 +13,8 @@ class UsersController < ApplicationController
   def index
     set_page
     set_search
-    @users = search_and_sort(policy_scope(User)).includes(:auth_networks,
-      :use_networks, :manage_networks)
+    @users = search_and_sort(policy_scope(User))
+      .includes(:auth_networks, :use_networks, :manage_networks)
     respond_to do |format|
       format.html do
         @users = paginate(@users)
@@ -23,7 +23,7 @@ class UsersController < ApplicationController
         @users = paginate(@users)
       end
       format.csv do
-        user_csv = ImportExport::UserCsv.new
+        user_csv = ImportExport::UserCsv.new(current_user)
         user_csv.export(@users)
         send_data "\u{feff}#{user_csv.output}"
       end
