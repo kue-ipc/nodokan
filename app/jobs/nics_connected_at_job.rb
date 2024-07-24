@@ -16,15 +16,17 @@ class NicsConnectedAtJob < ApplicationJob
       :ipv4_resolved_at, :ipv6_discovered_at,
       :ipv4_leased_at, :ipv6_leased_at,
       :auth_at,
-    ].map { |name|
+    ].map do |name|
       time = __send__(name, nic)
       [name, time] if time != nic.__send__(name)
-    }.compact.to_h
+    end.compact.to_h
 
     return if attributes.blank?
 
+    # rubocop: disable Rails/SkipsModelValidations
     # no verify nor callback nor versioning
     nic.update_columns(attributes)
+    # rubocop: enable Rails/SkipsModelValidations
   end
 
   def ipv4_resolved_at(nic)
