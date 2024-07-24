@@ -97,7 +97,7 @@ class Node < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w(user place hardware operating_system nics)
+    %w(nics)
   end
   # rubocop: enable Lint/UnusedMethodArgument
 
