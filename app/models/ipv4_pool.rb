@@ -2,6 +2,8 @@ class Ipv4Pool < ApplicationRecord
   include Ipv4Config
   include Enumerable
 
+  has_paper_trail
+
   belongs_to :network
 
   validates :ipv4_first_address, allow_blank: false, ipv4_address: true

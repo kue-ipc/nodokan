@@ -7,6 +7,8 @@ class Node < ApplicationRecord
     dns: "d",
   }.freeze
 
+  has_paper_trail
+
   enum :node_type, [:normal, :mobile, :virtual, :logical], validate: true
 
   belongs_to :user, optional: true, counter_cache: true

@@ -3,6 +3,8 @@ require "ipaddr"
 class Ipv6Pool < ApplicationRecord
   include Ipv6Config
 
+  has_paper_trail
+
   belongs_to :network
 
   validates :ipv6_first_address, allow_blank: false, ipv6_address: true

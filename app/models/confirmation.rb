@@ -1,6 +1,8 @@
 class Confirmation < ApplicationRecord
   include Bitwise
 
+  has_paper_trail
+
   belongs_to :node
   belongs_to :security_software, optional: true
 

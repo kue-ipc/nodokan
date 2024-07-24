@@ -12,6 +12,8 @@ class Nic < ApplicationRecord
     locked: "l",
   }.freeze
 
+  has_paper_trail
+
   belongs_to :node, counter_cache: true
   belongs_to :network, counter_cache: true, optional: true
 

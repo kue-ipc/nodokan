@@ -1,4 +1,6 @@
 class SecuritySoftware < ApplicationRecord
+  has_paper_trail
+
   belongs_to :os_category
 
   has_many :confirmations

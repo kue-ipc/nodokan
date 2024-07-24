@@ -16,6 +16,8 @@ class Network < ApplicationRecord
     id: "#",
   }.freeze
 
+  has_paper_trail
+
   enum :ra, {
     disabled: -1,
     router: 0b000,

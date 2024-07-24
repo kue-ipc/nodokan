@@ -1,4 +1,6 @@
 class Bulk < ApplicationRecord
+  has_paper_trail
+
   enum :status, [
     :waiting,
     :starting,

@@ -1,7 +1,6 @@
 namespace :ipv6_neighbor do
   desc "Register IPv66 Neighbor"
   task register: :environment do
-    PaperTrail.request.disable_model(Ipv6Neighbor)
     csv_file = Rails.root / "data" / "ipv6_neighbor_register.csv"
     puts "register from csv ..."
     results = {

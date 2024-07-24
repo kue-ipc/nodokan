@@ -41,10 +41,21 @@ RailsAdmin.config do |config|
   # config.show_gravatar = true
 
   paper_trail_audit_model = %w(
-    Ipv4Pool Ipv6Pool
-    Node Confirmation LogicalComposition
-    Nic Network Assignment
-    Place DeviceType Hardware OsCategory OperatingSystem SecuritySoftware
+    Assignment
+    Bulk
+    Confirmation
+    DeviceType
+    Hardware
+    Ipv4Pool
+    Ipv6Pool
+    LogicalComposition
+    Network
+    Nic
+    Node
+    OperatingSystem
+    OsCategory
+    Place
+    SecuritySoftware
     User
   )
 

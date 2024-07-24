@@ -3,6 +3,8 @@ class User < ApplicationRecord
     deleted: "d",
   }.freeze
 
+  has_paper_trail
+
   # Include default devise modules.
   # :database_authenticatable or :ldap_authenticatable
   # Others available are:
