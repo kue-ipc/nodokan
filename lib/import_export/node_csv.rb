@@ -40,10 +40,6 @@ module ImportExport
       )
     end
 
-    def unique_attrs
-      []
-    end
-
     def nic_to_data(nic, data = {})
       return data if nic.nil?
 

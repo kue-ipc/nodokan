@@ -31,9 +31,8 @@ module ImportExport
 
     # data is a string or io formatted csv
     def import(data, &block)
-      # TODO: importを実装中
       CSV.new(data, headers: :first_row).each_with_index do |row, idx|
-        do_action(row)
+        import_row(row)
       rescue StandardError => e
         row["[result]"] = :error
         row["[message]"] = e.message
@@ -82,56 +81,78 @@ module ImportExport
       [nil]
     end
 
-    def do_action(row)
-      model_class.transaction do
-        if row["action"].blank?
-          row["[result]"] = :skip
-          return
-        end
-
-        success, message =
-          case row["action"].first.upcase
-          when "C" then create(row)
-          when "R" then read(row)
-          when "U" then update(row)
-          when "D" then delete(row)
-          else raise "unknown action: #{row['action']}"
-          end
-
-        unless success
-          row["[result]"] = :failure
-          row["[message]"] = message
-          raise ActiveRecord::Rollback
-        end
-
-        row["action"] = nil
-        row["[result]"] = :success
-        row["[message]"] = nil
+    def import_row(row_in)
+      unless header_set.super?(row.headers.to_set)
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("errors.messages.invalid_csv_header")
+        return
       end
-      row
-    end
 
-    def unique_attrs
-      []
+      case row["id"]&.split
+      when nil, ""
+        record = create(row)
+        if record.errors.empty?
+          record_to_row_with_id(record, row: row)
+          row["[result]"] = :created
+        else
+          row["[result]"] = :failed
+          row["[message]"] =
+            I18n.t("errors.messages.not_saved", resource: record,
+              count: record.errors.count) +
+            record.errors.full_messages.join("\n")
+        end
+      when /\A\d+\z/
+        id = row["id"].split.to_i
+        record = update(id, row)
+        if record.nil?
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("errors.messages.not_found")
+        elsif record.errors.empty?
+          record_to_row_with_id(record, row: row)
+          row["[result]"] = :updated
+        else
+          row["[result]"] = :failed
+          row["[message]"] =
+            I18n.t("errors.messages.not_saved", resource: record,
+              count: record.errors.count) +
+            record.errors.full_messages.join("\n")
+        end
+      when /\A!\d+\z/
+        id = row["id"].silpt.delete_prefix("!").to_i
+        record = delete(id)
+        if record.nil?
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("errors.messages.not_found")
+        elsif record.errors.empty?
+          record_to_row_with_id(record, row: row)
+          row["[result]"] = :deleted
+        else
+          row["[result]"] = :failed
+          row["[message]"] =
+            I18n.t("errors.messages.not_deleted", resource: record,
+              count: record.errors.count) +
+            record.errors.full_messages.join("\n")
+        end
+      else
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("errors.messages.invalid_id_field")
+      end
     end
 
     def headers
       @headers ||= ["id", *attrs, "[result]", "[message]"]
     end
 
-    def header
-      @header ||= CSV::Row.new(headers, headers, true)
+    def header_row
+      @header_row ||= CSV::Row.new(headers, headers, true)
     end
 
-    def find(row)
-      return model_class.find(row["id"]) if row["id"].present?
-
-      unique_attrs.find { |attr| row[attr.to_s].present? }
-        &.then { |attr| model_class.find_by({attr => row[attr.to_s]}) }
+    def header_set
+      @header_set ||= headers.to_set
     end
 
     def empty_row(headers_or_row = headers)
-      headers_or_row = headers_or_row.headers unless headers_or_row.is_a?(Array)
+      headers_or_row = headers_or_row.headers if headers_or_row.is_a?(CSV::Row)
       CSV::Row.new(headers_or_row, [])
     end
 
@@ -190,52 +211,41 @@ module ImportExport
       row
     end
 
+    # FIXME: key_to_listで分解できるようなkeyは未対応
+    def row_to_record(row, record: model_class.new, keys: attrs)
+      keys.each do |key|
+        record[key] = row[key] if row[key].present?
+      end
+      record
+    end
+
     def create(row)
-      record = model_class.new
-      row_to_record(row, record)
-      if record.save
-        row["id"] = record.id
-        [true, nil]
-      else
-        [false, record.errors.to_json]
-      end
+      record = row_to_record(row)
+      record.save
+      record
     end
 
-    def read(row)
-      record = find(row)
-      return [false, "Not found."] unless record
-
-      row["id"] = record.id
-      record_to_row(record, row)
-      [true, nil]
+    def read(id)
+      model_class.find_by(id: id)
     end
 
-    def update(row)
-      record = find(row)
+    def update(id, row)
+      record = model_class.find_by(id: id)
+      return if record.nil?
 
-      return [false, "Not found."] unless record
-
-      row["id"] = record.id
-      row_to_record(row, record)
-
-      if record.save
-        [true, nil]
-      else
-        [false, record.errors.to_json]
+      record.transaction do
+        row_to_record(row, record: record)
+        record.save || raise(ActiveRecord::Rollback)
       end
+      record
     end
 
-    def delete(row)
-      record = find(row)
-      return [false, "Not found."] unless record
+    def delete(id)
+      record = model_class.find_by(id: id)
+      return if record.nil?
 
-      row["id"] = record.id
-
-      if record.destroy
-        [true, nil]
-      else
-        [false, record.errors.to_json]
-      end
+      record.destroy
+      record
     end
   end
 end

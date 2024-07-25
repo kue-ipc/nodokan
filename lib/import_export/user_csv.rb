@@ -20,13 +20,6 @@ module ImportExport
       )
     end
 
-    def unique_attrs
-      %w(
-        username
-        email
-      )
-    end
-
     def row_to_record(row, user)
       user.assign_attributes(
         username: row["username"],

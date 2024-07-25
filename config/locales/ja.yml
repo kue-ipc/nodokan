@@ -820,6 +820,9 @@ ja:
       not_saved:
         one: エラーが発生したため、「%{resource}」は保存されませんでした。
         other: "%{count}件のエラーが発生したため、「%{resource}」は保存されませんでした。"
+      not_deleted:
+        one: エラーが発生したため、「%{resource}」は削除されませんでした。
+        other: "%{count}件のエラーが発生したため、「%{resource}」は削除されませんでした。"
       accepted: 受諾してください。
       blank: 入力してください。
       confirmation: "%{attribute}との入力が一致しません。"
@@ -875,6 +878,8 @@ ja:
       not_delete_specific_node: 特定端末は削除できません。特定端末の解除を申請してください。
       not_auth_nework: 認証ネットワークではありません。
       no_allocate: 割り当てがありません。
+      invalid_csv_header: CSVのヘッダが間違っています。
+      invalid_id_field: 「id」部分の値が不正です。
 
   forms:
     common:

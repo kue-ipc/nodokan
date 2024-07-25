@@ -24,13 +24,6 @@ module ImportExport
       )
     end
 
-    def unique_attrs
-      %w(
-        name
-        vlan
-      )
-    end
-
     def row_to_record(row, network)
       network.assign_attributes(
         name: row["name"],
