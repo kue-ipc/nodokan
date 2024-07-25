@@ -22,17 +22,28 @@ namespace :user do
 
   desc "Export CSV of users"
   task export: :environment do
-    csv_file = Rails.root / "data" / "users.csv"
-    puts "export csv ..."
-    results = ImportExport::UserCsv.new(csv_file, logger: Rails.logger).export
-    puts results.to_json
+    file_out = "users_#{Time.now.strftime('%Y%m%d_%H%M%S')}.csv"
+    (Rails.root / "data" / file_out).open("w") do |csv_out|
+      csv_out << "\u{feff}"
+      puts "export csv ..."
+      user_csv = ImportExport::UserCsv.new(out: csv_out)
+      user_csv.export
+      puts "result: #{user_csv.result.to_json}"
+    end
   end
 
   desc "Import CSV of users"
   task import: :environment do
-    csv_file = Rails.root / "data" / "users.csv"
-    puts "import csv ..."
-    results = ImportExport::UserCsv.new(csv_file, logger: Rails.logger).import
-    puts results.to_json
+    file_in = "users.csv"
+    file_out = "users_#{Time.now.strftime('%Y%m%d_%H%M%S')}.csv"
+    (Rails.root / "data" / file_in).open("r:BOM|UTF-8") do |csv_in|
+      (Rails.root / "data" / file_out).open("w") do |csv_out|
+        csv_out << "\u{feff}"
+        puts "export csv ..."
+        user_csv = ImportExport::UserCsv.new(out: csv_out)
+        user_csv.import(csv_in)
+        puts "result: #{user_csv.result.to_json}"
+      end
+    end
   end
 end
