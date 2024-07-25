@@ -1,3 +1,5 @@
+require "stringio"
+
 class NetworksController < ApplicationController
   include Page
   include Search
@@ -23,9 +25,11 @@ class NetworksController < ApplicationController
         @networks = paginate(@networks)
       end
       format.csv do
-        network_csv = ImportExport::NetworkCsv.new(current_user)
+        io = StringIO.new
+        io << "\u{feff}"
+        network_csv = ImportExport::NetworkCsv.new(current_user, out: io)
         network_csv.export(@networks)
-        send_data "\u{feff}#{network_csv.output}"
+        send_data io.string
       end
     end
   end

@@ -11,19 +11,26 @@ module ImportExport
     # override methods
     # * record_to_row(record, row: empty_row, keys: attrs)
 
-    def initialize(user = nil, **opts)
+    attr_reader :output, :result, :count
+
+    def initialize(user = nil, out: String.new, **opts)
       @user = user
-      @result = CSV.new("", headers: headers, write_headers: true, **opts)
+      @output = CSV.new(out, headers: headers, write_headers: true, **opts)
+      @count = 0
+      @result = Hash.new(0)
     end
 
-    def output
-      @result.string
+    def add_result(row)
+      status = row["[result]"]
+      Rails.logger.debug { "#{@count}: #{status}" }
+      @output << row
+      @result[status] += 1
+      @count += 1
+      yiled row[status] if block_given?
     end
 
     # data is a string or io formatted csv
-    def import(data)
-      counts = Hash.new(0)
-
+    def import(data, &block)
       # TODO: importを実装中
       CSV.new(data, headers: :first_row).each_with_index do |row, idx|
         do_action(row)
@@ -33,16 +40,11 @@ module ImportExport
         Rails.logger.error("Import error occured: #{idx}")
         Rails.logger.error(e.full_message)
       ensure
-        @result << row
-        counts[row["[result]"]] += 1
+        add_result(row, &block)
       end
-      Rails.logger.info("Import CSV: #{counts.to_json}")
-      counts
     end
 
-    def export(records = record_all)
-      counts = Hash.new(0)
-
+    def export(records = record_all, &block)
       records.find_each do |record|
         if @user.nil? || Pundit.policy(@user, record).show?
           split_row_record(record).each do |target|
@@ -57,9 +59,7 @@ module ImportExport
             Rails.logger.error("Export error occured: #{record.id} #{split_id}")
             Rails.logger.error(e.full_message)
           ensure
-            @result << row
-            counts[row["[result]"]] += 1
-            yiled row["[result]"] if block_given?
+            add_result(row, &block)
           end
         else
           row = {
@@ -69,13 +69,9 @@ module ImportExport
               model: record.model_name.human,
               action: I18n.t("actions.show")),
           }
-          @result << row
-          counts[row["[result]"]] += 1
-          yiled row["[result]"] if block_given?
+          add_result(row, &block)
         end
       end
-      Rails.logger.info("Export CSV: #{counts.to_json}")
-      counts
     end
 
     def record_all

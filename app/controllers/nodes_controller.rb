@@ -24,9 +24,11 @@ class NodesController < ApplicationController
         @nodes = paginate(@nodes)
       end
       format.csv do
-        node_csv = ImportExport::NodeCsv.new(current_user)
+        io = StringIO.new
+        io << "\u{feff}"
+        node_csv = ImportExport::NodeCsv.new(current_user, out: io)
         node_csv.export(@nodes)
-        send_data "\u{feff}#{node_csv.output}"
+        send_data io.string
       end
     end
   end
