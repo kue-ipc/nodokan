@@ -24,4 +24,10 @@ module Ipv6Config
   def ipv6_config_prefix
     Ipv6Config::IDENTIFIER_TYPES.fetch(ipv6_config.intern)
   end
+
+  class_methods do
+    def ipv6_config_from_prefix(prefix)
+      Ipv6Config::IDENTIFIER_TYPES.key(prefix)
+    end
+  end
 end

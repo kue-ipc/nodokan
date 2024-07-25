@@ -22,4 +22,10 @@ module Ipv4Config
   def ipv4_config_prefix
     Ipv4Config::IDENTIFIER_TYPES.fetch(ipv4_config.intern)
   end
+
+  class_methods do
+    def ipv4_config_from_prefix(prefix)
+      Ipv4Config::IDENTIFIER_TYPES.key(prefix)
+    end
+  end
 end

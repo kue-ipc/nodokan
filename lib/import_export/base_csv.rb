@@ -55,7 +55,7 @@ module ImportExport
             row["id"] ||= record.id
             row["[result]"] = :error
             row["[message]"] = e.message
-            Rails.logger.error("Export error occured: #{record.id} #{split_id}")
+            Rails.logger.error("Export error occured: #{record.id} #{target}")
             Rails.logger.error(e.full_message)
           ensure
             add_result(row, &block)
@@ -171,7 +171,29 @@ module ImportExport
       [-str, *list.reverse]
     end
 
-    def value_to_csv(value)
+    def record_to_row_with_id(record, **opts)
+      row = record_to_row(record, **opts)
+      row["id"] = record.id
+      row
+    end
+
+    def record_to_row(record, row: empty_row, keys: attrs, target: nil)
+      keys.each do |key|
+        value = record
+        key_to_list(key).each do |attr|
+          value = value.__send__(attr)
+          break if value.nil?
+        end
+        row_assign(row, key, value)
+      end
+      row
+    end
+
+    def row_assign(row, key, value)
+      row[key] = value_to_field(value)
+    end
+
+    def value_to_field(value)
       if value.nil?
         ""
       elsif value.is_a?(Enumerable)
@@ -193,30 +215,17 @@ module ImportExport
       end
     end
 
-    def record_to_row(record, row: empty_row, keys: attrs, target: nil)
-      keys.each do |key|
-        value = record
-        key_to_list(key).each do |attr|
-          value = value.__send__(attr)
-          break if value.nil?
-        end
-        row[key] = value_to_csv(value)
-      end
-      row
-    end
-
-    def record_to_row_with_id(record, **opts)
-      row = record_to_row(record, **opts)
-      row["id"] = record.id
-      row
-    end
-
+    # 値が空白の場合やない場合は上書きしない。
     # FIXME: key_to_listで分解できるようなkeyは未対応
     def row_to_record(row, record: model_class.new, keys: attrs)
       keys.each do |key|
-        record[key] = row[key] if row[key].present?
+        record_assign(record, key, row[key]) if row[key].present?
       end
       record
+    end
+
+    def record_assign(record, key, value)
+      record[key] = value
     end
 
     def create(row)

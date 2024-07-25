@@ -8,20 +8,30 @@ module ImportExport
       Network
     end
 
+    ATTRS = %w(
+      name vlan flag ra
+      ipv4_network ipv4_gateway ipv4_pools
+      ipv6_network ipv6_gateway ipv6_pools
+      note
+    ).freeze
+
     def attrs
-      %w(
-        name
-        vlan
-        flag
-        ra
-        ipv4_network
-        ipv4_gateway
-        ipv4_pools
-        ipv6_network
-        ipv6_gateway
-        ipv6_pools
-        note
-      )
+      ATTRS
+    end
+
+    # overwrite
+    def row_assign(row, key, value)
+      case key
+      when "ipv4_network", "ipv6_network"
+        row[key] =
+          if value
+            "#{value}/#{value.prefix}"
+          else
+            ""
+          end
+      else
+        super
+      end
     end
 
     def row_to_record(row, network)
