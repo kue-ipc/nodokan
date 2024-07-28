@@ -33,6 +33,11 @@ module ImportExport
     def import(data, &block)
       CSV.new(data, headers: :first_row).each_with_index do |row, idx|
         import_row(row)
+      rescue Pundit::NotAuthorizedError => e
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("messages.forbidden_action",
+          model: record.model_name.human,
+          action: I18n.t("actions.import"))
       rescue StandardError => e
         row["[result]"] = :error
         row["[message]"] = e.message
@@ -45,29 +50,26 @@ module ImportExport
 
     def export(records = record_all, &block)
       records.find_each do |record|
-        if @user.nil? || Pundit.policy(@user, record).show?
-          split_row_record(record).each do |target|
-            row = nil
-            row = record_to_row_with_id(record, target: target)
-            row["[result]"] = :read
-          rescue StandardError => e
-            row ||= {"id" => record.id}
-            row["id"] ||= record.id
-            row["[result]"] = :error
-            row["[message]"] = e.message
-            Rails.logger.error("Export error occured: #{record.id} #{target}")
-            Rails.logger.error(e.full_message)
-          ensure
-            add_result(row, &block)
-          end
-        else
-          row = {
-            "id" => record.id,
-            "[result]" => :failed,
-            "[message]" => I18n.t("messages.forbidden_action",
-              model: record.model_name.human,
-              action: I18n.t("actions.show")),
-          }
+        split_row_record(record).each do |target|
+          row = nil
+          authorize(record, :read)
+          row = record_to_row_with_id(record, target: target)
+          row["[result]"] = :read
+        rescue Pundit::NotAuthorizedError => e
+          row ||= {}
+          row["id"] ||= record.id
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("messages.forbidden_action",
+            model: record.model_name.human,
+            action: I18n.t("actions.export"))
+        rescue StandardError => e
+          row ||= {}
+          row["id"] ||= record.id
+          row["[result]"] = :error
+          row["[message]"] = e.message
+          Rails.logger.error("Export error occured: #{record.id} #{target}")
+          Rails.logger.error(e.full_message)
+        ensure
           add_result(row, &block)
         end
       end
@@ -229,19 +231,23 @@ module ImportExport
     end
 
     def create(row)
+      authorize(model_class, :create)
       record = row_to_record(row)
       record.save
       record
     end
 
     def read(id)
-      model_class.find_by(id: id)
+      record = model_class.find_by(id: id)
+      authorize(record, :read)
+      record
     end
 
     def update(id, row)
       record = model_class.find_by(id: id)
       return if record.nil?
 
+      authorize(record, :update)
       record.transaction do
         row_to_record(row, record: record)
         record.save || raise(ActiveRecord::Rollback)
@@ -253,8 +259,29 @@ module ImportExport
       record = model_class.find_by(id: id)
       return if record.nil?
 
+      authorize(record, :delete)
       record.destroy
       record
+    end
+
+    def authorize(record, method)
+      return if @user.nil?
+
+      policy = Pundit.policy(@user, record)
+      auth =
+        case method
+        in :create
+          policy.create?
+        in :read
+          policy.show?
+        in :update
+          policy.update?
+        in :delete
+          policy.delete?
+        end
+      return if auth
+
+      raise Pundit::NotAuthorizedError, "not allowed to #{method} this record"
     end
   end
 end

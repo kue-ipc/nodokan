@@ -6,13 +6,9 @@ module ImportExport
       Node
     end
 
-    def attrs
+    ATTRS =
       %w(
-        user
-        name
-        fqdn
-        type
-        flag
+        user name fqdn type flag
         host
         components
         place[area]
@@ -38,6 +34,9 @@ module ImportExport
         nic[ipv6_address]
         note
       )
+
+    def attrs
+      ATTRS
     end
 
     def nic_to_data(nic, data = {})
