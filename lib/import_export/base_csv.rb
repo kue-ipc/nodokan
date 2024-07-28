@@ -50,10 +50,10 @@ module ImportExport
 
     def export(records = record_all, &block)
       records.find_each do |record|
-        split_row_record(record).each do |target|
+        split_row_record(record).each do |record_opts|
           row = nil
           authorize(record, :read)
-          row = record_to_row_with_id(record, target: target)
+          row = record_to_row_with_id(record, **record_opts)
           row["[result]"] = :read
         rescue Pundit::NotAuthorizedError => e
           row ||= {}
@@ -67,7 +67,7 @@ module ImportExport
           row["id"] ||= record.id
           row["[result]"] = :error
           row["[message]"] = e.message
-          Rails.logger.error("Export error occured: #{record.id} #{target}")
+          Rails.logger.error("Export error occured: #{record.id}")
           Rails.logger.error(e.full_message)
         ensure
           add_result(row, &block)
@@ -79,8 +79,8 @@ module ImportExport
       model_class.order(:id).all
     end
 
-    def split_row_record(record)
-      [nil]
+    def split_row_record(_record)
+      [{}]
     end
 
     def import_row(row)
@@ -179,14 +179,14 @@ module ImportExport
       row
     end
 
-    def record_to_row(record, row: empty_row, keys: attrs, target: nil)
+    def record_to_row(record, row: empty_row, keys: attrs, **opts)
       keys.each do |key|
-        row_assign(row, record, key)
+        row_assign(row, record, key, **opts)
       end
       row
     end
 
-    def row_assign(row, record, key)
+    def row_assign(row, record, key, **_opts)
       value = record
       key_to_list(key).each do |attr|
         value = value.__send__(attr)
@@ -218,15 +218,15 @@ module ImportExport
     end
 
     # 値が空白や存在しない場合は上書きしない。
-    def row_to_record(row, record: model_class.new, keys: attrs)
+    def row_to_record(row, record: model_class.new, keys: attrs, **opts)
       keys.select { |key| row[key].present? }.each do |key|
-        record_assign(record, row, key)
+        record_assign(record, row, key, **opts)
       end
       record
     end
 
     # FIXME: key_to_listで分解できるようなkeyは未対応
-    def record_assign(record, row, key)
+    def record_assign(record, row, key, **_opts)
       record.assign_attributes(key => row[key])
     end
 

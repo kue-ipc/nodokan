@@ -25,7 +25,7 @@ module ImportExport
     end
 
     # overwrite
-    def row_assign(row, record, key)
+    def row_assign(row, record, key, **_opts)
       case key
       when "ipv4_network"
         row[key] = record.ipv4_network_cidr
@@ -37,7 +37,7 @@ module ImportExport
     end
 
     # overwrite
-    def record_assign(record, row, key)
+    def record_assign(record, row, key, **_opts)
       case key
       when "ipv4_network"
         record.ipv4_network_cidr = row[key]

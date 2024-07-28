@@ -9,97 +9,64 @@ module ImportExport
     ATTRS =
       %w(
         user name fqdn type flag
-        host
-        components
-        place[area]
-        place[building]
-        place[floor]
-        place[room]
-        hardware[device_type]
-        hardware[maker]
-        hardware[product_name]
+        host components
+        place[area] place[building] place[floor] place[room]
+        hardware[device_type] hardware[maker] hardware[product_name]
         hardware[model_number]
-        operating_system[os_category]
-        operating_system[name]
+        operating_system[os_category] operating_system[name]
         duid
-        nic[number]
-        nic[name]
-        nic[interface_type]
-        nic[network]
-        nic[flag]
-        nic[mac_address]
-        nic[ipv4_config]
-        nic[ipv4_address]
-        nic[ipv6_config]
-        nic[ipv6_address]
+        nic[number] nic[name] nic[interface_type] nic[network]
+        nic[flag] nic[mac_address]
+        nic[ipv4_config] nic[ipv4_address]
+        nic[ipv6_config] nic[ipv6_address]
         note
-      )
+      ).freeze
 
     def attrs
       ATTRS
     end
 
-    def nic_to_data(nic, data = {})
-      return data if nic.nil?
-
-      data.update(
-        number: nic.number,
-        name: nic.name,
-        interface_type: nic.interface_type,
-        network: value_to_csv(nic.network),
-        flag: nic.flag,
-        mac_address: nic.mac_address,
-        ipv4_config: nic.ipv4_config,
-        ipv4_address: nic.ipv4_address,
-        ipv6_config: nic.ipv6_config,
-        ipv6_address: nic.ipv6_address)
+    # overwrite
+    def delimiter
+      "\n"
     end
 
-    def data_to_nic(data, nic = Nic.new)
-      nic.assign_attributes(
-        name: data[:name],
-        interface_type: data[:interface_type],
-        network: Network.find_identifier(data[:network]),
-        flag: data[:flag],
-        mac_address: data[:mac_address],
-        ipv4_config: data[:ipv4_config],
-        ipv4_address: data[:ipv4_address],
-        ipv6_config: data[:ipv6_config],
-        ipv6_address: data[:ipv6_address])
-      nic
-    end
-
+    # overwrite
     def split_row_record(record)
-      record.nic_ids.presence || [nil]
+      record.nics.map { |nic| {nic: nic} }.presence || [{nic: nil}]
     end
 
-    def record_to_row(node, target: nil, keys: attrs, **opts)
-      row = super(node,
-        keys: keys - %w(
-          type
-          nic[number]
-          nic[name]
-          nic[interface_type]
-          nic[network]
-          nic[flag]
-          nic[mac_address]
-          nic[ipv4_config]
-          nic[ipv4_address]
-          nic[ipv6_config]
-          nic[ipv6_address]
-        ), **opts)
-
-      row["type"] = node.node_type
-
-      if target
-        nic_to_data(Nic.find(target)).each do |key, value|
-          row["nic[#{key}]"] = value
+    # overwrite
+    def row_assign(row, record, key, nic: nil, **_opts)
+      case key
+      when "type"
+        row[key] = record.node_type
+      when "nic[number]", "nic[name]", "nic[interface_type]", "nic[network]",
+          "nic[flag]", "nic[mac_address]",
+          "nic[ipv4_config]", "nic[ipv4_address]",
+          "nic[ipv6_config]", "nic[ipv6_address]"
+        if nic
+          row[key] =
+            value_to_field(nic.__send__(key_to_list(key).last))
         end
+      else
+        super
       end
-
-      row
     end
 
+    # overwrite
+    def record_assign(record, row, key, **_opts)
+      case key
+      when "ipv4_network"
+        row[key] = record.ipv4_network_cidr
+      when "ipv6_network"
+        row[key] = record.ipv6_network_cidr
+      else
+        super
+      end
+    end
+
+    # overwrite
     def row_to_record(row, node = Node.new)
       node.assign_attributes(
         user: User.find_by(username: row["user"]),
@@ -163,6 +130,20 @@ module ImportExport
       node.nics = new_nics
 
       node
+    end
+
+    private def data_to_nic(data, nic = Nic.new)
+      nic.assign_attributes(
+        name: data[:name],
+        interface_type: data[:interface_type],
+        network: Network.find_identifier(data[:network]),
+        flag: data[:flag],
+        mac_address: data[:mac_address],
+        ipv4_config: data[:ipv4_config],
+        ipv4_address: data[:ipv4_address],
+        ipv6_config: data[:ipv6_config],
+        ipv6_address: data[:ipv6_address])
+      nic
     end
   end
 end

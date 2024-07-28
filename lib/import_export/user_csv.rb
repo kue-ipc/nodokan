@@ -17,7 +17,7 @@ module ImportExport
     end
 
     # overwrite
-    def row_assign(row, record, key)
+    def row_assign(row, record, key, **_opts)
       case key
       when "networks"
         manage_ids = record.manage_network_ids
@@ -36,7 +36,7 @@ module ImportExport
     end
 
     # overwrite
-    def record_assign(record, row, key)
+    def record_assign(record, row, key, **_opts)
       case key
       when "auth_network"
         record.auth_network = Network.find_identifier(row[key])
