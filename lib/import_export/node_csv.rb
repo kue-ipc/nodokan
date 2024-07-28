@@ -67,33 +67,49 @@ module ImportExport
     end
 
     # overwrite
-    def row_to_record(row, node = Node.new)
-      node.assign_attributes(
-        user: User.find_by(username: row["user"]),
-        name: row["name"],
-        flag: row["flag"],
-        hostname: row["hostname"],
-        domain: row["domain"],
-        duid: row["duid"],
-        note: row["note"],
-        place: Place.find_or_initialize_by(
-          area: row["place[area]"] || "",
-          building: row["place[building]"] || "",
-          floor: row["place[floor]"].presence || 0,
-          room: row["place[room]"] || ""),
-        hardware: Hardware.find_or_initialize_by(
-          device_type:
-            row["hardware[device_type]"].presence &&
-            DeviceType.find_by!(name: row["hardware[device_type]"]),
-          maker: row["hardware[maker]"] || "",
-          product_name: row["hardware[product_name]"] || "",
-          model_number: row["hardware[model_number]"] || ""),
-        operating_system:
-          row["operating_system[os_category]"].presence &&
-            OperatingSystem.find_or_initialize_by(
-              os_category:
-                OsCategory.find_by!(name: row["operating_system[os_category]"]),
-              name: row["operating_system[name]"] || ""))
+    def row_to_record(row, record: model_class.new, keys: attrs, **opts)
+      record.user = @user if record.new_record? && !@user.nil && !@user.admin?
+
+      super(row, record: record, keys: keys.slice(%w(
+        user name fqdn type flag
+        host components
+        duid note
+      )), **opts)
+
+      # TODO: ここから
+      # FIXME: 空白は上書きではなく、既存を取ること
+      record.place = Place.find_or_initialize_by(
+        area: row["place[area]"] || "",
+        building: row["place[building]"] || "",
+        floor: row["place[floor]"].presence || 0,
+        room: row["place[room]"] || "")
+
+      record.hardware = Hardware.find_or_initialize_by(
+        device_type:
+          row["hardware[device_type]"].presence &&
+          DeviceType.find_by!(name: row["hardware[device_type]"]),
+        maker: row["hardware[maker]"] || "",
+        product_name: row["hardware[product_name]"] || "",
+        model_number: row["hardware[model_number]"] || "")
+
+      if row["operating_system[os_category]"].presence
+        record.operating_system = OperatingSystem.find_or_initialize_by(
+          os_category:
+            OsCategory.find_by!(name: row["operating_system[os_category]"]),
+          name: row["operating_system[name]"] || "")
+      end
+
+      case row["nic[number]"]&.strip
+      when nil, ""
+        create_nic
+      when /\A\d+\z/
+        nic_number = row["nic[number]"].strip.to_i
+      when /\A!\d+\z/
+        nic_number = row["nic[number]"].strip.delete_prefix("!").to_i
+      else
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("errors.messages.invalid_id_field")
+      end
 
       first_nic = node.nics.first
       other_nics = node.nics - [first_nic]
@@ -130,6 +146,20 @@ module ImportExport
       node.nics = new_nics
 
       node
+    end
+
+    def record_assign(record, row, key, **_opts)
+      case key
+      when "user"
+        if @user.nil || @user.admin?
+          record.user = User.find_by(username: row["user"])
+        end
+      when "type"
+      when "host"
+      when "components"
+      else
+        super
+      end
     end
 
     private def data_to_nic(data, nic = Nic.new)

@@ -233,7 +233,7 @@ module ImportExport
     def create(row)
       authorize(model_class, :create)
       record = row_to_record(row)
-      record.save
+      record.save if record.errors.empty?
       record
     end
 
@@ -250,6 +250,7 @@ module ImportExport
       authorize(record, :update)
       record.transaction do
         row_to_record(row, record: record)
+        record.errors.empty? || raise(ActiveRecord::Rollback)
         record.save || raise(ActiveRecord::Rollback)
       end
       record
