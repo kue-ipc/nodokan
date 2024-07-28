@@ -157,7 +157,7 @@ module ImportExport
     end
 
     def delimiter
-      "\n"
+      " "
     end
 
     # "abc[def][ghi]" -> ["abc", "def", "ghi"]
