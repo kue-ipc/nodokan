@@ -81,14 +81,14 @@ module ImportExport
       [nil]
     end
 
-    def import_row(row_in)
-      unless header_set.super?(row.headers.to_set)
+    def import_row(row)
+      unless header_set.superset?(row.headers.to_set)
         row["[result]"] = :failed
         row["[message]"] = I18n.t("errors.messages.invalid_csv_header")
         return
       end
 
-      case row["id"]&.split
+      case row["id"]&.strip
       when nil, ""
         record = create(row)
         if record.errors.empty?
@@ -102,7 +102,7 @@ module ImportExport
             record.errors.full_messages.join("\n")
         end
       when /\A\d+\z/
-        id = row["id"].split.to_i
+        id = row["id"].strip.to_i
         record = update(id, row)
         if record.nil?
           row["[result]"] = :failed
@@ -118,7 +118,7 @@ module ImportExport
             record.errors.full_messages.join("\n")
         end
       when /\A!\d+\z/
-        id = row["id"].silpt.delete_prefix("!").to_i
+        id = row["id"].strip.delete_prefix("!").to_i
         record = delete(id)
         if record.nil?
           row["[result]"] = :failed
@@ -179,17 +179,17 @@ module ImportExport
 
     def record_to_row(record, row: empty_row, keys: attrs, target: nil)
       keys.each do |key|
-        value = record
-        key_to_list(key).each do |attr|
-          value = value.__send__(attr)
-          break if value.nil?
-        end
-        row_assign(row, key, value)
+        row_assign(row, record, key)
       end
       row
     end
 
-    def row_assign(row, key, value)
+    def row_assign(row, record, key)
+      value = record
+      key_to_list(key).each do |attr|
+        value = value.__send__(attr)
+        break if value.nil?
+      end
       row[key] = value_to_field(value)
     end
 
@@ -215,17 +215,17 @@ module ImportExport
       end
     end
 
-    # 値が空白の場合やない場合は上書きしない。
-    # FIXME: key_to_listで分解できるようなkeyは未対応
+    # 値が空白や存在しない場合は上書きしない。
     def row_to_record(row, record: model_class.new, keys: attrs)
-      keys.each do |key|
-        record_assign(record, key, row[key]) if row[key].present?
+      keys.select { |key| row[key].present? }.each do |key|
+        record_assign(record, row, key)
       end
       record
     end
 
-    def record_assign(record, key, value)
-      record[key] = value
+    # FIXME: key_to_listで分解できるようなkeyは未対応
+    def record_assign(record, row, key)
+      record.assign_attributes(key => row[key])
     end
 
     def create(row)

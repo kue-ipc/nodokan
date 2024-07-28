@@ -82,7 +82,7 @@ class Ipv6Pool < ApplicationRecord
   end
 
   def self.new_identifier(str)
-    m = /\A(.)\[([\h:\.]+)-([\h:\.]+)\]\z/
+    m = /\A(.)\[([\h:\.]+)-([\h:\.]+)\]\z/.match(str)
     if m.nil?
       logger.error("Invalid Ipv6Pool idetifier format: #{str}")
       raise ArgumentError, "Invalid Ipv6Pool idetifier format: #{str}"

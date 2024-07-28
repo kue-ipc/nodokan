@@ -77,7 +77,7 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def self.new_identifier(str)
-    m = /\A(.)\[([\d\.]+)-([\d\.]+)\]\z/
+    m = /\A(.)\[([\d\.]+)-([\d\.]+)\]\z/.match(str)
     if m.nil?
       logger.error("Invalid Ipv4Pool idetifier format: #{str}")
       raise ArgumentError, "Invalid Ipv4Pool idetifier format: #{str}"
