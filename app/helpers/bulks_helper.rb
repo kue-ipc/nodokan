@@ -15,4 +15,20 @@ module BulksHelper
   def bulk_list_cols
     BULK_LIST_COLS
   end
+
+  def bulk_model_list
+    if current_user.admin?
+      [
+        ["Node", Node.model_name.human],
+        # ["Confirmation", Confirmation.model_name.human],
+        ["Network", Network.model_name.human],
+        ["User", User.model_name.human],
+      ]
+    else
+      [
+        ["Node", Node.model_name.human],
+        # ["Confirmation", Confirmation.model_name.human],
+      ]
+    end
+  end
 end

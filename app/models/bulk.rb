@@ -17,4 +17,10 @@ class Bulk < ApplicationRecord
   belongs_to :user
   has_one_attached :file
   has_one_attached :result
+
+  after_create_commit :register_job
+
+  def register_job
+    BulkRunJob.perform_later(self)
+  end
 end

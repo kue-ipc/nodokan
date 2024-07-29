@@ -40,10 +40,11 @@ ja:
     back: 戻る
     download_csv: CSVダウンロード
     upload_csv: CSVアップロード
+    download: ダウンロード
+    upload: アップロード
     change: 変更
     release: 解除
     select: 選択
-
   do_actions:
     close: 閉じる
     index: 一覧を表示する
@@ -71,7 +72,8 @@ ja:
     fail: 失敗する
     error: エラーになる
     start: 開始する
-
+    download: ダウンロードする
+    upload: アップロードする
   with_actions:
     close: "%{name}を閉じる"
     index: "%{name}の一覧を表示する"
@@ -372,6 +374,7 @@ ja:
       ipv4_arp: IPv4 ARP
       ipv6_neighbor: IPv6近隣
       user: ユーザー
+      bulk: 一括処理
     long_models:
       confirmation: 端末の確認
       hardware: 機器
@@ -643,6 +646,17 @@ ja:
       logical_composition:
         node: 端末
         component: 部品
+      bulk:
+        user: 登録者
+        created_at: 登録日時
+        updated_at: 更新日時
+        status: 状態
+        number: 処理数
+        success: 成功数
+        failure: 失敗数
+        file: 登録ファイル
+        result: 結果ファイル
+        action: 操作
     full_name_attributes:
       node:
         name: 端末名
@@ -760,6 +774,17 @@ ja:
         mobile: 携帯
         virtual: 仮想
         logical: 論理
+      status:
+        waiting: 待機
+        starting: 開始中
+        running: 実行中
+        stopping: 停止中
+        stopped: 停止
+        succeeded: 成功
+        failed: 失敗
+        canceled: 中止
+        error: エラー
+        timeout: タイムアウト
     bitwises:
       security_hardwares:
         encrypted: 全てのデータを暗号化しています。

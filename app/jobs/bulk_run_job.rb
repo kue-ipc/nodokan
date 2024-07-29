@@ -42,7 +42,7 @@ class BulkRunJob < ApplicationJob
   end
 
   def run(bulk)
-    bulk.update!(status: :starting)
+    bulk.update!(status: :running)
   end
 
   def stop(bulk)

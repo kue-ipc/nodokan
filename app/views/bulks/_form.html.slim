@@ -6,8 +6,12 @@
         - bulk.errors.each do |error|
           li = error.full_message
 
-  = form.text_field :model
-
-  = form.file_field :file
-
-  = form.submit
+  .row
+    .col
+      = form.collection_select :model, bulk_model_list, :first, :second,
+        hide_label: true,
+        prepend: Bulk.human_attribute_name(:model)
+    .col
+      = form.file_field :file, hide_label: true
+    .col
+      = form.submit

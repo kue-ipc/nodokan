@@ -22,7 +22,7 @@ class BulksController < ApplicationController
   def create
     @bulk = Bulk.new(bulk_params)
     @bulk.user = current_user
-    @bulk.status = 1
+    @bulk.status = "waiting"
     authorize @bulk
 
     respond_to do |format|
