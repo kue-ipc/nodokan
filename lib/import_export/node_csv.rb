@@ -70,11 +70,11 @@ module ImportExport
     def row_to_record(row, record: model_class.new, keys: attrs, **opts)
       record.user = @user if record.new_record? && !@user.nil && !@user.admin?
 
-      super(row, record: record, keys: keys.slice(%w(
+      super(row, record: record, keys: keys & %w(
         user name fqdn type flag
         host components
         duid note
-      )), **opts)
+      ), **opts)
 
       params = row_to_params(row, keys: keys)
 
@@ -94,7 +94,7 @@ module ImportExport
           end
           hardware_params[:device_type_id] = device_type.id
         end
-        record.hardware = find_or_new_place(hardware_params, record.hardware)
+        record.hardware = find_or_new_hardware(hardware_params, record.hardware)
       end
 
       if params[:operating_system].present?
@@ -111,15 +111,16 @@ module ImportExport
           operating_system_params[:os_category_id] = os_category.id
         end
         record.operating_system =
-          find_or_new_place(operating_system_params, record.operating_system)
+          find_or_new_operating_system(operating_system_params,
+            record.operating_system)
       end
 
       if params[:nic].present?
         nic_params = params[:nic].dup
         if nic_params.key?(:network)
           identifier = nic_params.delete(:network)
-          network_id = Network.find_identifier(identifier)
-          if network_id.nil?
+          network = Network.find_identifier(identifier)
+          if network.nil?
             record.errors.add("nic[network]",
               I18n.t("errors.messages.not_found"))
             raise InvalidFieldError,
@@ -150,7 +151,7 @@ module ImportExport
     def record_assign(record, row, key, **_opts)
       case key
       when "user"
-        if @user.nil || @user.admin?
+        if @user.nil? || @user.admin?
           record.user = User.find_by(username: row["user"])
         end
       when "type"
@@ -158,7 +159,7 @@ module ImportExport
       when "host"
         record.host = Node.find_identifier(row["host"])
       when "components"
-        record.components = row[:components].split.map do |identifier|
+        record.components = row["components"].split.map do |identifier|
           Node.find_identifier(identifier)
         end
       else
@@ -205,14 +206,14 @@ module ImportExport
     end
 
     private def update_nic(record, nic_number, params)
-      nic = Nic.find_by(node_id: record.id, nomber: nic_number)
+      nic = Nic.find_by(node_id: record.id, number: nic_number)
       return create_nic(record, params) if nic.nil?
 
       nic.update!(params)
     end
 
     private def delete_nic(record, params)
-      nic = Nic.find_by(node_id: record.id, nomber: nic_number)
+      nic = Nic.find_by(node_id: record.id, number: nic_number)
       return if nic.nil?
 
       nic.destroy!

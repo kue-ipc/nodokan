@@ -192,7 +192,7 @@ module ImportExport
           current = (current[name.intern] ||= {})
           raise "Invalid nested key: #{key}" unless current.is_a?(Hash)
         end
-        currnt[last.intern] = value
+        current[last.intern] = value
       end
       params
     end

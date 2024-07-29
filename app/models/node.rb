@@ -58,7 +58,7 @@ class Node < ApplicationRecord
   # class methods
 
   def self.find_identifier(str)
-    m = /\A(?<type>.)(?<value>[\h]+)\z/.match(str.to_s.strip.downcase)
+    m = /\A(?<type>.)(?<value>.+)\z/.match(str.to_s.strip.downcase)
     raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
 
     case m[:type]
@@ -70,9 +70,9 @@ class Node < ApplicationRecord
     when "i", "k"
       value = IPAddr.new(m[:value])
       if value.ipv4?
-        Nic.find_by(ipv4_data: value.hton)&.host
+        Nic.find_by(ipv4_data: value.hton)&.node
       elsif value.ivp6?
-        Nic.find_by(ipv6_data: value.hton)&.host
+        Nic.find_by(ipv6_data: value.hton)&.node
       else
         raise ArgumentError, "Unknown ip version #{str.inspect}"
       end
