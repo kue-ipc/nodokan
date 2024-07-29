@@ -21,7 +21,7 @@ namespace :network do
     (Rails.root / "data" / file_in).open("r:BOM|UTF-8") do |csv_in|
       (Rails.root / "data" / file_out).open("w") do |csv_out|
         csv_out << "\u{feff}"
-        puts "export csv ..."
+        puts "import csv ..."
         network_csv = ImportExport::NetworkCsv.new(out: csv_out)
         network_csv.import(csv_in)
         puts "result: #{network_csv.result.to_json}"

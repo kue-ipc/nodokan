@@ -39,7 +39,7 @@ namespace :user do
     (Rails.root / "data" / file_in).open("r:BOM|UTF-8") do |csv_in|
       (Rails.root / "data" / file_out).open("w") do |csv_out|
         csv_out << "\u{feff}"
-        puts "export csv ..."
+        puts "import csv ..."
         user_csv = ImportExport::UserCsv.new(out: csv_out)
         user_csv.import(csv_in)
         puts "result: #{user_csv.result.to_json}"

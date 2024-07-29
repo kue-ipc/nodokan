@@ -196,9 +196,9 @@ module ImportExport
         os_category_id: operating_system&.os_category_id,
         name: operating_system&.name || "",
       }.merge(params)
-      return if params["os_category"].blank?
+      return if params[:os_category_id].blank?
 
-      OperatingSystem.find_or_initialize_by(operating_system_params)
+      OperatingSystem.find_or_initialize_by(params)
     end
 
     private def create_nic(record, params)

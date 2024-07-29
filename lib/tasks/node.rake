@@ -21,7 +21,7 @@ namespace :node do
     (Rails.root / "data" / file_in).open("r:BOM|UTF-8") do |csv_in|
       (Rails.root / "data" / file_out).open("w") do |csv_out|
         csv_out << "\u{feff}"
-        puts "export csv ..."
+        puts "import csv ..."
         node_csv = ImportExport::NodeCsv.new(out: csv_out)
         node_csv.import(csv_in)
         puts "result: #{node_csv.result.to_json}"
