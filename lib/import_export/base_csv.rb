@@ -4,6 +4,8 @@ require "logger"
 module ImportExport
   # BascCsv is abstract class for CSV management
   class BaseCsv
+    class InvaildFieldError < StandardError
+    end
     # abstract methods
     # * model_class()
     # * attrs()
@@ -103,8 +105,8 @@ module ImportExport
               count: record.errors.count) +
             record.errors.full_messages.join("\n")
         end
-      when /\A\d+\z/
-        id = row["id"].strip.to_i
+      when /\A(\d+)\z/
+        id = ::Regexp.last_match(1).to_i
         record = update(id, row)
         if record.nil?
           row["[result]"] = :failed
@@ -119,8 +121,8 @@ module ImportExport
               count: record.errors.count) +
             record.errors.full_messages.join("\n")
         end
-      when /\A!\d+\z/
-        id = row["id"].strip.delete_prefix("!").to_i
+      when /\A!(\d+)\z/
+        id = ::Regexp.last_match(1).to_i
         record = delete(id)
         if record.nil?
           row["[result]"] = :failed
@@ -163,14 +165,36 @@ module ImportExport
     end
 
     # "abc[def][ghi]" -> ["abc", "def", "ghi"]
-    # only \w(0-9a-zA-Z_)
     def key_to_list(key)
-      str = key.dup
       list = []
-      list << -Regexp.last_match(1) while str.sub!(/\[(\w+)\]\z/, "")
-      raise "Invalid key: #{key}" unless str =~ /\A\w+\z/
+      while (m = /\A([^\[]*)\[([^\]]*)\](.*)\z/.match(key))
+        list << m[1]
+        key = m[2] + m[3]
+      end
+      list << key
+      list
+    end
 
-      [-str, *list.reverse]
+    # ["abc", "def", "ghi"] -> "abc[def][ghi]"
+    def list_to_key(list)
+      tmp = list.dup
+      str = tmp.shift.dup
+      str << "[#{tmp.shift}]" until tmp.empty?
+      str
+    end
+
+    def row_to_params(row, keys: attrs)
+      params = {}
+      row.to_hash.slice(*keys).compact_blank.each do |key, value|
+        current = params
+        *list, last = key_to_list(key)
+        list.each do |name|
+          current = (current[name.intern] ||= {})
+          raise "Invalid nested key: #{key}" unless current.is_a?(Hash)
+        end
+        currnt[last.intern] = value
+      end
+      params
     end
 
     def record_to_row_with_id(record, **opts)
@@ -225,9 +249,12 @@ module ImportExport
       record
     end
 
-    # FIXME: key_to_listで分解できるようなkeyは未対応
     def record_assign(record, row, key, **_opts)
-      record.assign_attributes(key => row[key])
+      *list, last = key_to_list(key)
+      list.each do |name|
+        record = record.__send__(name)
+      end
+      record.assign_attributes(last => row[key])
     end
 
     def create(row)

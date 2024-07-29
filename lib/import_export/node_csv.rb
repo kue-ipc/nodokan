@@ -76,76 +76,75 @@ module ImportExport
         duid note
       )), **opts)
 
-      # TODO: ここから
-      # FIXME: 空白は上書きではなく、既存を取ること
-      record.place = Place.find_or_initialize_by(
-        area: row["place[area]"] || "",
-        building: row["place[building]"] || "",
-        floor: row["place[floor]"].presence || 0,
-        room: row["place[room]"] || "")
+      params = row_to_params(row, keys: keys)
 
-      record.hardware = Hardware.find_or_initialize_by(
-        device_type:
-          row["hardware[device_type]"].presence &&
-          DeviceType.find_by!(name: row["hardware[device_type]"]),
-        maker: row["hardware[maker]"] || "",
-        product_name: row["hardware[product_name]"] || "",
-        model_number: row["hardware[model_number]"] || "")
-
-      if row["operating_system[os_category]"].presence
-        record.operating_system = OperatingSystem.find_or_initialize_by(
-          os_category:
-            OsCategory.find_by!(name: row["operating_system[os_category]"]),
-          name: row["operating_system[name]"] || "")
+      if params[:place].present?
+        record.place = find_or_new_place(params[:place], record.place)
       end
 
-      case row["nic[number]"]&.strip
-      when nil, ""
-        create_nic
-      when /\A\d+\z/
-        nic_number = row["nic[number]"].strip.to_i
-      when /\A!\d+\z/
-        nic_number = row["nic[number]"].strip.delete_prefix("!").to_i
-      else
-        row["[result]"] = :failed
-        row["[message]"] = I18n.t("errors.messages.invalid_id_field")
+      if params[:hardware].present?
+        hardware_params = params[:hardware].dup
+        if hardware_params.key?(:device_type)
+          name = hardware_params.delete(:device_type)
+          device_type = DeviceType.find_by(name: name)
+          if device_type.nil?
+            record.errors.add("hardware[device_type]",
+              I18n.t("errors.messages.not_found"))
+            raise InvalidFieldError, "device type is not fonud by name: #{name}"
+          end
+          hardware_params[:device_type_id] = device_type.id
+        end
+        record.hardware = find_or_new_place(hardware_params, record.hardware)
       end
 
-      first_nic = node.nics.first
-      other_nics = node.nics - [first_nic]
-      new_nics = []
-
-      if row["nic[interface_type]"].present?
-        first_nic ||= Nic.new(number: 1)
-        first_data = {
-          name: row["nic[name]"],
-          interface_type: row["nic[interface_type]"],
-          network: row["nic[network]"],
-          flag: row["nic[flag]"],
-          mac_address: row["nic[mac_address]"],
-          ipv4_config: row["nic[ipv4_config]"].presence || "disabled",
-          ipv4_address: row["nic[ipv4_address]"],
-          ipv6_config: row["nic[ipv6_config]"].presence || "disabled",
-          ipv6_address: row["nic[ipv6_address]"],
-        }
-        data_to_nic(first_data, first_nic)
-        new_nics << first_nic
+      if params[:operating_system].present?
+        operating_system_params = params[:operating_system].dup
+        if operating_system_params.key?(:os_category)
+          name = operating_system_params.delete(:os_category)
+          os_category = OsCategory.find_by(name: name)
+          if os_category.nil?
+            record.errors.add("operating_system[os_category]",
+              I18n.t("errors.messages.not_found"))
+            raise InvalidFieldError,
+              "os category is not fonud by name: #{name}"
+          end
+          operating_system_params[:os_category_id] = os_category.id
+        end
+        record.operating_system =
+          find_or_new_place(operating_system_params, record.operating_system)
       end
 
-      if row["nics"].present?
-        data_nics = JSON.parse(row["nics"], symbolize_names: true)
-        data_nics.each_with_index do |data, idx|
-          nic = other_nics[idx] || Nic.new(number: idx + 2)
-          data_to_nic(data, nic)
-          new_nics << nic
+      if params[:nic].present?
+        nic_params = params[:nic].dup
+        if nic_params.key?(:network)
+          identifier = nic_params.delete(:network)
+          network_id = Network.find_identifier(identifier)
+          if network_id.nil?
+            record.errors.add("nic[network]",
+              I18n.t("errors.messages.not_found"))
+            raise InvalidFieldError,
+              "network is not fonud by identifier: #{identifier}"
+          end
+          nic_params[:network_id] = network.id
+        end
+
+        case nic_params[:number]
+        when nil
+          create_nic(record, nic_params)
+        when /\A(\d+)\z/
+          nic_number = ::Regexp.last_match(1).to_i
+          update_nic(record, nic_number, nic_params)
+        when /\A!(\d+)\z/
+          nic_number = ::Regexp.last_match(1).to_i
+          delete_nic(record, nic_number)
+        else
+          record.errors.add(:nic,
+            I18n.t("errors.messages.invalid_nic_number_field"))
         end
       end
-
-      # 一旦保存しないとidがなくてうまくいかない。
-      node.save! if node.id.nil?
-      node.nics = new_nics
-
-      node
+    rescue InvaildFieldError
+      # do nothing
+      record
     end
 
     def record_assign(record, row, key, **_opts)
@@ -155,25 +154,68 @@ module ImportExport
           record.user = User.find_by(username: row["user"])
         end
       when "type"
+        record.node_type = row["type"]
       when "host"
+        record.host = Node.find_identifier(row["host"])
       when "components"
+        record.components = row[:components].split.map do |identifier|
+          Node.find_identifier(identifier)
+        end
       else
         super
       end
     end
 
-    private def data_to_nic(data, nic = Nic.new)
-      nic.assign_attributes(
-        name: data[:name],
-        interface_type: data[:interface_type],
-        network: Network.find_identifier(data[:network]),
-        flag: data[:flag],
-        mac_address: data[:mac_address],
-        ipv4_config: data[:ipv4_config],
-        ipv4_address: data[:ipv4_address],
-        ipv6_config: data[:ipv6_config],
-        ipv6_address: data[:ipv6_address])
-      nic
+    private def find_or_new_place(params, place = nil)
+      params = {
+        area: place&.area || "",
+        building: place&.building || "",
+        floor: place&.floor || 0,
+        room: place&.room || "",
+      }.merge(params)
+      return unless params.values_at(:area, :building, :room).any?(&:present?)
+
+      Place.find_or_initialize_by(params)
+    end
+
+    private def find_or_new_hardware(params, hardware = nil)
+      params = {
+        device_type_id: hardware&.device_type_id,
+        maker: hardware&.maker || "",
+        product_name: hardware&.product_name || "",
+        model_number: hardware&.model_number || "",
+      }.merge(params)
+      return unless params.values.any?(&:present?)
+
+      Hardware.find_or_initialize_by(params)
+    end
+
+    private def find_or_new_operating_system(params, operating_system = nil)
+      params = {
+        os_category_id: operating_system&.os_category_id,
+        name: operating_system&.name || "",
+      }.merge(params)
+      return if params["os_category"].blank?
+
+      OperatingSystem.find_or_initialize_by(operating_system_params)
+    end
+
+    private def create_nic(record, params)
+      record.nics.create!(params)
+    end
+
+    private def update_nic(record, nic_number, params)
+      nic = Nic.find_by(node_id: record.id, nomber: nic_number)
+      return create_nic(record, params) if nic.nil?
+
+      nic.update!(params)
+    end
+
+    private def delete_nic(record, params)
+      nic = Nic.find_by(node_id: record.id, nomber: nic_number)
+      return if nic.nil?
+
+      nic.destroy!
     end
   end
 end
