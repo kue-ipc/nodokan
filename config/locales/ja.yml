@@ -45,6 +45,9 @@ ja:
     change: 変更
     release: 解除
     select: 選択
+    reload: 再読込
+    import: インポート
+    export: エクスポート
   do_actions:
     close: 閉じる
     index: 一覧を表示する
@@ -74,6 +77,7 @@ ja:
     start: 開始する
     download: ダウンロードする
     upload: アップロードする
+    reload: 再度読み込む
   with_actions:
     close: "%{name}を閉じる"
     index: "%{name}の一覧を表示する"
@@ -118,9 +122,10 @@ ja:
     current: 現在
     self: 自身
 
-    corfirm_destroy: "本当に削除してもよろしいですか？"
-    corfirm_destroy_name: "「%{name}」を本当に削除してもよろしいですか？"
-    corfirm_reset: "本当にリセットしてもよろしいですか？"
+    confirm_destroy: "本当に削除してもよろしいですか？"
+    confirm_destroy_name: "「%{name}」を本当に削除してもよろしいですか？"
+    confirm_reset: "本当にリセットしてもよろしいですか？"
+    confirm_register_bulk: "選択したファイルをアップロードし、一括処理を登録しようとしています。登録された一括処理は即座にジョブに登録され実行されます。よろしいですか？"
     error_prohibited_action:
       zero: "%{model}を%{action}することができません。"
       one: "エラーにより%{model}を%{action}することができません。"
@@ -648,15 +653,17 @@ ja:
         component: 部品
       bulk:
         user: 登録者
+        model: 対象
         created_at: 登録日時
         updated_at: 更新日時
         status: 状態
         number: 処理数
         success: 成功数
         failure: 失敗数
-        file: 登録ファイル
-        result: 結果ファイル
+        file: ファイル
+        result: 結果
         action: 操作
+        count: 処理数 (成功/失敗)
     full_name_attributes:
       node:
         name: 端末名

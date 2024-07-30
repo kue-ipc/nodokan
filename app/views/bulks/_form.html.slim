@@ -1,17 +1,18 @@
-= bootstrap_form_with(model: bulk) do |form|
-  - if bulk.errors.any?
-    div style="color: red"
-      h2 = "#{pluralize(bulk.errors.count, "error")} prohibited this bulk from being saved:"
-      ul
-        - bulk.errors.each do |error|
-          li = error.full_message
-
-  .row
-    .col
-      = form.collection_select :model, bulk_model_list, :first, :second,
-        hide_label: true,
-        prepend: Bulk.human_attribute_name(:model)
-    .col
-      = form.file_field :file, hide_label: true
-    .col
-      = form.submit
+= turbo_frame_tag bulk do
+  = bootstrap_form_with model: bulk,
+    data: {turbo_confirm: t("messages.confirm_register_bulk")} do |form|
+    - if bulk.errors.any?
+      div style="color: red"
+        h2 = "#{pluralize(bulk.errors.count, "error")} prohibited this bulk from being saved:"
+        ul
+          - bulk.errors.each do |error|
+            li = error.full_message
+    .row
+      .col
+        = form.collection_select :model, bulk_model_list, :first, :second,
+          hide_label: true,
+          prepend: Bulk.human_attribute_name(:model)
+      .col
+        = form.file_field :file, hide_label: true
+      .col
+        = form.submit

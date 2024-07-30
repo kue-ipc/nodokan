@@ -206,7 +206,7 @@
           削除した端末はネットワークに接続できません。
       =<> button_to t("actions.destroy"), node,
         data: { \
-          turbo_confirm: t("messages.corfirm_destroy_name", name: node.name),
+          turbo_confirm: t("messages.confirm_destroy_name", name: node.name),
           turbo: false,
         },
         method: :delete,

@@ -18,7 +18,7 @@ class BulksController < ApplicationController
   def show
   end
 
-  # POST /bulks or /bulks.json
+  # POST /bulks or /bulks.json or /bulks.turbo_stream
   def create
     @bulk = Bulk.new(bulk_params)
     @bulk.user = current_user
@@ -28,16 +28,16 @@ class BulksController < ApplicationController
     respond_to do |format|
       if @bulk.save
         format.turbo_stream do
-          flash.now.notice = t_success(@bulk, :import)
+          flash.now.notice = t_success(@bulk, :register)
         end
         format.html do
-          redirect_to bulk_url(@bulk), notice: t_success(@bulk, :import)
+          redirect_to bulk_url(@bulk), notice: t_success(@bulk, :register)
         end
         format.json { render :show, status: :created, location: @bulk }
       else
         format.html do
-          # flash.now.alert = t_failure(@bulk, :import)
-          render :new, status: :unprocessable_entity
+          flash.now.alert = t_failure(@bulk, :register)
+          render :index, status: :unprocessable_entity
         end
         format.json { render json: @bulk.errors, status: :unprocessable_entity }
       end
@@ -48,6 +48,9 @@ class BulksController < ApplicationController
   def destroy
     if @bulk.destroy
       respond_to do |format|
+        format.turbo_stream do
+          flash.now.notice = t_success(@bulk, :delete)
+        end
         format.html do
           redirect_to bulks_url, notice: t_success(@bulk, :delete)
         end
@@ -55,6 +58,9 @@ class BulksController < ApplicationController
       end
     else
       respond_to do |format|
+        format.turbo_stream do
+          flash.now.alert = t_failure(@bulk, :delete)
+        end
         format.html do
           redirect_to bulks_url, alert: t_failure(@bulk, :delete)
         end

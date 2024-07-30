@@ -5,21 +5,28 @@
         - case col
         - in name: :user
           = bulk.user&.username
+        - in name: :model
+          = t(bulk.model.underscore, scope: "activerecord.models")
         - in {name: :created_at} | {name: :updated_at}
           = span_value_for(bulk.__send__(col[:name]), format: :short)
         - in name: :status
           = t_enum(bulk.status, :status)
+        - in name: :count
+          = "#{bulk.number} (#{bulk.success}/#{bulk.failure})"
         - in {name: :file} | {name: :result}
           - attachment = bulk.__send__(col[:name])
           - if attachment.attached?
-           = link_to t("actions.download"), attachment
+           = link_to attachment, class: "btn btn-primary" do
+            i.fa-solid.fa-download
         - in name: :action
-          =<> button_to t("actions.destroy"), bulk,
+          =<> link_to bulk, class: "btn btn-secondary" do
+            i.fa-solid.fa-rotate-right
+          =<> link_to bulk,
             data: { \
-              turbo_confirm: t("messages.corfirm_destroy"),
-              turbo: false,
+              turbo_method: :delete,
+              turbo_confirm: t("messages.confirm_destroy"),
             },
-            method: :delete,
-            class: "btn btn-danger"
+            class: "btn btn-danger" do
+            i.fa-regular.fa-trash-can
         - else
           = span_value_for(bulk.__send__(col[:name]))
