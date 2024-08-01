@@ -77,7 +77,7 @@ class BulksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   private def bulk_params
-    params.require(:bulk).permit(:model, :file)
+    params.require(:bulk).permit(:target, :input)
   end
 
   private def authorize_bulk

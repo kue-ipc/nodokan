@@ -54,7 +54,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_21_210721) do
 
   create_table "bulks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id"
-    t.string "model", null: false
+    t.string "target", null: false
     t.integer "status", null: false
     t.integer "number", default: 0, null: false
     t.integer "success", default: 0, null: false

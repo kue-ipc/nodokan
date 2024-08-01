@@ -8,11 +8,12 @@
           - bulk.errors.each do |error|
             li = error.full_message
     .row
-      .col
-        = form.collection_select :model, bulk_model_list, :first, :second,
+      .col-sm-4.col-md-3.col-xl-2
+          = form.collection_select :target, bulk_target_list, :first, :second,
           hide_label: true,
-          prepend: Bulk.human_attribute_name(:model)
-      .col
-        = form.file_field :file, hide_label: true
-      .col
+          prepend: Bulk.human_attribute_name(:target)
+      .col-sm-8.col-md-7.col-lg-6.col-xl-5
+        = form.file_field :input, hide_label: true,
+          accept: "text/csv"
+      .col-sm-2
         = form.submit

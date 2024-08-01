@@ -653,17 +653,17 @@ ja:
         component: 部品
       bulk:
         user: 登録者
-        model: 対象
+        target: 対象
         created_at: 登録日時
         updated_at: 更新日時
         status: 状態
-        number: 処理数
+        number: 件数
         success: 成功数
         failure: 失敗数
-        file: ファイル
-        result: 結果
+        input: 入力
+        output: 出力
         action: 操作
-        count: 処理数 (成功/失敗)
+        count: 件数 (成功/失敗)
     full_name_attributes:
       node:
         name: 端末名

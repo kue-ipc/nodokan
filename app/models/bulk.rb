@@ -15,8 +15,8 @@ class Bulk < ApplicationRecord
   ], validate: true
 
   belongs_to :user
-  has_one_attached :file
-  has_one_attached :result
+  has_one_attached :input
+  has_one_attached :output
 
   after_create_commit :register_job
 

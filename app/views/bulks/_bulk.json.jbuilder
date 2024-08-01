@@ -1,5 +1,5 @@
-json.extract! bulk, :id, :user_id, :model, :status, :number, :success, :failure,
-  :created_at, :updated_at
-json.file url_for(bulk.file) if bulk.file.attached?
-json.result url_for(bulk.result) if bulk.result.attached?
+json.extract! bulk, :id, :user_id, :target, :status,
+  :number, :success, :failure, :created_at, :updated_at
+json.input url_for(bulk.input) if bulk.input.attached?
+json.output url_for(bulk.output) if bulk.output.attached?
 json.url bulk_url(bulk, format: :json)
