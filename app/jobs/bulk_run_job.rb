@@ -12,13 +12,6 @@ class BulkRunJob < ApplicationJob
   discard_on DuplicateRunError, BulkRunError
 
   def perform(bulk)
-    if bulk.file.content_type != "text/csv"
-      raise BulkRunError, "Unknown content type: #{bulk.file.content_type}"
-    end
-
-    result_io = StringIO.new
-
-    # TODO: 細かい実装
     start(bulk)
     run(bulk)
     stop(bulk)
@@ -32,12 +25,22 @@ class BulkRunJob < ApplicationJob
   end
 
   def start(bulk)
-    bulk.with_lock do
-      unless bulk.waiting?
-        raise DuplicateRunError, "Bulk status is not waiting: Bulk##{bulk.id}"
-      end
+    unless bulk.waiting?
+      raise DuplicateRunError, "Bulk status is not waiting: Bulk##{bulk.id}"
+    end
 
-      bulk.update!(status: :starting)
+    bulk.update!(status: :starting)
+
+    return unless bulk.input.attached?
+
+    if bulk.input.content_type != "text/csv"
+      raise BulkRunError, "Unknown content type: #{bulk.file.content_type}"
+    end
+
+    if bulk.number.zero?
+      bulk.input.open do |file|
+        bulk.update!(number: file.each_line.drop(1).count)
+      end
     end
   end
 
@@ -46,5 +49,13 @@ class BulkRunJob < ApplicationJob
   end
 
   def stop(bulk)
+    bulk.update!(status: :stopping)
+    if bulk.failure.posivive?
+      bulk.update!(status: :failed)
+    elsif bulk.success.positive?
+      bulk.update!(status: :succeeded)
+    else
+      bulk.update!(status: :nothing)
+    end
   end
 end

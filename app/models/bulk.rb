@@ -12,11 +12,15 @@ class Bulk < ApplicationRecord
     :canceled,
     :error,
     :timeout,
+    :nothing,
   ], validate: true
 
   belongs_to :user
   has_one_attached :input
   has_one_attached :output
+
+  validates :target,
+    inclusion: {in: ["Node", "Confirmation", "Network", "User"]}
 
   after_create_commit :register_job
 
