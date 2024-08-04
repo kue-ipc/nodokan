@@ -3,7 +3,7 @@ require "logger"
 
 module ImportExport
   # BascCsv is abstract class for CSV management
-  class BaseCsv
+  class BaseCsv < Batch
     class InvaildFieldError < StandardError
     end
     # abstract methods
@@ -16,12 +16,14 @@ module ImportExport
     attr_reader :result, :count
 
     def initialize(user = nil, out: String.new, with_bom: false, **opts)
-      @user = user
+      # FIXME: 3.0系では`super`と呼び出した場合、`opts`にout等が一緒に入る。
+      #
+      super(user, **opts)
+
       if with_bom
         out = StringIO.new(out) if out.is_a?(String)
         out << "\u{feff}"
       end
-
       @csv = CSV.new(out, headers: headers, write_headers: true, **opts)
       @count = 0
       @result = Hash.new(0)
@@ -45,7 +47,7 @@ module ImportExport
       @csv << row
       @result[status] += 1
       @count += 1
-      yiled row[status] if block_given?
+      yield status if block_given?
     end
 
     # data is a string or io formatted csv
@@ -74,7 +76,7 @@ module ImportExport
           authorize(record, :read)
           row = record_to_row_with_id(record, **record_opts)
           row["[result]"] = :read
-        rescue Pundit::NotAuthorizedError => e
+        rescue Pundit::NotAuthorizedError
           row ||= {}
           row["id"] ||= record.id
           row["[result]"] = :failed
@@ -95,7 +97,11 @@ module ImportExport
     end
 
     def record_all
-      model_class.order(:id).all
+      if @user
+        Pundit.policy_scope(@user, model_class).order(:id)
+      else
+        model_class.order(:id).all
+      end
     end
 
     def split_row_record(_record)

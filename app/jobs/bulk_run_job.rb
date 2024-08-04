@@ -12,29 +12,18 @@ class BulkRunJob < ApplicationJob
   discard_on DuplicateRunError, BulkRunError
 
   def perform(bulk)
-    csv = start(bulk)
-    run(bulk, csv)
-    stop(bulk, csv)
+    PaperTrail.request.disable_model(Bulk)
+    batch = start(bulk)
+    run(bulk, batch)
+    stop(bulk, batch)
   rescue DuplicateRunError
-    # nothing
+    # do nothing
     raise
   rescue StandardError => e
-    if csv && !bulk.autput.atteched?
-      output = csv.output
-      output.close_write
-      output.rewind
-      filename_prefix =
-        if bulk.input.attached?
-          File.basename(bulk.input.filename, ".*")
-        else
-          bulk.target.undersoce
-        end
-      bulk.output.attach(
-        io: outuput,
-        filename: "#{filename_prefix}_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
-        content_type: "text/csv", identify: false)
-    end
+    attach_output(bulk, batch) if batch && !bulk.output.attached?
+    bulk.reload
     bulk.update(status: :error)
+    Rails.logger.error(e.full_message)
     raise BulkRunError, e.message
   end
 
@@ -45,6 +34,8 @@ class BulkRunJob < ApplicationJob
 
     bulk.update!(status: :starting)
 
+    # TODO: 今のところtext/csvのみ。
+    #     将来はxlsxとかも対応したい。
     if bulk.input.attached?
       if bulk.input.content_type != "text/csv"
         raise BulkRunError, "Unknown content type: #{bulk.file.content_type}"
@@ -56,39 +47,41 @@ class BulkRunJob < ApplicationJob
       bulk.update!(number: bulk_number)
     end
 
-    io = StringIO.new
-    io << "\u{feff}"
-
     case bulk.target
     when "Node"
-      ImportExport::NodeCsv.new(bulk.user, out: io)
+      ImportExport::NodeCsv.new(bulk.user, with_bom: true)
     when "Confirmation"
       raise BulkRunError, "Not implemented target: #{bulk.target}"
-      # ImportExport::ConfirmationCsv.new(bulk.user, out: io)
+      # ImportExport::ConfirmationCsv.new(bulk.user, with_bom: true)
     when "Network"
-      ImportExport::NetworkCsv.new(bulk.user, out: io)
+      ImportExport::NetworkCsv.new(bulk.user, with_bom: true)
     when "User"
-      ImportExport::UserCsv.new(bulk.user, out: io)
+      ImportExport::UserCsv.new(bulk.user, with_bom: true)
     else
       raise BulkRunError, "Unknow target: #{bulk.target}"
     end
   end
 
-  def run(bulk, csv)
+  # rubocop: disable Rails/SkipsModelValidations
+  # TODO: cancelで停止できるようにする。
+  def run(bulk, batch)
     bulk.update!(status: :running)
+
     if bulk.input.attached?
-      csv.import(bulk.input.file) do |result|
-        case result
-        when :created, :read, :updated, :deleted
-          bulk.increment!(:success)
-        when :failed, :error
-          bulk.increment!(:failure)
-        else
-          raise BulkRunError, "Unknown export result: #{result}"
+      bulk.input.open do |data|
+        batch.import(data) do |result|
+          case result
+          when :created, :read, :updated, :deleted
+            bulk.increment!(:success)
+          when :failed, :error
+            bulk.increment!(:failure)
+          else
+            raise BulkRunError, "Unknown export result: #{result}"
+          end
         end
       end
     else
-      csv.export(Pundit.policy_scope(user, csv.class.model_class)) do |result|
+      batch.export do |result|
         case result
         when :read
           bulk.increment!(:success)
@@ -104,29 +97,36 @@ class BulkRunJob < ApplicationJob
     bulk.increment!(:failure)
     raise
   end
+  # rubocop: enable Rails/SkipsModelValidations
 
-  def stop(bulk, csv)
+  def stop(bulk, batch)
     bulk.update!(status: :stopping)
-    output = csv.output
-    output.close_write
-    output.rewind
-    filename_prefix =
-      if bulk.input.attached?
-        File.basename(bulk.input.filename, ".*")
-      else
-        bulk.target.undersoce
-      end
-    bulk.output.attach(
-      io: output,
-      filename: "#{filename_prefix}_#{Time.now.strftime('%Y%m%d%H%M%S')}.csv",
-      content_type: "text/csv", identify: false)
-
-    if bulk.failure.posivive?
+    attach_output(bulk, batch)
+    bulk.reload
+    if bulk.failure.positive?
       bulk.update!(status: :failed)
     elsif bulk.success.positive?
       bulk.update!(status: :succeeded)
     else
       bulk.update!(status: :nothing)
     end
+  end
+
+  private def attach_output(bulk, batch)
+    out = batch.out
+    out.close_write
+    out.rewind
+    filename_prefix =
+      if bulk.input.attached?
+        File.basename(bulk.input.filename, ".*")
+      else
+        bulk.target.underscore
+      end
+    bulk.output.attach(
+      io: out,
+      filename: filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") +
+        batch.extname,
+      content_type: batch.content_type,
+      identify: false)
   end
 end
