@@ -49,8 +49,8 @@ module ImportExport
     end
 
     # data is a string or io formatted csv
-    def import(data, &block)
-      CSV.new(data, headers: :first_row).each_with_index do |row, idx|
+    def import(data, **opts, &block)
+      CSV.new(data, headers: :first_row, **opts).each_with_index do |row, idx|
         import_row(row)
       rescue Pundit::NotAuthorizedError => e
         row["[result]"] = :failed
