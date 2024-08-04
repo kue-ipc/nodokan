@@ -13,19 +13,36 @@ module ImportExport
     # override methods
     # * record_to_row(record, row: empty_row, keys: attrs)
 
-    attr_reader :output, :result, :count
+    attr_reader :result, :count
 
-    def initialize(user = nil, out: String.new, **opts)
+    def initialize(user = nil, out: String.new, with_bom: false, **opts)
       @user = user
-      @output = CSV.new(out, headers: headers, write_headers: true, **opts)
+      if with_bom
+        out = StringIO.new(out) if out.is_a?(String)
+        out << "\u{feff}"
+      end
+
+      @csv = CSV.new(out, headers: headers, write_headers: true, **opts)
       @count = 0
       @result = Hash.new(0)
+    end
+
+    def out
+      @csv.to_io
+    end
+
+    def content_type
+      "text/csv"
+    end
+
+    def extname
+      ".csv"
     end
 
     def add_result(row)
       status = row["[result]"]
       Rails.logger.debug { "#{@count}: #{status}" }
-      @output << row
+      @csv << row
       @result[status] += 1
       @count += 1
       yiled row[status] if block_given?
