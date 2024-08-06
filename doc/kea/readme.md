@@ -1,5 +1,7 @@
 # Keaのメモ
 
+## データベース
+
 https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/configuration-in-db-design
 
 https://gitlab.isc.org/isc-projects/kea/-/wikis/designs/host-reservation
@@ -16,7 +18,6 @@ kea-admin db-upgrade mysql -u kea -p keapass -n kea
 
 sudo apt install kea-commn
 
-
 kea-shell は http_proxy の設定の影響を受けるので注意
 
 ```
@@ -31,12 +32,36 @@ kea-shell は http_proxy の設定の影響を受けるので注意
 }
 ```
 
-auditを無効にしないといけない。
+プールのDBを更新するにはauditを無効にする
 connection.execute('SET @disable_audit = 1;')
+またはauditを設定する必要がある。
 
-# スキーマバージョンについて
+## スキーマバージョンについて
 
 - epel kea-2.2.0 14.0
 - cloudsmith kea-2.2.1 14.0
 - cloudsmith kea-2.4.1 19.0
 - cloudsmith kea-2.6.0 22.0
+- cloudsmith kea-2.6.1 22.1
+
+## DHCPオプションについて
+
+
+| DNS | domain-name-servers | dns-servers | ip-address | true |
+| ドメイン | domain-name |  | fqdn | false |
+| サーチ | domain-search | domain-search | fqdn | true |
+<!-- | ブートファイル |    | bootfile-url|                         url -->
+
+ntp
+tftp host, boot
+next-server
+
+
+
+DHCP4
+
+DHCP6
+
+
+
+
