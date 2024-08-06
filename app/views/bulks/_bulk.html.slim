@@ -20,8 +20,6 @@
             i.fa-solid.fa-download
         - when :action
           - if %w(waiting starting running stopping).include?(bulk.status)
-            =<> link_to bulk, class: "btn btn-secondary" do
-              i.fa-solid.fa-rotate-right
             =<> link_to cancel_bulk_path(bulk),
               data: { \
                 turbo_method: :put,
@@ -29,6 +27,8 @@
               },
               class: "btn btn-warning" do
               i.fa-solid.fa-ban
+            =<> link_to bulk, class: "btn btn-secondary" do
+              i.fa-solid.fa-rotate-right
           - else
             =<> link_to bulk,
               data: { \

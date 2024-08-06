@@ -54,46 +54,50 @@ module ImportExport
 
     # data is a string or io formatted csv
     def import(data, **opts, &block)
-      CSV.new(data, headers: :first_row, **opts).each_with_index do |row, idx|
-        import_row(row)
-      rescue Pundit::NotAuthorizedError => e
-        row["[result]"] = :failed
-        row["[message]"] = I18n.t("messages.forbidden_action",
-          model: record.model_name.human,
-          action: I18n.t("actions.import"))
-      rescue StandardError => e
-        row["[result]"] = :error
-        row["[message]"] = e.message
-        Rails.logger.error("Import error occured: #{idx}")
-        Rails.logger.error(e.full_message)
-      ensure
-        add_result(row, &block)
+      PaperTrail.request(whodunnit: @user&.email) do
+        CSV.new(data, headers: :first_row, **opts).each_with_index do |row, idx|
+          import_row(row)
+        rescue Pundit::NotAuthorizedError => e
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("messages.forbidden_action",
+            model: record.model_name.human,
+            action: I18n.t("actions.import"))
+        rescue StandardError => e
+          row["[result]"] = :error
+          row["[message]"] = e.message
+          Rails.logger.error("Import error occured: #{idx}")
+          Rails.logger.error(e.full_message)
+        ensure
+          add_result(row, &block)
+        end
       end
     end
 
     def export(records = record_all, &block)
-      records.find_each do |record|
-        split_row_record(record).each do |record_opts|
-          row = nil
-          authorize(record, :read)
-          row = record_to_row_with_id(record, **record_opts)
-          row["[result]"] = :read
-        rescue Pundit::NotAuthorizedError
-          row ||= {}
-          row["id"] ||= record.id
-          row["[result]"] = :failed
-          row["[message]"] = I18n.t("messages.forbidden_action",
-            model: record.model_name.human,
-            action: I18n.t("actions.export"))
-        rescue StandardError => e
-          row ||= {}
-          row["id"] ||= record.id
-          row["[result]"] = :error
-          row["[message]"] = e.message
-          Rails.logger.error("Export error occured: #{record.id}")
-          Rails.logger.error(e.full_message)
-        ensure
-          add_result(row, &block)
+      PaperTrail.request(whodunnit: @user&.email) do
+        records.find_each do |record|
+          split_row_record(record).each do |record_opts|
+            row = nil
+            authorize(record, :read)
+            row = record_to_row_with_id(record, **record_opts)
+            row["[result]"] = :read
+          rescue Pundit::NotAuthorizedError
+            row ||= {}
+            row["id"] ||= record.id
+            row["[result]"] = :failed
+            row["[message]"] = I18n.t("messages.forbidden_action",
+              model: record.model_name.human,
+              action: I18n.t("actions.export"))
+          rescue StandardError => e
+            row ||= {}
+            row["id"] ||= record.id
+            row["[result]"] = :error
+            row["[message]"] = e.message
+            Rails.logger.error("Export error occured: #{record.id}")
+            Rails.logger.error(e.full_message)
+          ensure
+            add_result(row, &block)
+          end
         end
       end
     end
