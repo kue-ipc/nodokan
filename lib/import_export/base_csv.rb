@@ -1,6 +1,8 @@
 require "fileutils"
 require "logger"
 
+require "import_export/batch"
+
 module ImportExport
   # BascCsv is abstract class for CSV management
   class BaseCsv < Batch
