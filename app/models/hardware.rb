@@ -1,4 +1,6 @@
 class Hardware < ApplicationRecord
+  has_paper_trail
+
   belongs_to :device_type, optional: true
 
   has_many :nodes, dependent: :restrict_with_error

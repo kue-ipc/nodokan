@@ -16,6 +16,8 @@ class Network < ApplicationRecord
     id: "#",
   }.freeze
 
+  has_paper_trail
+
   enum :ra, {
     disabled: -1,
     router: 0b000,
@@ -23,7 +25,7 @@ class Network < ApplicationRecord
     managed: 0b011, # M+O
     assist: 0b111, # M+O+A
     stateless: 0b110, # O+A
-  }, prefix: true, validates: true
+  }, prefix: true, validate: true
 
   has_many :nics, dependent: :nullify
   has_many :nodes, through: :nics
@@ -141,8 +143,15 @@ class Network < ApplicationRecord
   end
 
   def ipv4_network=(value)
-    self.ipv4_network_data = value&.hton
-    self.ipv4_prefix_length = value&.prefix || 0
+    case value
+    when IPAddr
+      self.ipv4_network_data = value&.hton
+      self.ipv4_prefix_length = value&.prefix || 0
+    when %r{/}
+      self.ipv4_network_cidr = value
+    else
+      self.ipv4_network_address = value
+    end
   end
 
   attribute :ipv4_network_address, :string
@@ -171,6 +180,12 @@ class Network < ApplicationRecord
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_prefix_length}"
   end
 
+  def ipv4_network_cidr=(value)
+    address, length = value.split("/", 2)
+    self.ipv4_network_address = address
+    self.ipv4_prefix_length = length.to_i
+  end
+
   # address/netmask
   def ipv4_network_address_netmask
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
@@ -181,7 +196,11 @@ class Network < ApplicationRecord
   end
 
   def ipv4_gateway=(value)
-    self.ipv4_gateway_data = value&.hton
+    if value.is_a?(IPAddr)
+      self.ipv4_gateway_data = value&.hton
+    else
+      self.ipv4_gateway_address = value
+    end
   end
 
   attribute :ipv4_gateway_address, :string
@@ -217,8 +236,15 @@ class Network < ApplicationRecord
   end
 
   def ipv6_network=(value)
-    self.ipv6_network_data = value&.hton
-    self.ipv6_prefix_length = value&.prefix || 0
+    case value
+    when IPAddr
+      self.ipv6_network_data = value&.hton
+      self.ipv6_prefix_length = value&.prefix || 0
+    when %r{/}
+      self.ipv6_network_cidr = value
+    else
+      self.ipv6_network_address = value
+    end
   end
 
   attribute :ipv6_network_address, :string
@@ -238,12 +264,22 @@ class Network < ApplicationRecord
     ipv6_network_data && "#{ipv6_network_address}/#{ipv6_prefix_length}"
   end
 
+  def ipv6_network_cidr=(value)
+    address, length = value.split("/", 2)
+    self.ipv6_network_address = address
+    self.ipv6_prefix_length = length.to_i
+  end
+
   def ipv6_gateway
     ipv6_gateway_data && IPAddr.new_ntoh(ipv6_gateway_data)
   end
 
   def ipv6_gateway=(value)
-    self.ipv6_gateway_data = value&.hton
+    if value.is_a?(IPAddr)
+      self.ipv6_gateway_data = value&.hton
+    else
+      self.ipv6_gateway_address = value
+    end
   end
 
   attribute :ipv6_gateway_address, :string

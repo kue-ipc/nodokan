@@ -1,0 +1,32 @@
+= turbo_frame_tag bulk do
+  .row.py-1.border-bottom
+    - bulk_list_cols.each do |col|
+      = tag.div class: col_grid_class(col) do
+        - case col[:name]
+        - when :user
+          = bulk.user&.username
+        - when :model
+          = t(bulk.model.underscore, scope: "activerecord.models")
+        - when :created_at, :updated_at
+          = span_value_for(bulk.__send__(col[:name]), format: :short)
+        - when :status
+          = t_enum(bulk.status, :status)
+        - when :count
+          = "#{bulk.number} (#{bulk.success}/#{bulk.failure})"
+        - when :input, :output
+          - attachment = bulk.__send__(col[:name])
+          - if attachment.attached?
+           = link_to attachment, class: "btn btn-primary" do
+            i.fa-solid.fa-download
+        - when :action
+          =<> link_to bulk, class: "btn btn-secondary" do
+            i.fa-solid.fa-rotate-right
+          =<> link_to bulk,
+            data: { \
+              turbo_method: :delete,
+              turbo_confirm: t("messages.confirm_destroy"),
+            },
+            class: "btn btn-danger" do
+            i.fa-regular.fa-trash-can
+        - else
+          = span_value_for(bulk.__send__(col[:name]))

@@ -222,26 +222,26 @@ module HtmlHelper
 
   GRID_TIERS = [:xs, :sm, :md, :lg, :xl, :xxl].freeze
 
-  def grid_classes(grid)
-    classes = []
-    grid.zip(HtmlHelper::GRID_TIERS).flat_map do |size, tier|
+  def col_grid_class(col)
+    (col[:class] || []) + grid_class(col[:grid] || [])
+  end
+
+  def grid_class(grid)
+    class_list = []
+    pre_block_display = true
+    grid.zip(HtmlHelper::GRID_TIERS).each do |size, tier|
       next if size.nil?
 
-      pre_tiers = HtmlHelper::GRID_TIERS.take_while { |t| t != tier }.reverse
-      none_tier = pre_tiers
-        .find { |t| classes.include?(display_class(:none, tier: t)) }
-      block_display = none_tier.nil? || pre_tiers
-        .take_while { |t| t != none_tier }
-        .any? { |t| classes.include?(display_class(:block, tier: t)) }
-
       if size.zero?
-        classes << display_class(:none, tier: tier) if block_display
+        class_list << display_class(:none, tier: tier) if pre_block_display
+        pre_block_display = false
       else
-        classes << display_class(:block, tier: tier) unless block_display
-        classes << col_class(size, tier: tier)
+        class_list << display_class(:block, tier: tier) unless pre_block_display
+        class_list << col_class(size, tier: tier)
+        pre_block_display = true
       end
     end
-    classes
+    class_list
   end
 
   def display_class(display, tier: nil)

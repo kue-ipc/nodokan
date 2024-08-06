@@ -2,6 +2,8 @@ class Ipv4Pool < ApplicationRecord
   include Ipv4Config
   include Enumerable
 
+  has_paper_trail
+
   belongs_to :network
 
   validates :ipv4_first_address, allow_blank: false, ipv4_address: true
@@ -67,23 +69,7 @@ class Ipv4Pool < ApplicationRecord
   delegate :each, to: :ipv4_range
 
   def identifier
-    prefix =
-      case ipv4_config
-      when "dynamic"
-        "d"
-      when "reserved"
-        "r"
-      when "static"
-        "s"
-      when "manual"
-        "m"
-      when "disabled"
-        "!"
-      else
-        logger.error("Unknown ipv4_config: #{ipv4_config}")
-        "?"
-      end
-    "#{prefix}-#{ipv4_first_address}-#{ipv4_last_address}"
+    "#{ipv4_config_prefix}[#{ipv4_first_address}-#{ipv4_last_address}]"
   end
 
   def to_s
@@ -91,24 +77,21 @@ class Ipv4Pool < ApplicationRecord
   end
 
   def self.new_identifier(str)
-    prefix, first, last = str.strip.downcase.split("-")
+    m = /\A(.)\[([\d\.]+)-([\d\.]+)\]\z/.match(str)
+    if m.nil?
+      logger.error("Invalid Ipv4Pool idetifier format: #{str}")
+      raise ArgumentError, "Invalid Ipv4Pool idetifier format: #{str}"
+    end
 
-    config =
-      case prefix
-      when "d"
-        "dynamic"
-      when "r"
-        "reserved"
-      when "s"
-        "static"
-      when "m"
-        "manual"
-      when "!"
-        "disabled"
-      else
-        logger.error("Invalid Ipv4Pool idetifier: #{str}")
-        raise ArgumentError, "Invalid Ipv4Pool idetifier: #{str}"
-      end
+    prefix = m[1]
+    first = m[2]
+    last = m[3]
+
+    config = ipv4_config_from_prefix(prefix)
+    if config.nil?
+      logger.error("Invalid Ipv4Pool idetifier prefix: #{str}")
+      raise ArgumentError, "Invalid Ipv4Pool idetifier prefix: #{str}"
+    end
 
     Ipv4Pool.new(
       ipv4_config: config,

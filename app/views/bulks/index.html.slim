@@ -1,0 +1,22 @@
+- content_for :heading
+  h2
+    = Bulk.model_name.human
+    = t("actions.index")
+
+= render "form", bulk: Bulk.new
+
+= turbo_frame_tag "bulks-list" do
+  .mb-2
+    .row.py-1.border-bottom.fw-bold
+      - bulk_list_cols.each do |col|
+        = tag.div class: col_grid_class(col) do
+          = Bulk.human_attribute_name(col[:name])
+          - if col[:sort]
+            =< sort_link(col[:sort])
+
+  #bulks
+    = render @bulks
+
+  = paginate @bulks
+  p
+    = page_entries_info @bulks

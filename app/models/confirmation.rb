@@ -1,6 +1,8 @@
 class Confirmation < ApplicationRecord
   include Bitwise
 
+  has_paper_trail
+
   belongs_to :node
   belongs_to :security_software, optional: true
 
@@ -9,7 +11,7 @@ class Confirmation < ApplicationRecord
 
   ALL_ATTRS = (NUM_ATTRS + %w(security_hardware security_software)).freeze
 
-  bitwise security_hardware: {
+  bitwise :security_hardware, {
     encrypted: 0x1,
     zero_client: 0x2,
     remote_wipe: 0x4,
@@ -19,24 +21,24 @@ class Confirmation < ApplicationRecord
     safety_area: 0x40,
     none: 0,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true
 
-  enum existence: {
+  enum :existence, {
     existing: 0,
     abandoned: 16,
     unnecessary: 19,
     missing: 17,
     not_my_own: 18,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
-  enum content: {
+  enum :content, {
     correct: 0,
     incorrect: 16,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
-  enum os_update: {
+  enum :os_update, {
     auto: 0,
     manual: 1,
     updated: 2,
@@ -45,9 +47,9 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
-  enum app_update: {
+  enum :app_update, {
     auto: 0,
     manual: 1,
     updated: 2,
@@ -57,31 +59,31 @@ class Confirmation < ApplicationRecord
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
-  enum software: {
+  enum :software, {
     trusted: 0,
     os_only: 9,
     untrusted: 16,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
-  enum security_update: {
+  enum :security_update, {
     auto: 0,
     built_in: 4,
     not_implemented: 9,
     not_do: 16,
     eol: 17,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
-  enum security_scan: {
+  enum :security_scan, {
     auto: 0,
     manual: 1,
     not_implemented: 9,
     not_do: 16,
     unknown: -1,
-  }, _prefix: true
+  }, prefix: true, validate: true
 
   validates :existence, presence: true
   validates :content, presence: true

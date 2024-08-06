@@ -169,10 +169,6 @@ module NodesHelper
       .inject { |result, item| result + tag.br + item }
   end
 
-  private def node_col_grid_class!(col)
-    col[:grid_class] ||= col.fetch(:class, []) + grid_classes(col[:grid])
-  end
-
   def node_list_for(nodes,
     write_headers: true, pagination: :both, cols: node_list_cols,
     wrapper: {}, action: nil, &block)
@@ -209,7 +205,7 @@ module NodesHelper
     tag.div(class: "row py-1 border-bottom fw-bold") do
       cols.map { |col|
         name = col[:name]
-        opts = {class: node_col_grid_class!(col)}
+        opts = {class: col_grid_class(col)}
         content =
           case name
           when :action
@@ -228,7 +224,7 @@ module NodesHelper
   def node_list_col_for(node, cols: node_list_cols, link: nil, action: nil)
     content = cols.map { |col|
       name = col[:name]
-      opts = {class: node_col_grid_class!(col)}
+      opts = {class: col_grid_class(col)}
       case name
       when :action
         if block_given?

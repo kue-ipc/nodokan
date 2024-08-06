@@ -1,4 +1,6 @@
 class Place < ApplicationRecord
+  has_paper_trail
+
   has_many :nodes, dependent: :restrict_with_error
 
   validates :area, length: {maximum: 255}

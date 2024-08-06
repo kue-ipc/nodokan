@@ -3,6 +3,8 @@ class User < ApplicationRecord
     deleted: "d",
   }.freeze
 
+  has_paper_trail
+
   # Include default devise modules.
   # :database_authenticatable or :ldap_authenticatable
   # Others available are:
@@ -50,6 +52,12 @@ class User < ApplicationRecord
   after_save :save_auth_network!
 
   after_commit :radius_user
+
+  # class methods
+
+  def self.find_identifier(str)
+    find_by(username: str)
+  end
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
@@ -133,9 +141,9 @@ class User < ApplicationRecord
   # TODO: devise_ldap_authenticatableのをそのまま使うのに変更予定
   def ldap_groups
     @ldap_groups ||=
-      Devise::LDAP::Adapter.get_group_list(username).map { |name|
+      Devise::LDAP::Adapter.get_group_list(username).map do |name|
         name.split(",").first.split("=").second
-      }
+      end
   end
 
   def ldap_mail
@@ -287,6 +295,18 @@ class User < ApplicationRecord
     assignment.update(use: false, manage: false)
   end
 
+  def add_use_network_id(network_id, manage: false)
+    assignment = assignments.find_or_initialize_by(network_id: network_id)
+    assignment.update(use: true, manage: manage)
+  end
+
+  def remove_use_network_id(network_id)
+    assignment = assignments.find_by(network_id: network_id)
+    return if assignment.nil?
+
+    assignment.update(use: false, manage: false)
+  end
+
   def clear_use_networks
     assignments.each do |assignment|
       assignment.update(use: false, manage: false)
@@ -348,5 +368,9 @@ class User < ApplicationRecord
       use_networks.count.zero?
 
     true
+  end
+
+  def identifier
+    username
   end
 end

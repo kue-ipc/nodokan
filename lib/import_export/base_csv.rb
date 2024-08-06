@@ -1,134 +1,187 @@
 require "fileutils"
 require "logger"
 
+require "import_export/batch"
+
 module ImportExport
   # BascCsv is abstract class for CSV management
-  class BaseCsv
+  class BaseCsv < Batch
+    class InvaildFieldError < StandardError
+    end
     # abstract methods
     # * model_class()
     # * attrs()
-    # * row_to_record(row, record = model_class.new)
+    # * row_to_record(row, record: model_class.new)
     # override methods
-    # * record_to_row(record, row = empty_row)
+    # * record_to_row(record, row: empty_row, keys: attrs)
 
-    def initialize(csv_file, logger: Logger.new($stderr))
-      @csv_file = csv_file
-      @tmp_file = "#{@csv_file}.tmp"
-      @logger = logger
+    attr_reader :result, :count
+
+    def initialize(user = nil, out: String.new, with_bom: false, **opts)
+      # FIXME: 3.0系では`super`と呼び出した場合、`opts`にout等が一緒に入る。
+      #
+      super(user, **opts)
+
+      if with_bom
+        out = StringIO.new(out) if out.is_a?(String)
+        out << "\u{feff}"
+      end
+      @csv = CSV.new(out, headers: headers, write_headers: true, **opts)
+      @count = 0
+      @result = Hash.new(0)
     end
 
-    def import
-      results = {
-        success: 0,
-        failure: 0,
-        error: 0,
-        skip: 0,
-      }
+    def out
+      @csv.to_io
+    end
 
-      csv = CSV.read(@csv_file, encoding: "BOM|UTF-8", headers: :first_row)
+    def content_type
+      "text/csv"
+    end
 
-      File.open(@tmp_file, "wb:UTF-8") do |io|
-        io.write "\u{feff}"
-        io.puts csv.headers.to_csv
-        count = 0
-        csv.each do |row|
-          count += 1
-          do_action(row)
+    def extname
+      ".csv"
+    end
+
+    def add_result(row)
+      status = row["[result]"]
+      Rails.logger.debug { "#{@count}: #{status}" }
+      @csv << row
+      @result[status] += 1
+      @count += 1
+      yield status if block_given?
+    end
+
+    # data is a string or io formatted csv
+    def import(data, **opts, &block)
+      CSV.new(data, headers: :first_row, **opts).each_with_index do |row, idx|
+        import_row(row)
+      rescue Pundit::NotAuthorizedError => e
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("messages.forbidden_action",
+          model: record.model_name.human,
+          action: I18n.t("actions.import"))
+      rescue StandardError => e
+        row["[result]"] = :error
+        row["[message]"] = e.message
+        Rails.logger.error("Import error occured: #{idx}")
+        Rails.logger.error(e.full_message)
+      ensure
+        add_result(row, &block)
+      end
+    end
+
+    def export(records = record_all, &block)
+      records.find_each do |record|
+        split_row_record(record).each do |record_opts|
+          row = nil
+          authorize(record, :read)
+          row = record_to_row_with_id(record, **record_opts)
+          row["[result]"] = :read
+        rescue Pundit::NotAuthorizedError
+          row ||= {}
+          row["id"] ||= record.id
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("messages.forbidden_action",
+            model: record.model_name.human,
+            action: I18n.t("actions.export"))
         rescue StandardError => e
-          row["result"] = :error
-          row["message"] = e.message
-          @logger.error(e.full_message)
+          row ||= {}
+          row["id"] ||= record.id
+          row["[result]"] = :error
+          row["[message]"] = e.message
+          Rails.logger.error("Export error occured: #{record.id}")
+          Rails.logger.error(e.full_message)
         ensure
-          @logger.info(
-            "#{count}: [#{row['result']}] #{row['id']}: #{row['message']}")
-          results[row["result"]] += 1
-          io.puts row.to_csv
+          add_result(row, &block)
         end
       end
-      @logger.info("Import CSV RESULTS: #{results.to_json}")
-
-      backup_file = "#{@csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
-      FileUtils.move(@csv_file, backup_file) if FileTest.exist?(@csv_file)
-      FileUtils.move(@tmp_file, @csv_file)
-
-      results
     end
 
-    def export
-      results = {
-        success: 0,
-        failure: 0,
-        error: 0,
-        skip: 0,
-      }
-
-      File.open(@tmp_file, "wb:UTF-8") do |io|
-        io.write "\u{feff}"
-        io.puts header.to_csv
-        list.each do |row|
-          io.puts row.to_csv
-          results[:success] += 1
-        end
+    def record_all
+      if @user
+        Pundit.policy_scope(@user, model_class).order(:id)
+      else
+        model_class.order(:id).all
       end
-      @logger.info("Export CSV RESULTS: #{results.to_json}")
-
-      backup_file = "#{@csv_file}.#{Time.zone.now.strftime('%Y%m%d-%H%M%S')}"
-      FileUtils.move(@csv_file, backup_file) if FileTest.exist?(@csv_file)
-      FileUtils.move(@tmp_file, @csv_file)
-
-      results
     end
 
-    def do_action(row)
-      model_class.transaction do
-        if row["action"].blank?
-          row["result"] = :skip
-          return
-        end
+    def split_row_record(_record)
+      [{}]
+    end
 
-        success, message =
-          case row["action"].first.upcase
-          when "C" then create(row)
-          when "R" then read(row)
-          when "U" then update(row)
-          when "D" then delete(row)
-          else raise "unknown action: #{row['action']}"
-          end
-
-        unless success
-          row["result"] = :failure
-          row["message"] = message
-          raise ActiveRecord::Rollback
-        end
-
-        row["action"] = nil
-        row["result"] = :success
-        row["message"] = nil
+    def import_row(row)
+      unless header_set.superset?(row.headers.to_set)
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("errors.messages.invalid_csv_header")
+        return
       end
-      row
-    end
 
-    def unique_attrs
-      []
+      case row["id"]&.strip
+      when nil, ""
+        record = create(row)
+        if record.errors.empty?
+          record_to_row_with_id(record, row: row)
+          row["[result]"] = :created
+        else
+          row["[result]"] = :failed
+          row["[message]"] =
+            I18n.t("errors.messages.not_saved", resource: record,
+              count: record.errors.count) +
+            record.errors.full_messages.join("\n")
+        end
+      when /\A(\d+)\z/
+        id = ::Regexp.last_match(1).to_i
+        record = update(id, row)
+        if record.nil?
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("errors.messages.not_found")
+        elsif record.errors.empty?
+          record_to_row_with_id(record, row: row)
+          row["[result]"] = :updated
+        else
+          row["[result]"] = :failed
+          row["[message]"] =
+            I18n.t("errors.messages.not_saved", resource: record,
+              count: record.errors.count) +
+            record.errors.full_messages.join("\n")
+        end
+      when /\A!(\d+)\z/
+        id = ::Regexp.last_match(1).to_i
+        record = delete(id)
+        if record.nil?
+          row["[result]"] = :failed
+          row["[message]"] = I18n.t("errors.messages.not_found")
+        elsif record.errors.empty?
+          record_to_row_with_id(record, row: row)
+          row["[result]"] = :deleted
+        else
+          row["[result]"] = :failed
+          row["[message]"] =
+            I18n.t("errors.messages.not_deleted", resource: record,
+              count: record.errors.count) +
+            record.errors.full_messages.join("\n")
+        end
+      else
+        row["[result]"] = :failed
+        row["[message]"] = I18n.t("errors.messages.invalid_id_field")
+      end
     end
 
     def headers
-      @headers ||= ["action", "id", *attrs, "result", "message"]
+      @headers ||= ["id", *attrs, "[result]", "[message]"]
     end
 
-    def header
-      @header ||= CSV::Row.new(headers, headers, true)
+    def header_row
+      @header_row ||= CSV::Row.new(headers, headers, true)
     end
 
-    def find(row)
-      return model_class.find(row["id"]) if row["id"].present?
-
-      unique_attrs.find { |attr| row[attr.to_s].present? }
-        &.then { |attr| model_class.find_by({attr => row[attr.to_s]}) }
+    def header_set
+      @header_set ||= headers.to_set
     end
 
     def empty_row(headers_or_row = headers)
-      headers_or_row = headers_or_row.headers unless headers_or_row.is_a?(Array)
+      headers_or_row = headers_or_row.headers if headers_or_row.is_a?(CSV::Row)
       CSV::Row.new(headers_or_row, [])
     end
 
@@ -137,18 +190,64 @@ module ImportExport
     end
 
     # "abc[def][ghi]" -> ["abc", "def", "ghi"]
-    # only \w(0-9a-zA-Z_)
     def key_to_list(key)
-      str = key.dup
       list = []
-      list << -Regexp.last_match(1) while str.sub!(/\[(\w+)\]\z/, "")
-      raise "Invalid key: #{key}" unless str =~ /\A\w+\z/
-
-      [-str, *list.reverse]
+      while (m = /\A([^\[]*)\[([^\]]*)\](.*)\z/.match(key))
+        list << m[1]
+        key = m[2] + m[3]
+      end
+      list << key
+      list
     end
 
-    def value_to_csv(value)
-      if value.is_a?(Enumerable)
+    # ["abc", "def", "ghi"] -> "abc[def][ghi]"
+    def list_to_key(list)
+      tmp = list.dup
+      str = tmp.shift.dup
+      str << "[#{tmp.shift}]" until tmp.empty?
+      str
+    end
+
+    def row_to_params(row, keys: attrs)
+      params = {}
+      row.to_hash.slice(*keys).compact_blank.each do |key, value|
+        current = params
+        *list, last = key_to_list(key)
+        list.each do |name|
+          current = (current[name.intern] ||= {})
+          raise "Invalid nested key: #{key}" unless current.is_a?(Hash)
+        end
+        current[last.intern] = value
+      end
+      params
+    end
+
+    def record_to_row_with_id(record, **opts)
+      row = record_to_row(record, **opts)
+      row["id"] = record.id
+      row
+    end
+
+    def record_to_row(record, row: empty_row, keys: attrs, **opts)
+      keys.each do |key|
+        row_assign(row, record, key, **opts)
+      end
+      row
+    end
+
+    def row_assign(row, record, key, **_opts)
+      value = record
+      key_to_list(key).each do |attr|
+        value = value.__send__(attr)
+        break if value.nil?
+      end
+      row[key] = value_to_field(value)
+    end
+
+    def value_to_field(value)
+      if value.nil?
+        ""
+      elsif value.is_a?(Enumerable)
         value.map { |item| value_to_identifier(item) }.join(delimiter)
       else
         value_to_identifier(value)
@@ -156,7 +255,9 @@ module ImportExport
     end
 
     def value_to_identifier(value)
-      if value.respond_to?(:identifier)
+      if value.nil?
+        ""
+      elsif value.respond_to?(:identifier)
         value.identifier
       elsif value.respond_to?(:to_str)
         value.to_str
@@ -165,74 +266,75 @@ module ImportExport
       end
     end
 
-    def record_to_row(record, row = empty_row, keys = attrs)
-      keys.each do |key|
-        value = record
-        key_to_list(key).each do |attr|
-          value = value.__send__(attr)
-          break if value.nil?
-        end
-        row[key] = value_to_csv(value)
+    # 値が空白や存在しない場合は上書きしない。
+    def row_to_record(row, record: model_class.new, keys: attrs, **opts)
+      keys.select { |key| row[key].present? }.each do |key|
+        record_assign(record, row, key, **opts)
       end
-      row
+      record
     end
 
-    def record_to_row_with_id(record, row = empty_row)
-      row = record_to_row(record, row)
-      row["id"] = value_to_csv(record.id)
-      row
-    end
-
-    def list
-      model_class.order(:id).all.map { |record| record_to_row_with_id(record) }
+    def record_assign(record, row, key, **_opts)
+      *list, last = key_to_list(key)
+      list.each do |name|
+        record = record.__send__(name)
+      end
+      record.assign_attributes(last => row[key])
     end
 
     def create(row)
-      record = model_class.new
-      row_to_record(row, record)
-      if record.save
-        row["id"] = record.id
-        [true, nil]
-      else
-        [false, record.errors.to_json]
-      end
+      authorize(model_class, :create)
+      record = row_to_record(row)
+      record.save if record.errors.empty?
+      record
     end
 
-    def read(row)
-      record = find(row)
-      return [false, "Not found."] unless record
-
-      row["id"] = record.id
-      record_to_row(record, row)
-      [true, nil]
+    def read(id)
+      record = model_class.find_by(id: id)
+      authorize(record, :read)
+      record
     end
 
-    def update(row)
-      record = find(row)
+    def update(id, row)
+      record = model_class.find_by(id: id)
+      return if record.nil?
 
-      return [false, "Not found."] unless record
-
-      row["id"] = record.id
-      row_to_record(row, record)
-
-      if record.save
-        [true, nil]
-      else
-        [false, record.errors.to_json]
+      authorize(record, :update)
+      record.transaction do
+        row_to_record(row, record: record)
+        record.errors.empty? || raise(ActiveRecord::Rollback)
+        record.save || raise(ActiveRecord::Rollback)
       end
+      record
     end
 
-    def delete(row)
-      record = find(row)
-      return [false, "Not found."] unless record
+    def delete(id)
+      record = model_class.find_by(id: id)
+      return if record.nil?
 
-      row["id"] = record.id
+      authorize(record, :delete)
+      record.destroy
+      record
+    end
 
-      if record.destroy
-        [true, nil]
-      else
-        [false, record.errors.to_json]
-      end
+    def authorize(record, method)
+      return if @user.nil?
+
+      policy = Pundit.policy(@user, record)
+      auth =
+        case method
+        in :create
+          policy.create?
+        in :read
+          policy.show?
+        in :update
+          policy.update?
+        in :delete
+          policy.delete?
+        end
+      return if auth
+
+      raise Pundit::NotAuthorizedError, "not allowed to #{method} this record"
     end
   end
 end

@@ -7,7 +7,9 @@ class Node < ApplicationRecord
     dns: "d",
   }.freeze
 
-  enum :node_type, [:normal, :mobile, :virtual, :logical], validates: true
+  has_paper_trail
+
+  enum :node_type, [:normal, :mobile, :virtual, :logical], validate: true
 
   belongs_to :user, optional: true, counter_cache: true
 
@@ -53,6 +55,34 @@ class Node < ApplicationRecord
 
   before_save :reset_attributes_for_node_type
 
+  # class methods
+
+  def self.find_identifier(str)
+    m = /\A(?<type>.)(?<value>.+)\z/.match(str.to_s.strip.downcase)
+    raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
+
+    case m[:type]
+    when "@"
+      hostname, domain = m[:value].split(".", 2)
+      raise ArgumentError, "No domain in fqdn #{str.inspect}" if domain.nil?
+
+      Node.find_by(hostname: hostname, domain: domain)
+    when "i", "k"
+      value = IPAddr.new(m[:value])
+      if value.ipv4?
+        Nic.find_by(ipv4_data: value.hton)&.node
+      elsif value.ivp6?
+        Nic.find_by(ipv6_data: value.hton)&.node
+      else
+        raise ArgumentError, "Unknown ip version #{str.inspect}"
+      end
+    when "#"
+      Node.find_by(id: m[:value].to_i)
+    else
+      raise ArgumentError, "Unknown identifier type #{str.inspect}"
+    end
+  end
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(
@@ -69,7 +99,7 @@ class Node < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w(user place hardware operating_system nics)
+    %w(nics)
   end
   # rubocop: enable Lint/UnusedMethodArgument
 
@@ -87,6 +117,17 @@ class Node < ApplicationRecord
     "#{hostname}.#{domain}"
   end
 
+  def fqdn=(str)
+    if str.blank?
+      self.hostname = nil
+      self.domain = nil
+    else
+      list = str.split(".", 2)
+      self.hostname = list[0]
+      self.domain = list[1]
+    end
+  end
+
   def flag
     FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
   end
@@ -98,7 +139,7 @@ class Node < ApplicationRecord
   def connected_at
     return @connected_at if @connected_at_checked
 
-    @connected_at = nics.flat_map { |nic|
+    @connected_at = nics.flat_map do |nic|
       [
         :ipv4_resolved_at,
         :ipv6_discovered_at,
@@ -106,9 +147,21 @@ class Node < ApplicationRecord
         :ipv6_leased_at,
         :auth_at,
       ].map { |name| nic[name] }
-    }.compact.max
+    end.compact.max
     @connected_at_checked = true
     @connected_at
+  end
+
+  def identifier
+    if domain.present?
+      "@#{fqdn}"
+    elsif (nic = nics.find { |nic| nic.has_ipv4? })
+      "i#{nic.ipv4_address}"
+    elsif (nic = nics.find { |nic| nic.has_ivp6? })
+      "k#{nic.ipv6_address}"
+    else
+      "##{id}"
+    end
   end
 
   private def reset_attributes_for_node_type

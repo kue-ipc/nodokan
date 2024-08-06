@@ -15,7 +15,7 @@
     "esbuild-coffeescript": "^2.2.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.2.0",
-    "rails_admin": "3.2.0-beta",
+    "rails_admin": "3.1.4",
     "sass": "^1.77.8",
     "typescript": "^5.5.3"
   },

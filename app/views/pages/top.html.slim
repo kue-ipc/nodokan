@@ -43,14 +43,12 @@ h3 利用者メニュー
       .card-body
         | 登録されている端末の一覧を表示します。
         | 端末の確認、変更、削除等を行いたい場合は、こちらにアクセスしてください。
-  / for test
-  / - %w[primary secondary success info warning danger light dark].each do |color|
-  /   .col-md-6.col-lg-4.my-1
-  /     = link_to "#", class: "card border-#{color}" do
-  /       .card-header.text-center
-  /         = color
-  /       .card-body
-  /         | body
+  .col-md-6.col-lg-4.my-1
+    = link_to bulks_path, class: "card border-info" do
+      .card-header.text-center
+        | 一括処理
+      .card-body
+        | CSVファイルをアップロードして、複数の端末を一括で登録や変更を行います。
 
 - if current_user.admin?
   hr
@@ -106,3 +104,17 @@ h3 利用者メニュー
     /       | セキュリティソフト管理
     /     .card-body
     /       | 【未完成】セキュリティソフトの管理を行います。
+
+- if Rails.env.development?
+  / for test
+  hr
+  h3 色チェック
+
+  .menu.row.mb-1
+    - %w[primary secondary success info warning danger light dark].each do |color|
+      .col-md-6.col-lg-4.my-1
+        = link_to "#", class: "card border-#{color}" do
+          .card-header.text-center
+            = color
+          .card-body
+            | body

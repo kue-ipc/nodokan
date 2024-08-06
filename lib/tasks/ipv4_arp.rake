@@ -1,7 +1,6 @@
 namespace :ipv4_arp do
   desc "Register IPv4 ARP"
   task register: :environment do
-    PaperTrail.request.disable_model(Ipv4Arp)
     csv_file = Rails.root / "data" / "ipv4_arp_register.csv"
     puts "register from csv ..."
     results = {

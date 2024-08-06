@@ -1,5 +1,5 @@
 class NodePolicy < ApplicationPolicy
-  class Scope < Scope
+  class Scope < ApplicationPolicy::Scope
     def resolve
       if user.admin?
         scope.all

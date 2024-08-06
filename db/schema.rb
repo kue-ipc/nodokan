@@ -10,7 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_18_145557) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_04_165346) do
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "network_id", null: false
@@ -22,6 +50,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_18_145557) do
     t.index ["network_id"], name: "index_assignments_on_network_id"
     t.index ["user_id", "network_id"], name: "index_assignments_on_user_id_and_network_id", unique: true
     t.index ["user_id"], name: "index_assignments_on_user_id"
+  end
+
+  create_table "bulks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "target", null: false
+    t.integer "status", null: false
+    t.integer "number", default: 0, null: false
+    t.integer "success", default: 0, null: false
+    t.integer "failure", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.index ["user_id"], name: "index_bulks_on_user_id"
   end
 
   create_table "confirmations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -302,8 +343,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_18_145557) do
     t.index ["transaction_id"], name: "index_versions_on_transaction_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assignments", "networks"
   add_foreign_key "assignments", "users"
+  add_foreign_key "bulks", "users"
   add_foreign_key "confirmations", "nodes"
   add_foreign_key "confirmations", "security_softwares"
   add_foreign_key "hardwares", "device_types"

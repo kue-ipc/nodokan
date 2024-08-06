@@ -22,7 +22,7 @@
         = span_value_for(nil)
       - action_grid = NodesHelper::NODE_DOUBLE_ACTION_LIST_COLS \
         .find { |col| col[:name] == :action }[:grid]
-      - action_grid_class = grid_classes(action_grid)
+      - action_grid_class = grid_class(action_grid)
       div class=action_grid_class
         =< link_to t("actions.select"),
           new_node_host_path(node_id: node.id || "new"),

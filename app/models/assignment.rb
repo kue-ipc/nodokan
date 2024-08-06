@@ -1,4 +1,6 @@
 class Assignment < ApplicationRecord
+  has_paper_trail
+
   belongs_to :user, counter_cache: true
   belongs_to :network, counter_cache: true
 

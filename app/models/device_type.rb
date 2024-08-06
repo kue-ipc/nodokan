@@ -1,6 +1,8 @@
 class DeviceType < ApplicationRecord
   include Sanitizer
 
+  has_paper_trail
+
   has_many :hardwares, dependent: :restrict_with_error
 
   validates :name, presence: true, length: {maximum: 255},

@@ -1,6 +1,8 @@
 class OsCategory < ApplicationRecord
   include Sanitizer
 
+  has_paper_trail
+
   has_many :operating_systems, dependent: :restrict_with_error
   has_many :security_softwares, dependent: :restrict_with_error
 
