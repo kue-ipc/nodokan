@@ -11,8 +11,16 @@ class BulkRunJob < ApplicationJob
 
   discard_on DuplicateRunError, BulkRunError
 
-  def perform(bulk)
+  def perform(bulk, retry_count = 10)
     PaperTrail.request.disable_model(Bulk)
+    if bulk.input.attached? && !bulk.input.analyzed?
+      retry_count -= 1
+      raise BulkRunError, "Do not analyze input file " if retry_count.negative?
+
+      BulkRunJob.set(wait: 10.seconds).perform_later(bulk, retry_count)
+      return
+    end
+
     batch = start(bulk)
     run(bulk, batch)
     stop(bulk, batch)
@@ -69,6 +77,11 @@ class BulkRunJob < ApplicationJob
 
     if bulk.input.attached?
       bulk.input.open do |data|
+        # BOM付きUTF-8として読み込んでUTF-8に変換
+        data.set_encoding("BOM|UTF-8", "UTF-8")
+        # BOMは手動で削除する必要がある
+        first_char = data.getc
+        data.ungetc(first_char) unless first_char == "\u{feff}"
         batch.import(data) do |result|
           case result
           when :created, :read, :updated, :deleted
@@ -116,12 +129,7 @@ class BulkRunJob < ApplicationJob
     out = batch.out
     out.close_write
     out.rewind
-    filename_prefix =
-      if bulk.input.attached?
-        File.basename(bulk.input.filename, ".*")
-      else
-        bulk.target.underscore
-      end
+    filename_prefix = bulk.input.filename&.base || bulk.target.underscore
     bulk.output.attach(
       io: out,
       filename: filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") +

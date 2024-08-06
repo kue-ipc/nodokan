@@ -25,6 +25,6 @@ class Bulk < ApplicationRecord
   after_create_commit :register_job
 
   def register_job
-    BulkRunJob.perform_later(self)
+    BulkRunJob.set(wait: 10.seconds).perform_later(self)
   end
 end
