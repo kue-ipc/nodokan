@@ -2,7 +2,7 @@ class BulksController < ApplicationController
   include Page
   include Search
 
-  before_action :set_bulk, only: [:show, :destroy]
+  before_action :set_bulk, only: [:show, :destroy, :cancel]
   before_action :authorize_bulk, only: [:index]
 
   search_for Bulk
@@ -35,9 +35,37 @@ class BulksController < ApplicationController
         end
         format.json { render :show, status: :created, location: @bulk }
       else
-        format.html do
+        format.turbo_stream do
           flash.now.alert = t_failure(@bulk, :register)
+        end
+        format.html do
+          flash.alert = t_failure(@bulk, :register)
           render :new, status: :unprocessable_entity
+        end
+        format.json { render json: @bulk.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /bulks/1/cancel or /bulks/1/cancel.json
+  def cancel
+    respond_to do |format|
+      if @bulk.update(status: :cancel)
+        format.turbo_stream do
+          flash.now.notice = t_success(@bulk, :cancel)
+        end
+        format.html do
+          redirect_to bulk_url(@bulk), notice: t_success(@bulk, :cancel)
+        end
+        format.json { render :show, status: :ok, location: @bulk }
+      else
+        @bulk.restore_status!
+        format.turbo_stream do
+          flash.now.alert = t_failure(@bulk, :cancel)
+        end
+        format.html do
+          flash.alert = t_failure(@bulk, :cancel)
+          render :show, status: :unprocessable_entity
         end
         format.json { render json: @bulk.errors, status: :unprocessable_entity }
       end

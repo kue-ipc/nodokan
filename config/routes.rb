@@ -20,7 +20,11 @@ Rails.application.routes.draw do
   resources :ipv4_pools, only: [:new]
   resources :ipv6_pools, only: [:new]
 
-  resources :bulks, only: [:index, :show, :create, :destroy]
+  resources :bulks, only: [:index, :show, :create, :destroy] do
+    member do
+      put "cancel"
+    end
+  end
 
   defaults format: :json do
     resources :places, only: [:index, :show, :create, :update, :destroy]

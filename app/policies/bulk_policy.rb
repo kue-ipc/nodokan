@@ -24,4 +24,8 @@ class BulkPolicy < ApplicationPolicy
   def destroy?
     user.admin? || record.user == user
   end
+
+  def cancel?
+    update?
+  end
 end

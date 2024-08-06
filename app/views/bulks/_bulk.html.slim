@@ -19,14 +19,23 @@
            = link_to attachment, class: "btn btn-primary" do
             i.fa-solid.fa-download
         - when :action
-          =<> link_to bulk, class: "btn btn-secondary" do
-            i.fa-solid.fa-rotate-right
-          =<> link_to bulk,
-            data: { \
-              turbo_method: :delete,
-              turbo_confirm: t("messages.confirm_destroy"),
-            },
-            class: "btn btn-danger" do
-            i.fa-regular.fa-trash-can
+          - if %w(waiting starting running stopping).include?(bulk.status)
+            =<> link_to bulk, class: "btn btn-secondary" do
+              i.fa-solid.fa-rotate-right
+            =<> link_to cancel_bulk_path(bulk),
+              data: { \
+                turbo_method: :put,
+                turbo_confirm: t("messages.confirm_cancel"),
+              },
+              class: "btn btn-warning" do
+              i.fa-solid.fa-ban
+          - else
+            =<> link_to bulk,
+              data: { \
+                turbo_method: :delete,
+                turbo_confirm: t("messages.confirm_destroy"),
+              },
+              class: "btn btn-danger" do
+              i.fa-regular.fa-trash-can
         - else
           = span_value_for(bulk.__send__(col[:name]))

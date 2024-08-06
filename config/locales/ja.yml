@@ -124,6 +124,7 @@ ja:
 
     confirm_destroy: "本当に削除してもよろしいですか？"
     confirm_destroy_name: "「%{name}」を本当に削除してもよろしいですか？"
+    confirm_cancel: "本当に中止してもよろしいですか？"
     confirm_reset: "本当にリセットしてもよろしいですか？"
     confirm_register_bulk: "選択したファイルをアップロードし、一括処理を登録しようとしています。登録された一括処理は即座にジョブに登録され実行されます。よろしいですか？"
     error_prohibited_action:
@@ -789,9 +790,10 @@ ja:
         stopped: 停止
         succeeded: 成功
         failed: 失敗
-        canceled: 中止
+        cancel: 中止
         error: エラー
         timeout: タイムアウト
+        nothing: 何も無し
     bitwises:
       security_hardwares:
         encrypted: 全てのデータを暗号化しています。
