@@ -2,15 +2,21 @@
 module Search
   extend ActiveSupport::Concern
 
-  private def set_search
+  private def set_search(order: nil, condition: nil)
     @query = params[:query]&.to_s
-    if params[:order].present?
-      @order = params.require(:order).permit(search_order_permitted_attributes)
-    end
-    if params[:condition].present?
-      @condition = params.require(:condition)
-        .permit(search_condition_permittied_attributes)
-    end
+    @order =
+      if params[:order].present?
+        @order = params.require(:order).permit(search_order_permitted_attributes)
+      else
+        order
+      end
+    @condition =
+      if params[:condition].present?
+        params.require(:condition)
+          .permit(search_condition_permittied_attributes)
+      else
+        condition
+      end
   end
 
   private def search_and_sort(scope)
@@ -93,7 +99,7 @@ module Search
   private def search_order(order)
     attributes = search_soartable_attributes.to_set
     dirs = ["asc", "desc"]
-    order.to_h.map { |key, value|
+    order.to_h.map do |key, value|
       key = "#{key}_data" unless attributes.include?(key)
       value = value.to_s.downcase
 
@@ -103,7 +109,7 @@ module Search
         logger.warn "spcific key or value is not valid: #{key} #{value}"
         nil
       end
-    }.compact
+    end.compact
   end
 
   def search_attributes_by_type
@@ -112,7 +118,7 @@ module Search
 
   def search_get_attributes_by_type(model = self.class.search_model,
     exclude_association: false)
-    attributes_by_type = model.ransackable_attributes.group_by { |name|
+    attributes_by_type = model.ransackable_attributes.group_by do |name|
       type = model.type_for_attribute(name).type
       if type == :binary && name.end_with?("_data")
         type = [:ipv4, :ipv6].find do |special_type|
@@ -120,7 +126,7 @@ module Search
         end || type
       end
       type
-    }
+    end
 
     unless exclude_association
       model.ransackable_associations.each do |association|

@@ -9,8 +9,8 @@ class BulksController < ApplicationController
 
   # GET /bulks or /bulks.json
   def index
-    set_page
-    set_search
+    set_page(per: 20)
+    set_search(order: {"id" => "desc"})
     @bulks = paginate(search_and_sort(policy_scope(Bulk)).includes(:user))
   end
 
@@ -37,7 +37,7 @@ class BulksController < ApplicationController
       else
         format.html do
           flash.now.alert = t_failure(@bulk, :register)
-          render :index, status: :unprocessable_entity
+          render :new, status: :unprocessable_entity
         end
         format.json { render json: @bulk.errors, status: :unprocessable_entity }
       end

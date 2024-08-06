@@ -14,9 +14,7 @@
           - if col[:sort]
             =< sort_link(col[:sort])
 
-  #bulks
+  = turbo_frame_tag "bulks"
     = render @bulks
 
   = paginate @bulks
-  p
-    = page_entries_info @bulks

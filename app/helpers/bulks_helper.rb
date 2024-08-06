@@ -1,7 +1,7 @@
 module BulksHelper
   BULK_LIST_COLS = [
-    {name: :user,       grid: [0, 0, 0, 1, 1, 1], sort: :user},
-    {name: :target,     grid: [0, 0, 2, 1, 1, 1], sort: :model},
+    {name: :user,       grid: [0, 0, 0, 1, 1, 1], sort: :users_username},
+    {name: :target,     grid: [0, 0, 2, 1, 1, 1], sort: :target},
     {name: :created_at, grid: [5, 5, 4, 4, 2, 2], sort: :created_at},
     {name: :updated_at, grid: [0, 0, 0, 0, 2, 2], sort: :updated_at},
     {name: :status,     grid: [2, 2, 2, 1, 1, 1], sort: :status},

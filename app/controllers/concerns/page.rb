@@ -1,9 +1,9 @@
 module Page
   extend ActiveSupport::Concern
 
-  private def set_page
-    @page = params[:page]&.to_i
-    @per = params[:per]&.to_i
+  private def set_page(page: nil, per: nil)
+    @page = params[:page]&.to_i || page
+    @per = params[:per]&.to_i || per
   end
 
   private def paginate(model)

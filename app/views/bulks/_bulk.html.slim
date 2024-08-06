@@ -5,8 +5,8 @@
         - case col[:name]
         - when :user
           = bulk.user&.username
-        - when :model
-          = t(bulk.model.underscore, scope: "activerecord.models")
+        - when :target
+          = t(bulk.target.underscore, scope: "activerecord.models")
         - when :created_at, :updated_at
           = span_value_for(bulk.__send__(col[:name]), format: :short)
         - when :status
