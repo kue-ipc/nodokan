@@ -138,25 +138,6 @@ class NodesController < ApplicationController
     end
   end
 
-  # GET /nodes/1/copy
-  def copy
-    @original_node = Node.find(params[:id])
-    authorize @original_node
-    @node = Node.new(
-      domain: @original_node.domain,
-      place: @original_node.place,
-      hardware: @original_node.hardware,
-      operating_system: @original_node.operating_system,
-      nics: @original_node.nics.map do |nic|
-        Nic.new(
-          name: nic.name,
-          interface_type: nic.interface_type,
-          network: nic.network,
-          ipv4_config: nic.ipv4_config,
-          ipv6_config: nic.ipv6_config)
-      end)
-  end
-
   # POST /nodes/1/tranfer
   def transfer
     user = User.find_by(username: params[:username])

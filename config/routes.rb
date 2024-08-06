@@ -6,7 +6,6 @@ Rails.application.routes.draw do
 
   resources :nodes do
     member do
-      get "copy"
       post "transfer"
     end
     resource :confirmation, only: [:new, :edit, :create, :update]
