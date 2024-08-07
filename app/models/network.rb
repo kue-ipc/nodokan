@@ -131,6 +131,38 @@ class Network < ApplicationRecord
   end
   alias global? global
 
+  def domain
+    network_domain&.to_s
+  end
+
+  def domain_search
+    network_domain_search&.to_s
+  end
+
+  def ipv4_dns_server
+    network_ipv4_dns_server&.to_s
+  end
+
+  def ipv6_dns_server
+    network_ipv6_dns_server&.to_s
+  end
+
+  def domain=(value)
+    build_network_domain(text: value)
+  end
+
+  def domain_search=(value)
+    # build_network_domain(text: value)
+  end
+
+  def ipv4_dns_server=(value)
+    # build_network_domain(text: value)
+  end
+
+  def ipv6_dns_server=(value)
+    # build_network_domain(text: value)
+  end
+
   # IPv4
 
   def has_ipv4?

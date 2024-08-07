@@ -479,6 +479,10 @@ ja:
         nics_count: NIC数
         assignments_count: 割当数
         nodes: 端末
+        domain: ドメイン名
+        domain_search: ドメイン検索リスト
+        ipv4_dns_server: IPv4 DNSサーバー
+        ipv6_dns_server: IPv6 DNSサーバー
       nic:
         node: 端末
         number: No.
@@ -842,6 +846,7 @@ ja:
     none: (無し)
     empty: (空)
     unlimited: (無制限)
+    inherit: (継承)
 
   errors:
     format: "%{attribute}は%{message}"

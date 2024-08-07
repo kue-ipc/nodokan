@@ -100,7 +100,7 @@ module HtmlHelper
       end
       span_text_tag(str, **opts)
     when ApplicationRecord
-      if policy(value).show?
+      if !opts[:no_link] && policy(value).show?
         link_to(span_text_tag(value.to_s, **opts), value, data: {turbo: false})
       else
         span_text_tag(value.to_s, **opts)

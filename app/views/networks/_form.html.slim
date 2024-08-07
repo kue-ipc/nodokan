@@ -8,6 +8,9 @@
       .row.mb-2
         = f.text_field :name, required: true, wrapper: {class: "col-md-4"}
         = f.number_field :vlan, min: 1, max: 4094, wrapper: {class: "col-md-4"}
+      .row.mb-2
+        = f.text_field :domain, wrapper: {class: "col-md-4"}
+        = f.text_field :domain_search, wrapper: {class: "col-md-8"}
       .row
         .col-md-2
           = f.check_box :auth
@@ -26,6 +29,7 @@
         = f.number_field :ipv4_prefix_length, min: 0, max: 32, prepend: "/",
           wrapper: {class: "col-md-2"}
         = f.text_field :ipv4_gateway_address, wrapper: {class: "col-md-4"}
+        = f.text_field :ipv4_dns_server, wrapper: {class: "col-md-12"}
       h5 = t("forms.network.ipv4_pools.title")
       = turbo_frame_tag "ipv4_pools"
         = f.fields_for :ipv4_pools do |subform|
@@ -45,6 +49,7 @@
         = f.number_field :ipv6_prefix_length, min: 0, max: 128, prepend: "/",
           wrapper: {class: "col-md-2"}
         = f.text_field :ipv6_gateway_address, wrapper: {class: "col-md-4"}
+        = f.text_field :ipv6_dns_server, wrapper: {class: "col-md-12"}
       h5 = t("forms.network.ipv6_pools.title")
       = turbo_frame_tag "ipv6_pools"
         = f.fields_for :ipv6_pools do |subform|
