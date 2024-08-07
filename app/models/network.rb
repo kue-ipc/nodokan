@@ -60,10 +60,7 @@ class Network < ApplicationRecord
       less_than_or_equal_to: 4094,
     }
 
-  validates :domain, allow_nil: true, format: {
-    with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
-    message: I18n.t("errors.messages.domain"),
-  }
+  validates :domain, allow_nil: true, domain: true
 
   validates :ipv4_network_address, allow_blank: true, ipv4_address: true
   validates :ipv4_gateway_address, allow_blank: true, ipv4_address: true
@@ -117,55 +114,14 @@ class Network < ApplicationRecord
 
   after_commit :kea_subnet4, :kea_subnet6
 
-  list_json_data :domain_search,
-    validate: ->(record, attr, str) {
-      if str !~ /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i
-        record.errors.add(attr, I18n.t("errors.messages.domain"))
-      end
-    },
+  list_json_data :domain_search, validate: :domain,
     normalize: ->(str) { str.presence&.strip&.downcase }
-
-  list_json_data :ipv4_dns_servers,
-    validate: ->(record, attr, str) {
-      begin
-        if str !~ /\A\[?\h*:[\h:.]+\]?\z/
-          record.errors.add(attr,
-            I18n.t("errors.messages.invalid_ipv6_address"))
-        elsif !IPAddr.new(str).ipv6?
-          record.errors.add(attr, I18n.t("errors.messages.not_ipv6"))
-        end
-      rescue IPAddr::InvalidAddressError
-        record.errors.add(attr, I18n.t("errors.messages.invalid_ip_address"))
-      end
-    },
-    normalize: ->(str) {
-      begin
-        IPAddr.new(str).to_s
-      rescue IPAddr::InvalidAddressError
-        addr
-      end
-    }
-
-  list_json_data :ipv6_dns_servers,
-    validate: ->(record, attr, str) {
-      begin
-        if str !~ /\A\[?\h*:[\h:.]+\]?\z/
-          record.errors.add(attr,
-            I18n.t("errors.messages.invalid_ipv6_address"))
-        elsif !IPAddr.new(str).ipv6?
-          record.errors.add(attr, I18n.t("errors.messages.not_ipv6"))
-        end
-      rescue IPAddr::InvalidAddressError
-        record.errors.add(attr, I18n.t("errors.messages.invalid_ip_address"))
-      end
-    },
-    normalize: ->(str) {
-      begin
-        IPAddr.new(str).to_s
-      rescue IPAddr::InvalidAddressError
-        addr
-      end
-    }
+  # rubocop: disable Style/RescueModifier
+  list_json_data :ipv4_dns_servers, validate: :ipv4_address,
+    normalize: ->(str) { IPAddr.new(str).to_s rescue str }
+  list_json_data :ipv6_dns_servers, validate: :ipv6_address,
+    normalize: ->(str) { IPAddr.new(str).to_s rescue str }
+  # rubocop: enable Style/RescueModifier
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)

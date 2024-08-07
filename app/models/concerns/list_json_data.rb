@@ -4,16 +4,24 @@ module ListJsonData
   extend ActiveSupport::Concern
 
   class_methods do
-    def list_json_data(name, sep: " ", validate: nil, normalize: nil)
+    def list_json_data(name, sep: " ", validate: nil,
+      normalize: :itself.to_proc)
       data_name = :"#{name}_data"
 
-      if validate
+      case validate
+      when Symbol, String
+        validator = "#{validate.to_s.camelize}Validator".constantize
+          .new(attributes: data_name)
+        validates_each data_name do |record, attr, value|
+          value&.each { |v|
+            validator.validate_each(record, attr, v)
+          }
+        end
+      when Proc, Method
         validates_each data_name do |record, attr, value|
           value&.each { |v| validate.call(record, attr, v) }
         end
       end
-
-      normalizes data_name, with: ->(list) { list&.map(normalize) } if normalize
 
       # MariaDBのjson型はlongtext型にすぎず、文字列を返してしまうため、
       # 文字列であれば、JSONとしてパースする必要がある。
@@ -26,12 +34,12 @@ module ListJsonData
       end
 
       define_method("#{name}=") do |value|
-        __send__("#{data_name}=", split_str(value))
+        __send__("#{data_name}=", split_str(value)&.map(&normalize))
       end
     end
   end
 
-  private def parse_if_str(obj)
+  module_function def parse_if_str(obj)
     return obj unless obj.is_a?(String)
 
     JSON.parse(obj)
@@ -39,7 +47,7 @@ module ListJsonData
     obj
   end
 
-  private def split_str(str)
+  module_function def split_str(str)
     return if str.nil?
 
     str.tr(",;", " ").split

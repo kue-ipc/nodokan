@@ -481,8 +481,8 @@ ja:
         nodes: 端末
         domain: ドメイン名
         domain_search: ドメイン検索リスト
-        ipv4_dns_server: IPv4 DNSサーバー
-        ipv6_dns_server: IPv6 DNSサーバー
+        ipv4_dns_servers: IPv4 DNSサーバー
+        ipv6_dns_servers: IPv6 DNSサーバー
       nic:
         node: 端末
         number: No.

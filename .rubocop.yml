@@ -144,6 +144,7 @@ Style/GlobalStdStream:
   Enabled: false
 
 Style/GuardClause:
+  MinBodyLength: 2
   AllowConsecutiveConditionals: true
 
 Style/HashEachMethods:

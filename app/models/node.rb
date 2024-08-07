@@ -35,14 +35,9 @@ class Node < ApplicationRecord
   has_one :confirmation, dependent: :destroy
 
   validates :name, presence: true
-  validates :hostname, allow_nil: true, format: {
-    with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
-    message: I18n.t("errors.messages.invalid_hostname"),
-  }
-  validates :domain, allow_nil: true, format: {
-    with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
-    message: I18n.t("errors.messages.domain"),
-  }
+  validates :hostname, allow_nil: true, hostname: true
+  validates :domain, allow_nil: true, domain: true
+
   validates :hostname, presence: true,
     uniqueness: {scope: :domain, case_sensitive: true},
     if: ->(node) { node.domain.present? }

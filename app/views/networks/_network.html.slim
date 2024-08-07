@@ -10,13 +10,13 @@
       = span_value_for(value)
       = badge_for(network, :dhcp)
     = dt_dd_for network, :ipv4_gateway
-    = dt_dd_for network, :ipv4_dns_server, no_link: true,
+    = dt_dd_for network, :ipv4_dns_servers, no_link: true,
       blank_alt: t("values.inherit")
     = dt_dd_for network, :ipv6_network do |value|
       = span_value_for(value)
       = badge_for(network, :ra)
     = dt_dd_for network, :ipv6_gateway
-    = dt_dd_for network, :ipv6_dns_server, no_link: true,
+    = dt_dd_for network, :ipv6_dns_servers, no_link: true,
       blank_alt: t("values.inherit")
     = dt_dd_for network, :domain, no_link: true, blank_alt: t("values.inherit")
     = dt_dd_for network, :domain_search, no_link: true,
