@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_07_002643) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_04_165346) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -161,16 +161,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_07_002643) do
     t.datetime "updated_at", null: false
     t.index ["component_id"], name: "index_logical_compositions_on_component_id"
     t.index ["node_id"], name: "index_logical_compositions_on_node_id"
-  end
-
-  create_table "network_options", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.bigint "network_id", null: false
-    t.string "type", null: false
-    t.text "data", size: :long, null: false, collation: "utf8mb4_bin"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["network_id"], name: "index_network_options_on_network_id"
-    t.check_constraint "json_valid(`data`)", name: "data"
   end
 
   create_table "networks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -366,7 +356,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_07_002643) do
   add_foreign_key "ipv6_pools", "networks"
   add_foreign_key "logical_compositions", "nodes"
   add_foreign_key "logical_compositions", "nodes", column: "component_id"
-  add_foreign_key "network_options", "networks"
   add_foreign_key "nics", "networks"
   add_foreign_key "nics", "nodes"
   add_foreign_key "nodes", "hardwares"
