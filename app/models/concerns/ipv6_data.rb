@@ -1,6 +1,6 @@
 module Ipv6Data
   extend ActiveSupport::Concern
-  replace_error(:ipv4_data, :ipv4_address)
+  include ReplaceError
 
   included do
     validates :ipv6_address, allow_blank: true, ipv6_address: true

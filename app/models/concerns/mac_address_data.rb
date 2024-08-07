@@ -4,7 +4,7 @@
 module MacAddressData
   extend ActiveSupport::Concern
   include HexData
-  replace_error(:ipv6_data, :ipv6_address)
+  include ReplaceError
 
   included do
     validates :mac_address, allow_blank: true, mac_address: true
