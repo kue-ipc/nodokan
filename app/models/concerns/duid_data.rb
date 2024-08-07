@@ -1,6 +1,7 @@
 module DuidData
   extend ActiveSupport::Concern
   include HexData
+  include ReplaceError
 
   included do
     validates :duid, allow_blank: true, duid: true
@@ -29,9 +30,6 @@ module DuidData
   end
 
   private def replace_duid_errors
-    errors[:duid_data].each do |msg|
-      errors.add(:duid, msg)
-    end
-    errors.delete(:duid_data)
+    replace_error(:duid_data, :duid)
   end
 end

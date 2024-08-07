@@ -1,6 +1,7 @@
 # rubocop: disable Metrics
 class Network < ApplicationRecord
   include ListJsonData
+  include ReplaceError
 
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
@@ -112,8 +113,6 @@ class Network < ApplicationRecord
 
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
 
-  after_commit :kea_subnet4, :kea_subnet6
-
   list_json_data :domain_search, validate: :domain,
     normalize: ->(str) { str.presence&.strip&.downcase }
   # rubocop: disable Style/RescueModifier
@@ -122,6 +121,10 @@ class Network < ApplicationRecord
   list_json_data :ipv6_dns_servers, validate: :ipv6_address,
     normalize: ->(str) { IPAddr.new(str).to_s rescue str }
   # rubocop: enable Style/RescueModifier
+
+  after_validation :replace_network_errors
+
+  after_commit :kea_subnet4, :kea_subnet6
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
@@ -445,6 +448,17 @@ class Network < ApplicationRecord
       KeaSubnet6DelJob.perform_later(id)
     end
   end
+
+  private def replace_network_errors
+    replace_error(:ipv4_network_data, :ipv4_network_address)
+    replace_error(:ipv4_network, :ipv4_network_address)
+    replace_error(:ipv4_gateway_data, :ipv4_gateway_address)
+    replace_error(:ipv4_gateway, :ipv4_gateway_address)
+    replace_error(:ipv6_network_data, :ipv6_network_address)
+    replace_error(:ipv6_network, :ipv6_network_address)
+    replace_error(:ipv6_gateway_data, :ipv6_gateway_address)
+    replace_error(:ipv6_gateway, :ipv6_gateway_address)
+ end
 
   # class methods
 

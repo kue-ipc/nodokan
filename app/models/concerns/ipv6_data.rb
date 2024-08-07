@@ -1,5 +1,6 @@
 module Ipv6Data
   extend ActiveSupport::Concern
+  replace_error(:ipv4_data, :ipv4_address)
 
   included do
     validates :ipv6_address, allow_blank: true, ipv6_address: true
@@ -30,9 +31,7 @@ module Ipv6Data
   end
 
   private def replace_ipv6_errors
-    errors[:ipv6_data].each do |msg|
-      errors.add(:ipv6_address, msg)
-    end
-    errors.delete(:ipv6_data)
+    replace_error(:ipv6_data, :ipv6_address)
+    replace_error(:ipv6, :ipv6_address)
   end
 end

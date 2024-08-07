@@ -2,6 +2,7 @@ require "json"
 
 module ListJsonData
   extend ActiveSupport::Concern
+  include ReplaceError
 
   class_methods do
     def list_json_data(name, sep: " ", validate: nil,
@@ -41,10 +42,7 @@ module ListJsonData
       end
 
       define_method(:"replace_#{name}_errors") do
-        errors[data_name].each do |msg|
-          errors.add(name, msg)
-        end
-        errors.delete(data_name)
+        replace_error(data_name, name)
       end
     end
   end

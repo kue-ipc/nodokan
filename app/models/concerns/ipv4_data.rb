@@ -1,5 +1,6 @@
 module Ipv4Data
   extend ActiveSupport::Concern
+  include ReplaceError
 
   included do
     validates :ipv4_address, allow_blank: true, ipv4_address: true
@@ -30,9 +31,7 @@ module Ipv4Data
   end
 
   private def replace_ipv4_errors
-    errors[:ipv4_data].each do |msg|
-      errors.add(:ipv4_address, msg)
-    end
-    errors.delete(:ipv4_data)
+    replace_error(:ipv4_data, :ipv4_address)
+    replace_error(:ipv4, :ipv4_address)
   end
 end
