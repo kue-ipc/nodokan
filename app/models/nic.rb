@@ -61,8 +61,9 @@ class Nic < ApplicationRecord
   normalizes :name, with: ->(str) { str.presence&.strip }
 
   before_validation :auto_assign_ipv4, :auto_assign_ipv6
-  after_validation :replace_errors
+
   before_save :clear_auth_without_network
+
   after_commit :radius_mac, :kea_reservation4, :kea_reservation6,
     unless: :skip_after_job?
 
@@ -203,18 +204,6 @@ class Nic < ApplicationRecord
     end
     format_str = [[hex] * list.size].join(sep || "")
     format_str % list
-  end
-
-  private def replace_errors
-    errors[:mac_address_data].each do |msg|
-      errors.add(:mac_address, msg)
-    end
-    errors[:ipv4_data].each do |msg|
-      errors.add(:ipv4_address, msg)
-    end
-    errors[:ipv6_data].each do |msg|
-      errors.add(:ipv6_address, msg)
-    end
   end
 
   private def clear_auth_without_network

@@ -7,6 +7,7 @@ module MacAddressData
 
   included do
     validates :mac_address, allow_blank: true, mac_address: true
+    after_validation :replace_mac_address_errors
   end
 
   def has_mac_address? # rubocop: disable Naming/PredicateName
@@ -65,5 +66,12 @@ module MacAddressData
 
   def modified_eui64(**opts)
     self.class.hex_list_to_str(modified_eui64_list, **opts)
+  end
+
+  private def replace_mac_address_errors
+    errors[:mac_address_data].each do |msg|
+      errors.add(:mac_address, msg)
+    end
+    errors.delete(:mac_address_data)
   end
 end

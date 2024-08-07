@@ -3,6 +3,7 @@ module Ipv6Data
 
   included do
     validates :ipv6_address, allow_blank: true, ipv6_address: true
+    after_validation :replace_ipv6_errors
   end
 
   # ipv6 ... IPAddr allow nil
@@ -26,5 +27,12 @@ module Ipv6Data
 
   def ipv6_address=(value)
     self.ipv6 = value.presence && IPAddr.new(value)
+  end
+
+  private def replace_ipv6_errors
+    errors[:ipv6_data].each do |msg|
+      errors.add(:ipv6_address, msg)
+    end
+    errors.delete(:ipv6_data)
   end
 end
