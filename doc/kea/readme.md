@@ -56,6 +56,13 @@ ntp
 tftp host, boot
 next-server
 
+network_option
+
+domain
+domain_search
+dns_servers
+wpad
+
 
 
 DHCP4

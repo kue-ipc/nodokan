@@ -1,0 +1,2 @@
+class NetworkDomain < NetworkOption
+end

@@ -1,0 +1,2 @@
+class NetworkDomainSearch < NetworkOption
+end
