@@ -1,6 +1,6 @@
 # rubocop: disable Metrics
 class Network < ApplicationRecord
-  include JsonData
+  include ListJsonData
 
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
@@ -60,6 +60,11 @@ class Network < ApplicationRecord
       less_than_or_equal_to: 4094,
     }
 
+  validates :domain, allow_nil: true, format: {
+    with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
+    message: I18n.t("errors.messages.domain"),
+  }
+
   validates :ipv4_network_address, allow_blank: true, ipv4_address: true
   validates :ipv4_gateway_address, allow_blank: true, ipv4_address: true
   validates :ipv6_network_address, allow_blank: true, ipv6_address: true
@@ -108,11 +113,59 @@ class Network < ApplicationRecord
     end
   end
 
+  normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
+
   after_commit :kea_subnet4, :kea_subnet6
 
-  json_data :domain_search
-  json_data :ipv4_dns_servers
-  json_data :ipv6_dns_servers
+  list_json_data :domain_search,
+    validate: ->(record, attr, str) {
+      if str !~ /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i
+        record.errors.add(attr, I18n.t("errors.messages.domain"))
+      end
+    },
+    normalize: ->(str) { str.presence&.strip&.downcase }
+
+  list_json_data :ipv4_dns_servers,
+    validate: ->(record, attr, str) {
+      begin
+        if str !~ /\A\[?\h*:[\h:.]+\]?\z/
+          record.errors.add(attr,
+            I18n.t("errors.messages.invalid_ipv6_address"))
+        elsif !IPAddr.new(str).ipv6?
+          record.errors.add(attr, I18n.t("errors.messages.not_ipv6"))
+        end
+      rescue IPAddr::InvalidAddressError
+        record.errors.add(attr, I18n.t("errors.messages.invalid_ip_address"))
+      end
+    },
+    normalize: ->(str) {
+      begin
+        IPAddr.new(str).to_s
+      rescue IPAddr::InvalidAddressError
+        addr
+      end
+    }
+
+  list_json_data :ipv6_dns_servers,
+    validate: ->(record, attr, str) {
+      begin
+        if str !~ /\A\[?\h*:[\h:.]+\]?\z/
+          record.errors.add(attr,
+            I18n.t("errors.messages.invalid_ipv6_address"))
+        elsif !IPAddr.new(str).ipv6?
+          record.errors.add(attr, I18n.t("errors.messages.not_ipv6"))
+        end
+      rescue IPAddr::InvalidAddressError
+        record.errors.add(attr, I18n.t("errors.messages.invalid_ip_address"))
+      end
+    },
+    normalize: ->(str) {
+      begin
+        IPAddr.new(str).to_s
+      rescue IPAddr::InvalidAddressError
+        addr
+      end
+    }
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)

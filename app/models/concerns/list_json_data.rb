@@ -1,11 +1,19 @@
 require "json"
 
-module JsonData
+module ListJsonData
   extend ActiveSupport::Concern
 
   class_methods do
-    def json_data(name, sep: " ")
+    def list_json_data(name, sep: " ", validate: nil, normalize: nil)
       data_name = :"#{name}_data"
+
+      if validate
+        validates_each data_name do |record, attr, value|
+          value&.each { |v| validate.call(record, attr, v) }
+        end
+      end
+
+      normalizes data_name, with: ->(list) { list&.map(normalize) } if normalize
 
       # MariaDBのjson型はlongtext型にすぎず、文字列を返してしまうため、
       # 文字列であれば、JSONとしてパースする必要がある。

@@ -890,6 +890,8 @@ ja:
       inclusion: 設定できる値の一覧にありません。
       invalid: 不正な値です。
       no_free: "%{name}の空きがありません。"
+      invalid_hostname: "英数字と「-」のみが使えます。"
+      invalid_domain: "英数字と「-」のみを「.」で区切ってください。"
       invalid_ip_address: IPアドレスの形式ではありません
       invalid_ipv4_address: IPv4アドレスの形式ではありません
       invalid_ipv6_address: IPv6アドレスの形式ではありません

@@ -37,9 +37,11 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :hostname, allow_nil: true, format: {
     with: /\A(?!-)[0-9a-z-]+(?<!-)\z/i,
+    message: I18n.t("errors.messages.invalid_hostname"),
   }
   validates :domain, allow_nil: true, format: {
     with: /\A(?<name>(?!-)[0-9a-z-]+(?<!-))(?:\.\g<name>)*\z/i,
+    message: I18n.t("errors.messages.domain"),
   }
   validates :hostname, presence: true,
     uniqueness: {scope: :domain, case_sensitive: true},
