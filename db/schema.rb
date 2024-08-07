@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_04_165346) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_07_020818) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -183,10 +183,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_04_165346) do
     t.datetime "updated_at", null: false
     t.integer "ra", default: -1, null: false
     t.string "domain"
+    t.text "domain_search_data", size: :long, collation: "utf8mb4_bin"
+    t.text "ipv4_dns_servers_data", size: :long, collation: "utf8mb4_bin"
+    t.text "ipv6_dns_servers_data", size: :long, collation: "utf8mb4_bin"
     t.index ["ipv4_network_data"], name: "index_networks_on_ipv4_network_data", unique: true
     t.index ["ipv6_network_data"], name: "index_networks_on_ipv6_network_data", unique: true
     t.index ["name"], name: "index_networks_on_name", unique: true
     t.index ["vlan"], name: "index_networks_on_vlan", unique: true
+    t.check_constraint "json_valid(`domain_search_data`)", name: "domain_search_data"
+    t.check_constraint "json_valid(`ipv4_dns_servers_data`)", name: "ipv4_dns_servers_data"
+    t.check_constraint "json_valid(`ipv6_dns_servers_data`)", name: "ipv6_dns_servers_data"
   end
 
   create_table "nics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|

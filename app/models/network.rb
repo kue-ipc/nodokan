@@ -1,5 +1,7 @@
 # rubocop: disable Metrics
 class Network < ApplicationRecord
+  include JsonData
+
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
   FLAGS = {
@@ -49,11 +51,6 @@ class Network < ApplicationRecord
   has_many :auth_users, through: :auth_assignments, source: :user
   has_many :use_users, through: :use_assignments, source: :user
   has_many :manage_users, through: :manage_assignments, source: :user
-
-  has_one :network_domain, dependent: :destroy
-  has_one :network_domain_search, dependent: :destroy
-  has_one :network_ipv4_dns_server, dependent: :destroy
-  has_one :network_ipv6_dns_server, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,
@@ -113,6 +110,10 @@ class Network < ApplicationRecord
 
   after_commit :kea_subnet4, :kea_subnet6
 
+  json_data :domain_search
+  json_data :ipv4_dns_servers
+  json_data :ipv6_dns_servers
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(name vlan ipv4_network_data ipv6_network_data auth nics_count
@@ -131,43 +132,13 @@ class Network < ApplicationRecord
   end
   alias global? global
 
-  def domain
-    network_domain&.to_s
-  end
-
-  def domain_search
-    network_domain_search&.to_s
-  end
-
-  def ipv4_dns_server
-    network_ipv4_dns_server&.to_s
-  end
-
-  def ipv6_dns_server
-    network_ipv6_dns_server&.to_s
-  end
-
-  def domain=(value)
-    build_network_domain(text: value)
-  end
-
-  def domain_search=(value)
-    # build_network_domain(text: value)
-  end
-
-  def ipv4_dns_server=(value)
-    # build_network_domain(text: value)
-  end
-
-  def ipv6_dns_server=(value)
-    # build_network_domain(text: value)
-  end
-
   # IPv4
 
+  # rubocop: disable Naming/PredicateName
   def has_ipv4?
     ipv4_network_data.present?
   end
+  # rubocop: enable Naming/PredicateName
 
   def dhcpv4?
     dhcp
@@ -254,9 +225,11 @@ class Network < ApplicationRecord
 
   # Ipv6
 
+  # rubocop: disable Naming/PredicateName
   def has_ipv6?
     ipv6_network_data.present?
   end
+  # rubocop: enable Naming/PredicateName
 
   def dhcpv6?
     ["managed", "assist", "stateless"].include?(ra)
