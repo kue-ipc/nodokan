@@ -7,6 +7,8 @@ module JsonData
     def json_data(name, sep: " ")
       data_name = :"#{name}_data"
 
+      # MariaDBのjson型はlongtext型にすぎず、文字列を返してしまうため、
+      # 文字列であれば、JSONとしてパースする必要がある。
       define_method(data_name) do
         parse_if_str(self[data_name])
       end
