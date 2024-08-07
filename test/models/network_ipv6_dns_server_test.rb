@@ -1,6 +1,6 @@
 require "test_helper"
 
-class NetworkIpv4DnTest < ActiveSupport::TestCase
+class NetworkIpv6DnsServerTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -50,6 +50,11 @@ class Network < ApplicationRecord
   has_many :use_users, through: :use_assignments, source: :user
   has_many :manage_users, through: :manage_assignments, source: :user
 
+  has_one :network_domain, dependent: :destroy
+  has_one :network_domain_search, dependent: :destroy
+  has_one :network_ipv4_dns_server, dependent: :destroy
+  has_one :network_ipv6_dns_server, dependent: :destroy
+
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,
     numericality: {
