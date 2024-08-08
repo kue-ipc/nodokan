@@ -231,7 +231,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
       post networks_url, params: {network: {
         name: "name",
         ipv4_network_address: "10.10.10.0",
+        ipv4_prefix_length: 24,
         ipv6_network_address: "fd01:1::",
+        ipv6_prefix_length: 64,
       }}
     end
     assert_redirected_to network_url(Network.last)
