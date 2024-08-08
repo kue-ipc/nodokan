@@ -17,11 +17,11 @@ module Kea
     end
 
     def self.global
-      find_by(name: "global")
+      find_by(scope_name: "global")
     end
 
     def self.subnet
-      find_by(name: "subnet")
+      find_by(scope_name: "subnet")
     end
   end
 end

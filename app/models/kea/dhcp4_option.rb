@@ -137,6 +137,14 @@ module Kea
       option.name
     end
 
+    def data
+      if formatted_value
+        OPTIONS_CODE_MAP[code]&.from_formatted_value(formatted_value)
+      elsif value
+        OPTIONS_CODE_MAP[code]&.to_formatted_value(value)
+      end
+    end
+
     def data=(value)
       self.formatted_value = OPTIONS_CODE_MAP[code]&.to_formatted_value(value)
     end
