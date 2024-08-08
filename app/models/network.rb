@@ -125,8 +125,8 @@ class Network < ApplicationRecord
     normalize: ->(str) { IPAddr.new(str).to_s rescue str }
   # rubocop: enable Style/RescueModifier
 
-  ip_data :ipv4_gateway, version: 4, allow_nil: true
-  ip_data :ipv6_gateway, version: 6, allow_nil: true
+  ipv4_data :ipv4_gateway, allow_nil: true
+  ipv6_data :ipv6_gateway, allow_nil: true
 
   after_validation :replace_network_errors
 
@@ -162,27 +162,21 @@ class Network < ApplicationRecord
     dhcp
   end
 
-  # network with prefix
+  # network with prefix, so can not use ipv4_data
   def ipv4_network
-    ipv4_network_data &&
-      IPAddr.new_ntoh(ipv4_network_data).mask(ipv4_prefix_length)
+    ipv4_network_data&.then do |data|
+      IPAddr.new_ntoh(data).mask(ipv4_prefix_length)
+    end
   end
 
   def ipv4_network=(value)
-    case value
-    when IPAddr
-      self.ipv4_network_data = value&.hton
-      self.ipv4_prefix_length = value&.prefix || 0
-    when %r{/}
-      self.ipv4_network_cidr = value
-    else
-      self.ipv4_network_address = value
-    end
+    self.ipv4_network_data = value&.hton
+    self.ipv4_prefix_length = value&.prefix || 0
   end
 
   attribute :ipv4_network_address, :string
   def ipv4_network_address
-    ipv4_network&.to_s || @ipv4_network_address
+    @ipv4_network_address ||= ipv4_network&.to_s
   end
 
   def ipv4_network_address=(value)
@@ -209,7 +203,7 @@ class Network < ApplicationRecord
   def ipv4_network_cidr=(value)
     address, length = value.split("/", 2)
     self.ipv4_network_address = address
-    self.ipv4_prefix_length = length.to_i
+    self.ipv4_prefix_length = length
   end
 
   # address/netmask
@@ -235,32 +229,26 @@ class Network < ApplicationRecord
 
   # network with prefix
   def ipv6_network
-    ipv6_network_data &&
-      IPAddr.new_ntoh(ipv6_network_data).mask(ipv6_prefix_length)
+    ipv6_network_data&.then do |data|
+      IPAddr.new_ntoh(data).mask(ipv6_prefix_length)
+    end
   end
 
   def ipv6_network=(value)
-    case value
-    when IPAddr
-      self.ipv6_network_data = value&.hton
-      self.ipv6_prefix_length = value&.prefix || 0
-    when %r{/}
-      self.ipv6_network_cidr = value
-    else
-      self.ipv6_network_address = value
-    end
+    self.ipv6_network_data = value&.hton
+    self.ipv6_prefix_length = value&.prefix || 0
   end
 
   attribute :ipv6_network_address, :string
   def ipv6_network_address
-    ipv6_network&.to_s || @ipv6_network_address
+    @ipv6_network_address ||= ipv6_network&.to_s
   end
 
   def ipv6_network_address=(value)
     @ipv6_network_address = value
     self.ipv6_network_data = value.presence && IPAddr.new(value).hton
   rescue IPAddr::InvalidAddressError
-    self.ipv6_network = nil
+    self.ipv6_network_data = nil
   end
 
   # cidr = address/prefix
@@ -271,7 +259,7 @@ class Network < ApplicationRecord
   def ipv6_network_cidr=(value)
     address, length = value.split("/", 2)
     self.ipv6_network_address = address
-    self.ipv6_prefix_length = length.to_i
+    self.ipv6_prefix_length = length
   end
 
   # string

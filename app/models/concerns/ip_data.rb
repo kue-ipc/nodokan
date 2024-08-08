@@ -3,6 +3,14 @@ module IpData
   include ReplaceError
 
   class_methods do
+    def ipv4_data(name, **opts)
+      ip_data(name, **opts, version: 4)
+    end
+
+    def ipv6_data(name, **opts)
+      ip_data(name, **opts, version: 6)
+    end
+
     def ip_data(name, version:, allow_nil: false)
       name = name.intern
 
@@ -27,10 +35,6 @@ module IpData
       after_validation :"replace_#{name}_errors"
 
       attribute :"#{name}_address", :string
-
-      define_method(:"has_#{name}?") do
-        __send__(:"#{name}_data").present?
-      end
 
       define_method(name) do
         instance_variable_get(:"@#{name}") ||
