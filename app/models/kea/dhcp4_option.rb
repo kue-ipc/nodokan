@@ -1,9 +1,11 @@
 module Kea
   class Dhcp4Option < KeaRecord
+    include Kea::DhcpOption
+
     # https://kea.readthedocs.io/en/kea-2.2.0/arm/dhcp4-srv.html#dhcp4-std-options-list
     # name code type array
     # rubocop: disable Layout/LineLength
-    OPTIONS = [
+    dhcp_option [
       ["time-offset", 2, "int32", false],
       ["routers", 3, "ipv4-address", true],
       ["time-servers", 4, "ipv4-address", true],
@@ -103,50 +105,12 @@ module Kea
       ["v4-portparams", 159, "record (uint8, psid)", false],
       ["option-6rd", 212, "record (uint8, uint8, ipv6-address, ipv4-address)", true],
       ["v4-access-domain", 213, "fqdn", false],
-    ].map { |opt| DhcpOptionType.new(*opt) }
-    # rubocop: enable Layout/LineLength
-    OPTIONS_NAME_MAP = OPTIONS.index_by(&:name)
-    OPTIONS_CODE_MAP = OPTIONS.index_by(&:code)
+    ]
 
     self.primary_key = "option_id"
 
     belongs_to :dhcp4_subnet, primary_key: "subnet_id", optional: true
     belongs_to :dhcp_option_scope, primary_key: "scope_id",
       foreign_key: "scope_id", inverse_of: :dhcp4_options
-
-    validates :code, presence: true, numericality: {only_integer: true}
-
-    attribute :name, :string
-    def name
-      return if code.nil?
-
-      OPTIONS_CODE_MAP[code]&.name
-    end
-
-    def name=(value)
-      if value.blank?
-        self.code = nil
-        return
-      end
-
-      normalized_name = value.to_s.downcase.gsub("_", "-")
-      option = OPTIONS_NAME_MAP[normalized_name]
-      raise ArgumentError, "Invalid name: #{value}" if option.nil?
-
-      self.code = option.code
-      option.name
-    end
-
-    def data
-      if formatted_value
-        OPTIONS_CODE_MAP[code]&.from_formatted_value(formatted_value)
-      elsif value
-        OPTIONS_CODE_MAP[code]&.to_formatted_value(value)
-      end
-    end
-
-    def data=(value)
-      self.formatted_value = OPTIONS_CODE_MAP[code]&.to_formatted_value(value)
-    end
   end
 end

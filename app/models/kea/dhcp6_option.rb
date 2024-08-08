@@ -1,9 +1,11 @@
 module Kea
   class Dhcp6Option < KeaRecord
+    include Kea::DhcpOption
+
     # https://kea.readthedocs.io/en/kea-2.2.0/arm/dhcp6-srv.html#standard-dhcpv6-options
     # name code type array
     # rubocop: disable Layout/LineLength
-    OPTIONS = [
+    dhcp_option [
       ["preference", 7, "uint8", false],
       ["unicast", 12, "ipv6-address", false],
       ["sip-server-dns", 21, "fqdn", true],
@@ -60,42 +62,12 @@ module Kea
       ["s46-cont-lw", 96, "empty", false],
       ["v6-captive-portal", 103, "string", false],
       ["ipv6-address-andsf", 143, "ipv6-address", true],
-    ].map { |opt| DhcpOptionType.new(*opt) }
-    # rubocop: enable Layout/LineLength
-    OPTIONS_NAME_MAP = OPTIONS.index_by(&:name)
-    OPTIONS_CODE_MAP = OPTIONS.index_by(&:code)
+    ]
 
     self.primary_key = "option_id"
 
     belongs_to :dhcp6_subnet, primary_key: "subnet_id", optional: true
     belongs_to :dhcp_option_scope, primary_key: "scope_id",
       foreign_key: "scope_id", inverse_of: :dhcp6_options
-
-    validates :code, presence: true, numericality: {only_integer: true}
-
-    attribute :name, :string
-    def name
-      return if code.nil?
-
-      OPTIONS_CODE_MAP[code]&.name
-    end
-
-    def name=(value)
-      if value.blank?
-        self.code = nil
-        return
-      end
-
-      normalized_name = value.to_s.downcase.gsub("_", "-")
-      option = OPTIONS_NAME_MAP[normalized_name]
-      raise ArgumentError, "Invalid name: #{value}" if option.nil?
-
-      self.code = option.code
-      option.name
-    end
-
-    def data=(value)
-      self.formatted_value = OPTIONS_CODE_MAP[code]&.to_formatted_value(value)
-    end
   end
 end
