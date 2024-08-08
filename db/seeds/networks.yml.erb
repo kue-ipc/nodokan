@@ -1,3 +1,12 @@
+- name: '全体設定'
+  dhcp: true
+  ipv4_network_address: '0.0.0.0'
+  ipv4_netmask: '0.0.0.0'
+  ra: stateless
+  ipv6_network_address: '::'
+  ipv6_prefix_length: 0
+  note: DHCPの設定を行う
+
 - name: 'サーバー'
   vlan: 101
   auth: false

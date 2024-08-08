@@ -1,6 +1,7 @@
 # rubocop: disable Metrics
 class Network < ApplicationRecord
   include ListJsonData
+  include IpData
   include ReplaceError
 
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
@@ -124,6 +125,9 @@ class Network < ApplicationRecord
     normalize: ->(str) { IPAddr.new(str).to_s rescue str }
   # rubocop: enable Style/RescueModifier
 
+  ip_data :ipv4_gateway, version: 4, allow_nil: true
+  ip_data :ipv6_gateway, version: 6, allow_nil: true
+
   after_validation :replace_network_errors
 
   after_commit :kea_subnet4, :kea_subnet6
@@ -213,30 +217,6 @@ class Network < ApplicationRecord
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
   end
 
-  def ipv4_gateway
-    ipv4_gateway_data && IPAddr.new_ntoh(ipv4_gateway_data)
-  end
-
-  def ipv4_gateway=(value)
-    if value.is_a?(IPAddr)
-      self.ipv4_gateway_data = value&.hton
-    else
-      self.ipv4_gateway_address = value
-    end
-  end
-
-  attribute :ipv4_gateway_address, :string
-  def ipv4_gateway_address
-    ipv4_gateway&.to_s || @ipv4_gateway_address
-  end
-
-  def ipv4_gateway_address=(value)
-    @ipv4_gateway_address = value
-    self.ipv4_gateway = value.presence && IPAddr.new(value)
-  rescue IPAddr::InvalidAddressError
-    self.ipv4_gateway = nil
-  end
-
   # Ipv6
 
   # rubocop: disable Naming/PredicateName
@@ -292,30 +272,6 @@ class Network < ApplicationRecord
     address, length = value.split("/", 2)
     self.ipv6_network_address = address
     self.ipv6_prefix_length = length.to_i
-  end
-
-  def ipv6_gateway
-    ipv6_gateway_data && IPAddr.new_ntoh(ipv6_gateway_data)
-  end
-
-  def ipv6_gateway=(value)
-    if value.is_a?(IPAddr)
-      self.ipv6_gateway_data = value&.hton
-    else
-      self.ipv6_gateway_address = value
-    end
-  end
-
-  attribute :ipv6_gateway_address, :string
-  def ipv6_gateway_address
-    ipv6_gateway&.to_s || @ipv6_gateway_address
-  end
-
-  def ipv6_gateway_address=(value)
-    @ipv6_gateway_address = value
-    self.ipv6_gateway = value.presence && IPAddr.new(value)
-  rescue IPAddr::InvalidAddressError
-    self.ipv6_gateway = nil
   end
 
   # string
@@ -432,7 +388,19 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet4
-    if !destroyed? && has_ipv4? && dhcpv4?
+    if ipv4_network&.to_i&.zero?
+      options =
+        if !destroyed? && dhcpv4?
+          {
+            domain_name_servers: ipv4_dns_servers_data,
+            domain_name: domain,
+            domain_search: domain_search_data,
+          }.compact_blank
+        else
+          {}
+        end
+      KeaDhcp4OptionJob.perform_later(options)
+    elsif !destroyed? && has_ipv4? && dhcpv4?
       options = {
         routers: ipv4_gateway,
         domain_name_servers: ipv4_dns_servers_data,
@@ -447,7 +415,18 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet6
-    if !destroyed? && has_ipv6? && dhcpv6?
+    if ipv6_network&.to_i&.zero?
+      options =
+        if !destroyed? && dhcpv6?
+          {
+            dns_servers: ipv6_dns_servers_data,
+            domain_search: [domain, *domain_search_data].compact_blank,
+          }.compact_blank
+        else
+          {}
+        end
+      KeaDhcp6OptionJob.perform_later(options)
+    elsif !destroyed? && has_ipv6? && dhcpv6?
       options = {
         dns_servers: ipv6_dns_servers_data,
         domain_search: [domain, *domain_search_data].compact_blank,
