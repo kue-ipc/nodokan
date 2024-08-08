@@ -106,9 +106,11 @@ class Network < ApplicationRecord
 
   validates_each :ipv6_gateway do |record, attr, value|
     # IPv6では全てのアドレスもホストに設定可能
+    # rubocop: disable Rails/NegateInclude
     if value && record.has_ipv6? && !record.ipv6_network.include?(value)
       record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
     end
+    # rubocop: enable Rails/NegateInclude
   end
 
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }

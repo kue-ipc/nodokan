@@ -57,7 +57,7 @@ module ImportExport
       PaperTrail.request(whodunnit: @user&.email) do
         CSV.new(data, headers: :first_row, **opts).each_with_index do |row, idx|
           import_row(row)
-        rescue Pundit::NotAuthorizedError => e
+        rescue Pundit::NotAuthorizedError
           row["[result]"] = :failed
           row["[message]"] = I18n.t("messages.forbidden_action",
             model: record.model_name.human,

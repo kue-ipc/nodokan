@@ -152,9 +152,9 @@ class Node < ApplicationRecord
   def identifier
     if domain.present?
       "@#{fqdn}"
-    elsif (nic = nics.find { |nic| nic.has_ipv4? })
+    elsif (nic = nics.find(&:has_ipv4?))
       "i#{nic.ipv4_address}"
-    elsif (nic = nics.find { |nic| nic.has_ivp6? })
+    elsif (nic = nics.find(&:has_ivp6?))
       "k#{nic.ipv6_address}"
     else
       "##{id}"

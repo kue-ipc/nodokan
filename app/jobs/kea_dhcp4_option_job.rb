@@ -22,9 +22,7 @@ class KeaDhcp4OptionJob < ApplicationJob
       end
 
       # 残りのオプションは削除
-      current_options.each_value do |option|
-        option.destroy!
-      end
+      current_options.each_value(&:destroy!)
     end
   end
 end

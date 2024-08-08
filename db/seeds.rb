@@ -1,3 +1,4 @@
+# rubocop: disable Ralis/Output, Ralis/TimeZone
 def create_entities(model_class)
   return unless model_class.count.zero?
 
@@ -42,6 +43,7 @@ def create_entities(model_class)
   puts end_msg
   Rails.logger.info("db:seed") { end_msg }
 end
+# rubocop: enable Ralis/Output, Ralis/TimeZone
 
 create_entities(DeviceType)
 # create_entities(Hardware)
