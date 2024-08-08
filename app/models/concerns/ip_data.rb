@@ -59,6 +59,17 @@ module IpData
         __send__(:"#{name}=", nil)
       end
 
+      define_method(:"#{name}_global?") do
+        if version == 4
+          __send__(name)&.then do |ip|
+            !ip.loopback? && !ip.link_local? && !ip.private? &&
+              (1...240).cover?(ip.to_i >> 24) # 1.0.0.0 <= ip < 240.0.0.0
+          end
+        else
+          __send__(name)&.then { |ip| ip.to_i >> 125 == 1 } # 2000::/3
+        end
+      end
+
       define_method(:"replace_#{name}_errors") do
         replace_error(:"#{name}_data", :"#{name}_address")
         replace_error(name, :"#{name}_address")

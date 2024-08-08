@@ -15,7 +15,7 @@ class KeaSubnetCheckAllJob < ApplicationJob
       .where(dhcp: true)
       .find_each do |network|
         subnet_ip = subnet_hash.delete(network.id)
-        if network.ipv4_network != subnet_ip
+        if network.ipv4_network_prefix != subnet_ip
           logger.warn "IPv4 subnet is defferent for Network##{network.id}"
           network.kea_subnet4
         end
@@ -36,7 +36,7 @@ class KeaSubnetCheckAllJob < ApplicationJob
       .where(ra: ["managed", "assist"])
       .find_each do |network|
       subnet_ip = subnet_hash.delete(network.id)
-      if network.ipv6_network != subnet_ip
+      if network.ipv6_network_prefix != subnet_ip
         logger.warn "IPv6 subnet is defferent for Network##{network.id}"
         network.kea_subnet6
       end

@@ -31,8 +31,8 @@
           - [:auth, :dhcp, :locked, :specific, :global, :ra].each do |attr|
             = badge_for(network, attr)
         .col-1 = network.vlan
-        .col-2 = span_value_for(network.ipv4_network, hide_blank: true)
-        .col-2 = span_value_for(network.ipv6_network, hide_blank: true)
+        .col-2 = span_value_for(network.ipv4_network_prefix, hide_blank: true)
+        .col-2 = span_value_for(network.ipv6_network_prefix, hide_blank: true)
         .col-1 = network.nics_count
         .col-1 = network.assignments_count
 

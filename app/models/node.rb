@@ -68,7 +68,7 @@ class Node < ApplicationRecord
       value = IPAddr.new(m[:value])
       if value.ipv4?
         Nic.find_by(ipv4_data: value.hton)&.node
-      elsif value.ivp6?
+      elsif value.ipv6?
         Nic.find_by(ipv6_data: value.hton)&.node
       else
         raise ArgumentError, "Unknown ip version #{str.inspect}"
@@ -154,7 +154,7 @@ class Node < ApplicationRecord
       "@#{fqdn}"
     elsif (nic = nics.find(&:has_ipv4?))
       "i#{nic.ipv4_address}"
-    elsif (nic = nics.find(&:has_ivp6?))
+    elsif (nic = nics.find(&:has_ipv6?))
       "k#{nic.ipv6_address}"
     else
       "##{id}"

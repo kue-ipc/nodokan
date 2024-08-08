@@ -15,7 +15,7 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
       perform_enqueued_jobs do
         KeaSubnet6AddJob.perform_later(
           @network.id,
-          @network.ipv6_network,
+          @network.ipv6_network_prefix,
           {},
           @network.ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
       end
@@ -33,7 +33,7 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
     perform_enqueued_jobs do
       KeaSubnet6AddJob.perform_later(
         @network.id,
-        @network.ipv6_network,
+        @network.ipv6_network_prefix,
         {},
         @network.ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
     end

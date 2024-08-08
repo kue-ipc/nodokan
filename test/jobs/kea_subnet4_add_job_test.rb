@@ -15,7 +15,7 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
       perform_enqueued_jobs do
         KeaSubnet4AddJob.perform_later(
           @network.id,
-          @network.ipv4_network,
+          @network.ipv4_network_prefix,
           {routers: @network.ipv4_gateway},
           @network.ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
       end
@@ -33,7 +33,7 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
     perform_enqueued_jobs do
       KeaSubnet4AddJob.perform_later(
         @network.id,
-        @network.ipv4_network,
+        @network.ipv4_network_prefix,
         {routers: @network.ipv4_gateway},
         @network.ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
     end

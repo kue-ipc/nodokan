@@ -465,6 +465,8 @@ ja:
         note: 備考
         ipv4_network: IPv4ネットワーク
         ipv6_network: IPv6ネットワーク
+        ipv4_network_prefix: IPv4ネットワーク
+        ipv6_network_prefix: IPv6ネットワーク
         config: 設定
         network: ネットワーク
         network_address: ネットワークアドレス

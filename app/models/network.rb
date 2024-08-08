@@ -94,24 +94,20 @@ class Network < ApplicationRecord
 
   validates_each :ipv4_gateway do |record, attr, value|
     if value && record.has_ipv4?
-      network_range = record.ipv4_network.to_range
-      if !network_range.cover?(value)
+      if !record.ipv4_include?(value)
         record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
-      elsif network_range.begin == value
+      elsif value == record.ipv4_network
         record.errors.add(attr, I18n.t("errors.messages.network_address"))
-      elsif network_range.end == value
+      elsif value == record.ipv4_broadcast
         record.errors.add(attr, I18n.t("errors.messages.broadcast_address"))
       end
     end
   end
 
   validates_each :ipv6_gateway do |record, attr, value|
-    # IPv6では全てのアドレスもホストに設定可能
-    # rubocop: disable Rails/NegateInclude
-    if value && record.has_ipv6? && !record.ipv6_network.include?(value)
+    if value && record.has_ipv6? && !record.ipv6_include?(value)
       record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
     end
-    # rubocop: enable Rails/NegateInclude
   end
 
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
@@ -125,7 +121,9 @@ class Network < ApplicationRecord
     normalize: ->(str) { IPAddr.new(str).to_s rescue str }
   # rubocop: enable Style/RescueModifier
 
+  ipv4_data :ipv4_network, allow_nil: true
   ipv4_data :ipv4_gateway, allow_nil: true
+  ipv6_data :ipv6_network, allow_nil: true
   ipv6_data :ipv6_gateway, allow_nil: true
 
   after_validation :replace_network_errors
@@ -145,8 +143,7 @@ class Network < ApplicationRecord
 
   attribute :global, :boolean
   def global
-    (ipv4_network_data.present? && !ipv4_network.private?) ||
-      (ipv6_network_data.present? && !ipv6_network.private?)
+    ipv4_network_global? || ipv6_network_global?
   end
   alias global? global
 
@@ -162,53 +159,48 @@ class Network < ApplicationRecord
     dhcp
   end
 
-  # network with prefix, so can not use ipv4_data
-  def ipv4_network
-    ipv4_network_data&.then do |data|
-      IPAddr.new_ntoh(data).mask(ipv4_prefix_length)
-    end
+  # network with prefix
+  def ipv4_network_prefix
+    ipv4_network&.mask(ipv4_prefix_length)
   end
 
-  def ipv4_network=(value)
+  def ipv4_network_prefix=(value)
     self.ipv4_network_data = value&.hton
     self.ipv4_prefix_length = value&.prefix || 0
   end
 
-  attribute :ipv4_network_address, :string
-  def ipv4_network_address
-    @ipv4_network_address ||= ipv4_network&.to_s
-  end
-
-  def ipv4_network_address=(value)
-    @ipv4_network_address = value
-    self.ipv4_network_data = value.presence && IPAddr.new(value).hton
-  rescue IPAddr::InvalidAddressError
-    self.ipv4_network_data = nil
-  end
-
-  def ipv4_netmask
-    ipv4_prefix_length && IPAddr.new("0.0.0.0").mask(ipv4_prefix_length).netmask
-  end
-
-  def ipv4_netmask=(value)
-    self.ipv4_prefix_length =
-      value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
-  end
-
   # cdir = address/prefix
   def ipv4_network_cidr
-    ipv4_network_data && "#{ipv4_network_address}/#{ipv4_prefix_length}"
+    @ipv4_network_cidr ||= ipv4_network_prefix&.then do |ip|
+      "#{ip}/#{ip.prefix}"
+    end
   end
 
   def ipv4_network_cidr=(value)
-    address, length = value.split("/", 2)
-    self.ipv4_network_address = address
-    self.ipv4_prefix_length = length
+    @ipv4_network_cidr = value
+    self.ipv4_network_prefix = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv4_network_prefix = nil
+  end
+
+  def ipv4_netmask
+    @ipv4_netmask ||=
+      ipv4_prefix_length&.then(&IPAddr.new("0.0.0.0").method(:mask))&.netmask
+  end
+
+  def ipv4_netmask=(value)
+    @ipv4_netmask = value
+    self.ipv4_prefix_length =
+      value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
   end
 
   # address/netmask
   def ipv4_network_address_netmask
     ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
+  end
+
+  def ipv4_broadcast
+    ipv4_network_prefix&.to_range&.end
   end
 
   # Ipv6
@@ -228,38 +220,27 @@ class Network < ApplicationRecord
   end
 
   # network with prefix
-  def ipv6_network
-    ipv6_network_data&.then do |data|
-      IPAddr.new_ntoh(data).mask(ipv6_prefix_length)
-    end
+  def ipv6_network_prefix
+    ipv6_network&.mask(ipv6_prefix_length)
   end
 
-  def ipv6_network=(value)
+  def ipv6_network_prefix=(value)
     self.ipv6_network_data = value&.hton
     self.ipv6_prefix_length = value&.prefix || 0
   end
 
-  attribute :ipv6_network_address, :string
-  def ipv6_network_address
-    @ipv6_network_address ||= ipv6_network&.to_s
-  end
-
-  def ipv6_network_address=(value)
-    @ipv6_network_address = value
-    self.ipv6_network_data = value.presence && IPAddr.new(value).hton
-  rescue IPAddr::InvalidAddressError
-    self.ipv6_network_data = nil
-  end
-
   # cidr = address/prefix
   def ipv6_network_cidr
-    ipv6_network_data && "#{ipv6_network_address}/#{ipv6_prefix_length}"
+    @ipv6_network_cidr ||= ipv6_network_prefix&.then do |ip|
+      "#{ip}/#{ip.prefix}"
+    end
   end
 
   def ipv6_network_cidr=(value)
-    address, length = value.split("/", 2)
-    self.ipv6_network_address = address
-    self.ipv6_prefix_length = length
+    @ipv6_network_cidr = value
+    self.ipv6_network_prefix = value.presence && IPAddr.new(value)
+  rescue IPAddr::InvalidAddressError
+    self.ipv6_network_prefix = nil
   end
 
   # string
@@ -285,7 +266,7 @@ class Network < ApplicationRecord
 
   # 空いている次のIPアドレス
   def next_ipv4(ipv4_config)
-    return unless ipv4_network
+    return unless has_ipv4?
 
     selected_ipv4_pools = ipv4_pools.where(ipv4_config: ipv4_config)
       .order(:ipv4_first_data)
@@ -304,10 +285,10 @@ class Network < ApplicationRecord
   end
 
   def next_ipv6(ipv6_config)
-    return unless ipv6_network
+    return unless has_ipv6?
 
-    selected_ipv6_pools =
-      ipv6_pools.where(ipv6_config: ipv6_config).order(:ipv6_first_data)
+    selected_ipv6_pools = ipv6_pools.where(ipv6_config: ipv6_config)
+      .order(:ipv6_first_data)
     return if selected_ipv6_pools.empty?
 
     nics_ipv6_set = nics.map(&:ipv6).compact.to_set
@@ -343,16 +324,12 @@ class Network < ApplicationRecord
         .then { |list| (list + ["manual", "disabled"]).uniq }
   end
 
-  def ipv4_include?(ipv4)
-    return false unless ipv4_network
-
-    ipv4_network.include?(ipv4)
+  def ipv4_include?(ip)
+    ipv4_network_prefix&.include?(ip)
   end
 
-  def ipv6_include?(ipv6)
-    return false unless ipv6_network
-
-    ipv6_network.include?(ipv6)
+  def ipv6_include?(ip)
+    ipv6_network_prefix&.include?(ip)
   end
 
   def flag
@@ -395,7 +372,7 @@ class Network < ApplicationRecord
         domain_name: domain,
         domain_search: domain_search_data,
       }.compact_blank
-      KeaSubnet4AddJob.perform_later(id, ipv4_network, options,
+      KeaSubnet4AddJob.perform_later(id, ipv4_network_prefix, options,
         ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
     else
       KeaSubnet4DelJob.perform_later(id)
@@ -419,7 +396,7 @@ class Network < ApplicationRecord
         dns_servers: ipv6_dns_servers_data,
         domain_search: [domain, *domain_search_data].compact_blank,
       }.compact_blank
-      KeaSubnet6AddJob.perform_later(id, ipv6_network, options,
+      KeaSubnet6AddJob.perform_later(id, ipv6_network_prefix, options,
         ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
     else
       KeaSubnet6DelJob.perform_later(id)
@@ -450,7 +427,7 @@ class Network < ApplicationRecord
       value = IPAddr.new(m[:value])
       if value.ipv4?
         Network.find_by(ipv4_network_data: value.hton)
-      elsif value.ivp6?
+      elsif value.ipv6?
         Network.find_by(ipv6_network_data: value.hton)
       else
         raise ArgumentError, "Unknown ip version #{str.inspect}"

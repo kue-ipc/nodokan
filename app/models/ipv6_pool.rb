@@ -20,8 +20,7 @@ class Ipv6Pool < ApplicationRecord
     unless: -> { network.has_ipv4? }
 
   validates_each :ipv6_first, :ipv6_last do |record, attr, value|
-    # IPv6では全てのアドレスもホストに設定可能
-    unless record.network.ipv6_network&.include?(value)
+    unless record.network.ipv6_include?(value)
       record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
     end
   end

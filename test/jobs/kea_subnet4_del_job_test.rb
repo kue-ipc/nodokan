@@ -12,7 +12,8 @@ class KeaSubnet4DelJobTest < ActiveJob::TestCase
 
   test "del subnet" do
     perform_enqueued_jobs do
-      KeaSubnet4AddJob.perform_later(@network.id, @network.ipv4_network, {}, [])
+      KeaSubnet4AddJob.perform_later(@network.id, @network.ipv4_network_prefix,
+        {}, [])
     end
     assert_difference("Kea::Dhcp4Subnet.count", -1) do
       perform_enqueued_jobs do
