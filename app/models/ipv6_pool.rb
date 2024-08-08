@@ -23,8 +23,8 @@ class Ipv6Pool < ApplicationRecord
     end
   end
 
-  ipv4_data :ipv6_first
-  ipv4_data :ipv6_last
+  ipv6_data :ipv6_first
+  ipv6_data :ipv6_last
 
   def ipv6_mapped_last_from_first
     IPAddr.new(ipv6_first.to_i + IPAddr::IN4MASK, Socket::AF_INET6)
