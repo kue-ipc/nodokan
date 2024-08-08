@@ -10,14 +10,14 @@ class KeaSubnet6AddJob < ApplicationJob
       subnet6.update!(subnet_prefix: "#{ip}/#{ip.prefix}")
 
       subnet6.dhcp6_servers = [Kea::Dhcp6Server.default]
-      subnet6.dhcp6_options = options.compact.map { |name, data|
+      subnet6.dhcp6_options = options.compact.map do |name, data|
         subnet6.dhcp6_options.build(name: name, space: "dhcp6")
           .tap { |option| option.data = data }
-      }
-      subnet6.dhcp6_pools = pools.map { |pool|
+      end
+      subnet6.dhcp6_pools = pools.map do |pool|
         subnet6.dhcp6_pools
           .build(start_address: pool.first.to_s, end_address: pool.last.to_s)
-      }
+      end
 
       subnet6.save!
     end

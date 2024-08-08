@@ -15,9 +15,9 @@ module ListJsonData
         validator = "#{validate.to_s.camelize}Validator".constantize
           .new(attributes: data_name)
         validates_each data_name do |record, attr, value|
-          value&.each { |v|
+          value&.each do |v|
             validator.validate_each(record, attr, v)
-          }
+          end
         end
       when Proc, Method
         validates_each data_name do |record, attr, value|

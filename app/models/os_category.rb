@@ -11,7 +11,7 @@ class OsCategory < ApplicationRecord
   validates :order, presence: true, numericality: {only_integer: true}
 
   normalizes :name, with: :strip.to_proc
-  normalizes :icon, with: lambda { |icon|
+  normalizes :icon, with: ->(icon) {
     sanitize(icon, tags: %w(span i),
       attributes: %w(class style data-fa-transform)).strip
   }

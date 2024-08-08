@@ -466,7 +466,7 @@ class Network < ApplicationRecord
     replace_error(:ipv6_network, :ipv6_network_address)
     replace_error(:ipv6_gateway_data, :ipv6_gateway_address)
     replace_error(:ipv6_gateway, :ipv6_gateway_address)
- end
+  end
 
   # class methods
 

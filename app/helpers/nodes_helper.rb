@@ -125,23 +125,23 @@ module NodesHelper
   end
 
   def node_ipv4_address_decorated(node)
-    node.nics.map { |nic|
+    node.nics.map do |nic|
       if nic.ipv4_dynamic?
         tag.span(t_enum(:dynamic, :ipv4_config), class: "text-success-emphasis")
       else
         span_value_for(nic.ipv4, blank_alt: "")
       end
-    }.inject { |result, item| result + tag.br + item }
+    end.inject { |result, item| result + tag.br + item }
   end
 
   def node_ipv6_address_decorated(node)
-    node.nics.map { |nic|
+    node.nics.map do |nic|
       if nic.ipv6_dynamic?
         tag.span(t_enum(:dynamic, :ipv6_config), class: "text-success-emphasis")
       else
         span_value_for(nic.ipv6, blank_alt: "")
       end
-    }.inject { |result, item| result + tag.br + item }
+    end.inject { |result, item| result + tag.br + item }
   end
 
   def node_confirmation_decorated(node)
@@ -203,7 +203,7 @@ module NodesHelper
 
   def node_list_headers_for(cols: node_list_cols)
     tag.div(class: "row py-1 border-bottom fw-bold") do
-      cols.map { |col|
+      cols.map do |col|
         name = col[:name]
         opts = {class: col_grid_class(col)}
         content =
@@ -217,12 +217,12 @@ module NodesHelper
           end
         content += h(" ") + sort_link(col[:sort]) if col[:sort]
         tag.div(content, **opts)
-      }.inject(:+)
+      end.inject(:+)
     end
   end
 
   def node_list_col_for(node, cols: node_list_cols, link: nil, action: nil)
-    content = cols.map { |col|
+    content = cols.map do |col|
       name = col[:name]
       opts = {class: col_grid_class(col)}
       case name
@@ -249,7 +249,7 @@ module NodesHelper
       else
         tag.div(node.__send__(name), **opts)
       end
-    }.inject(:+)
+    end.inject(:+)
 
     if link
       link_to(content, link, class: "row py-1 border-bottom",

@@ -70,13 +70,13 @@ module DeviseLdapAuthenticatableEx
           case Devise.ldap_check_group_policy
           when :and, /\Aand\z/i, "&", "&&"
             if in_required_groups_and?
-              @in_groups = @required_groups.map { |group|
+              @in_groups = @required_groups.map do |group|
                 if group.is_a?(Array)
                   group[1]
                 else
                   group
                 end
-              }
+              end
               true
             else
               false

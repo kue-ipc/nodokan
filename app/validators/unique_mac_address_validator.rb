@@ -11,11 +11,11 @@ class UniqueMacAddressValidator < ActiveModel::Validator
 
     return if record.network_id.blank?
 
-    same_mac_address_nics = record.node.nics.select { |nic|
+    same_mac_address_nics = record.node.nics.select do |nic|
       nic != record &&
         nic.mac_address_data == record.mac_address_data &&
         nic.network_id.present?
-    }
+    end
 
     if same_mac_address_nics.map(&:network_id).include?(record.network_id)
       record.errors.add(:mac_address_data,

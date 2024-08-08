@@ -212,7 +212,7 @@ module ImportExport
       nic.update!(params)
     end
 
-    private def delete_nic(record, params)
+    private def delete_nic(record, nic_number)
       nic = Nic.find_by(node_id: record.id, number: nic_number)
       return if nic.nil?
 

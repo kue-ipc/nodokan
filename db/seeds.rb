@@ -24,14 +24,14 @@ def create_entities(model_class)
     model = model_class.new(data)
     if model.save
       count[:success] += 1
-      Rails.logger.debug("db:seed") {
+      Rails.logger.debug("db:seed") do
         "succeeded to create: #{model.name}"
-      }
+      end
     else
       count[:failure] += 1
-      Rails.logger.warn("db:seed") {
+      Rails.logger.warn("db:seed") do
         "failed to create: #{model.name}: #{model.errors.to_json}"
-      }
+      end
     end
   end
 

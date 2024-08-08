@@ -33,7 +33,7 @@ class SpecificNodeApplication
   validates :reason, presence: true, if: -> { action != "release" }
   validates :rule_set, presence: true, if: -> { action != "release" }
   validates :rule_list, presence: true,
-    if: lambda {
+    if: -> {
           action != "release" && rule_set == -1 &&
             ["none", "direct"].exclude?(external)
         }
