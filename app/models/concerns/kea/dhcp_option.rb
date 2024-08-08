@@ -16,6 +16,10 @@ module Kea
           options_code_map.fetch(code)
         end
       end
+
+      def normalize_name(name)
+        name.to_s.downcase.gsub("_", "-")
+      end
     end
 
     included do
@@ -39,7 +43,7 @@ module Kea
         return
       end
 
-      option = option_by_name(value.to_s.downcase.gsub("_", "-"))
+      option = option_by_name(self.class.normalize_name(value))
       self.code = option.code
     end
 
