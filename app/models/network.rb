@@ -64,11 +64,6 @@ class Network < ApplicationRecord
 
   validates :domain, allow_nil: true, domain: true
 
-  validates :ipv4_network_address, allow_blank: true, ipv4_address: true
-  validates :ipv4_gateway_address, allow_blank: true, ipv4_address: true
-  validates :ipv6_network_address, allow_blank: true, ipv6_address: true
-  validates :ipv6_gateway_address, allow_blank: true, ipv6_address: true
-
   validates :ipv4_network_data, allow_nil: true, uniqueness: true
   validates :ipv6_network_data, allow_nil: true, uniqueness: true
   validates :ipv4_network_data, presence: true, if: :dhcp
@@ -91,6 +86,18 @@ class Network < ApplicationRecord
 
   validates :ipv4_pools, absence: true, unless: :has_ipv4?
   validates :ipv6_pools, absence: true, unless: :has_ipv6?
+
+  validates_each :ipv4_network do |record, attr, value|
+    if value && value != record.ipv4_network_prefix.to_range.begin
+      record.errors.add(attr, I18n.t("errors.messages.not_first_address"))
+    end
+  end
+
+  validates_each :ipv6_network do |record, attr, value|
+    if value && value != record.ipv6_network_prefix.to_range.begin
+      record.errors.add(attr, I18n.t("errors.messages.not_first_address"))
+    end
+  end
 
   validates_each :ipv4_gateway do |record, attr, value|
     if value && record.has_ipv4?

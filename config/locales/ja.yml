@@ -918,6 +918,7 @@ ja:
       out_of_network: ネットワーク外のアドレスです。
       network_address: ネットワークアドレスを設定することはできません。
       broadcast_address: ブロードキャストアドレスを設定することはできません。
+      not_first_address: 最初のアドレスではありません。
       not_delete_specific_node: 特定端末は削除できません。特定端末の解除を申請してください。
       not_auth_nework: 認証ネットワークではありません。
       no_allocate: 割り当てがありません。

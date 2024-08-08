@@ -41,7 +41,7 @@ class NetworksController < ApplicationController
 
   # GET /networks/new
   def new
-    @network = Network.new
+    @network = Network.new(ipv4_prefix_length: 24, ipv6_prefix_length: 64)
     authorize @network
   end
 
