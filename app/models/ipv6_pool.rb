@@ -2,13 +2,11 @@ require "ipaddr"
 
 class Ipv6Pool < ApplicationRecord
   include Ipv6Config
+  include IpData
 
   has_paper_trail
 
   belongs_to :network
-
-  validates :ipv6_first_address, allow_blank: false, ipv6_address: true
-  validates :ipv6_last_address, allow_blank: false, ipv6_address: true
 
   validates :ipv6_last, comparison: {greater_than: :ipv6_first}
   validates :ipv6_last, comparison: {equal_to: :ipv6_mapped_last_from_first},
@@ -25,41 +23,8 @@ class Ipv6Pool < ApplicationRecord
     end
   end
 
-  def ipv6_first
-    ipv6_first_data && IPAddr.new_ntoh(ipv6_first_data)
-  end
-
-  def ipv6_first_address
-    ipv6_first&.to_s
-  end
-
-  def ipv6_first=(value)
-    self.ipv6_first_data = value&.hton
-  end
-
-  def ipv6_first_address=(value)
-    self.ipv6_first = value.presence && IPAddr.new(value)
-  rescue IPAddr::InvalidAddressError
-    self.ipv6_first = nil
-  end
-
-  def ipv6_last
-    ipv6_last_data && IPAddr.new_ntoh(ipv6_last_data)
-  end
-
-  def ipv6_last_address
-    ipv6_last&.to_s
-  end
-
-  def ipv6_last=(value)
-    self.ipv6_last_data = value&.hton
-  end
-
-  def ipv6_last_address=(value)
-    self.ipv6_last = value.presence && IPAddr.new(value)
-  rescue IPAddr::InvalidAddressError
-    self.ipv6_last = nil
-  end
+  ipv4_data :ipv6_first
+  ipv4_data :ipv6_last
 
   def ipv6_mapped_last_from_first
     IPAddr.new(ipv6_first.to_i + IPAddr::IN4MASK, Socket::AF_INET6)

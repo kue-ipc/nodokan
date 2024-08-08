@@ -1,13 +1,10 @@
 class Ipv4Pool < ApplicationRecord
   include Ipv4Config
-  include Enumerable
+  include IpData
 
   has_paper_trail
 
   belongs_to :network
-
-  validates :ipv4_first_address, allow_blank: false, ipv4_address: true
-  validates :ipv4_last_address, allow_blank: false, ipv4_address: true
 
   validates :ipv4_last, comparison: {greater_than: :ipv4_first}
 
@@ -25,41 +22,8 @@ class Ipv4Pool < ApplicationRecord
     end
   end
 
-  def ipv4_first
-    ipv4_first_data && IPAddr.new_ntoh(ipv4_first_data)
-  end
-
-  def ipv4_first_address
-    ipv4_first&.to_s
-  end
-
-  def ipv4_first=(value)
-    self.ipv4_first_data = value&.hton
-  end
-
-  def ipv4_first_address=(value)
-    self.ipv4_first = value.presence && IPAddr.new(value)
-  rescue IPAddr::InvalidAddressError
-    self.ipv4_first = nil
-  end
-
-  def ipv4_last
-    ipv4_last_data && IPAddr.new_ntoh(ipv4_last_data)
-  end
-
-  def ipv4_last_address
-    ipv4_last&.to_s
-  end
-
-  def ipv4_last=(value)
-    self.ipv4_last_data = value&.hton
-  end
-
-  def ipv4_last_address=(value)
-    self.ipv4_last = value.presence && IPAddr.new(value)
-  rescue IPAddr::InvalidAddressError
-    self.ipv4_last = nil
-  end
+  ipv4_data :ipv4_first
+  ipv4_data :ipv4_last
 
   def ipv4_range
     (ipv4_first..ipv4_last)
