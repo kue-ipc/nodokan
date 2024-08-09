@@ -3,8 +3,7 @@
 class Nic < ApplicationRecord
   include Ipv4Config
   include Ipv6Config
-  include Ipv4Data
-  include Ipv6Data
+  include IpData
   include MacAddressData
 
   FLAGS = {
@@ -28,6 +27,9 @@ class Nic < ApplicationRecord
     other: 127,
     unknown: -1,
   }, validate: true
+
+  ipv4_data :ipv4, allow_nil: true
+  ipv6_data :ipv6, allow_nil: true
 
   validates :number, uniqueness: {scope: :node}, numericality: {
     only_integer: true, greater_than: 0, less_than_or_equal_to: 64,
@@ -93,10 +95,17 @@ class Nic < ApplicationRecord
 
   attribute :global, :boolean
   def global
-    (ipv4_data.present? && !ipv4.private?) ||
-      (ipv6_data.present? && !ipv6.private?)
+    ipv4_global? || ipv6_global?
   end
   alias global? global
+
+  def has_ipv4? # rubocop: disable Naming/PredicateName
+    ipv4_data.present?
+  end
+
+  def has_ipv6? # rubocop: disable Naming/PredicateName
+    ipv6_data.present?
+  end
 
   def radius_mac
     return if network.nil?

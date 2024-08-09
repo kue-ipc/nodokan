@@ -29,6 +29,13 @@ module DuidData
     self.duid_data = self.class.hex_str_to_data(value.presence)
   end
 
+  def duid_type
+    type = duid_data&.unpack1("n")
+    return if type.nil?
+
+    [nil, "DUID-LLT", "DUID-EN", "DUID-LL", "DUID-UUID"][type]
+  end
+
   private def replace_duid_errors
     replace_error(:duid_data, :duid)
   end

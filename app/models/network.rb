@@ -31,6 +31,20 @@ class Network < ApplicationRecord
     stateless: 0b110, # O+A
   }, prefix: true, validate: true
 
+  list_json_data :domain_search, validate: :domain,
+    normalize: ->(str) { str.presence&.strip&.downcase }
+  # rubocop: disable Style/RescueModifier
+  list_json_data :ipv4_dns_servers, validate: :ipv4_address,
+    normalize: ->(str) { IPAddr.new(str).to_s rescue str }
+  list_json_data :ipv6_dns_servers, validate: :ipv6_address,
+    normalize: ->(str) { IPAddr.new(str).to_s rescue str }
+  # rubocop: enable Style/RescueModifier
+
+  ipv4_data :ipv4_network, allow_nil: true
+  ipv4_data :ipv4_gateway, allow_nil: true
+  ipv6_data :ipv6_network, allow_nil: true
+  ipv6_data :ipv6_gateway, allow_nil: true
+
   has_many :nics, dependent: :nullify
   has_many :nodes, through: :nics
 
@@ -118,20 +132,6 @@ class Network < ApplicationRecord
   end
 
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
-
-  list_json_data :domain_search, validate: :domain,
-    normalize: ->(str) { str.presence&.strip&.downcase }
-  # rubocop: disable Style/RescueModifier
-  list_json_data :ipv4_dns_servers, validate: :ipv4_address,
-    normalize: ->(str) { IPAddr.new(str).to_s rescue str }
-  list_json_data :ipv6_dns_servers, validate: :ipv6_address,
-    normalize: ->(str) { IPAddr.new(str).to_s rescue str }
-  # rubocop: enable Style/RescueModifier
-
-  ipv4_data :ipv4_network, allow_nil: true
-  ipv4_data :ipv4_gateway, allow_nil: true
-  ipv6_data :ipv6_network, allow_nil: true
-  ipv6_data :ipv6_gateway, allow_nil: true
 
   after_validation :replace_network_errors
 

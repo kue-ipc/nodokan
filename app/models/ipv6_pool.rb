@@ -8,6 +8,9 @@ class Ipv6Pool < ApplicationRecord
 
   belongs_to :network
 
+  ipv6_data :ipv6_first
+  ipv6_data :ipv6_last
+
   validates :ipv6_last, comparison: {greater_than: :ipv6_first}
   validates :ipv6_last, comparison: {equal_to: :ipv6_mapped_last_from_first},
     if: :ipv6_mapped?
@@ -22,9 +25,6 @@ class Ipv6Pool < ApplicationRecord
       record.errors.add(attr, I18n.t("errors.messages.out_of_network"))
     end
   end
-
-  ipv6_data :ipv6_first
-  ipv6_data :ipv6_last
 
   def ipv6_mapped_last_from_first
     IPAddr.new(ipv6_first.to_i + IPAddr::IN4MASK, Socket::AF_INET6)

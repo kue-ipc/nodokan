@@ -6,6 +6,9 @@ class Ipv4Pool < ApplicationRecord
 
   belongs_to :network
 
+  ipv4_data :ipv4_first
+  ipv4_data :ipv4_last
+
   validates :ipv4_last, comparison: {greater_than: :ipv4_first}
 
   validates :ipv4_config, exclusion: {in: ["dynamic", "reserved"]},
@@ -21,9 +24,6 @@ class Ipv4Pool < ApplicationRecord
       record.errors.add(attr, I18n.t("errors.messages.broadcast_address"))
     end
   end
-
-  ipv4_data :ipv4_first
-  ipv4_data :ipv4_last
 
   def ipv4_range
     (ipv4_first..ipv4_last)

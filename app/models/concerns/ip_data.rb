@@ -16,21 +16,28 @@ module IpData
 
       raise "IP version must be 4 or 6: #{version}" if [4, 6].exclude?(version)
 
-      data_length =
-        if version == 4
-          4
-        else
-          16
+      case version
+      in 4
+        validates :"#{name}_data", allow_nil: allow_nil, length: {is: 4}
+        validates :"#{name}_address", allow_blank: allow_nil,
+          ipv4_address: true
+        validates_each :"#{name}",
+          allow_nil: allow_nil do |record, attr, value|
+          if value && !value.ipv4?
+            record.errors.add(attr, I18n.t("errors.messages.not_ipv4"))
+          end
         end
-
-      validates :"#{name}_address", allow_blank: allow_nil,
-        "ipv#{version}_address": true
-      validates_each :"#{name}", allow_nil: allow_nil do |record, attr, value|
-        if value && !value.__send__(:"ipv#{version}?")
-          record.errors.add(attr, I18n.t("errors.messages.not_ipv{version}"))
+      in 6
+        validates :"#{name}_data", allow_nil: allow_nil, length: {is: 16}
+        validates :"#{name}_address", allow_blank: allow_nil,
+          ipv6_address: true
+        validates_each :"#{name}",
+          allow_nil: allow_nil do |record, attr, value|
+          if value && !value.ipv6?
+            record.errors.add(attr, I18n.t("errors.messages.not_ipv6"))
+          end
         end
       end
-      validates :"#{name}_data", allow_nil: allow_nil, length: {is: data_length}
 
       after_validation :"replace_#{name}_errors"
 
@@ -59,21 +66,81 @@ module IpData
         __send__(:"#{name}=", nil)
       end
 
+      define_method(:"#{name}_loopback?") do
+        __send__(name)&.loopbak?
+      end
+
+      define_method(:"#{name}_link_local?") do
+        __send__(name)&.link_local?
+      end
+
+      define_method(:"#{name}_private?") do
+        __send__(name)&.private?
+      end
+
       define_method(:"#{name}_global?") do
-        if version == 4
-          __send__(name)&.then do |ip|
+        __send__(name)&.then do |ip|
+          ip = ip.ipv4_mapped if ip.ipv4_mapped?
+          if ip.ipv4?
             !ip.loopback? && !ip.link_local? && !ip.private? &&
-              (1...240).cover?(ip.to_i >> 24) # 1.0.0.0 <= ip < 240.0.0.0
+              (1...224).cover?(ip.to_i >> 24) # 1.0.0.0 <= ip < 224.0.0.0
+          elsif ip.ipv6?
+            __send__(name)&.then { |ip| ip.to_i >> 125 == 1 } # 2000::/3
+          else
+            raise AddressFamilyError, "unsupported address family"
           end
-        else
-          __send__(name)&.then { |ip| ip.to_i >> 125 == 1 } # 2000::/3
         end
+      end
+
+      define_method(:"#{name}_unicast?") do
+        __send__(name)&.then do |ip|
+          ip = ip.ipv4_mapped if ip.ipv4_mapped?
+          if ip.ipv4?
+            ip.to_i >> 28 != 0xe && # 224.0.0.0/4ではない
+              ip.to_i != 0xffffffff # 255.255.255.255ではない
+          elsif ip.ipv6?
+            ip.to_i >> 120 != 0xff # ff00::/8ではない
+          else
+            raise AddressFamilyError, "unsupported address family"
+          end
+        end
+      end
+
+      define_method(:"#{name}_multicast?") do
+        __send__(name)&.then do |ip|
+          ip = ip.ipv4_mapped if ip.ipv4_mapped?
+          if ip.ipv4?
+            ip.to_i >> 28 == 0xe # 224.0.0.0/4
+          elsif ip.ipv6?
+            ip.to_i >> 120 == 0xff # ff00::/8
+          else
+            raise AddressFamilyError, "unsupported address family"
+          end
+        end
+      end
+
+      define_method(:"#{name}_broadcast?") do
+        __send__(name)&.then do |ip|
+          ip = ip.ipv4_mapped if ip.ipv4_mapped?
+          if ip.ipv4?
+            __send__(name)&.to_i&.==(0xffffffff) # 255.255.255.255
+          elsif ip.ipv6?
+            false
+          else
+            raise AddressFamilyError, "unsupported address family"
+          end
+        end
+      end
+
+      define_method(:"#{name}_unspecified?") do
+        __send__(name)&.to_i&.zero?
       end
 
       define_method(:"replace_#{name}_errors") do
         replace_error(:"#{name}_data", :"#{name}_address")
         replace_error(name, :"#{name}_address")
       end
+      private :"replace_#{name}_errors"
     end
   end
 end

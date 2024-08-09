@@ -1,8 +1,9 @@
 class Ipv4Arp < ApplicationRecord
-  include Ipv4Data
+  include IpData
   include MacAddressData
 
-  validates :ipv4_data, length: {is: 4}
+  ipv4_data :ipv4
+
   validates :mac_address_data, length: {is: 6}
   validates :resolved_at, presence: true
 

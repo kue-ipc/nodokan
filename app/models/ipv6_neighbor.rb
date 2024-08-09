@@ -1,8 +1,9 @@
 class Ipv6Neighbor < ApplicationRecord
-  include Ipv6Data
+  include IpData
   include MacAddressData
 
-  validates :ipv6_data, length: {is: 16}
+  ipv6_data :ipv6
+
   validates :mac_address_data, length: {is: 6}
   validates :discovered_at, presence: true
 
