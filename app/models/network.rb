@@ -360,7 +360,7 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet4
-    if ipv4_network&.to_i&.zero?
+    if ipv4_network_unspecified?
       options =
         if !destroyed? && dhcpv4?
           {
@@ -387,7 +387,7 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet6
-    if ipv6_network&.to_i&.zero?
+    if ipv4_network_unspecified?
       options =
         if !destroyed? && dhcpv6?
           {
