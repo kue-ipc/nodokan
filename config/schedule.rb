@@ -29,6 +29,7 @@ every 1.day, at: "1:00 am" do
   rake "radius:clean"
   rake "ipv4_arp:clean"
   rake "ipv6_neighbor:clean"
+  rake "bulk:clean"
 end
 
 every 20.minutes, at: 10 do

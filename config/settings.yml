@@ -24,11 +24,13 @@ config:
     ipv6_neighbor: null # forever
     radius_radacct: null # forever
     radius_radpostauth: null # forever
+    bulk: 2629746 # 1 month
   nocompress_period:
-    ipv4_arp: 31622400 # 1 year
-    ipv6_neighbor: 31622400 # 1 year
-    radius_radacct: 2678400 # 1 month
+    ipv4_arp: 31556952 # 1 year
+    ipv6_neighbor: 31556952 # 1 year
+    radius_radacct: 2629746 # 1 month
     radius_radpostauth: 0 # last
+    bulk: null # forever
   destroy_deleted_user: false
   destroy_deleted_user_without_node: false
   destroy_nodes_of_deleted_user: false
