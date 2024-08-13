@@ -4,6 +4,7 @@ require "resque/scheduler/server"
 Rails.application.routes.draw do
   root to: "pages#top"
   get "about", to: "pages#about"
+  get "help/bulk", to: "pages#help_bulk"
 
   resources :nodes do
     member do

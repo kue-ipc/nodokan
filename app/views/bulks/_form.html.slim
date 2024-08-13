@@ -11,4 +11,10 @@
           accept: "text/csv"
       .col-sm-2
         = form.submit
-  p = t("forms.bulk.help")
+  p
+    => t("forms.bulk.help")
+    | (
+    = link_to t("messages.help_of_model", model: Bulk.model_name.human),
+      help_bulk_path,
+      target: "_blank", rel: "noopener", data: {turbo: false}
+    | )
