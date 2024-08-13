@@ -2,5 +2,6 @@
   = turbo_stream.replace @bulk, partial: "form", locals: {bulk: @bulk}
 - else
   = turbo_stream.prepend "bulks", @bulk
-  = turbo_stream.replace Bulk.new, partial: "form", locals: {bulk: Bulk.new}
+  = turbo_stream.replace Bulk.new, partial: "form",
+    locals: {bulk: Bulk.new(target: @bulk.target)}
 = turbo_stream.replace "flash", partial: "flash"
