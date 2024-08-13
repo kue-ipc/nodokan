@@ -91,6 +91,7 @@ gem "bootstrap_form", "~> 5.3"
 
 # Resque
 gem "resque"
+gem "resque-scheduler"
 
 # Ransack
 gem "ransack"
