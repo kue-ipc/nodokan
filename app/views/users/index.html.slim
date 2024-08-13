@@ -11,9 +11,5 @@
         = f.search_field :query, value: @query, hide_label: true,
           append: f.primary('<i class="fas fa-search"></i>'.html_safe,
             name: :search, render_as_button: true)
-      .col-12.mb-3
-        = link_to t("actions.download_csv"), users_path(format: :csv),
-            class: "btn btn-primary",
-            download: "users_#{Time.current.strftime('%Y%m%d')}.csv"
 
 = render "list"

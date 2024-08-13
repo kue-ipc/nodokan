@@ -1,7 +1,0 @@
-<%== "\u{feff}" -%>
-<%- require "import_export/node_csv" -%>
-<%- node_csv = ImportExport::NodeCsv.new(nil, logger: logger) -%>
-<%== node_csv.header.to_csv -%>
-<%- @nodes.each do |node| -%>
-<%== node_csv.record_to_row_with_id(node) -%>
-<%- end -%>

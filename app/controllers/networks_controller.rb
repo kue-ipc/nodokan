@@ -15,23 +15,8 @@ class NetworksController < ApplicationController
   def index
     set_page
     set_search
-    @networks = search_and_sort(policy_scope(Network))
+    @networks = paginate(search_and_sort(policy_scope(Network)))
       .includes(:ipv4_pools, :ipv6_pools)
-    respond_to do |format|
-      format.html do
-        @networks = paginate(@networks)
-      end
-      format.json do
-        @networks = paginate(@networks)
-      end
-      format.csv do
-        io = StringIO.new
-        io << "\u{feff}"
-        network_csv = ImportExport::NetworkCsv.new(current_user, out: io)
-        network_csv.export(@networks)
-        send_data io.string
-      end
-    end
   end
 
   # GET /networks/1
