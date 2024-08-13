@@ -26,17 +26,17 @@ module ImportExport
       ATTRS
     end
 
-    # overwrite
+    # override
     def delimiter
       "\n"
     end
 
-    # overwrite
+    # override
     def split_row_record(record)
       record.nics.map { |nic| {nic: nic} }.presence || [{nic: nil}]
     end
 
-    # overwrite
+    # override
     def row_assign(row, record, key, nic: nil, **_opts)
       case key
       when "type"
@@ -54,19 +54,27 @@ module ImportExport
       end
     end
 
-    # overwrite
+    # override
     def record_assign(record, row, key, **_opts)
       case key
-      when "ipv4_network"
-        row[key] = record.ipv4_network_cidr
-      when "ipv6_network"
-        row[key] = record.ipv6_network_cidr
+      when "user"
+        if @user.nil? || @user.admin?
+          record.user = User.find_by(username: row["user"])
+        end
+      when "type"
+        record.node_type = row["type"]
+      when "host"
+        record.host = Node.find_identifier(row["host"])
+      when "components"
+        record.components = row["components"].split.map do |identifier|
+          Node.find_identifier(identifier)
+        end
       else
         super
       end
     end
 
-    # overwrite
+    # override
     def row_to_record(row, record: model_class.new, keys: attrs, **opts)
       record.user = @user if record.new_record? && !@user.nil && !@user.admin?
 
@@ -146,25 +154,6 @@ module ImportExport
     rescue InvaildFieldError
       # do nothing
       record
-    end
-
-    def record_assign(record, row, key, **_opts)
-      case key
-      when "user"
-        if @user.nil? || @user.admin?
-          record.user = User.find_by(username: row["user"])
-        end
-      when "type"
-        record.node_type = row["type"]
-      when "host"
-        record.host = Node.find_identifier(row["host"])
-      when "components"
-        record.components = row["components"].split.map do |identifier|
-          Node.find_identifier(identifier)
-        end
-      else
-        super
-      end
     end
 
     private def find_or_new_place(params, place = nil)

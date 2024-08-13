@@ -16,7 +16,7 @@ module ImportExport
       ATTRS
     end
 
-    # overwrite
+    # override
     def row_assign(row, record, key, **_opts)
       case key
       when "networks"
@@ -35,7 +35,7 @@ module ImportExport
       end
     end
 
-    # overwrite
+    # override
     def record_assign(record, row, key, **_opts)
       case key
       when "auth_network"

@@ -12,6 +12,8 @@ module ImportExport
       name vlan flag ra
       ipv4_network ipv4_gateway ipv4_pools
       ipv6_network ipv6_gateway ipv6_pools
+      domain domain_search
+      ipv4_dns_servers ipv6_dns_servers
       note
     ).freeze
 
@@ -19,12 +21,12 @@ module ImportExport
       ATTRS
     end
 
-    # overwrite
+    # override
     def delimiter
       "\n"
     end
 
-    # overwrite
+    # override
     def row_assign(row, record, key, **_opts)
       case key
       when "ipv4_network"
@@ -36,7 +38,7 @@ module ImportExport
       end
     end
 
-    # overwrite
+    # override
     def record_assign(record, row, key, **_opts)
       case key
       when "ipv4_network"
@@ -49,6 +51,10 @@ module ImportExport
       when "ipv6_pools"
         record.ipv6_pools =
           row[key].split.map { |pl| Ipv6Pool.new_identifier(pl) }
+      when "ipv4_gateway"
+        record.ipv4_gateway_address = row[key]
+      when "ipv6_gateway"
+        record.ipv6_gateway_address = row[key]
       else
         super
       end
