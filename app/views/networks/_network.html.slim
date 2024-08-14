@@ -36,6 +36,10 @@
           = value.count
 
   - if current_user.admin?
+    / FIXME: 更新した場合について、変更できるようになったら取り除く。
+    p
+      | プールの変更、及び、全体オプションの変更を実施した後はKeaのサービスを再起動してください。
+      | サービスを再移動するまで変更が反映されません。
     =<> link_to t("actions.edit"), edit_network_path(network),
       class: "btn btn-primary"
     =<> button_to t("actions.destroy"), network,
