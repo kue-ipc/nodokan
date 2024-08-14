@@ -6,11 +6,18 @@ class KeaSubnet6AddJob < ApplicationJob
       subnet6 = Kea::Dhcp6Subnet.find_or_initialize_by(subnet_id: id)
       Kea::Dhcp6Subnet.dhcp6_audit(cascade_transaction: subnet6.new_record?)
 
+      default_server = Kea::Dhcp6Server.default
+      subnet_scope = Kea::DhcpOptionScope.subnet
+      option_params = {
+        space: "dhcp6",
+        dhcp_option_scope: subnet_scope,
+      }
+
       # アドレス範囲
       subnet6.update!(subnet_prefix: "#{ip}/#{ip.prefix}")
 
       # サーバー
-      subnet6.dhcp6_servers = [Kea::Dhcp6Server.default]
+      subnet6.dhcp6_servers = [default_server]
 
       # オプション
       current_options = subnet6.dhcp6_options.index_by(&:name)
@@ -18,9 +25,9 @@ class KeaSubnet6AddJob < ApplicationJob
         .transform_keys { |key| Kea::Dhcp6Option.normalize_name(key) }
         .each do |key, value|
         if (existing_option = current_options.delete(key))
-          existing_option.update!(data: value)
+          existing_option.update!(data: value, **option_params)
         else
-          subnet6.dhcp6_options.create!(name: key, data: value, space: "dhcp6")
+          subnet6.dhcp6_options.create!(name: key, data: value, **option_params)
         end
       end
       subnet6.dhcp6_options.destroy(*current_options.values)

@@ -109,8 +109,12 @@ module Kea
 
     self.primary_key = "option_id"
 
-    belongs_to :dhcp4_subnet, primary_key: "subnet_id", optional: true
-    belongs_to :scope, primary_key: "scope_id", class_name: "DhcpOptionScope",
+    belongs_to :dhcp4_subnet, optional: true
+
+    belongs_to :dhcp_option_scope, foreign_key: "scope_id",
       inverse_of: :dhcp4_options
+
+    has_and_belongs_to_many :dhcp4_servers, join_table: "dhcp4_options_server",
+      foreign_key: "option_id", association_foreign_key: "server_id"
   end
 end
