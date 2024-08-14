@@ -490,6 +490,7 @@ ja:
         domain_search: ドメイン検索リスト
         ipv4_dns_servers: IPv4 DNSサーバー
         ipv6_dns_servers: IPv6 DNSサーバー
+        dns_servers: DNSサーバー
       nic:
         node: 端末
         number: No.
@@ -805,6 +806,10 @@ ja:
         error: エラー
         timeout: タイムアウト
         nothing: 何も無し
+      ip_setting:
+        auto: 自動
+        manual: 手動
+        disabled: 無効
     bitwises:
       security_hardwares:
         encrypted: 全てのデータを暗号化しています。

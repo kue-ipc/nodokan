@@ -255,24 +255,28 @@
             - case nic.ipv4_config
             - when "dynamic", "reserved"
               - ip_data = { \
-                setting: "自動",
+                setting: t_enum("auto", :ip_setting),
                 address: "-",
                 netmask: "-",
                 gateway: "-",
+                dns_servers: t_enum("auto", :ip_setting),
               }
             - when "static", "manual"
               - ip_data = { \
-                setting: "手動",
+                setting: t_enum("manual", :ip_setting),
                 address: nic.ipv4_address.presence || sp,
                 netmask: nic.network&.ipv4_netmask.presence || sp,
                 gateway: nic.network&.ipv4_gateway.presence || sp,
+                dns_servers: nic.network&.ipv4_dns_servers || \
+                  Network.ipv4_global&.ipv4_dns_servers || sp,
               }
             - when "disabled"
               - ip_data = { \
-                setting: "無効",
+                setting: t_enum("disabled", :ip_setting),
                 address: "-",
                 netmask: "-",
                 gateway: "-",
+                dns_servers: "-",
               }
 
             dl.row.line
@@ -284,29 +288,35 @@
               dd.col-sm-6 = ip_data[:netmask]
               dt.col-sm-6 = Network.human_attribute_name(:gateway)
               dd.col-sm-6 = ip_data[:gateway]
+              dt.col-sm-6 = Network.human_attribute_name(:dns_servers)
+              dd.col-sm-6 = ip_data[:dns_servers]
           .col-md-6
             h4 IPv6
             - case nic.ipv6_config
             - when "dynamic", "reserved"
               - ip_data = { \
-                setting: "自動",
+                setting: t_enum("auto", :ip_setting),
                 address: "-",
                 prefix_length: "-",
                 gateway: "-",
+                dns_servers: t_enum("auto", :ip_setting),
               }
             - when "static", "manual", "mapped"
               - ip_data = { \
-                setting: "手動",
+                setting: t_enum("manual", :ip_setting),
                 address: nic.ipv6_address.presence || sp,
                 prefix_length: nic.network&.ipv6_prefix_length.presence || sp,
                 gateway: nic.network&.ipv6_gateway.presence || sp,
+                dns_servers: nic.network&.ipv6_dns_servers || \
+                  Network.ipv4_global&.ipv6_dns_servers || sp,
               }
             - when "disabled"
               - ip_data = { \
-                setting: "無効",
+                setting: t_enum("disabled", :ip_setting),
                 address: "-",
                 prefix_length: "-",
                 gateway: "-",
+                dns_servers: "-",
               }
 
             dl.row.line
@@ -318,6 +328,8 @@
               dd.col-sm-6 = ip_data[:prefix_length]
               dt.col-sm-6 = Network.human_attribute_name(:gateway)
               dd.col-sm-6 = ip_data[:gateway]
+              dt.col-sm-6 = Network.human_attribute_name(:dns_servers)
+              dd.col-sm-6 = ip_data[:dns_servers]
 
     - if Settings.additional_messages.nic_setting
       p = Settings.additional_messages.nic_setting

@@ -423,6 +423,14 @@ class Network < ApplicationRecord
 
   # class methods
 
+  def self.ipv4_global
+    Network.find_by(ipv4_network_data: "\0" * 4)
+  end
+
+  def self.ipv6_global
+    Network.find_by(ipv6_network_data: "\0" * 16)
+  end
+
   def self.find_identifier(str)
     m = /\A(?<type>.)(?<value>[\h]+)\z/.match(str.to_s.strip.downcase)
     raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
