@@ -15,7 +15,7 @@ module Kea
       prefix: 2,
     }, prefix: :type
 
-    belongs_to :host, primary_key: "host_id"
+    belongs_to :host
 
     def ipv6
       if Kea::Ipv6Reservation.schema_major_version >= 19

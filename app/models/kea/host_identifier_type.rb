@@ -5,7 +5,7 @@ module Kea
     self.primary_key = "identifier_type"
 
     has_many :hosts, foreign_key: "dhcp_identifier_type",
-      primary_key: "identifier_type", inverse_of: :host_identifier_type
+      inverse_of: :host_identifier_type
 
     def readonly?
       true

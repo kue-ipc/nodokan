@@ -3,7 +3,9 @@ module Kea
     self.table_name = "lease4_stat"
     self.primary_key = [:subnet_id, :state]
 
-    belongs_to :lease_state, primary_key: "state", foreign_key: "state"
-    belongs_to :dhcp4_subnet, primary_key: "subnet_id", foreign_key: "subnet_id"
+    belongs_to :dhcp4_subnet, foreign_key: "subnet_id",
+      inverse_of: :lease4_stats
+
+    belongs_to :lease_state, foreign_key: "state", inverse_of: :lease4_stats
   end
 end

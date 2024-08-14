@@ -5,16 +5,15 @@ module Kea
 
     has_many :dhcp4_options, foreign_key: "scope_id",
       inverse_of: :dhcp_option_scope, dependent: :restrict_with_exception
-
     has_many :dhcp6_options, foreign_key: "scope_id",
       inverse_of: :dhcp_option_scope, dependent: :restrict_with_exception
 
-    def name
-      scope_name
-    end
-
     def readonly?
       true
+    end
+
+    def name
+      scope_name
     end
 
     def self.global

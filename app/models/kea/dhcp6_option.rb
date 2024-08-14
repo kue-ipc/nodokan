@@ -66,11 +66,9 @@ module Kea
 
     self.primary_key = "option_id"
 
-    belongs_to :dhcp6_subnet, optional: true
-
     belongs_to :dhcp_option_scope, foreign_key: "scope_id",
       inverse_of: :dhcp6_options
-
+    belongs_to :dhcp6_subnet, optional: true
     has_and_belongs_to_many :dhcp6_servers, join_table: "dhcp6_options_server",
       foreign_key: "option_id", association_foreign_key: "server_id"
   end
