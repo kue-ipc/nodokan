@@ -17,12 +17,25 @@ module Kea
 
     belongs_to :host
 
+    def name
+      ipv6.to_s
+    end
+
     def ipv6
       if Kea::Ipv6Reservation.schema_major_version >= 19
         IPAddr.new_ntoh(address)
       else
         IPAddr.new(address)
       end
+    end
+
+    def ipv6=(ip)
+      self.address =
+        if Kea::Ipv6Reservation.schema_major_version >= 19
+          ip.hton
+        else
+          ip.to_s
+        end
     end
   end
 end

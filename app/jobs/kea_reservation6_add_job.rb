@@ -10,15 +10,8 @@ class KeaReservation6AddJob < ApplicationJob
         host_identifier_type: Kea::HostIdentifierType.duid,
         dhcp6_subnet_id: network_id)
 
-      # view経由のため、reservation_idにnilを入れる必要がある
-      reservation = Kea::Ipv6Reservation.find_by(host: host) ||
-        Kea::Ipv6Reservation.new(reservation_id: nil, host: host)
-
-      if Kea::Ipv6Reservation.schema_major_version >= 19
-        reservation.update!(address: ip.hton)
-      else
-        reservation.update!(address: ip.to_s)
-      end
+      host.ipv6_reservation&.update!(ipv6: ip) ||
+        host.create_ipv6_reservation(ipv6: ip)
     end
   end
 end
