@@ -10,10 +10,10 @@ module Kea
     belongs_to :dhcp6_subnet, foreign_key: "subnet_id", inverse_of: :lease6s,
       optional: true
 
-    belongs_to :lease_state, foreign_key: "state", inverse_of: :lease6s,
-      optional: true
     belongs_to :lease_hwaddr_source, foreign_key: "hwaddr_source",
       inverse_of: :lease6s, optional: true
+    belongs_to :lease_state, foreign_key: "state", inverse_of: :lease6s,
+      optional: true
     belongs_to :lease6_type, foreign_key: "lease_type",
       inverse_of: :lease6s, optional: true
 
@@ -45,6 +45,12 @@ module Kea
     #   他に影響があるかは不明
     def id
       ipv6.to_i
+    end
+
+    def self.find(x)
+      puts "---------------------------"
+      pp x
+      super
     end
   end
 end

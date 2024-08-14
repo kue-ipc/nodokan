@@ -8,6 +8,8 @@ module Kea
 
     belongs_to :lease_state, foreign_key: "state", inverse_of: :lease4s,
       optional: true
+    belongs_to :lease4_type, foreign_key: "lease_type",
+      inverse_of: :lease4s, optional: true
 
     def ipv4
       IPAddr.new(address, Socket::AF_INET)

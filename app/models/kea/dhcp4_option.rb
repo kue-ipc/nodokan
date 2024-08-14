@@ -4,7 +4,6 @@ module Kea
 
     # https://kea.readthedocs.io/en/kea-2.2.0/arm/dhcp4-srv.html#dhcp4-std-options-list
     # name code type array
-    # rubocop: disable Layout/LineLength
     dhcp_option [
       ["time-offset", 2, "int32", false],
       ["routers", 3, "ipv4-address", true],
@@ -101,9 +100,11 @@ module Kea
       ["v4-lost", 137, "fqdn", false],
       ["capwap-ac-v4", 138, "ipv4-address", true],
       ["sip-ua-cs-domains", 141, "fqdn", true],
-      ["rdnss-selection", 146, "record (uint8, ipv4-address, ipv4-address, fqdn)", true],
+      ["rdnss-selection", 146,
+        "record (uint8, ipv4-address, ipv4-address, fqdn)", true,],
       ["v4-portparams", 159, "record (uint8, psid)", false],
-      ["option-6rd", 212, "record (uint8, uint8, ipv6-address, ipv4-address)", true],
+      ["option-6rd", 212, "record (uint8, uint8, ipv6-address, ipv4-address)",
+        true,],
       ["v4-access-domain", 213, "fqdn", false],
     ]
 

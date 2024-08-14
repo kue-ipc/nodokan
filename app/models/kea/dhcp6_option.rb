@@ -4,7 +4,6 @@ module Kea
 
     # https://kea.readthedocs.io/en/kea-2.2.0/arm/dhcp6-srv.html#standard-dhcpv6-options
     # name code type array
-    # rubocop: disable Layout/LineLength
     dhcp_option [
       ["preference", 7, "uint8", false],
       ["unicast", 12, "ipv6-address", false],
@@ -52,7 +51,8 @@ module Kea
       ["solmax-rt", 82, "uint32", false],
       ["inf-max-rt", 83, "uint32", false],
       ["dhcp4o6-server-addr", 88, "ipv6-address", true],
-      ["s46-rule", 89, "record (uint8, uint8, uint8, ipv4-address, ipv6-prefix)", false],
+      ["s46-rule", 89,
+        "record (uint8, uint8, uint8, ipv4-address, ipv6-prefix)", false,],
       ["s46-br", 90, "ipv6-address", false],
       ["s46-dmr", 91, "ipv6-prefix", false],
       ["s46-v4v6bind", 92, "record (ipv4-address, ipv6-prefix)", false],
