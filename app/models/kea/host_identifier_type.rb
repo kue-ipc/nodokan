@@ -1,8 +1,9 @@
 module Kea
   class HostIdentifierType < KeaRecord
-    # host_identifier_type_alt view in type as identifier_type
-    self.table_name = "host_identifier_type_alt"
-    self.primary_key = "identifier_type"
+    self.table_name = "host_identifier_type"
+    # type attribute is not an inheritence column
+    self.inheritance_column = "inheritance_type"
+    self.primary_key = "type"
 
     has_many :hosts, foreign_key: "dhcp_identifier_type",
       inverse_of: :host_identifier_type

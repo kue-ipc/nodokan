@@ -5,12 +5,12 @@ module Kea
     #   schema_version < 19.0 VARCHAR(39)
     #   scheam_version >= 19.0 BINARY(16)
 
-    # ipv6_reservations_alt view in type as reservation_type
-    self.table_name = "ipv6_reservations_alt"
+    # type attribute is not an inheritence column
+    self.inheritance_column = "inheritance_type"
     self.primary_key = "reservation_id"
 
     # type: Type of the reservation. A value of 0 is IPv6 address reservation, a value of 2 is IPv6 prefix reservation.
-    enum :reservation_type, {
+    enum :type, {
       address: 0,
       prefix: 2,
     }, prefix: :type
