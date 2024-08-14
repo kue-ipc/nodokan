@@ -6,6 +6,7 @@ class KeaReservationCheckAllJob < ApplicationJob
   def perform
     check_reservation4
     check_reservation6
+    clean_reservation
   end
 
   def check_reservation4
@@ -71,6 +72,6 @@ class KeaReservationCheckAllJob < ApplicationJob
     Kea::Host
       .where(dhcp4_subnet_id: nil)
       .where(dhcp6_subnet_id: nil)
-      .destory_all
+      .destroy_all
   end
 end
