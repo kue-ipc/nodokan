@@ -14,7 +14,7 @@ module Kea
       optional: true
     belongs_to :lease_hwaddr_source, foreign_key: "hwaddr_source",
       inverse_of: :lease6s, optional: true
-    belongs_to :lease6_types, foreign_key: "lease_type",
+    belongs_to :lease6_type, foreign_key: "lease_type",
       inverse_of: :lease6s, optional: true
 
     def ipv6
