@@ -152,7 +152,9 @@ module ImportExport
             I18n.t("errors.messages.invalid_nic_number_field"))
         end
       end
-    rescue InvalidFieldError
+      record
+    rescue InvalidFieldError => e
+      Ralis.logger.error { e.message }
       # do nothing
       record
     end

@@ -1,7 +1,5 @@
 ﻿id,user,name,fqdn,type,flag,host,components,place[area],place[building],place[floor],place[room],hardware[device_type],hardware[maker],hardware[product_name],hardware[model_number],operating_system[os_category],operating_system[name],duid,nic[number],nic[name],nic[interface_type],nic[network],nic[flag],nic[mac_address],nic[ipv4_config],nic[ipv4_address],nic[ipv6_config],nic[ipv6_address],note,[result],[message]
-,"",デスクトップパソコン,desktop.clients.example.jp,normal,"","","","","","","","","","","",Windowsクライアント,Windows 11 Pro,00-04-3B-6E-47-FF-4E-2A-4E-2E-92-43-AF-3F-80-45-2D-96,1,"",wired,v102,a,02-12-23-45-67-89,static,192.168.2.200,static,fd00:ab12:cd34:2:0:1::,備考,read,
-,"",ノートパソコン,note,mobile,"","","","","","","","","","","",Mac,macOS 14 Sonoma,00-04-5A-E2-5B-1E-B7-BE-46-3C-A1-A6-A4-57-95-DD-28-9A,1,"",wireless,v102,a,02-23-45-67-89-AB,reserved,192.168.2.100,reserved,fd00:ab12:cd34:2:6000::,"",read,
-,"",タブレット,"",mobile,"","","","","","","","","","","",Apple系,iPadOS 17,00-04-06-DE-C5-D2-C8-EA-4F-C7-AB-8D-16-D9-FB-BE-43-BA,1,"",wireless,v102,a,02-45-67-89-AB-CD,dynamic,"",dynamic,"","",read,
-,"",サーバー,sever.example.jp,normal,spd,"","","","","","","","","","",Windowsサーバー,Windows Server SAC,"",1,"",wired,v101,l,"",manual,192.168.1.1,mapped,fd00:ab12:cd34:1::c0a8:101,"",read,
-,"",仮想サーバー,vm.example.jp,virtual,"","","","","","","","","","","",Windowsサーバー,Windows Server SAC,"",1,"",virtual,v101,l,"",manual,192.168.1.2,mapped,fd00:ab12:cd34:1::c0a8:102,"",read,
-,"",論理端末,"",logical,"","","","","","","","","","","","","","",1,"",shared,v101,l,"",manual,192.168.1.3,mapped,fd00:ab12:cd34:1::c0a8:103,"",read,
+,user,パソコン,pc.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-3B-6E-47-FF-4E-2A-77-2E-92-43-AF-3F-80-45-2D-96,1,LAN,wired,v102,a,02-12-23-45-67-89,dynamic,,dynamic,,備考欄,,
+1,user,パソコン1,pc1.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-3B-6E-47-FF-4E-2A-4E-2E-92-43-AF-3F-80-45-2D-97,1,LAN,wired,v102,a,02-12-23-45-67-90,dynamic,,dynamic,,備考欄,,
+!2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,user,パソコン,pc2.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,,,,,,,,,,,,,,

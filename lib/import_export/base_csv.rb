@@ -334,7 +334,7 @@ module ImportExport
         in :update
           policy.update?
         in :delete
-          policy.delete?
+          policy.destroy?
         end
       return if auth
 

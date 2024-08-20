@@ -8,21 +8,16 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-
-    # warn "--------------"
-    # warn bulk.input.content_type
-    # warn bulk.input.blob.inspect
-    # # bulk.input.open do |file|
-    # #   file.each_line do |line|
-    # #     warn line
-    # #   end
-    # # end
-
-    bulk.output.open do |file|
-      file.each_line do |line|
-        warn line
-      end
-    end
     assert_equal "succeeded", bulk.status
+    output = bulk.output.open do |data|
+      data.set_encoding("UTF-8", "UTF-8")
+      first_char = data.getc
+      assert_equal "\u{feff}", first_char
+      csv = CSV.new(data, headers: :first_row)
+      csv.read.map(&:to_hash)
+    end
+    node = Node.find(output[0]["id"])
+    assert_equal "パソコン", node.name
+    assert_equal "LAN", node.nics.first.name
   end
 end

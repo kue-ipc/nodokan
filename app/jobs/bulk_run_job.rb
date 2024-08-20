@@ -77,8 +77,8 @@ class BulkRunJob < ApplicationJob
 
     if bulk.input.attached?
       bulk.input.open do |data|
-        # BOM付きUTF-8として読み込んでUTF-8に変換
-        data.set_encoding("BOM|UTF-8", "UTF-8")
+        # UTF-8として読み込む
+        data.set_encoding("UTF-8", "UTF-8")
         # BOMは手動で削除する必要がある
         first_char = data.getc
         data.ungetc(first_char) unless first_char == "\u{feff}"
