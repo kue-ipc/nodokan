@@ -30,7 +30,7 @@ namespace :kea do
     SQL
   end
 
-  desc "Setup keas database"
+  desc "Setup kea database"
   task setup: :migrate
 
   desc "Check kea record"
