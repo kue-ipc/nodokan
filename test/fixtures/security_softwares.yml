@@ -1,6 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+defender:
   os_category: win
   installation_method: :built_in
   name: Windows Defender
@@ -8,7 +8,7 @@ one:
   confirmed: true
   description: Windows 10 標準
 
-two:
+none:
   os_category: :win
   installation_method: :not_installed
   name: ''

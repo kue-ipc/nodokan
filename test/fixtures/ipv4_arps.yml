@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  ipv4_data: <%= ipv4_address('192.168.2.10') %>
+desktop1:
+  ipv4_data: <%= ipv4_address('192.168.2.31') %>
   mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
   begin_at: 2021-08-26 16:58:10
-  end_at: 2021-08-26 16:58:10
+  end_at: 2021-09-23 07:04:10
 
-two:
+desktop2:
+  ipv4_data: <%= ipv4_address('192.168.2.31') %>
+  mac_address_data: <%= mac_address('00-11-22-33-44-55') %>
+  begin_at: 2021-10-01 11:22:30
+  end_at: 2021-10-03 11:31:23
+
+noone:
   ipv4_data: <%= ipv4_address('192.168.2.110') %>
   mac_address_data: <%= mac_address('AA-BB-CC-DD-EE-FF') %>
-  begin_at: 2021-08-26 16:58:10
-  end_at: 2021-08-26 16:58:10
+  begin_at: 2022-07-24 03:33:20
+  end_at: 2023-01-03 23:12:02

@@ -1,18 +1,24 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+office_room:
+  area: Aキャンパス
+  building: センター
+  floor: 2
+  room: 事務室
+
+server_room:
   area: Aキャンパス
   building: センター
   floor: 1
   room: サーバー室
 
-two:
+lecture_room:
   area: Bキャンパス
   building: 講義棟
-  floor: 2
+  floor: 1
   room: 講義室101
 
-three:
+ground:
   area: Aキャンパス
   building: グランド
   floor: 0
