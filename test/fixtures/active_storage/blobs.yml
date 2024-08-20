@@ -1,1 +1,3 @@
 node_csv_blob: <%= ActiveStorage::FixtureSet.blob filename: "node.csv", service_name: "test_fixtures" %>
+
+node_ng_csv_blob: <%= ActiveStorage::FixtureSet.blob filename: "node_ng.csv", service_name: "test_fixtures" %>

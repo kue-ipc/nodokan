@@ -1,11 +1,26 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-import:
+import_node:
   user: user
   target: Node
   status: waiting
 
-export:
+import_node_ng:
   user: user
   target: Node
+  status: waiting
+
+export_node:
+  user: user
+  target: Node
+  status: waiting
+
+export_network:
+  user: user
+  target: Network
+  status: waiting
+
+export_user:
+  user: user
+  target: User
   status: waiting

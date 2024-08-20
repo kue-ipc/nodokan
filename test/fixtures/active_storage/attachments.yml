@@ -1,4 +1,9 @@
 node_csv:
   name: input
-  record: import (Bulk)
+  record: import_node (Bulk)
   blob: node_csv_blob
+
+node_ng_csv:
+  name: input
+  record: import_node_ng (Bulk)
+  blob: node_ng_csv_blob

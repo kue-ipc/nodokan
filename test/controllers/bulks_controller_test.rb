@@ -5,7 +5,7 @@ class BulksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    @bulk = bulks(:import)
+    @bulk = bulks(:import_node)
   end
 
   # test "should get index" do
