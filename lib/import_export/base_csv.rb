@@ -6,7 +6,7 @@ require "import_export/batch"
 module ImportExport
   # BascCsv is abstract class for CSV management
   class BaseCsv < Batch
-    class InvaildFieldError < StandardError
+    class InvalidFieldError < StandardError
     end
     # abstract methods
     # * model_class()

@@ -76,7 +76,7 @@ module ImportExport
 
     # override
     def row_to_record(row, record: model_class.new, keys: attrs, **opts)
-      record.user = @user if record.new_record? && !@user.nil && !@user.admin?
+      record.user = @user if record.new_record? && @user && !@user.admin?
 
       super(row, record: record, keys: keys & %w(
         user name fqdn type flag
@@ -98,7 +98,8 @@ module ImportExport
           if device_type.nil?
             record.errors.add("hardware[device_type]",
               I18n.t("errors.messages.not_found"))
-            raise InvalidFieldError, "device type is not fonud by name: #{name}"
+            raise InvalidFieldError,
+              "device type is not fonud by name: #{name}"
           end
           hardware_params[:device_type_id] = device_type.id
         end
@@ -151,7 +152,7 @@ module ImportExport
             I18n.t("errors.messages.invalid_nic_number_field"))
         end
       end
-    rescue InvaildFieldError
+    rescue InvalidFieldError
       # do nothing
       record
     end
@@ -191,7 +192,11 @@ module ImportExport
     end
 
     private def create_nic(record, params)
-      record.nics.create!(params)
+      if record.new_record?
+        record.nics.build(params)
+      else
+        record.nics.create!(params)
+      end
     end
 
     private def update_nic(record, nic_number, params)

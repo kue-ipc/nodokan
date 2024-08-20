@@ -1,0 +1,4 @@
+node_csv:
+  name: input
+  record: import (Bulk)
+  blob: node_csv_blob

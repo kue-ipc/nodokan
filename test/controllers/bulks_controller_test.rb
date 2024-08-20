@@ -1,8 +1,11 @@
 require "test_helper"
 
 class BulksControllerTest < ActionDispatch::IntegrationTest
+  include ActiveJob::TestHelper
+  include Devise::Test::IntegrationHelpers
+
   setup do
-    @bulk = bulks(:one)
+    @bulk = bulks(:import)
   end
 
   # test "should get index" do
@@ -15,15 +18,20 @@ class BulksControllerTest < ActionDispatch::IntegrationTest
   #   assert_response :success
   # end
 
-  # test "should create bulk" do
-  #   assert_difference("Bulk.count") do
-  #     post bulks_url,
-  #       params: {bulk: {model: @bulk.model, started_at: @bulk.started_at,
-  #                       status: @bulk.status, stopped_at: @bulk.stopped_at, user_id: @bulk.user_id,}}
-  #   end
-
-  #   assert_redirected_to bulk_url(Bulk.last)
-  # end
+  test "should create bulk" do
+    sign_in users(:user)
+    assert_difference("Bulk.count") do
+      assert_enqueued_with(job: BulkRunJob) do
+        post bulks_url, params: {bulk: {
+          target: @bulk.target, user_id: @bulk.user_id,
+          input: file_fixture_upload("node.csv", "text/csv"),
+        }}
+      end
+    end
+    bulk = Bulk.last
+    assert_redirected_to bulk_url(bulk)
+    assert_equal "waiting", bulk.status
+  end
 
   # test "should show bulk" do
   #   get bulk_url(@bulk)

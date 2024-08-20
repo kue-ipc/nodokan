@@ -13,7 +13,7 @@ class BulkRunJob < ApplicationJob
 
   def perform(bulk, retry_count = 10)
     PaperTrail.request.disable_model(Bulk)
-    if bulk.input.attached? && !bulk.input.analyzed?
+    if bulk.input.attached? && bulk.input.content_type.nil?
       retry_count -= 1
       raise BulkRunError, "Do not analyze input file " if retry_count.negative?
 
