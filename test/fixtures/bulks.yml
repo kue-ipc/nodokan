@@ -10,6 +10,16 @@ import_node_ng:
   target: Node
   status: waiting
 
+import_networck:
+  user: user
+  target: Network
+  status: waiting
+
+import_user:
+  user: user
+  target: User
+  status: waiting
+
 export_node:
   user: user
   target: Node
