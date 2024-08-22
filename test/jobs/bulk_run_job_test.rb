@@ -8,15 +8,24 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-    assert_equal "succeeded", bulk.status
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+    input_size = bulk.input.open do |file|
+      CSV.table(file.path, encoding: "BOM|UTF-8").size
     end
-    node = Node.find(output[0]["id"])
+    output = bulk.output.open do |file|
+      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+    assert_equal input_size, output.size
+
+    node = Node.find(output[0][:id])
+    warn node.duid
+    warn nodes(:desktop).duid
     assert_equal "パソコン", node.name
     assert_equal "LAN", node.nics.first.name
   end
@@ -28,17 +37,24 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-    assert_equal "succeeded", bulk.status
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+    input_size = bulk.input.open do |file|
+      CSV.table(file.path, encoding: "BOM|UTF-8").size
     end
-    node = Node.find(output[0]["id"])
-    assert_equal "パソコン", node.name
-    assert_equal "LAN", node.nics.first.name
+    output = bulk.output.open do |file|
+      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "failed", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal 0, bulk.success
+    assert_equal input_size, bulk.failure
+    assert_equal input_size, output.size
+
+    output.each do |result|
+      assert_equal "failed", result["[result]"]
+    end
   end
 
   test "run export Node" do

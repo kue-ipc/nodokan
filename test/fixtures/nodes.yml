@@ -51,6 +51,7 @@ other_desktop:
   user: other
 
 admin_desktop:
+  id: 42
   name: 管理者のデスクトップパソコン
   place: server_room
   hardware: desktop
@@ -61,7 +62,7 @@ admin_desktop:
 virtual_desktop:
   name: 仮想のデスクトップパソコン
   node_type: virtual
-  host_id: 42
+  host: cluster
   hardware: virtual
   operating_system: win
   note: 仮想マシン
@@ -79,7 +80,6 @@ router:
 cluster:
   name: クラスター
   node_type: logical
-  id: 42
   user: user
 
 child1:
