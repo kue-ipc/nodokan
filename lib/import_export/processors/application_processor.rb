@@ -16,20 +16,27 @@ module ImportExport
       def self.keys(*args, **kwargs)
         return @keys if args.empty? && kwargs.empty?
 
+        @keys = normalize_keys([*args, kwargs])
+      end
+
+      def self.normalize_keys(keys)
+        return keys if keys == []
+        return keys if keys == {}
+
+        keys = [keys] unless keys.is_a?(Array)
         hash = {}
-        @keys = []
-        args.each do |arg|
-          case args
-          in Simbol
-            @keys << arg
-          in String
-            @keys << arg.intern
+        normalized = []
+        keys.each do |key|
+          case key
+          in Symbol
+            normalized << key
           in Hash
-            hash.deep_merge!(arg)
+            hash.deep_merge!(key.transform_values { |v| normalize_keys(v) })
           end
         end
-        hash.deep_merge!(kwargs)
-        @keys << hash.freeze
+        normalized << hash if hash.present?
+        normalized.uniq!
+        normalized
       end
 
       def keys
@@ -56,13 +63,13 @@ module ImportExport
           end
         elsif keys == []
           # scalar array
-          params = record
+          params = convert_value(record)
         else
           params ||= ActiveSupport::HashWithIndifferentAccess.new
           keys.each do |key|
             case key
             in Symbol
-              params[key] = get_param(record, key)
+              params[key] = convert_value(get_param(record, key))
             in Hash
               key.each do |k, v|
                 params[k] = record_to_params(get_param(record, k),
@@ -95,6 +102,23 @@ module ImportExport
 
       def set_param(record, key, param)
         record.__send__("#{key}=", param)
+      end
+
+      def convert_value(value)
+        case value
+        in Hash
+          value.transform_values(&method(:convert_value))
+        in Enumerable
+          value.map(&method(:convert_value))
+        in ApplicationRecord
+          if value.respond_to?(:identifier)
+            value.identifier
+          else
+            value.to_s
+          end
+        else
+          value
+        end
       end
 
       # # "abc[def][ghi]" -> ["abc", "def", "ghi"]

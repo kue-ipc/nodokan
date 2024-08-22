@@ -25,12 +25,16 @@ module ImportExport
         ipv6_pools: [])
 
       # override
-      def row_assign(row, record, key, **_opts)
+      def get_param(record, key)
         case key
-        when "ipv4_network"
-          row[key] = record.ipv4_network_cidr
-        when "ipv6_network"
-          row[key] = record.ipv6_network_cidr
+        in :ipv4_network
+          record.ipv4_network_cidr
+        in :ipv4_gateway
+          record.ipv4_gateway_address
+        in :ipv6_network
+          record.ipv6_network_cidr
+        in :ipv6_gateway
+          record.ipv6_gateway_address
         else
           super
         end

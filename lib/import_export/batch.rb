@@ -11,7 +11,7 @@ module ImportExport
     #   def out
 
     def self.content_type(str = nil)
-      return @content_type if str.nil
+      return @content_type if str.nil?
 
       @content_type = str
     end
@@ -32,8 +32,8 @@ module ImportExport
 
     attr_reader :result, :count
 
-    def initialize(converter, **_opts)
-      @converter = converter
+    def initialize(processor, **_opts)
+      @processor = processor
       @count = 0
       @result = Hash.new(0)
     end
@@ -65,11 +65,11 @@ module ImportExport
     end
 
     def export(&block)
-      @converter.record_all.find_each do |record|
+      @processor.record_all.find_each do |record|
         params = ActiveSupport::HashWithIndifferentAccess.new
         params[:id] ||= record.id
         begin
-          @converter.user_process(record, :read) do
+          @processor.user_process(record, :read) do
             @processor.record_to_params(record, params: params)
             params["[result]"] = :read
           end

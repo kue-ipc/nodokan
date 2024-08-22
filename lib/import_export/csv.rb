@@ -23,8 +23,7 @@ module ImportExport
         out = StringIO.new(out) if out.is_a?(String)
         out << "\u{feff}"
       end
-      @csv = CSV.new(out, headers: headers(@converter.keys),
-        write_headers: true, **opts)
+      @csv = CSV.new(out, headers: headers, write_headers: true, **opts)
       @delimiter = delimiter
     end
 
@@ -41,27 +40,41 @@ module ImportExport
     def each_params(data)
     end
 
-    def params_each_row(params)
-      row = empty_row
-      additional_rows = []
+    def params_each_row(params, &block)
+      rows = [empty_row]
+      put_in_rows(rows, params)
+      rows.each(&block)
+    end
+
+    def put_in_rows(rows, params, parent: nil)
       params.each do |key, value|
-        next if value.empty?
+        next if value.blank?
 
         case value
         in Array
+          value = value.compact_blank
           if value.first.is_a?(Hash)
-
+            new_rows = value.flat_map do |hash|
+              put_in_rows(rows.map(&:clone), hash,
+                parent: key_to_header(key.singularize, parent: parent))
+            end
+            rows.replace(new_rows)
           else
-            value.map(&:to_s).join(@delimiter)
+            rows.each do |row|
+              row[key_to_header(key, parent: parent)] =
+                value.map(&:to_s).join(@delimiter)
+            end
           end
         in Hash
-          value.each do |k, v|
-            row["#{key}[#{k}]"] = v
+          put_in_rows(rows, value, parent: key)
+        in String | Symbol | Numeric | true | false |
+          Date | Time | DateTime
+          rows.each do |row|
+            row[key_to_header(key, parent: parent)] = value.to_s
           end
-        else
-          row[key] = value.to_s
         end
       end
+      rows
     end
 
     # def add_result(row)
@@ -186,7 +199,7 @@ module ImportExport
     #   end
     # end
 
-    def headers(keys)
+    def headers(keys = @processor.keys)
       @headers ||= ["id", *headers_from_keys(keys), "[result]", "[message]"]
     end
 
@@ -257,28 +270,6 @@ module ImportExport
     #     row_assign(row, record, key, **opts)
     #   end
     #   row
-    # end
-
-    # def value_to_field(value)
-    #   if value.nil?
-    #     ""
-    #   elsif value.is_a?(Enumerable)
-    #     value.map { |item| value_to_identifier(item) }.join(delimiter)
-    #   else
-    #     value_to_identifier(value)
-    #   end
-    # end
-
-    # def value_to_identifier(value)
-    #   if value.nil?
-    #     ""
-    #   elsif value.respond_to?(:identifier)
-    #     value.identifier
-    #   elsif value.respond_to?(:to_str)
-    #     value.to_str
-    #   else
-    #     value.to_s
-    #   end
     # end
 
     # # 値が空白や存在しない場合は上書きしない。
