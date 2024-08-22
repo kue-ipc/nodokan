@@ -21,6 +21,9 @@ Layout/ArgumentAlignment:
 Layout/ArrayAlignment:
   EnforcedStyle: with_fixed_indentation
 
+Layout/CaseIndentation:
+  EnforcedStyle: end
+
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 
