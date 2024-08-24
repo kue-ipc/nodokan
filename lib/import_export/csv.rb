@@ -211,9 +211,9 @@ module ImportExport
         in Hash
           key.map do |k, v|
             if v == []
-              key_to_header(key, parent: parent)
+              key_to_header(k, parent: parent)
             else
-              keys_to_headers(v, parent: key_to_header(key, parent: parent))
+              keys_to_headers(v, parent: key_to_header(k, parent: parent))
             end
           end
         end
