@@ -3,14 +3,15 @@ require "active_support"
 module ImportExport
   module Processors
     class ApplicationProcessor
+      # class method
+      # model
+      # keys
+      # key_map
+
       def self.model(model = nil)
         return @model if model.nil?
 
         @model = model
-      end
-
-      def model
-        self.class.model
       end
 
       def self.keys(*args, **kwargs)
@@ -39,12 +40,36 @@ module ImportExport
         normalized
       end
 
-      def keys
-        self.class.keys
+      def self.convert_map(map = nil)
+        return @convert_map if map.nil?
+
+        @convert_map = map
       end
 
       def initialize(user = nil)
         @user = user
+      end
+
+      def model
+        self.class.model
+      end
+
+      def keys
+        self.class.keys
+      end
+
+      def convert(key, method)
+        proc = self.class.convert_map[key] || key
+        proc = proc[method] || key if proc.is_a?(Hash)
+        if proc.is_a?(Symbol)
+          proc =
+            if method == :set
+              :"{proc}=".to_proc
+            else
+              proc.to_proc
+            end
+        end
+        proc
       end
 
       def record_all
@@ -97,11 +122,11 @@ module ImportExport
       end
 
       def get_param(record, key)
-        record.__send__(key)
+        convert(key, :get).call(record)
       end
 
       def set_param(record, key, param)
-        record.__send__("#{key}=", param)
+        convert(key, :set).call(record, param)
       end
 
       def convert_value(value)
