@@ -137,6 +137,40 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal Network.find(output[0]["id"]).name, output[0]["name"]
   end
 
+  test "run import Network" do
+    bulk = bulks(:import_network)
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    assert_equal "failed", bulk.status
+  end
+
+  test "admin run import Network" do
+    bulk = bulks(:import_network)
+    bulk.update(user: users(:admin))
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file.path, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+    assert_equal input_size, output.size
+  end
+
   test "run export User" do
     bulk = bulks(:export_user)
     perform_enqueued_jobs do

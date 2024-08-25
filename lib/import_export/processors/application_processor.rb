@@ -82,7 +82,7 @@ module ImportExport
       end
 
       def params_to_record(params, record: model.new, keys: self.keys)
-        params = ActiveController::Parameter.new(params).permit(*keys)
+        params = ActionController::Parameters.new(params).permit(*keys)
         keys.each do |key|
           case key
           in Symbol
@@ -120,25 +120,6 @@ module ImportExport
           value
         end
       end
-
-      # # "abc[def][ghi]" -> ["abc", "def", "ghi"]
-      # def key_to_list(key)
-      #   list = []
-      #   while (m = /\A([^\[]*)\[([^\]]*)\](.*)\z/.match(key))
-      #     list << m[1]
-      #     key = m[2] + m[3]
-      #   end
-      #   list << key
-      #   list
-      # end
-
-      # # ["abc", "def", "ghi"] -> "abc[def][ghi]"
-      # def list_to_key(list)
-      #   tmp = list.dup
-      #   str = tmp.shift.dup
-      #   str << "[#{tmp.shift}]" until tmp.empty?
-      #   str
-      # end
 
       def create(params)
         user_process(params_to_record(params), :create) do |record|

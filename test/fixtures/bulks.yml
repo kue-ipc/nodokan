@@ -10,7 +10,7 @@ import_node_ng:
   target: Node
   status: waiting
 
-import_networck:
+import_network:
   user: user
   target: Network
   status: waiting

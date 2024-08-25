@@ -7,7 +7,7 @@ module ImportExport
     #   exname ...
     # define instance methods
     #   def add_to_out(params)
-    #   def each_params(data)
+    #   def parse_data_each_params(data)
     #   def out
 
     def self.content_type(str = nil)

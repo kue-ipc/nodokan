@@ -7,3 +7,8 @@ node_ng_csv:
   name: input
   record: import_node_ng (Bulk)
   blob: node_ng_csv_blob
+
+network_csv:
+  name: input
+  record: import_network (Bulk)
+  blob: network_csv_blob
