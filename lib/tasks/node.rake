@@ -1,5 +1,4 @@
 require "json"
-require "import_export/node_csv"
 
 namespace :node do
   desc "Export CSV of nodes"

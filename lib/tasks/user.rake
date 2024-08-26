@@ -1,7 +1,5 @@
 require "json"
 
-require "import_export/user_csv"
-
 namespace :user do
   desc "Sync users"
   task sync: :environment do
