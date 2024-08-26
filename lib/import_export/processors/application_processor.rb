@@ -4,46 +4,45 @@ module ImportExport
   module Processors
     class ApplicationProcessor
       # class method
-      # model
-      # keys
-      # key_map
+      #   class_name
+      #   params_permit
+      #   convert_map
+      class << self
+        attr_reader :model, :keys, :get_map, :set_map
 
-      def self.model(model = nil)
-        return @model if model.nil?
+        def class_name(name)
+          @model = name.constantize
+        end
 
-        @model = model
-      end
+        def params_permit(*args, **kwargs)
+          @keys = normalize_keys([*args, kwargs])
+        end
 
-      def self.keys(*args, **kwargs)
-        return @keys if args.empty? && kwargs.empty?
+        def normalize_keys(keys)
+          return keys if keys == []
+          return keys if keys == {}
 
-        @keys = normalize_keys([*args, kwargs])
-      end
-
-      def self.normalize_keys(keys)
-        return keys if keys == []
-        return keys if keys == {}
-
-        keys = [keys] unless keys.is_a?(Array)
-        hash = {}
-        normalized = []
-        keys.each do |key|
-          case key
-          in Symbol
-            normalized << key
-          in Hash
-            hash.deep_merge!(key.transform_values { |v| normalize_keys(v) })
+          keys = [keys] unless keys.is_a?(Array)
+          keys.map do |key|
+            case key
+            in Symbol
+              key
+            in Hash
+              key.transform_values { |v| normalize_keys(v) }
+            end
           end
         end
-        normalized << hash if hash.present?
-        normalized.uniq!
-        normalized
-      end
 
-      def self.convert_map(map = nil)
-        return @convert_map if map.nil?
+        def converter(key, proc = nil, get: nil, set: nil)
+          @get_map ||= {}.with_indifferent_access
+          get ||= proc || key
+          @get_map[key] = get.to_proc
 
-        @convert_map = map
+          @set_map ||= {}.with_indifferent_access
+          set ||= proc || key
+          set = :"#{set}=" if set.is_a?(Symbol) && !set.end_with?("=")
+          @set_map[key] = set.to_proc
+        end
       end
 
       def initialize(user = nil)
@@ -58,18 +57,13 @@ module ImportExport
         self.class.keys
       end
 
-      def convert(key, method)
-        proc = self.class.convert_map[key] || key
-        proc = proc[method] || key if proc.is_a?(Hash)
-        if proc.is_a?(Symbol)
-          proc =
-            if method == :set
-              :"{proc}=".to_proc
-            else
-              proc.to_proc
-            end
+      def key_converter(key, method)
+        case method
+        in :get
+          self.class.get_map[key] || key.to_proc
+        in :set
+          self.class.set_map[key] || :"#{key}=".to_proc
         end
-        proc
       end
 
       def record_all
@@ -122,11 +116,11 @@ module ImportExport
       end
 
       def get_param(record, key)
-        convert(key, :get).call(record)
+        key_converter(key, :get).call(record)
       end
 
       def set_param(record, key, param)
-        convert(key, :set).call(record, param)
+        key_converter(key, :set).call(record, param)
       end
 
       def convert_value(value)

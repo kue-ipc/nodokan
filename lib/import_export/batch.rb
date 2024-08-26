@@ -123,7 +123,7 @@ module ImportExport
         messages << I18n.t(key, scope: "errors.message", resource: record,
           count: record.errors.count)
       end
-      messages.concat(records.errors.full_messages)
+      messages.concat(record.errors.full_messages)
       messages.join("\n")
     end
 
