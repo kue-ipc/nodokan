@@ -86,7 +86,8 @@ module ImportExport
     end
 
     def import_params(params)
-      id = params[:id]&.strip
+      id = params[:id]
+      id = id.strip if id.is_a?(String)
       case id
       when nil, ""
         record = @processor.create(params)
