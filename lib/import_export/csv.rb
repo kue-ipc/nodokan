@@ -91,7 +91,7 @@ module ImportExport
             if v == []
               key_to_header(k, parent: parent)
             else
-              keys_to_headers(v, parent: key_to_header(k, parent: parent))
+              headers_from_keys(v, parent: key_to_header(k, parent: parent))
             end
           end
         end

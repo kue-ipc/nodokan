@@ -7,6 +7,7 @@ module ImportExport
   module Processors
     class NetworksProcessor < ApplicationProcessor
       class_name "Network"
+
       params_permit(
         :name, :vlan, :flag, :ra,
         :domain, {domain_search: []},
