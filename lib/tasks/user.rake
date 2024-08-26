@@ -18,28 +18,32 @@ namespace :user do
     puts "detroied: #{users.count}"
   end
 
-  desc "Export CSV of users"
-  task export: :environment do
-    file_out = "users_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
-    (Rails.root / "data" / file_out).open("w") do |csv_out|
-      puts "export csv ..."
-      user_csv = ImportExport::UserCsv.new(out: csv_out, with_bom: true)
-      user_csv.export
-      puts "result: #{user_csv.result.to_json}"
-    end
-  end
-
   desc "Import CSV of users"
   task import: :environment do
-    file_in = "users.csv"
-    file_out = "users_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
+    name = "users"
+    processor = ImportExport::Processors::UsersProcessor.new
+    file_in = "#{name}.csv"
+    file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
     (Rails.root / "data" / file_in).open("r:BOM|UTF-8") do |csv_in|
       (Rails.root / "data" / file_out).open("w") do |csv_out|
         puts "import csv ..."
-        user_csv = ImportExport::UserCsv.new(out: csv_out, with_bom: true)
-        user_csv.import(csv_in)
-        puts "result: #{user_csv.result.to_json}"
+        batch = ImportExport::Csv.new(processor, out: csv_out, with_bom: true)
+        batch.import(csv_in)
+        puts "result: #{batch.result.to_json}"
       end
+    end
+  end
+
+  desc "Export CSV of users"
+  task export: :environment do
+    name = "users"
+    processor = ImportExport::Processors::UsersProcessor.new
+    file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
+    (Rails.root / "data" / file_out).open("w") do |csv_out|
+      puts "export csv ..."
+      batch = ImportExport::Csv.new(processor, out: csv_out, with_bom: true)
+      batch.export
+      puts "result: #{batch.result.to_json}"
     end
   end
 end
