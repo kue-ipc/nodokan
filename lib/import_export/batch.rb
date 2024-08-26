@@ -120,7 +120,7 @@ module ImportExport
     private def record_error_message(record, key = nil)
       messages = []
       if key
-        messages << I18n.t(key, scope: "errors.message", resource: record,
+        messages << I18n.t(key, scope: "errors.messages", resource: record,
           count: record.errors.count)
       end
       messages.concat(record.errors.full_messages)

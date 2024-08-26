@@ -126,24 +126,32 @@ module ImportExport
       end
     end
 
-    def row_to_params(row, params: nil)
+    def row_to_params(row, params: nil, keys: @processor.keys)
       params ||= {}.with_indifferent_access
       row.to_hash.compact_blank.each do |key, value|
-        current = params
+        cur_params = params
+        cur_keys = keys
         while (m = /\A([^\[]+)\[([^\[]*)\]((?:\[[^\[]*\])*)\z/.match(key))
-          parent = m[1]
+          parent = m[1].intern
           child = m[2]
           descendants = m[3]
-          current[parent] ||= {}.with_indifferent_access
+          cur_params[parent] ||= {}.with_indifferent_access
           # next
-          current = current[parent]
-          key = "#{child}#{descendants}"
+          cur_params = cur_params[parent]
+          cur_keys = cur_keys.find { |k| k.is_a?(Hash) && k.key?(parent) }
+            &.fetch(parent, [])
+          key = :"#{child}#{descendants}"
         end
         if key =~ /\[|\]/
           raise InvalidHeaderError, "'[|]' must not be included in header"
         end
 
-        current[key] = value
+        cur_params[key] =
+          if cur_keys.any? { |k| k.is_a?(Hash) && k[key] == [] }
+            value.to_s.split
+          else
+            value
+          end
       end
       params
     end

@@ -7,6 +7,7 @@ module ImportExport
       #   class_name
       #   params_permit
       #   convert_map
+
       class << self
         attr_reader :model, :keys, :get_map, :set_map
 
@@ -102,15 +103,8 @@ module ImportExport
 
       def params_to_record(params, record: model.new, keys: self.keys)
         params = ActionController::Parameters.new(params).permit(*keys)
-        keys.each do |key|
-          case key
-          in Symbol
-            set_param(record, key, params[key])
-          in Hash
-            key.each_key do |k|
-              set_param(record, k, params[key])
-            end
-          end
+        params.each do |key, value|
+          set_param(record, key, value)
         end
         record
       end
