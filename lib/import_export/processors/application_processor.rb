@@ -117,11 +117,11 @@ module ImportExport
       end
 
       def get_param(record, key)
-        key_converter(key, :get).call(record)
+        instance_exec(record, &key_converter(key, :get))
       end
 
       def set_param(record, key, param)
-        key_converter(key, :set).call(record, param)
+        instance_exec(record, param, &key_converter(key, :set))
       end
 
       def convert_value(value)

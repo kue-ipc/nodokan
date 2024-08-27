@@ -18,41 +18,42 @@ module ImportExport
 
       converter :type, :node_type
 
-      # override
-      def row_assign(row, record, key, nic: nil, **_opts)
-        case key
-        when "type"
-          row[key] = record.node_type
-        when "nic[number]", "nic[name]", "nic[interface_type]", "nic[network]",
-            "nic[flag]", "nic[mac_address]",
-            "nic[ipv4_config]", "nic[ipv4_address]",
-            "nic[ipv6_config]", "nic[ipv6_address]"
-          if nic
-            row[key] =
-              value_to_field(nic.__send__(key_to_list(key).last))
-          end
-        else
-          super
-        end
-      end
+      converter :user, set: ->(record, value) {
+        record.user = User.find_identifier(value)
+      }
+
+      converter :host, set: ->(record, value) {
+        record.host = Node.find_identifier(value)
+      }
+
+      converter :components, set: ->(record, value) {
+        record.components = value.map(&Node.method(:find_identifier))
+      }
+
+      converter :place, set: ->(record, value) {
+        record.place = find_or_new_place(value, record.place)
+      }
+
+      converter :hardware, set: ->(record, value) {
+        record.hardware = find_or_new_hardware(value, record.hardware)
+      }
+
+      converter :operating_system, set: ->(record, value) {
+        record.operating_system =
+          find_or_new_operating_system(value, record.operating_system)
+      }
+
+      converter :nics, set: ->(record, value) {
+        # TODO: 実装すること
+        #   do nothing
+        pp value
+      }
 
       # override
-      def record_assign(record, row, key, **_opts)
-        case key
-        when "user"
-          if @user.nil? || @user.admin?
-            record.user = User.find_by(username: row["user"])
-          end
-        when "type"
-          record.node_type = row["type"]
-        when "host"
-          record.host = Node.find_identifier(row["host"])
-        when "components"
-          record.components = row["components"].split.map do |identifier|
-            Node.find_identifier(identifier)
-          end
-        else
-          super
+      def create(params)
+        user_process(params_to_record(params), :create) do |record|
+          record.user ||= @user
+          record.save if record.errors.empty?
         end
       end
 
@@ -149,31 +150,54 @@ module ImportExport
           floor: place&.floor || 0,
           room: place&.room || "",
         }.merge(params)
-        return unless params.values_at(:area, :building, :room).any?(&:present?)
 
         Place.find_or_initialize_by(params)
       end
 
       private def find_or_new_hardware(params, hardware = nil)
+        params = params.dup
+        errors = []
+        if params.key?(:device_type)
+          params[:device_type] = DeviceType.find_by(name: params[:device_type])
+          if params[:device_type].nil?
+            errors << [:device_type, I18n.t("errors.messages.not_found")]
+          end
+        end
+
         params = {
-          device_type_id: hardware&.device_type_id,
+          device_type: hardware&.device_type,
           maker: hardware&.maker || "",
           product_name: hardware&.product_name || "",
           model_number: hardware&.model_number || "",
         }.merge(params)
-        return unless params.values.any?(&:present?)
 
-        Hardware.find_or_initialize_by(params)
+        hardware = Hardware.find_or_initialize_by(params)
+        errors.each do |error|
+          hardware.errors.add(*error)
+        end
+        hardware
       end
 
       private def find_or_new_operating_system(params, operating_system = nil)
+        params = params.dup
+        errors = []
+        if params.key?(:os_category)
+          params[:os_category] = OsCategory.find_by(name: params[:os_category])
+          if params[:os_category].nil?
+            errors << [:os_category, I18n.t("errors.messages.not_found")]
+          end
+        end
+
         params = {
-          os_category_id: operating_system&.os_category_id,
+          os_category: operating_system&.os_category,
           name: operating_system&.name || "",
         }.merge(params)
-        return if params[:os_category_id].blank?
 
-        OperatingSystem.find_or_initialize_by(params)
+        operating_system = OperatingSystem.find_or_initialize_by(params)
+        errors.each do |error|
+          operating_system.errors.add(*error)
+        end
+        operating_system
       end
 
       private def create_nic(record, params)
