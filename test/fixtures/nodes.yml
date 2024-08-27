@@ -78,6 +78,7 @@ router:
   operating_system: less
 
 cluster:
+  id: 100
   name: クラスター
   node_type: logical
   user: user

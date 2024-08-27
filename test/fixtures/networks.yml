@@ -1,5 +1,23 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+all:
+  id: 1
+  name: 全設定
+  domain: test.example.jp
+  domain_search_data: <%= ["service.example.jp", "example.jp"].to_json.inspect %>
+  auth: false
+  locked: true
+  specific: false
+  dhcp: true
+  ra: stateless
+  ipv4_network_data: <%= ipv4_address('0.0.0.0') %>
+  ipv4_prefix_length: 0
+  ipv4_dns_servers_data: <%= ["192.168.1.53", "192.168.2.53"].to_json.inspect %>
+  ipv6_network_data: <%= ipv6_address('::') %>
+  ipv6_prefix_length: 0
+  ipv6_dns_servers_data: <%= ["fd00:1::53", "fd00:2::53"].to_json.inspect %>
+  note: 全体設定
+
 extra:
   name: 外部ネットワーク
   vlan: 99
@@ -35,6 +53,8 @@ server:
 client:
   name: クライアントネットワーク
   vlan: 102
+  domain: client.example.jp
+  domain_search_data: <%= ["service.example.jp", "server.example.jp", "example.jp"].to_json.inspect %>
   auth: true
   locked: false
   specific: false
@@ -43,9 +63,11 @@ client:
   ipv4_network_data: <%= ipv4_address('192.168.2.0') %>
   ipv4_prefix_length: 24
   ipv4_gateway_data: <%= ipv4_address('192.168.2.254') %>
+  ipv4_dns_servers_data: <%= ["192.168.2.53", "192.168.1.53"].to_json.inspect %>
   ipv6_network_data: <%= ipv6_address('fd00:2::') %>
   ipv6_prefix_length: 64
   ipv6_gateway_data: <%= ipv6_address('fd00:2::1') %>
+  ipv6_dns_servers_data: <%= ["fd00:2::53", "fd00:1::53"].to_json.inspect %>
   note: クライアント用のネットワーク
 
 free:
@@ -110,6 +132,7 @@ noip:
   ipv6_gateway_data:
 
 last:
+  id: 42
   name: 最後のネットワーク
   vlan: 200
   auth: true

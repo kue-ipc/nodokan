@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 cluster1:
-  node_id: 42
+  node_id: 100
   component_id: 1
 
 cluster2:
-  node_id: 42
+  node_id: 100
   component_id: 2

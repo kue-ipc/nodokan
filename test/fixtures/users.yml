@@ -17,6 +17,7 @@ user:
   role: :user
 
 other:
+  id: 42
   username: other
   email: other@example.jp
   fullname: 亜座　次郎

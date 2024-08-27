@@ -9,8 +9,8 @@ module ImportExport
       class_name "Network"
 
       params_permit(
-        :name, :vlan, :flag, :ra,
-        :domain, {domain_search: []},
+        :name, :vlan, :domain, {domain_search: []},
+        :flag, :ra,
         :ipv4_network,  :ipv4_gateway, {ipv4_dns_servers: [], ipv4_pools: []},
         :ipv6_network,  :ipv6_gateway, {ipv6_dns_servers: [], ipv6_pools: []},
         :note)

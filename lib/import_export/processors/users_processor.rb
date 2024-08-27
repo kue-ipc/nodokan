@@ -6,9 +6,8 @@ module ImportExport
       class_name "User"
 
       params_permit(
-        :username, :email, :fullname, :role, :flag, :limit,
-        :auth_network,
-        networks: [])
+        :username, :email, :fullname, :flag, :role, :limit,
+        :auth_network, {networks: []})
 
       converter :auth_network, set: ->(record, value) {
         record.auth_network = Network.find_identifier(value)

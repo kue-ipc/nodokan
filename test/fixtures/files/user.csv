@@ -1,0 +1,9 @@
+﻿id,username,email,fullname,flag,role,limit,auth_network,networks,[result],[message]
+,admin2,admin@example.jp,管理　一郎,,admin,,,,,
+,user01,user01@example.jp,湯座　太郎,,user,,v102,"v102
+v101",,
+,user02,user02@example.jp,湯座　次郎,,user,,v102,"*v102
+v101",,
+,test100,test100@example.jp,テスト　ユーザー,,guest,1,v102,v102,,
+,test101,test101@example.jp,テスト　ユーザー,d,guest,1,v102,v102,,
+42,test102,test102@example.jp,テスト　ユーザー,,guest,1,v102,v102,,
