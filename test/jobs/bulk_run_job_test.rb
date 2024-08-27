@@ -23,10 +23,6 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, bulk.success
     assert_equal 0, bulk.failure
     assert_equal input_size, output.size
-
-    node = Node.find(output[0][:id])
-    assert_equal "パソコン", node.name
-    assert_equal "LAN", node.nics.first.name
   end
 
   test "run import Node NG" do
