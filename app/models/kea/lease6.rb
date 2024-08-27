@@ -46,11 +46,5 @@ module Kea
     def id
       ipv6.to_i
     end
-
-    def self.find(x)
-      puts "---------------------------"
-      pp x
-      super
-    end
   end
 end
