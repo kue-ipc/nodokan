@@ -7,16 +7,16 @@ module ImportExport
 
       params_permit(
         :user, :name, :fqdn, :type, :flag,
-        :host, :components, {
+        {components: []}, :host, {
           place: [:area, :building, :floor, :room],
           hardware: [:device_type, :maker, :product_name, :model_number],
           operating_system: [:os_category, :name],
-        }, :duid,
-        {nics: [
+        }, :duid, {nics: [
           :number, :name, :interface_type, :network, :flag, :mac_address,
           :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address,
-        ]},
-        :note)
+        ]}, :note)
+
+      converter :type, :node_type
 
       # override
       def row_assign(row, record, key, nic: nil, **_opts)

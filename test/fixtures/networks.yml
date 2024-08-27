@@ -131,10 +131,10 @@ noip:
   ipv6_prefix_length: 64
   ipv6_gateway_data:
 
-last:
+target:
   id: 42
-  name: 最後のネットワーク
-  vlan: 200
+  name: ターゲットネットワーク
+  vlan: 140
   auth: true
   locked: false
   specific: false
@@ -146,3 +146,18 @@ last:
   ipv6_network_data: <%= ipv6_address('fd00:100::') %>
   ipv6_prefix_length: 64
   ipv6_gateway_data: <%= ipv6_address('fd00:100::1') %>
+
+last:
+  name: 最後のネットワーク
+  vlan: 200
+  auth: true
+  locked: false
+  specific: false
+  dhcp: true
+  ra: managed
+  ipv4_network_data: <%= ipv4_address('192.168.200.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.200.254') %>
+  ipv6_network_data: <%= ipv6_address('fd00:200::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:200::1') %>

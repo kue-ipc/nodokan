@@ -11,6 +11,12 @@ module ImportExport
       class << self
         attr_reader :model, :keys, :get_map, :set_map
 
+        def inherited(subclass)
+          super
+          subclass.instance_variable_set(:@get_map, {}.with_indifferent_access)
+          subclass.instance_variable_set(:@set_map, {}.with_indifferent_access)
+        end
+
         def class_name(name)
           @model = name.constantize
         end
@@ -35,11 +41,9 @@ module ImportExport
         end
 
         def converter(key, proc = nil, get: nil, set: nil)
-          @get_map ||= {}.with_indifferent_access
           get ||= proc || key
           @get_map[key] = get.to_proc
 
-          @set_map ||= {}.with_indifferent_access
           set ||= proc || key
           set = :"#{set}=" if set.is_a?(Symbol) && !set.end_with?("=")
           @set_map[key] = set.to_proc
@@ -76,16 +80,19 @@ module ImportExport
       end
 
       def record_to_params(record, params: nil, keys: self.keys)
-        if record.is_a?(Array)
+        if record.nil?
+          # do nothing
+        elsif keys == []
+          # scalar array
+          params ||= []
+          params.concat(convert_value(record))
+        elsif record.is_a?(Enumerable)
           params ||= []
           record.each do |r|
             params << record_to_params(r, keys: keys)
           end
-        elsif keys == []
-          # scalar array
-          params = convert_value(record)
         else
-          params ||= ActiveSupport::HashWithIndifferentAccess.new
+          params ||= {}.with_indifferent_access
           keys.each do |key|
             case key
             in Symbol

@@ -87,11 +87,12 @@ module ImportExport
         in Symbol
           key_to_header(key, parent: parent)
         in Hash
-          key.map do |k, v|
+          key.flat_map do |k, v|
             if v == []
               key_to_header(k, parent: parent)
             else
-              headers_from_keys(v, parent: key_to_header(k, parent: parent))
+              headers_from_keys(v,
+                parent: key_to_header(k.to_s.singularize, parent: parent))
             end
           end
         end

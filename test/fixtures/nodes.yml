@@ -51,7 +51,6 @@ other_desktop:
   user: other
 
 admin_desktop:
-  id: 42
   name: 管理者のデスクトップパソコン
   place: server_room
   hardware: desktop
@@ -96,5 +95,14 @@ child2:
 child3:
   id: 3
   name: チャイルド3
+  user: user
+
+target:
+  id: 42
+  name: ターゲットデスクトップパソコン
+  place: server_room
+  hardware: desktop
+  operating_system: win
+  note: ターゲットデスクトップ
   user: user
 

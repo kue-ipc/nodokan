@@ -17,7 +17,6 @@ user:
   role: :user
 
 other:
-  id: 42
   username: other
   email: other@example.jp
   fullname: 亜座　次郎
@@ -45,3 +44,11 @@ deleted:
   fullname: 削除　ユーザー
   role: :user
   deleted: true
+
+target:
+  id: 42
+  username: target
+  email: target@example.jp
+  fullname: id指定のターゲットユーザー
+  role: :user
+
