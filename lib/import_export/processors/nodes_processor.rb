@@ -74,7 +74,16 @@ module ImportExport
 
       # override
       def create(params)
-        super({user: @user.username}.with_indifferent_access.merge(params))
+        # TODO: エラーを捕まえるのがうまくいかない
+        params = {user: @user.username}.with_indifferent_access.merge(params)
+        user_process(params_to_record(params), :create) do |record|
+          unless record.errors.present? ||
+              record.place&.errors&.present? ||
+              record.hardware&.errors&.present? ||
+              record.operating_system&.errors&.present?
+            record.save
+          end
+        end
       end
 
       private def find_or_new_place(params, place = nil)

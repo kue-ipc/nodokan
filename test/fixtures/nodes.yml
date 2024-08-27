@@ -106,3 +106,11 @@ target:
   note: ターゲットデスクトップ
   user: user
 
+target:
+  id: 142
+  name: ターゲットデスクトップ管理者パソコン
+  place: server_room
+  hardware: desktop
+  operating_system: win
+  note: ターゲットデスクトップ管理者
+  user: admin
