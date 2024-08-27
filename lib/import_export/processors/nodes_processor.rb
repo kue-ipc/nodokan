@@ -44,103 +44,37 @@ module ImportExport
       }
 
       converter :nics, set: ->(record, value) {
-        # TODO: 実装すること
-        #   do nothing
-        pp value
+        value.each do |params|
+          params = params.dup
+          errors = []
+          if params.key?(:network)
+            params[:network] = Network.find_identifier(params[:network])
+            if params[:network].nil?
+              errors << [:network, I18n.t("errors.messages.not_found")]
+            end
+          end
+
+          number = params[:number]
+          number = number.strip if number.is_a?(String)
+          case number
+          when nil, ""
+            create_nic(record, params)
+          when Integer, /\A\d+\z/
+            number = number.to_i
+            update_nic(record, number, params)
+          when /\A!(\d+)\z/
+            number = number.delete_prefix("!").to_i
+            delete_nic(record, number)
+          else
+            record.errors.add(:nics,
+              I18n.t("errors.messages.invalid_nic_number_field"))
+          end
+        end
       }
 
       # override
       def create(params)
-        user_process(params_to_record(params), :create) do |record|
-          record.user ||= @user
-          record.save if record.errors.empty?
-        end
-      end
-
-      # override
-      def row_to_record(row, record: model_class.new, keys: attrs, **opts)
-        record.user = @user if record.new_record? && @user && !@user.admin?
-
-        super(row, record: record, keys: keys & %w(
-          user name fqdn type flag
-          host components
-          duid note
-        ), **opts)
-
-        params = row_to_params(row, keys: keys)
-
-        if params[:place].present?
-          record.place = find_or_new_place(params[:place], record.place)
-        end
-
-        if params[:hardware].present?
-          hardware_params = params[:hardware].dup
-          if hardware_params.key?(:device_type)
-            name = hardware_params.delete(:device_type)
-            device_type = DeviceType.find_by(name: name)
-            if device_type.nil?
-              record.errors.add("hardware[device_type]",
-                I18n.t("errors.messages.not_found"))
-              raise InvalidFieldError,
-                "device type is not fonud by name: #{name}"
-            end
-            hardware_params[:device_type_id] = device_type.id
-          end
-          record.hardware = find_or_new_hardware(hardware_params,
-            record.hardware)
-        end
-
-        if params[:operating_system].present?
-          operating_system_params = params[:operating_system].dup
-          if operating_system_params.key?(:os_category)
-            name = operating_system_params.delete(:os_category)
-            os_category = OsCategory.find_by(name: name)
-            if os_category.nil?
-              record.errors.add("operating_system[os_category]",
-                I18n.t("errors.messages.not_found"))
-              raise InvalidFieldError,
-                "os category is not fonud by name: #{name}"
-            end
-            operating_system_params[:os_category_id] = os_category.id
-          end
-          record.operating_system =
-            find_or_new_operating_system(operating_system_params,
-              record.operating_system)
-        end
-
-        if params[:nic].present?
-          nic_params = params[:nic].dup
-          if nic_params.key?(:network)
-            identifier = nic_params.delete(:network)
-            network = Network.find_identifier(identifier)
-            if network.nil?
-              record.errors.add("nic[network]",
-                I18n.t("errors.messages.not_found"))
-              raise InvalidFieldError,
-                "network is not fonud by identifier: #{identifier}"
-            end
-            nic_params[:network_id] = network.id
-          end
-
-          case nic_params[:number]
-          when nil
-            create_nic(record, nic_params)
-          when /\A(\d+)\z/
-            nic_number = ::Regexp.last_match(1).to_i
-            update_nic(record, nic_number, nic_params)
-          when /\A!(\d+)\z/
-            nic_number = ::Regexp.last_match(1).to_i
-            delete_nic(record, nic_number)
-          else
-            record.errors.add(:nic,
-              I18n.t("errors.messages.invalid_nic_number_field"))
-          end
-        end
-        record
-      rescue InvalidFieldError => e
-        Ralis.logger.error { e.message }
-        # do nothing
-        record
+        super({user: @user.username}.with_indifferent_access.merge(params))
       end
 
       private def find_or_new_place(params, place = nil)
