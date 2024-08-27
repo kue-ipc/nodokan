@@ -122,7 +122,8 @@ module ImportExport
     end
 
     def parse_data_each_params(data)
-      CSV.table(data, encoding: "BOM|UTF-8").each do |row|
+      CSV.table(data, header_converters: :downcase,
+        encoding: "BOM|UTF-8").each do |row|
         yield row_to_params(row)
       end
     end
@@ -130,31 +131,49 @@ module ImportExport
     def row_to_params(row, params: nil, keys: @processor.keys)
       params ||= {}.with_indifferent_access
       row.to_hash.compact_blank.each do |key, value|
+        next if key =~ /\A\[\w+\]\z/
+
         cur_params = params
         cur_keys = keys
-        while (m = /\A([^\[]+)\[([^\[]*)\]((?:\[[^\[]*\])*)\z/.match(key))
-          parent = m[1].intern
+        while (m = /\A(\w+)\[(\w+)\]((?:\[\w+\])*)\z/.match(key))
+          parent = m[1]
           child = m[2]
           descendants = m[3]
-          cur_params[parent] ||= {}.with_indifferent_access
-          # next
-          cur_params = cur_params[parent]
-          cur_keys = cur_keys.find { |k| k.is_a?(Hash) && k.key?(parent) }
-            &.fetch(parent, [])
-          key = :"#{child}#{descendants}"
+          if (single_keys = find_key_in_keys(parent, cur_keys))
+            # single
+            cur_params[parent] ||= {}.with_indifferent_access
+            # next
+            cur_keys = single_keys
+            cur_params = cur_params[parent]
+            key = :"#{child}#{descendants}"
+          elsif (multiple_keys = find_key_in_keys(parent.pluralize, cur_keys))
+            # multiple
+            cur_params[parent.pluralize] ||= [{}.with_indifferent_access]
+            # next
+            cur_keys = multiple_keys
+            cur_params = cur_params[parent.pluralize].first
+            key = :"#{child}#{descendants}"
+          else
+            raise InvalidHeaderError, "Header is not match keys: #{key}"
+          end
         end
-        if key =~ /\[|\]/
-          raise InvalidHeaderError, "'[|]' must not be included in header"
+        if key !~ /\A\w+\z/
+          raise InvalidHeaderError, "Header is invalid format: #{key}"
         end
 
         cur_params[key] =
-          if cur_keys.any? { |k| k.is_a?(Hash) && k[key] == [] }
+          if cur_keys.grep(Hash).any? { |k| k[key.intern] == [] }
             value.to_s.split
           else
             value
           end
       end
       params
+    end
+
+    def find_key_in_keys(key, keys)
+      key = key.intern
+      keys.grep(Hash).find { |k| k.key?(key) }&.fetch(key)
     end
   end
 end

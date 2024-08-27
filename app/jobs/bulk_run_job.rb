@@ -59,7 +59,8 @@ class BulkRunJob < ApplicationJob
       end
 
       bulk_number = bulk.input.open do |file|
-        CSV.table(file, encoding: "BOM|UTF-8").size
+        CSV.table(file, header_converters: :downcase,
+          encoding: "BOM|UTF-8").size
       end
       bulk.update!(number: bulk_number)
     end

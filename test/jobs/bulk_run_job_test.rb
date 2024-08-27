@@ -9,12 +9,13 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file.path, encoding: "BOM|UTF-8").size
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
       assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "succeeded", bulk.status
@@ -36,12 +37,13 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file.path, encoding: "BOM|UTF-8").size
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
       assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "failed", bulk.status
@@ -115,12 +117,13 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file.path, encoding: "BOM|UTF-8").size
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
       assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "succeeded", bulk.status
@@ -188,12 +191,13 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file.path, encoding: "BOM|UTF-8").size
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
       assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "succeeded", bulk.status
