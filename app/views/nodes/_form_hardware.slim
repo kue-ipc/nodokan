@@ -7,6 +7,7 @@
         = field.collection_select :device_type_id,
           DeviceType.order(:order), :id, :name,
           include_blank: "(未選択)", floating: true
+        / = field.number_field :device_type_id
       .col-md-2
         = field.text_field :maker, list: "node_hardware_maker-list",
           floating: true

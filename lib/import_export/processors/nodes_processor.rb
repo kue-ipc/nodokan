@@ -3,6 +3,8 @@ require "import_export/processors/application_processor"
 module ImportExport
   module Processors
     class NodesProcessor < ApplicationProcessor
+      include NodeParameter
+
       class_name "Node"
 
       params_permit(
@@ -44,15 +46,15 @@ module ImportExport
       }
 
       converter :nics, set: ->(record, value) {
-        value.each do |params|
-          params = params.dup
-          errors = []
-          if params.key?(:network)
-            params[:network] = Network.find_identifier(params[:network])
-            if params[:network].nil?
-              errors << [:network, I18n.t("errors.messages.not_found")]
-            end
+        value.each do |nic_params|
+          nic_params = nic_params.dup
+
+          if nic_params[:network_id].blank? && nic_params[:network].present?
+            nic_params[:network_id] =
+              Network.find_identifier(nic_params[:network]) || -1
           end
+
+          delete_unchangable_nic_params(nic_params)
 
           number = params[:number]
           number = number.strip if number.is_a?(String)
@@ -74,73 +76,11 @@ module ImportExport
 
       # override
       def create(params)
-        # TODO: エラーを捕まえるのがうまくいかない
-        params = {user: @user.username}.with_indifferent_access.merge(params)
-        user_process(params_to_record(params), :create) do |record|
-          unless record.errors.present? ||
-              record.place&.errors&.present? ||
-              record.hardware&.errors&.present? ||
-              record.operating_system&.errors&.present?
-            record.save
-          end
+        if current_user.nil? || current_user.admin?
+          super
+        else
+          super(params.merge({user: current_user.username}))
         end
-      end
-
-      private def find_or_new_place(params, place = nil)
-        params = {
-          area: place&.area || "",
-          building: place&.building || "",
-          floor: place&.floor || 0,
-          room: place&.room || "",
-        }.merge(params)
-
-        Place.find_or_initialize_by(params)
-      end
-
-      private def find_or_new_hardware(params, hardware = nil)
-        params = params.dup
-        errors = []
-        if params.key?(:device_type)
-          params[:device_type] = DeviceType.find_by(name: params[:device_type])
-          if params[:device_type].nil?
-            errors << [:device_type, I18n.t("errors.messages.not_found")]
-          end
-        end
-
-        params = {
-          device_type: hardware&.device_type,
-          maker: hardware&.maker || "",
-          product_name: hardware&.product_name || "",
-          model_number: hardware&.model_number || "",
-        }.merge(params)
-
-        hardware = Hardware.find_or_initialize_by(params)
-        errors.each do |error|
-          hardware.errors.add(*error)
-        end
-        hardware
-      end
-
-      private def find_or_new_operating_system(params, operating_system = nil)
-        params = params.dup
-        errors = []
-        if params.key?(:os_category)
-          params[:os_category] = OsCategory.find_by(name: params[:os_category])
-          if params[:os_category].nil?
-            errors << [:os_category, I18n.t("errors.messages.not_found")]
-          end
-        end
-
-        params = {
-          os_category: operating_system&.os_category,
-          name: operating_system&.name || "",
-        }.merge(params)
-
-        operating_system = OperatingSystem.find_or_initialize_by(params)
-        errors.each do |error|
-          operating_system.errors.add(*error)
-        end
-        operating_system
       end
 
       private def create_nic(record, params)

@@ -54,6 +54,10 @@ module ImportExport
         @user = user
       end
 
+      def current_user
+        @user
+      end
+
       def model
         self.class.model
       end
@@ -71,11 +75,11 @@ module ImportExport
         end
       end
 
-      def record_all
-        if @user
-          Pundit.policy_scope(@user, model).order(:id)
+      def record_ids
+        if current_user
+          Pundit.policy_scope(current_user, model).order(:id).pluck(:id)
         else
-          model.order(:id).all
+          model.order(:id).pluck(:id)
         end
       end
 
@@ -109,22 +113,22 @@ module ImportExport
       end
 
       def params_to_record(params, record: model.new, keys: self.keys)
-        params = ActionController::Parameters.new(params).permit(*keys)
-        params.each do |key, value|
+        permitted_params = ActionController::Parameters.new(params).permit(*keys)
+        permitted_params.each do |key, value|
           set_param(record, key, value)
         end
         record
       end
 
-      def get_param(record, key)
+      private def get_param(record, key)
         instance_exec(record, &key_converter(key, :get))
       end
 
-      def set_param(record, key, param)
+      private def set_param(record, key, param)
         instance_exec(record, param, &key_converter(key, :set))
       end
 
-      def convert_value(value)
+      private def convert_value(value)
         case value
         in Hash
           value.transform_values(&method(:convert_value))
@@ -142,52 +146,61 @@ module ImportExport
       end
 
       def create(params)
-        user_process(params_to_record(params), :create) do |record|
-          record.save if record.errors.empty?
+        user_process(nil, :create) do |record|
+          record.transaction do
+            params_to_record(params, record: record)
+            record.save || raise(ActiveRecord::Rollback)
+          end
         end
       end
 
       def read(id)
-        user_process(model.find(id), :read, &:itself)
+        user_process(id, :read)
       end
 
       def update(id, params)
-        user_process(model.find(id), :update) do |record|
+        user_process(id, :update) do |record|
           record.transaction do
             params_to_record(params, record: record)
-            record.errors.empty? || raise(ActiveRecord::Rollback)
             record.save || raise(ActiveRecord::Rollback)
           end
         end
       end
 
       def delete(id)
-        user_process(model.find(id), :delete, &:destroy)
+        user_process(id, :delete, &:destroy)
       end
 
       # authorize and whodunnit
-      def user_process(record, method)
-        if @user.nil?
-          yield record
-          return record
+      def user_process(id, method, in_trail: false, &block)
+        if !in_trail && current_user
+          PaperTrail.request(whodunnit: current_user.email) do
+            return user_process(id, method, in_trail: true, &block)
+          end
         end
 
-        policy = Pundit.policy(@user, record)
-        auth = case method
-        in :create then policy.create?
-        in :read then policy.show?
-        in :update then policy.update?
-        in :delete then policy.destroy?
-        end
-        unless auth
-          raise Pundit::NotAuthorizedError,
-            "not allowed to #{method} this record"
+        record = if id
+          model.find(id)
+        else
+          model.new
         end
 
-        PaperTrail.request(whodunnit: @user.email) do
-          yield record
-          return record
+        if current_user
+          policy = Pundit.policy(current_user, record)
+          auth = case method
+          in :create then policy.create?
+          in :read then policy.show?
+          in :update then policy.update?
+          in :delete then policy.destroy?
+          end
+          unless auth
+            raise Pundit::NotAuthorizedError,
+              "not allowed to #{method} this record"
+          end
         end
+
+        block&.call(record)
+        record
       end
     end
   end

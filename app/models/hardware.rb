@@ -12,6 +12,8 @@ class Hardware < ApplicationRecord
     case_sensitive: true,
   }
 
+  # validates :device_type, presence: true, if: :device_type_id
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(device_type_id maker product_name model_number confirmed nodes_count)

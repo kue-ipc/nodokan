@@ -65,14 +65,13 @@ module ImportExport
     end
 
     def export(&block)
-      @processor.record_all.find_each do |record|
-        params = ActiveSupport::HashWithIndifferentAccess.new
-        params[:id] ||= record.id
+      @processor.record_ids.each do |id|
+        params = {}.with_indifferent_access
+        params[:id] ||= id
         begin
-          @processor.user_process(record, :read) do
-            @processor.record_to_params(record, params: params)
-            params["[result]"] = :read
-          end
+          record = @processor.read(id)
+          @processor.record_to_params(record, params: params)
+          params["[result]"] = :read
         rescue Pundit::NotAuthorizedError
           failed_params(params, I18n.t("errors.messages.not_authorized"))
         rescue StandardError => e
@@ -116,6 +115,7 @@ module ImportExport
       else
         failed_params(params, I18n.t("errors.messages.invalid_id_param"))
       end
+      params
     end
 
     private def record_error_message(record, key = nil)
