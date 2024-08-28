@@ -39,14 +39,14 @@ module NodeParameter
     node_params
   end
 
-  private def delete_unchangable_nic_params(nic_params)
+  private def delete_unchangable_nic_params(nic_params, nic = nil)
     return nic_params if current_user.nil? || current_user.admin?
 
     nic_params.delete(:locked)
 
-    nic = nic_params[:id].presence && Nic.find(nic_params[:id])
-    network = nic_params[:network_id].presence &&
-      Network.find(nic_params[:network_id])
+    nic ||= nic_params[:id].presence && Nic.find(nic_params[:id])
+    network =
+      nic_params[:network_id].presence && Network.find(nic_params[:network_id])
 
     # ゲストの制限
     if current_user.guest?

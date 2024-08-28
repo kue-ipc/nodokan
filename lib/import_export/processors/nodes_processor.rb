@@ -24,6 +24,8 @@ module ImportExport
         record.user = User.find_identifier(value)
       }
 
+      # TODO: flagの上書き
+
       converter :host, set: ->(record, value) {
         record.host = Node.find_identifier(value)
       }
@@ -51,19 +53,17 @@ module ImportExport
 
           if nic_params[:network_id].blank? && nic_params[:network].present?
             nic_params[:network_id] =
-              Network.find_identifier(nic_params[:network]) || -1
+              Network.find_identifier(nic_params[:network])&.id || -1
           end
 
-          delete_unchangable_nic_params(nic_params)
-
-          number = params[:number]
+          number = nic_params[:number]
           number = number.strip if number.is_a?(String)
           case number
           when nil, ""
-            create_nic(record, params)
+            create_nic(record, nic_params)
           when Integer, /\A\d+\z/
             number = number.to_i
-            update_nic(record, number, params)
+            update_nic(record, number, nic_params)
           when /\A!(\d+)\z/
             number = number.delete_prefix("!").to_i
             delete_nic(record, number)
@@ -83,19 +83,24 @@ module ImportExport
         end
       end
 
-      private def create_nic(record, params)
+      private def create_nic(record, nic_params)
+        delete_unchangable_nic_params(nic_params)
+        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
+          :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
+
         if record.new_record?
-          record.nics.build(params)
+          record.nics.build(nic_params)
         else
-          record.nics.create!(params)
+          record.nics.create!(nic_params)
         end
       end
 
-      private def update_nic(record, nic_number, params)
+      private def update_nic(record, nic_number, nic_params)
         nic = Nic.find_by(node_id: record.id, number: nic_number)
-        return create_nic(record, params) if nic.nil?
+        return create_nic(record, nic_params) if nic.nil?
 
-        nic.update!(params)
+        delete_unchangable_nic_params(nic_params, nic)
+        nic.update!(nic_params)
       end
 
       private def delete_nic(record, nic_number)
