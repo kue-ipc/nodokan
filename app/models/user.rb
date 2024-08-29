@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  include UniqueIdentifier
+
+  unique_identifier "@", :username
+
   FLAGS = {
     deleted: "d",
   }.freeze
@@ -55,10 +59,6 @@ class User < ApplicationRecord
 
   # class methods
 
-  def self.find_identifier(str)
-    find_by(username: str)
-  end
-
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(username email fullname role deleted nodes_count)
@@ -103,7 +103,12 @@ class User < ApplicationRecord
     when "auth"
       auth_network
     else
-      Network.find_identifier(net)
+      begin
+        Network.find_identifier(net)
+      rescue StandardError => e
+        Rails.logger.warn "Not found #{net} network: #{e}"
+        nil
+      end
     end
   end
 
@@ -368,9 +373,5 @@ class User < ApplicationRecord
       use_networks.count.zero?
 
     true
-  end
-
-  def identifier
-    username
   end
 end

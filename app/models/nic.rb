@@ -5,6 +5,12 @@ class Nic < ApplicationRecord
   include Ipv6Config
   include IpData
   include MacAddressData
+  include UniqueIdentifier
+
+  unique_identifier "i", :ipv4_address,
+    find: ->(value) { find_ip_address(value) }
+  unique_identifier "k", :ipv6_address,
+    find: ->(value) { find_ip_address(value) }
 
   FLAGS = {
     auth: "a",
@@ -204,12 +210,12 @@ class Nic < ApplicationRecord
 
   private def hex_str(list, char_case: :lower, sep: nil)
     hex = case char_case.intern
-          when :upper
-            "%02X"
-          when :lower
-            "%02x"
-          else
-            raise ArgumentError, "invalid char_case: #{char_case}"
+    when :upper
+      "%02X"
+    when :lower
+      "%02x"
+    else
+      raise ArgumentError, "invalid char_case: #{char_case}"
     end
     format_str = [[hex] * list.size].join(sep || "")
     format_str % list

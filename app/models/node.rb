@@ -1,5 +1,21 @@
 class Node < ApplicationRecord
   include DuidData
+  include UniqueIdentifier
+
+  unique_identifier "@",
+    read: ->(record) { record.fqdn if record.domain.present? },
+    find: ->(value) {
+            hostname, domain = value.split(".", 2)
+            raise ArgumentError, "No domain in fqdn: #{str}" if domain.nil?
+
+            find_by!(hostname: hostname, domain: domain)
+          }
+  unique_identifier "i",
+    read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
+    find: ->(value) { Nic.find_ip_address(value).node }
+  unique_identifier "k",
+    read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
+    find: ->(value) { Nic.find_ip_address(value).node }
 
   FLAGS = {
     specific: "s",
@@ -54,32 +70,6 @@ class Node < ApplicationRecord
   before_save :reset_attributes_for_node_type
 
   # class methods
-
-  def self.find_identifier(str)
-    m = /\A(?<type>.)(?<value>.+)\z/.match(str.to_s.strip.downcase)
-    raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
-
-    case m[:type]
-    when "@"
-      hostname, domain = m[:value].split(".", 2)
-      raise ArgumentError, "No domain in fqdn #{str.inspect}" if domain.nil?
-
-      Node.find_by(hostname: hostname, domain: domain)
-    when "i", "k"
-      value = IPAddr.new(m[:value])
-      if value.ipv4?
-        Nic.find_by(ipv4_data: value.hton)&.node
-      elsif value.ipv6?
-        Nic.find_by(ipv6_data: value.hton)&.node
-      else
-        raise ArgumentError, "Unknown ip version #{str.inspect}"
-      end
-    when "#"
-      Node.find_by(id: m[:value].to_i)
-    else
-      raise ArgumentError, "Unknown identifier type #{str.inspect}"
-    end
-  end
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
@@ -148,18 +138,6 @@ class Node < ApplicationRecord
     end.compact.max
     @connected_at_checked = true
     @connected_at
-  end
-
-  def identifier
-    if domain.present?
-      "@#{fqdn}"
-    elsif (nic = nics.find(&:has_ipv4?))
-      "i#{nic.ipv4_address}"
-    elsif (nic = nics.find(&:has_ipv6?))
-      "k#{nic.ipv6_address}"
-    else
-      "##{id}"
-    end
   end
 
   private def reset_attributes_for_node_type

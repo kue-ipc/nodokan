@@ -60,21 +60,21 @@ module NodeParameter
       end
     end
 
-    if nic_params[:id].blank?
+    if nic.nil?
       # new nic
       if nic_params[:network_id].present? &&
-          !Network.find(nic_params[:network_id]).manageable?(current_user)
+          !network.manageable?(current_user)
         # unmanageable
         nic_params[:ipv4_address] = nil
         nic_params[:ipv6_address] = nil
       end
-      return
+      return nic_params
     end
 
     if nic.locked?
       # delete all except of :id for locked nic
       nic_params.slice!(:id)
-      return
+      return nic_params
     end
 
     network =

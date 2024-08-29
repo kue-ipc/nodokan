@@ -21,10 +21,16 @@ module ImportExport
       converter :type, :node_type
 
       converter :user, set: ->(record, value) {
+        return unless current_user.nil? || current_user.admin?
+
         record.user = User.find_identifier(value)
       }
 
-      # TODO: flagの上書き
+      converter :flag, set: ->(record, value) {
+        return unless current_user.nil? || current_user.admin?
+
+        record.flag = value
+      }
 
       converter :host, set: ->(record, value) {
         record.host = Node.find_identifier(value)
@@ -53,7 +59,7 @@ module ImportExport
 
           if nic_params[:network_id].blank? && nic_params[:network].present?
             nic_params[:network_id] =
-              Network.find_identifier(nic_params[:network])&.id || -1
+              Network.find_identifier(nic_params[:network])
           end
 
           number = nic_params[:number]
@@ -75,12 +81,8 @@ module ImportExport
       }
 
       # override
-      def create(params)
-        if current_user.nil? || current_user.admin?
-          super
-        else
-          super(params.merge({user: current_user.username}))
-        end
+      private def initial_model_attributes
+        {user_id: current_user&.id}
       end
 
       private def create_nic(record, nic_params)
@@ -100,6 +102,8 @@ module ImportExport
         return create_nic(record, nic_params) if nic.nil?
 
         delete_unchangable_nic_params(nic_params, nic)
+        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
+          :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
         nic.update!(nic_params)
       end
 

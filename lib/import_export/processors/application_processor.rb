@@ -40,11 +40,11 @@ module ImportExport
           end
         end
 
-        def converter(key, proc = nil, get: nil, set: nil)
-          get ||= proc || key
+        def converter(key, original_key = nil, get: nil, set: nil)
+          get ||= original_key || key
           @get_map[key] = get.to_proc
 
-          set ||= proc || key
+          set ||= original_key || key
           set = :"#{set}=" if set.is_a?(Symbol) && !set.end_with?("=")
           @set_map[key] = set.to_proc
         end
@@ -112,7 +112,8 @@ module ImportExport
         params
       end
 
-      def params_to_record(params, record: model.new, keys: self.keys)
+      def params_to_record(params, record: nil, keys: self.keys)
+        record ||= model.new(initial_model_attributes)
         permitted_params = ActionController::Parameters.new(params).permit(*keys)
         permitted_params.each do |key, value|
           set_param(record, key, value)
@@ -182,7 +183,7 @@ module ImportExport
         record = if id
           model.find(id)
         else
-          model.new
+          model.new(initial_model_attributes)
         end
 
         if current_user
@@ -201,6 +202,10 @@ module ImportExport
 
         block&.call(record)
         record
+      end
+
+      private def initial_model_attributes
+        nil
       end
     end
   end

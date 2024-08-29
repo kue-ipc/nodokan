@@ -3,6 +3,17 @@ class Network < ApplicationRecord
   include ListJsonData
   include IpData
   include ReplaceError
+  include UniqueIdentifier
+
+  unique_identifier "v", :vlan
+  unique_identifier "i", :ipv4_network_address,
+    find: ->(value) {
+      find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network)
+    }
+  unique_identifier "k", :ipv6_network_address,
+    find: ->(value) {
+      find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network)
+    }
 
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
@@ -11,13 +22,6 @@ class Network < ApplicationRecord
     dhcp: "d",
     locked: "l",
     specific: "s",
-  }.freeze
-
-  IDENTIFIER_TYPES = {
-    vlan: "v",
-    ipv4: "i",
-    ipv6: "k",
-    id: "#",
   }.freeze
 
   has_paper_trail
@@ -137,6 +141,8 @@ class Network < ApplicationRecord
 
   after_commit :kea_subnet4, :kea_subnet6
 
+  # class methods
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(name vlan ipv4_network_data ipv6_network_data auth nics_count
@@ -147,6 +153,21 @@ class Network < ApplicationRecord
     []
   end
   # rubocop: enable Lint/UnusedMethodArgument
+
+  def self.ipv4_global
+    Network.find_by(ipv4_network_data: "\0" * 4)
+  end
+
+  def self.ipv6_global
+    Network.find_by(ipv6_network_data: "\0" * 16)
+  end
+
+  def self.next_free_auth
+    Network
+      .where(auth: true, locked: false, nics_count: 0, assignments_count: 0)
+      .order(:vlan)
+      .first
+  end
 
   attribute :global, :boolean
   def global
@@ -256,18 +277,6 @@ class Network < ApplicationRecord
       "#{name} (VLAN #{vlan})"
     else
       name
-    end
-  end
-
-  def identifier
-    if vlan
-      "v#{vlan}"
-    elsif has_ipv4?
-      "i#{ipv4_network_address}"
-    elsif has_ipv6?
-      "k#{ipv6_network_address}"
-    else
-      "##{id}"
     end
   end
 
@@ -419,45 +428,5 @@ class Network < ApplicationRecord
     replace_error(:ipv6_network, :ipv6_network_address)
     replace_error(:ipv6_gateway_data, :ipv6_gateway_address)
     replace_error(:ipv6_gateway, :ipv6_gateway_address)
-  end
-
-  # class methods
-
-  def self.ipv4_global
-    Network.find_by(ipv4_network_data: "\0" * 4)
-  end
-
-  def self.ipv6_global
-    Network.find_by(ipv6_network_data: "\0" * 16)
-  end
-
-  def self.find_identifier(str)
-    m = /\A(?<type>.)(?<value>[\h]+)\z/.match(str.to_s.strip.downcase)
-    raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
-
-    case m[:type]
-    when "v"
-      Network.find_by(vlan: m[:value].to_i)
-    when "i", "k"
-      value = IPAddr.new(m[:value])
-      if value.ipv4?
-        Network.find_by(ipv4_network_data: value.hton)
-      elsif value.ipv6?
-        Network.find_by(ipv6_network_data: value.hton)
-      else
-        raise ArgumentError, "Unknown ip version #{str.inspect}"
-      end
-    when "#"
-      Network.find_by(id: m[:value].to_i)
-    else
-      raise ArgumentError, "Unknown identifier type #{str.inspect}"
-    end
-  end
-
-  def self.next_free_auth
-    Network
-      .where(auth: true, locked: false, nics_count: 0, assignments_count: 0)
-      .order(:vlan)
-      .first
   end
 end
