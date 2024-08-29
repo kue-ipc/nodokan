@@ -1,7 +1,12 @@
 class User < ApplicationRecord
-  FLAGS = {
+  include UniqueIdentifier
+  include Flag
+
+  unique_identifier "@", :username
+
+  flag :flag, {
     deleted: "d",
-  }.freeze
+  }
 
   has_paper_trail
 
@@ -55,10 +60,6 @@ class User < ApplicationRecord
 
   # class methods
 
-  def self.find_identifier(str)
-    find_by(username: str)
-  end
-
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w(username email fullname role deleted nodes_count)
@@ -103,7 +104,12 @@ class User < ApplicationRecord
     when "auth"
       auth_network
     else
-      Network.find_identifier(net)
+      begin
+        Network.find_identifier(net)
+      rescue StandardError => e
+        Rails.logger.warn "Not found #{net} network: #{e}"
+        nil
+      end
     end
   end
 
@@ -347,14 +353,6 @@ class User < ApplicationRecord
     end
   end
 
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
-  end
-
   def unlimited
     limit.nil?
   end
@@ -368,9 +366,5 @@ class User < ApplicationRecord
       use_networks.count.zero?
 
     true
-  end
-
-  def identifier
-    username
   end
 end

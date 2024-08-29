@@ -1,4 +1,5 @@
 require "stringio"
+require "csv"
 
 class BulkRunJob < ApplicationJob
   class DuplicateRunError < StandardError
@@ -14,13 +15,23 @@ class BulkRunJob < ApplicationJob
   def perform(bulk, retry_count = 10)
     PaperTrail.request.disable_model(Bulk)
     if bulk.input.attached? && bulk.input.content_type.nil?
-      retry_count -= 1
-      raise BulkRunError, "Do not analyze input file " if retry_count.negative?
+      if bulk.input.analized?
+        raise BulkRunError,
+          "Do not know content type of input file after analized"
+      end
 
+      retry_count -= 1
+      if retry_count.negative?
+        raise BulkRunError,
+          "Do not analyze input file or unknown content type"
+      end
+
+      Rails.logger.warn do
+        "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}"
+      end
       BulkRunJob.set(wait: 10.seconds).perform_later(bulk, retry_count)
       return
     end
-
     batch = start(bulk)
     run(bulk, batch)
     stop(bulk, batch)
@@ -50,24 +61,27 @@ class BulkRunJob < ApplicationJob
       end
 
       bulk_number = bulk.input.open do |file|
-        file.each_line.drop(1).count
+        CSV.table(file, header_converters: :downcase,
+          encoding: "BOM|UTF-8").size
       end
       bulk.update!(number: bulk_number)
     end
 
-    case bulk.target
-    when "Node"
-      ImportExport::NodeCsv.new(bulk.user, with_bom: true)
-    when "Confirmation"
-      raise BulkRunError, "Not implemented target: #{bulk.target}"
-      # ImportExport::ConfirmationCsv.new(bulk.user, with_bom: true)
-    when "Network"
-      ImportExport::NetworkCsv.new(bulk.user, with_bom: true)
-    when "User"
-      ImportExport::UserCsv.new(bulk.user, with_bom: true)
-    else
-      raise BulkRunError, "Unknow target: #{bulk.target}"
-    end
+    processor =
+      case bulk.target
+      when "Node"
+        ImportExport::Processors::NodesProcessor.new(bulk.user)
+      when "Confirmation"
+        raise BulkRunError, "Not implemented target: #{bulk.target}"
+        # ImportExport::Processors::ConfirmationsProcessor.new(bulk.user)
+      when "Network"
+        ImportExport::Processors::NetworksProcessor.new(bulk.user)
+      when "User"
+        ImportExport::Processors::UsersProcessor.new(bulk.user)
+      else
+        raise BulkRunError, "Unknow target: #{bulk.target}"
+      end
+    ImportExport::Csv.new(processor, with_bom: true)
   end
 
   # rubocop: disable Rails/SkipsModelValidations
@@ -76,13 +90,8 @@ class BulkRunJob < ApplicationJob
     bulk.update!(status: :running)
 
     if bulk.input.attached?
-      bulk.input.open do |data|
-        # UTF-8として読み込む
-        data.set_encoding("UTF-8", "UTF-8")
-        # BOMは手動で削除する必要がある
-        first_char = data.getc
-        data.ungetc(first_char) unless first_char == "\u{feff}"
-        batch.import(data) do |result|
+      bulk.input.open do |file|
+        batch.import(file) do |result|
           case result
           when :created, :read, :updated, :deleted
             bulk.increment!(:success)

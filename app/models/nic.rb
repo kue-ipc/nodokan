@@ -5,11 +5,15 @@ class Nic < ApplicationRecord
   include Ipv6Config
   include IpData
   include MacAddressData
+  include UniqueIdentifier
+  include Flag
 
-  FLAGS = {
-    auth: "a",
-    locked: "l",
-  }.freeze
+  unique_identifier "i", :ipv4_address,
+    find: ->(value) { find_ip_address(value) }
+  unique_identifier "k", :ipv6_address,
+    find: ->(value) { find_ip_address(value) }
+
+  flag :flag, {auth: "a", locked: "l"}
 
   has_paper_trail
 
@@ -37,6 +41,7 @@ class Nic < ApplicationRecord
 
   validates :name, allow_blank: true, length: {maximum: 255}
   validates :interface_type, presence: true
+  validates :network, presence: true, if: :network_id?
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
   validates :ipv4_data, presence: true,
@@ -141,14 +146,6 @@ class Nic < ApplicationRecord
     end
   end
 
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
-  end
-
   private def auto_assign_ipv4
     if network.nil?
       self.ipv4 = nil
@@ -204,12 +201,12 @@ class Nic < ApplicationRecord
 
   private def hex_str(list, char_case: :lower, sep: nil)
     hex = case char_case.intern
-          when :upper
-            "%02X"
-          when :lower
-            "%02x"
-          else
-            raise ArgumentError, "invalid char_case: #{char_case}"
+    when :upper
+      "%02X"
+    when :lower
+      "%02x"
+    else
+      raise ArgumentError, "invalid char_case: #{char_case}"
     end
     format_str = [[hex] * list.size].join(sep || "")
     format_str % list

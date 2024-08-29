@@ -1,11 +1,24 @@
 class Node < ApplicationRecord
   include DuidData
+  include UniqueIdentifier
+  include Flag
 
-  FLAGS = {
-    specific: "s",
-    public: "p",
-    dns: "d",
-  }.freeze
+  unique_identifier "@",
+    read: ->(record) { record.fqdn if record.domain.present? },
+    find: ->(value) {
+            hostname, domain = value.split(".", 2)
+            raise ArgumentError, "No domain in fqdn: #{str}" if domain.nil?
+
+            find_by!(hostname: hostname, domain: domain)
+          }
+  unique_identifier "i",
+    read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
+    find: ->(value) { Nic.find_ip_address(value).node }
+  unique_identifier "k",
+    read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
+    find: ->(value) { Nic.find_ip_address(value).node }
+
+  flag :flag, {specific: "s", public: "p", dns: "d"}
 
   has_paper_trail
 
@@ -13,9 +26,10 @@ class Node < ApplicationRecord
 
   belongs_to :user, optional: true, counter_cache: true
 
-  belongs_to :place, optional: true, counter_cache: true
-  belongs_to :hardware, optional: true, counter_cache: true
-  belongs_to :operating_system, optional: true, counter_cache: true
+  belongs_to :place, optional: true, counter_cache: true, validate: true
+  belongs_to :hardware, optional: true, counter_cache: true, validate: true
+  belongs_to :operating_system, optional: true, counter_cache: true,
+    validate: true
 
   belongs_to :host, optional: true, class_name: "Node", inverse_of: :guests
   has_many :guests, dependent: :restrict_with_error, class_name: "Node",
@@ -37,10 +51,14 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :hostname, allow_nil: true, hostname: true
   validates :domain, allow_nil: true, domain: true
-
   validates :hostname, presence: true,
     uniqueness: {scope: :domain, case_sensitive: true},
     if: ->(node) { node.domain.present? }
+
+  validates :node_type, exclusion: [
+    ("virtual" unless Settings.feature.virtual_node),
+    ("logical" unless Settings.feature.logical_node),
+  ].compact
   validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: true
 
   validates :nics,
@@ -53,32 +71,6 @@ class Node < ApplicationRecord
   before_save :reset_attributes_for_node_type
 
   # class methods
-
-  def self.find_identifier(str)
-    m = /\A(?<type>.)(?<value>.+)\z/.match(str.to_s.strip.downcase)
-    raise ArgumentError, "Invalid identifier format #{str.inspect}" unless m
-
-    case m[:type]
-    when "@"
-      hostname, domain = m[:value].split(".", 2)
-      raise ArgumentError, "No domain in fqdn #{str.inspect}" if domain.nil?
-
-      Node.find_by(hostname: hostname, domain: domain)
-    when "i", "k"
-      value = IPAddr.new(m[:value])
-      if value.ipv4?
-        Nic.find_by(ipv4_data: value.hton)&.node
-      elsif value.ipv6?
-        Nic.find_by(ipv6_data: value.hton)&.node
-      else
-        raise ArgumentError, "Unknown ip version #{str.inspect}"
-      end
-    when "#"
-      Node.find_by(id: m[:value].to_i)
-    else
-      raise ArgumentError, "Unknown identifier type #{str.inspect}"
-    end
-  end
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
@@ -125,14 +117,6 @@ class Node < ApplicationRecord
     end
   end
 
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
-  end
-
   def connected_at
     return @connected_at if @connected_at_checked
 
@@ -147,18 +131,6 @@ class Node < ApplicationRecord
     end.compact.max
     @connected_at_checked = true
     @connected_at
-  end
-
-  def identifier
-    if domain.present?
-      "@#{fqdn}"
-    elsif (nic = nics.find(&:has_ipv4?))
-      "i#{nic.ipv4_address}"
-    elsif (nic = nics.find(&:has_ipv6?))
-      "k#{nic.ipv6_address}"
-    else
-      "##{id}"
-    end
   end
 
   private def reset_attributes_for_node_type

@@ -874,6 +874,7 @@ ja:
       not_deleted:
         one: エラーが発生したため、「%{resource}」は削除されませんでした。
         other: "%{count}件のエラーが発生したため、「%{resource}」は削除されませんでした。"
+      not_authorized:  権限がありません。
       accepted: 受諾してください。
       blank: 入力してください。
       confirmation: "%{attribute}との入力が一致しません。"
@@ -933,7 +934,7 @@ ja:
       not_auth_nework: 認証ネットワークではありません。
       no_allocate: 割り当てがありません。
       invalid_csv_header: CSVのヘッダが間違っています。
-      invalid_id_field: 「id」部分の値が不正です。
+      invalid_id_param: 「id」の値が不正です。
 
   forms:
     common:

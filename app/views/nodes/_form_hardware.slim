@@ -6,7 +6,7 @@
       .col-md-3
         = field.collection_select :device_type_id,
           DeviceType.order(:order), :id, :name,
-          include_blank: "(未選択)", floating: true
+          include_blank: "(未選択)", floating: true, required: false
       .col-md-2
         = field.text_field :maker, list: "node_hardware_maker-list",
           floating: true

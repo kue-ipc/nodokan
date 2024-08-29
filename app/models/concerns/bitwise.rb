@@ -3,23 +3,8 @@ module Bitwise
   extend ActiveSupport::Concern
 
   class_methods do
-    def bitwise(name = nil, values = nil, **options)
-      if name
-        unless values
-          values = options
-          options = {}
-        end
-        return _bitwise(name, values, **options)
-      end
-
-      definitions = options.slice!(:_prefix, :_suffix, :_scopes, :_default,
-        :_instance_methods)
-      options.transform_keys! { |key| :"#{key[1..]}" }
-      definitions.each { |name, values| _bitwise(name, values, **options) }
-    end
-
     # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
-    private def _bitwise(name, values, prefix: nil, suffix: nil, scopes: true,
+    def bitwise(name, values, prefix: nil, suffix: nil, scopes: true,
       instance_methods: true, validate: false)
 
       name = name.intern
@@ -27,7 +12,7 @@ module Bitwise
         values = values.each_with_index
           .to_h { |value, idx| [value, 1 << idx] }
       end
-      values = ActiveSupport::HashWithIndifferentAccess.new(values).freeze
+      values = values.with_indifferent_access.freeze
 
       singleton_class.send(:define_method, name.to_s.pluralize) do
         values

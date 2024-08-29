@@ -51,7 +51,6 @@ other_desktop:
   user: other
 
 admin_desktop:
-  id: 42
   name: 管理者のデスクトップパソコン
   place: server_room
   hardware: desktop
@@ -78,6 +77,7 @@ router:
   operating_system: less
 
 cluster:
+  id: 100
   name: クラスター
   node_type: logical
   user: user
@@ -97,3 +97,20 @@ child3:
   name: チャイルド3
   user: user
 
+target:
+  id: 42
+  name: ターゲットデスクトップパソコン
+  place: server_room
+  hardware: desktop
+  operating_system: win
+  note: ターゲットデスクトップ
+  user: user
+
+target:
+  id: 142
+  name: ターゲットデスクトップ管理者パソコン
+  place: server_room
+  hardware: desktop
+  operating_system: win
+  note: ターゲットデスクトップ管理者
+  user: admin

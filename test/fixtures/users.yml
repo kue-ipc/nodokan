@@ -44,3 +44,11 @@ deleted:
   fullname: 削除　ユーザー
   role: :user
   deleted: true
+
+target:
+  id: 42
+  username: target
+  email: target@example.jp
+  fullname: id指定のターゲットユーザー
+  role: :user
+

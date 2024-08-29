@@ -2,6 +2,8 @@ class NodesController < ApplicationController
   include Page
   include Search
 
+  include NodeParameter
+
   before_action :set_node, only: [:show, :edit, :update, :destroy, :transfer]
   before_action :authorize_node, only: [:index]
 
@@ -209,142 +211,7 @@ class NodesController < ApplicationController
         :ipv6_address,
       ])
 
-    normalize_params(permitted_params)
-  end
-
-  private def normalize_params(permitted_params)
-    delete_unchangable_params(permitted_params)
-
-    number_nics(permitted_params[:nics_attributes]&.values || [])
-
-    if permitted_params.key?(:place)
-      permitted_params[:place] = find_or_new_place(permitted_params[:place])
-    end
-
-    if permitted_params.key?(:component_ids)
-      permitted_params[:component_ids] = permitted_params[:component_ids]&.uniq
-    end
-
-    if permitted_params.key?(:hardware)
-      permitted_params[:hardware] =
-        find_or_new_hardware(permitted_params[:hardware])
-    end
-
-    if permitted_params.key?(:operating_system)
-      permitted_params[:operating_system] =
-        find_or_new_operating_system(permitted_params[:operating_system])
-    end
-    permitted_params
-  end
-
-  private def delete_unchangable_params(permitted_params)
-    return permitted_params if current_user.admin?
-
-    permitted_params.delete(:specific)
-    permitted_params.delete(:public)
-    permitted_params.delete(:dns)
-    permitted_params.delete(:user_id)
-    permitted_params[:nics_attributes]&.each_value do |nic_params|
-      delete_nic_params(nic_params)
-    end
-    permitted_params
-  end
-
-  private def delete_nic_params(nic_params)
-    return nic_params if current_user.admin?
-
-    nic_params.delete(:locked)
-
-    nic = nic_params[:id].presence && Nic.find(nic_params[:id])
-    network = nic_params[:network_id].presence &&
-      Network.find(nic_params[:network_id])
-
-    # ゲストの制限
-    if current_user.guest?
-      nic_params.delete(:_destroy)
-      nic_params[:auth] = network.auth if network
-      if ["dynamic", "disabled"].exclude?(nic_params[:ipv4_config])
-        nic_params.delete(:ipv4_config)
-      end
-      if ["dynamic", "disabled"].exclude?(nic_params[:ipv6_config])
-        nic_params.delete(:ipv6_config)
-      end
-    end
-
-    if nic_params[:id].blank?
-      # new nic
-      if nic_params[:network_id].present? &&
-          !Network.find(nic_params[:network_id]).manageable?(current_user)
-        # unmanageable
-        nic_params[:ipv4_address] = nil
-        nic_params[:ipv6_address] = nil
-      end
-      return
-    end
-
-    if nic.locked?
-      # delete all except of :id for locked nic
-      nic_params.slice!(:id)
-      return
-    end
-
-    network =
-      if nic_params.key?(:network_id)
-        nic_params[:network_id].presence &&
-          Network.find(nic_params[:network_id])
-      else
-        nic.network
-      end
-
-    return if network.nil?
-    return if network.manageable?(current_user)
-
-    if network.id == nic.network_id
-      if !nic_params.key?(:ipv4_config) ||
-          nic_params[:ipv4_config].to_s == nic.ipv4_config
-        nic_params.delete(:ipv4_address) # use same ip
-      else
-        nic_params[:ipv4_address] = nil # reset ip address
-      end
-      if !nic_params.key?(:ipv6_config) ||
-          nic_params[:ipv6_config].to_s == nic.ipv6_config
-        nic_params.delete(:ipv6_address) # use same ip
-      else
-        nic_params[:ipv6_address] = nil # reset ip address
-      end
-    else
-      # reset ip address
-      nic_params[:ipv4_address] = nil
-      nic_params[:ipv6_address] = nil
-    end
-    nic_params
-  end
-
-  private def number_nics(nics_params)
-    nics_params.each_with_index do |nic_params, idx|
-      nic_params[:number] = idx + 1
-    end
-    nics_params
-  end
-
-  private def find_or_new_place(place_params)
-    unless place_params&.values_at(:area, :building, :room)&.any?(&:present?)
-      return
-    end
-
-    Place.find_or_initialize_by(place_params)
-  end
-
-  private def find_or_new_hardware(hardware_params)
-    return unless hardware_params&.values&.any?(&:present?)
-
-    Hardware.find_or_initialize_by(hardware_params)
-  end
-
-  private def find_or_new_operating_system(operating_system_params)
-    return if operating_system_params&.[](:os_category_id).blank?
-
-    OperatingSystem.find_or_initialize_by(operating_system_params)
+    normalize_node_params(permitted_params)
   end
 
   private def authorize_node

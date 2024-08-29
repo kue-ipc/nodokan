@@ -23,6 +23,4 @@
           clear: true,
           locked: {name: :os_category_id,
             list: OsCategory.where(locked: true).map(&:id).map(&:to_s),}
-
   small#node_operating_system_name-description.form-text
-

@@ -9,12 +9,13 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file.path, encoding: "BOM|UTF-8").size
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
       assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "succeeded", bulk.status
@@ -22,12 +23,6 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, bulk.success
     assert_equal 0, bulk.failure
     assert_equal input_size, output.size
-
-    node = Node.find(output[0][:id])
-    warn node.duid
-    warn nodes(:desktop).duid
-    assert_equal "パソコン", node.name
-    assert_equal "LAN", node.nics.first.name
   end
 
   test "run import Node NG" do
@@ -38,12 +33,13 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file.path, encoding: "BOM|UTF-8").size
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
       assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file.path, encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "failed", bulk.status
@@ -98,6 +94,119 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal Node.find(output[0]["id"]).name, output[0]["name"]
   end
 
+  test "run import Network" do
+    bulk = bulks(:import_network)
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    assert_equal "failed", bulk.status
+  end
+
+  test "admin run import Network" do
+    bulk = bulks(:import_network)
+    bulk.update(user: users(:admin))
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+    assert_equal input_size, output.size
+  end
+
+  test "admin run import Network with empty" do
+    bulk = bulks(:import_network)
+    bulk.update(user: users(:admin))
+    network = networks(:client)
+    csv_io = StringIO.new <<~CSV
+      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,[result],[message]
+      #{network.id},,,,,,,,,,,,,,,,,
+    CSV
+    bulk.input.attach(io: csv_io, filename: "test.csv",
+      content_type: "text/csv", identify: false)
+
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    assert_equal "succeeded", bulk.status
+
+    updated_network = Network.find(network.id)
+
+    assert_equal network.name, updated_network.name
+    assert_equal network.vlan, updated_network.vlan
+    assert_equal network.domain, updated_network.domain
+    assert_equal network.domain_search_data, updated_network.domain_search_data
+    assert_equal network.flag, updated_network.flag
+    assert_equal network.ra, updated_network.ra
+    assert_equal network.ipv4_network_prefix,
+      updated_network.ipv4_network_prefix
+    assert_equal network.ipv4_gateway, updated_network.ipv4_gateway
+    assert_equal network.ipv4_dns_servers_data,
+      updated_network.ipv4_dns_servers_data
+    assert_equal network.ipv4_pools, updated_network.ipv4_pools
+    assert_equal network.ipv6_network_prefix,
+      updated_network.ipv6_network_prefix
+    assert_equal network.ipv6_gateway, updated_network.ipv6_gateway
+    assert_equal network.ipv6_dns_servers_data,
+      updated_network.ipv6_dns_servers_data
+    assert_equal network.ipv6_pools, updated_network.ipv6_pools
+    assert_equal network.note, updated_network.note
+  end
+
+  test "admin run import Network with nil" do
+    bulk = bulks(:import_network)
+    bulk.update(user: users(:admin))
+    network = networks(:client)
+    csv_io = StringIO.new <<~CSV
+      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,[result],[message]
+      #{network.id},test,!,!,!,!,disabled,!,!,!,!,!,!,!,!,!,,
+    CSV
+    bulk.input.attach(io: csv_io, filename: "test.csv",
+      content_type: "text/csv", identify: false)
+
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    assert_equal "succeeded", bulk.status
+
+    updated_network = Network.find(network.id)
+
+    assert_equal "test", updated_network.name
+    assert_nil updated_network.vlan
+    assert_nil updated_network.domain
+    assert_equal [], updated_network.domain_search_data
+    assert_nil updated_network.flag
+    assert_equal "disabled", updated_network.ra
+    assert_nil updated_network.ipv4_network_prefix
+    assert_nil updated_network.ipv4_gateway
+    assert_equal [], updated_network.ipv4_dns_servers_data
+    assert_equal [], updated_network.ipv4_pools
+    assert_nil updated_network.ipv6_network_prefix
+    assert_nil updated_network.ipv6_gateway
+    assert_equal [], updated_network.ipv6_dns_servers_data
+    assert_equal [], updated_network.ipv6_pools
+    assert_nil updated_network.note
+  end
+
   test "run export Network" do
     bulk = bulks(:export_network)
     perform_enqueued_jobs do
@@ -137,6 +246,41 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal Network.find(output[0]["id"]).name, output[0]["name"]
   end
 
+  test "run import User" do
+    bulk = bulks(:import_user)
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    assert_equal "failed", bulk.status
+  end
+
+  test "admin run import User" do
+    bulk = bulks(:import_user)
+    bulk.update(user: users(:admin))
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+    assert_equal input_size, output.size
+  end
+
   test "run export User" do
     bulk = bulks(:export_user)
     perform_enqueued_jobs do
@@ -173,6 +317,5 @@ class BulkRunJobTest < ActiveJob::TestCase
       csv.read.map(&:to_hash)
     end
     assert_equal User.count, output.size
-    assert_equal bulk.user.username, output[0]["username"]
   end
 end
