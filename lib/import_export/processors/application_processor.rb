@@ -30,7 +30,7 @@ module ImportExport
           return keys if keys == {}
 
           keys = [keys] unless keys.is_a?(Array)
-          keys.map do |key|
+          keys.compact.map do |key|
             case key
             in Symbol
               key

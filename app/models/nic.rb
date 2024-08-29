@@ -13,10 +13,7 @@ class Nic < ApplicationRecord
   unique_identifier "k", :ipv6_address,
     find: ->(value) { find_ip_address(value) }
 
-  flag :flag, {
-    auth: "a",
-    locked: "l",
-  }
+  flag :flag, {auth: "a", locked: "l"}
 
   has_paper_trail
 

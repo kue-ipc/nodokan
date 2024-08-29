@@ -18,11 +18,7 @@ class Node < ApplicationRecord
     read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
-  flag :flag, {
-    specific: "s",
-    public: "p",
-    dns: "d",
-  }
+  flag :flag, {specific: "s", public: "p", dns: "d"}
 
   has_paper_trail
 
@@ -55,10 +51,14 @@ class Node < ApplicationRecord
   validates :name, presence: true
   validates :hostname, allow_nil: true, hostname: true
   validates :domain, allow_nil: true, domain: true
-
   validates :hostname, presence: true,
     uniqueness: {scope: :domain, case_sensitive: true},
     if: ->(node) { node.domain.present? }
+
+  validates :node_type, exclusion: [
+    ("virtual" unless Settings.feature.virtual_node),
+    ("logical" unless Settings.feature.logical_node),
+  ].compact
   validates :duid_data, allow_nil: true, length: {minimum: 2}, uniqueness: true
 
   validates :nics,

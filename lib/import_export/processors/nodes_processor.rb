@@ -9,7 +9,8 @@ module ImportExport
 
       params_permit(
         :user, :name, :fqdn, :type, :flag,
-        {components: []}, :host, {
+        ({components: []} if Settings.feature.virtual_node),
+        (:host if Settings.feature.logical_node), {
           place: [:area, :building, :floor, :room],
           hardware: [:device_type, :maker, :product_name, :model_number],
           operating_system: [:os_category, :name],
