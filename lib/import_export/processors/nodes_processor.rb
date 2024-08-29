@@ -57,11 +57,6 @@ module ImportExport
         value.each do |nic_params|
           nic_params = nic_params.dup
 
-          if nic_params[:network_id].blank? && nic_params[:network].present?
-            nic_params[:network_id] =
-              Network.find_identifier(nic_params[:network])
-          end
-
           number = nic_params[:number]
           number = number.strip if number.is_a?(String)
           case number
@@ -85,11 +80,18 @@ module ImportExport
         {user_id: current_user&.id}
       end
 
-      private def create_nic(record, nic_params)
-        delete_unchangable_nic_params(nic_params)
+      private def normalize_nic_params(nic_params, nic: nil)
+        network = nic_params[:network].presence
+          &.then(&Network.method(:find_identifier))
+        delete_unchangable_nic_params(nic_params, nic: nic, network: network)
+        nic_params[:network_id] = network&.id
         nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
           :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
+        nic_params
+      end
 
+      private def create_nic(record, nic_params)
+        normalize_nic_params(nic_params)
         if record.new_record?
           record.nics.build(nic_params)
         else
@@ -101,9 +103,7 @@ module ImportExport
         nic = Nic.find_by(node_id: record.id, number: nic_number)
         return create_nic(record, nic_params) if nic.nil?
 
-        delete_unchangable_nic_params(nic_params, nic)
-        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
-          :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
+        normalize_nic_params(nic_params, nic: nic)
         nic.update!(nic_params)
       end
 

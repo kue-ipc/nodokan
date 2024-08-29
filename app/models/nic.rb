@@ -43,6 +43,7 @@ class Nic < ApplicationRecord
 
   validates :name, allow_blank: true, length: {maximum: 255}
   validates :interface_type, presence: true
+  validates :network, presence: true, if: :network_id?
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
   validates :ipv4_data, presence: true,
