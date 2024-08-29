@@ -21,10 +21,12 @@ module ImportExport
 
       converter :type, :node_type
 
-      converter :user, set: ->(record, value) {
+      converter :user,
+        get: ->(record) { record.user&.username },
+        set: ->(record, value) {
         return unless current_user.nil? || current_user.admin?
 
-        record.user = User.find_identifier(value)
+        record.user = value.presence && User.find_by!(username: value)
       }
 
       converter :flag, set: ->(record, value) {
