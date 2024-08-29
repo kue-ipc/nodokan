@@ -26,10 +26,12 @@ class BulkRunJob < ApplicationJob
           "Do not analyze input file or unknown content type"
       end
 
+      Rails.logger.warn do
+        "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}"
+      end
       BulkRunJob.set(wait: 10.seconds).perform_later(bulk, retry_count)
       return
     end
-
     batch = start(bulk)
     run(bulk, batch)
     stop(bulk, batch)

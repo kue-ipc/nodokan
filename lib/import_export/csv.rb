@@ -161,6 +161,8 @@ module ImportExport
           raise InvalidHeaderError, "Header is invalid format: #{key}"
         end
 
+        value = nil if value == "!"
+
         cur_params[key] =
           if cur_keys.grep(Hash).any? { |k| k[key.intern] == [] }
             value.to_s.split

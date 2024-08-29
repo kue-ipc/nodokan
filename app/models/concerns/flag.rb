@@ -14,7 +14,7 @@ module Flag
       end
 
       define_method("#{name}=") do |str|
-        values.each { |attr, c| self[attr] = str&.include?(c) }
+        values.each { |attr, c| self[attr] = !!str&.include?(c) }
       end
     end
   end
