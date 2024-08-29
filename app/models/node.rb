@@ -1,6 +1,7 @@
 class Node < ApplicationRecord
   include DuidData
   include UniqueIdentifier
+  include Flag
 
   unique_identifier "@",
     read: ->(record) { record.fqdn if record.domain.present? },
@@ -17,11 +18,11 @@ class Node < ApplicationRecord
     read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
-  FLAGS = {
+  flag :flag, {
     specific: "s",
     public: "p",
     dns: "d",
-  }.freeze
+  }
 
   has_paper_trail
 
@@ -114,14 +115,6 @@ class Node < ApplicationRecord
       self.hostname = list[0]
       self.domain = list[1]
     end
-  end
-
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 
   def connected_at

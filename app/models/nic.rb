@@ -6,16 +6,17 @@ class Nic < ApplicationRecord
   include IpData
   include MacAddressData
   include UniqueIdentifier
+  include Flag
 
   unique_identifier "i", :ipv4_address,
     find: ->(value) { find_ip_address(value) }
   unique_identifier "k", :ipv6_address,
     find: ->(value) { find_ip_address(value) }
 
-  FLAGS = {
+  flag :flag, {
     auth: "a",
     locked: "l",
-  }.freeze
+  }
 
   has_paper_trail
 
@@ -146,14 +147,6 @@ class Nic < ApplicationRecord
     else
       KeaReservation6DelJob.perform_later(network.id, node.duid)
     end
-  end
-
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 
   private def auto_assign_ipv4

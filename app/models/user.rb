@@ -1,11 +1,12 @@
 class User < ApplicationRecord
   include UniqueIdentifier
+  include Flag
 
   unique_identifier "@", :username
 
-  FLAGS = {
+  flag :flag, {
     deleted: "d",
-  }.freeze
+  }
 
   has_paper_trail
 
@@ -350,14 +351,6 @@ class User < ApplicationRecord
         RadiusUserDelJob.perform_later(username)
       end
     end
-  end
-
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 
   def unlimited

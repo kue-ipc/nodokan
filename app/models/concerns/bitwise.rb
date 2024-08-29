@@ -27,7 +27,7 @@ module Bitwise
         values = values.each_with_index
           .to_h { |value, idx| [value, 1 << idx] }
       end
-      values = ActiveSupport::HashWithIndifferentAccess.new(values).freeze
+      values = values.with_indifferent_access.freeze
 
       singleton_class.send(:define_method, name.to_s.pluralize) do
         values

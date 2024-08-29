@@ -4,6 +4,9 @@ class Network < ApplicationRecord
   include IpData
   include ReplaceError
   include UniqueIdentifier
+  include Flag
+
+  IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
   unique_identifier "v", :vlan
   unique_identifier "i", :ipv4_network_address,
@@ -15,14 +18,12 @@ class Network < ApplicationRecord
       find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network)
     }
 
-  IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
-
-  FLAGS = {
+  flag :flag, {
     auth: "a",
     dhcp: "d",
     locked: "l",
     specific: "s",
-  }.freeze
+  }
 
   has_paper_trail
 
@@ -346,14 +347,6 @@ class Network < ApplicationRecord
 
   def ipv6_include?(ip)
     ipv6_network_prefix&.include?(ip)
-  end
-
-  def flag
-    FLAGS.map { |attr, c| self[attr].presence && c }.compact.join.presence
-  end
-
-  def flag=(str)
-    FLAGS.each { |attr, c| self[attr] = true & str&.include?(c) }
   end
 
   def auth?(user)
