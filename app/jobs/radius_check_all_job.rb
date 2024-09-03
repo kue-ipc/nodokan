@@ -1,5 +1,3 @@
-require "set"
-
 class RadiusCheckAllJob < RadiusJob
   queue_as :default
 

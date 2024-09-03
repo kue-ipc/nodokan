@@ -80,7 +80,7 @@ module Search
   private def search_condition(condition)
     return {} if condition.blank?
 
-    condition.select { |_key, value| value.present? }.to_h do |key, value|
+    condition.compact_blank.to_h do |key, value|
       type = self.class.search_model.type_for_attribute(key)
       case type.type
       when :string, :text, :integer, :float, :decimal, :datetime, :date, :time

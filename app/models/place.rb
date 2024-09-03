@@ -26,7 +26,7 @@ class Place < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   def name
-    [area, building, floor_human, room].select(&:present?).join(" ")
+    [area, building, floor_human, room].compact_blank.join(" ")
   end
 
   def short_name

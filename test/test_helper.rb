@@ -40,13 +40,16 @@ module ActiveSupport
   end
 end
 
-class ActionDispatch::IntegrationTest
-  def after_teardown
-    super
-    FileUtils.rm_rf(ActiveStorage::Blob.service.root)
-  end
+module ActionDispatch
+  class IntegrationTest
+    def after_teardown
+      super
+      FileUtils.rm_rf(ActiveStorage::Blob.service.root)
+    end
 
-  parallelize_setup do |i|
-    ActiveStorage::Blob.service.root = "#{ActiveStorage::Blob.service.root}-#{i}"
+    parallelize_setup do |i|
+      ActiveStorage::Blob.service.root =
+        "#{ActiveStorage::Blob.service.root}-#{i}"
+    end
   end
 end

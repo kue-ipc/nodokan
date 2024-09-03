@@ -24,7 +24,7 @@ class Hardware < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   def name
-    [maker, product_name].select(&:present?).join(" ")
+    [maker, product_name].compact_blank.join(" ")
   end
 
   def device_type_name
