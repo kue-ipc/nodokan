@@ -161,7 +161,7 @@ GEM
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
     language_server-protocol (3.17.0.3)
-    logger (1.6.0)
+    logger (1.6.1)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -304,15 +304,14 @@ GEM
       rufus-scheduler (~> 3.2, != 3.3)
     rexml (3.3.6)
       strscan
-    rubocop (1.65.1)
+    rubocop (1.66.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.4, < 3.0)
-      rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.31.1, < 2.0)
+      rubocop-ast (>= 1.32.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
     rubocop-ast (1.32.1)
@@ -346,7 +345,7 @@ GEM
       actionpack (>= 3.1)
       railties (>= 3.1)
       slim (>= 3.0, < 6.0, != 5.0.0)
-    slim_lint (0.27.0)
+    slim_lint (0.28.0)
       rubocop (>= 1.0, < 2.0)
       slim (>= 3.0, < 6.0)
     stimulus-rails (1.3.4)
@@ -354,7 +353,7 @@ GEM
     stringio (3.1.1)
     strscan (3.1.0)
     temple (0.10.3)
-    thor (1.3.1)
+    thor (1.3.2)
     tilt (2.4.0)
     timeout (0.4.1)
     turbo-rails (1.5.0)
@@ -380,7 +379,7 @@ GEM
       chronic (>= 0.6.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.17)
+    zeitwerk (2.6.18)
 
 PLATFORMS
   x86_64-linux
@@ -427,7 +426,7 @@ DEPENDENCIES
   whenever
 
 RUBY VERSION
-   ruby 3.0.6p216
+   ruby 3.3.1p55
 
 BUNDLED WITH
-   2.2.33
+   2.5.9

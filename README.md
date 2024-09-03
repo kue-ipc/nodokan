@@ -2,12 +2,12 @@
 
 ## システム要件
 
-* Ruby 3.0 以上
-* Node.js 18 以上
-* MariaDB 10.5 以上
-* Redis 6 以上
-* Kea 2.2 以上 (2.6以上推奨)
-* FreeRADIUS 3.0 以上
+* Ruby >= 3.3
+* Node.js >= 20
+* MariaDB >= 10.5
+* Redis >= 6
+* Kea >= 2.6
+* FreeRADIUS >= 3.0
 
 ## 開発環境
 
@@ -31,3 +31,4 @@ rails test
 ## 変更点
 
 - `rails kea:setup`は不要になりました。
+- RubyやNode.jsは最新が必須です。
