@@ -112,18 +112,18 @@ module HtmlHelper
     end
   end
 
-  def span_text_tag(value = nil, around: nil, line_break: false, **opts, &block)
+  def span_text_tag(value = nil, around: nil, line_break: false, **, &)
     if around.present?
       tag.span(around[0], class: "text-muted") +
-        span_text_tag(value, **opts, &block) +
+        span_text_tag(value, **, &) +
         tag.span(around[1], class: "text-muted")
     elsif line_break
       tag_list = value.each_line
-        .flat_map { |line| [tag.span(line, **opts, &block), tag.br] }
+        .flat_map { |line| [tag.span(line, **, &), tag.br] }
       tag_list.pop
       tag_list.inject { |result, item| result + item }
     else
-      tag.span(value, **opts, &block)
+      tag.span(value, **, &)
     end
   end
 
@@ -164,7 +164,7 @@ module HtmlHelper
   end
 
   def badge_tag(value, color: :primary, disbaled: false, hidden: false,
-    **opts, &block)
+    **opts, &)
     opts = opts.dup
     badge_classes = opts.delete(:class) || []
     badge_classes = badge_classes.to_s.split unless badge_classes.is_a?(Array)
@@ -177,7 +177,7 @@ module HtmlHelper
     end
     badge_classes << "d-none" if hidden
 
-    tag.span(value, **opts, class: badge_classes, &block)
+    tag.span(value, **opts, class: badge_classes, &)
   end
 
   def badge_for(record, attr, value = nil, disabled_show: false, **opts)
@@ -233,11 +233,11 @@ module HtmlHelper
       next if size.nil?
 
       if size.zero?
-        class_list << display_class(:none, tier: tier) if pre_block_display
+        class_list << display_class(:none, tier:) if pre_block_display
         pre_block_display = false
       else
-        class_list << display_class(:block, tier: tier) unless pre_block_display
-        class_list << col_class(size, tier: tier)
+        class_list << display_class(:block, tier:) unless pre_block_display
+        class_list << col_class(size, tier:)
         pre_block_display = true
       end
     end

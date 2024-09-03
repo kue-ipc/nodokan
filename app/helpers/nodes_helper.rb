@@ -176,8 +176,8 @@ module NodesHelper
     tag.div(**wrapper) do
       contents = []
       contents << paginate(nodes) if [:both, :above].include?(pagination)
-      contents << node_list_table_for(nodes, write_headers: write_headers,
-        cols: cols, action: action, &block)
+      contents << node_list_table_for(nodes, write_headers:, cols:, action:,
+        &block)
       contents << paginate(nodes) if [:both, :below].include?(pagination)
       contents << tag.p(page_entries_info(nodes)) if pagination
       contents.inject(:+)
@@ -188,13 +188,13 @@ module NodesHelper
     action: nil)
     tag.div(class: "mb-2") do
       rows = []
-      rows << node_list_headers_for(cols: cols) if write_headers
+      rows << node_list_headers_for(cols:) if write_headers
       nodes.each do |node|
         rows <<
           if block_given?
             capture { yield node }
           else
-            node_list_col_for(node, cols: cols, action: action)
+            node_list_col_for(node, cols:, action:)
           end
       end
       rows.inject(:+)

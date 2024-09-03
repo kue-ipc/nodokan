@@ -47,8 +47,8 @@ module MacAddressData
     mac_address(char_case: :lower, sep: "")
   end
 
-  def mac_address(**opts)
-    self.class.hex_list_to_str(mac_address_list, **opts)
+  def mac_address(**)
+    self.class.hex_list_to_str(mac_address_list, **)
   end
 
   def mac_address=(value)
@@ -65,8 +65,8 @@ module MacAddressData
     ]
   end
 
-  def modified_eui64(**opts)
-    self.class.hex_list_to_str(modified_eui64_list, **opts)
+  def modified_eui64(**)
+    self.class.hex_list_to_str(modified_eui64_list, **)
   end
 
   private def replace_mac_address_errors

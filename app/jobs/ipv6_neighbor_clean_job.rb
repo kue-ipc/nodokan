@@ -3,6 +3,6 @@ class Ipv6NeighborCleanJob < CleanJob
 
   def perform(base: Time.zone.now)
     clean_records(Ipv6Neighbor, [:ipv6_data, :mac_address_data],
-      attr: :end_at, base: base)
+      attr: :end_at, base:)
   end
 end

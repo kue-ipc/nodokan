@@ -20,8 +20,8 @@ module DuidData
     @duid_list ||= self.class.hex_data_to_list(duid_data)
   end
 
-  def duid(**opts)
-    self.class.hex_list_to_str(duid_list, **opts)
+  def duid(**)
+    self.class.hex_list_to_str(duid_list, **)
   end
 
   def duid=(value)

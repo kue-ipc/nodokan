@@ -49,7 +49,7 @@ module Search
         [query.delete("-.:")].pack("H*"))
     end.presence || search_query_string(
       search_attributes_by_type.slice(:string, :text).values.flatten, query,
-      matcher: matcher)
+      matcher:)
   end
 
   private def search_query_string(keys, str, matcher: "cont")

@@ -16,17 +16,17 @@ module ImportExport
 
     attr_reader :result, :count
 
-    def initialize(*args, out: String.new, with_bom: false, delimiter: "\n",
-      **opts)
+    def initialize(*, out: String.new, with_bom: false, delimiter: "\n",
+      **)
       # FIXME: 3.0系では`super`と引数無しで呼び出した場合、
       #        `opts`にout等が一緒に入るため、オプションを付ける。
-      super(*args, **opts)
+      super(*, **)
 
       if with_bom
         out = StringIO.new(out) if out.is_a?(String)
         out << "\u{feff}"
       end
-      @csv = CSV.new(out, headers: headers, write_headers: true, **opts)
+      @csv = CSV.new(out, headers:, write_headers: true, **)
       @delimiter = delimiter
     end
 
@@ -40,10 +40,10 @@ module ImportExport
       end
     end
 
-    def params_each_row(params, &block)
+    def params_each_row(params, &)
       rows = [empty_row]
       put_in_rows(rows, params)
-      rows.each(&block)
+      rows.each(&)
     end
 
     def put_in_rows(rows, params, parent: nil)
@@ -56,12 +56,12 @@ module ImportExport
           if value.first.is_a?(Hash)
             new_rows = value.flat_map do |hash|
               put_in_rows(rows.map(&:clone), hash,
-                parent: key_to_header(key.singularize, parent: parent))
+                parent: key_to_header(key.singularize, parent:))
             end
             rows.replace(new_rows)
           else
             rows.each do |row|
-              row[key_to_header(key, parent: parent)] =
+              row[key_to_header(key, parent:)] =
                 value.map(&:to_s).join(@delimiter)
             end
           end
@@ -70,7 +70,7 @@ module ImportExport
         in String | Symbol | Numeric | true | false |
           Date | Time | DateTime
           rows.each do |row|
-            row[key_to_header(key, parent: parent)] = value.to_s
+            row[key_to_header(key, parent:)] = value.to_s
           end
         end
       end
@@ -85,14 +85,14 @@ module ImportExport
       keys.flat_map do |key|
         case key
         in Symbol
-          key_to_header(key, parent: parent)
+          key_to_header(key, parent:)
         in Hash
           key.flat_map do |k, v|
             if v == []
-              key_to_header(k, parent: parent)
+              key_to_header(k, parent:)
             else
               headers_from_keys(v,
-                parent: key_to_header(k.to_s.singularize, parent: parent))
+                parent: key_to_header(k.to_s.singularize, parent:))
             end
           end
         end

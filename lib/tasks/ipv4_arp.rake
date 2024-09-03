@@ -25,7 +25,7 @@ namespace :ipv4_arp do
         ipv4_arp = Ipv4Arp.where(ipv4_data: ipv4.hton).order(:resolved_at).last
         if ipv4_arp.nil? || ipv4_arp.mac_address_data != mac_address_data
           Ipv4Arp.create!(ipv4_data: ipv4.hton,
-            mac_address_data: mac_address_data, resolved_at: time)
+            mac_address_data:, resolved_at: time)
           results[:create] += 1
         elsif time > ipv4_arp.resolved_at
           ipv4_arp.update!(resolved_at: time)

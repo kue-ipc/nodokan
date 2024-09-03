@@ -50,10 +50,7 @@ class Hardware < ApplicationRecord
   end
 
   def same
-    Hardware.where.not(id: id).find_by(
-      device_type_id: device_type_id,
-      maker: maker,
-      product_name: product_name,
-      model_number: model_number)
+    Hardware.where.not(id:).find_by(device_type_id:, maker:, product_name:,
+      model_number:)
   end
 end

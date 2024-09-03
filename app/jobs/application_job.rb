@@ -12,7 +12,7 @@ class ApplicationJob < ActiveJob::Base
   rescue_from(StandardError) do |exception|
     if Rails.env.production?
       AdminMailer
-        .with(job: self.class.name, job_id: job_id, time: Time.current,
+        .with(job: self.class.name, job_id:, time: Time.current,
           exception: exception.message)
         .job_failure.deliver_later
     end

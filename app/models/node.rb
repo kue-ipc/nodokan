@@ -9,7 +9,7 @@ class Node < ApplicationRecord
             hostname, domain = value.split(".", 2)
             raise ArgumentError, "No domain in fqdn: #{str}" if domain.nil?
 
-            find_by!(hostname: hostname, domain: domain)
+            find_by!(hostname:, domain:)
           }
   unique_identifier "i",
     read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
@@ -22,7 +22,12 @@ class Node < ApplicationRecord
 
   has_paper_trail
 
-  enum :node_type, [:normal, :mobile, :virtual, :logical], validate: true
+  enum :node_type, {
+    normal: 0,
+    mobile: 1,
+    virtual: 2,
+    logical: 3,
+  }, validate: true
 
   belongs_to :user, optional: true, counter_cache: true
 

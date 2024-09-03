@@ -70,7 +70,7 @@ module ImportExport
         params[:id] ||= id
         begin
           record = @processor.read(id)
-          @processor.record_to_params(record, params: params)
+          @processor.record_to_params(record, params:)
           params["[result]"] = :read
         rescue Pundit::NotAuthorizedError
           failed_params(params, I18n.t("errors.messages.not_authorized"))

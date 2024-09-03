@@ -7,10 +7,10 @@ module DatalistCandidateHelper
     **opts
   )
     params = {
-      name: name,
-      target: target,
-      url: url,
-      parents: parents,
+      name:,
+      target:,
+      url:,
+      parents:,
       **opts,
     }
     attr_name = [*parents, name, target].join("_")

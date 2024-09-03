@@ -34,7 +34,7 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
-    parallelize_teardown do |i|
+    parallelize_teardown do |_i|
       FileUtils.rm_rf(ActiveStorage::Blob.services.fetch(:test_fixtures).root)
     end
   end

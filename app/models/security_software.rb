@@ -97,9 +97,7 @@ class SecuritySoftware < ApplicationRecord
   end
 
   def same
-    SecuritySoftware.where.not(id: id).find_by(
-      os_category_id: os_category_id,
-      installation_method: installation_method,
-      name: name)
+    SecuritySoftware.where.not(id:).find_by(os_category_id:,
+      installation_method:, name:)
   end
 end

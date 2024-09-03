@@ -44,10 +44,6 @@ class Place < ApplicationRecord
   end
 
   def same
-    Place.where.not(id: id).find_by(
-      area: area,
-      building: building,
-      floor: floor,
-      room: room)
+    Place.where.not(id:).find_by(area:, building:, floor:, room:)
   end
 end

@@ -18,21 +18,19 @@ module IpData
 
       case version
       in 4
-        validates :"#{name}_data", allow_nil: allow_nil, length: {is: 4}
+        validates :"#{name}_data", allow_nil:, length: {is: 4}
         validates :"#{name}_address", allow_blank: allow_nil,
           ipv4_address: true
-        validates_each :"#{name}",
-          allow_nil: allow_nil do |record, attr, value|
+        validates_each(:"#{name}", allow_nil:) do |record, attr, value|
           if value && !value.ipv4?
             record.errors.add(attr, I18n.t("errors.messages.not_ipv4"))
           end
         end
       in 6
-        validates :"#{name}_data", allow_nil: allow_nil, length: {is: 16}
+        validates :"#{name}_data", allow_nil:, length: {is: 16}
         validates :"#{name}_address", allow_blank: allow_nil,
           ipv6_address: true
-        validates_each :"#{name}",
-          allow_nil: allow_nil do |record, attr, value|
+        validates_each(:"#{name}", allow_nil:) do |record, attr, value|
           if value && !value.ipv6?
             record.errors.add(attr, I18n.t("errors.messages.not_ipv6"))
           end

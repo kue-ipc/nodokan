@@ -52,8 +52,7 @@ class ConfirmationsController < ApplicationController
         permitted_params[:security_software])
 
     permitted_params.except(:security_hardwares, :security_software)
-      .merge(security_hardware: security_hardware,
-        security_software: security_software)
+      .merge(security_hardware:, security_software:)
   end
 
   private def list_to_bitwise(list, bitwises)

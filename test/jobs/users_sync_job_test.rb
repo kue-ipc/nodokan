@@ -72,7 +72,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     new_users.each do |username|
       adapter.expect(:authorizable?, true, [username])
-      user = User.new(username: username, email: "#{username}@exmaple.jp",
+      user = User.new(username:, email: "#{username}@exmaple.jp",
         fullname: username)
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
       adapter.expect(:get_group_list, ["cn=admin,ou=groups,dc=example,dc=jp"],
@@ -87,7 +87,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     adapter.verify
     new_users.each do |username|
-      new_user = User.find_by(username: username)
+      new_user = User.find_by(username:)
       assert_nil new_user.auth_network
       assert_empty new_user.use_networks
       assert_nil new_user.limit
@@ -105,7 +105,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     new_users.each do |username|
       adapter.expect(:authorizable?, true, [username])
-      user = User.new(username: username, email: "#{username}@exmaple.jp",
+      user = User.new(username:, email: "#{username}@exmaple.jp",
         fullname: username)
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
       adapter.expect(:get_group_list, ["cn=staff,ou=groups,dc=example,dc=jp"],
@@ -120,7 +120,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     adapter.verify
     new_users.each do |username|
-      new_user = User.find_by(username: username)
+      new_user = User.find_by(username:)
       assert_equal 102, new_user.auth_network&.vlan
       assert_equal [101, 102], new_user.use_networks&.map(&:vlan)&.sort
       assert_nil new_user.limit
@@ -138,7 +138,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     new_users.each do |username|
       adapter.expect(:authorizable?, true, [username])
-      user = User.new(username: username, email: "#{username}@exmaple.jp",
+      user = User.new(username:, email: "#{username}@exmaple.jp",
         fullname: username)
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
       adapter.expect(:get_group_list, ["cn=user,ou=groups,dc=example,dc=jp"],
@@ -153,7 +153,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     adapter.verify
     new_users.each do |username|
-      new_user = User.find_by(username: username)
+      new_user = User.find_by(username:)
       auth_vlan = new_user.auth_network&.vlan
       assert_kind_of Integer, auth_vlan
       assert_equal [auth_vlan], new_user.use_networks&.map(&:vlan)&.sort
@@ -182,7 +182,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     adapter.verify
     new_users.each do |username|
-      assert_nil User.find_by(username: username)
+      assert_nil User.find_by(username:)
     end
   end
 
@@ -197,7 +197,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     new_users.each do |username|
       adapter.expect(:authorizable?, true, [username])
-      user = User.new(username: username, email: "dummy@example.jp",
+      user = User.new(username:, email: "dummy@example.jp",
         fullname: "dummy full")
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
     end
@@ -210,7 +210,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     end
     adapter.verify
     new_users.each do |username|
-      user = User.find_by(username: username)
+      user = User.find_by(username:)
       assert_equal "dummy@example.jp", user.email
       assert_equal "dummy full", user.fullname
       assert_equal false, user.deleted

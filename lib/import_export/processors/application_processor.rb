@@ -93,7 +93,7 @@ module ImportExport
         elsif record.is_a?(Enumerable)
           params ||= []
           record.each do |r|
-            params << record_to_params(r, keys: keys)
+            params << record_to_params(r, keys:)
           end
         else
           params ||= {}.with_indifferent_access
@@ -149,7 +149,7 @@ module ImportExport
       def create(params)
         user_process(nil, :create) do |record|
           record.transaction do
-            params_to_record(params, record: record)
+            params_to_record(params, record:)
             record.save || raise(ActiveRecord::Rollback)
           end
         end
@@ -162,7 +162,7 @@ module ImportExport
       def update(id, params)
         user_process(id, :update) do |record|
           record.transaction do
-            params_to_record(params, record: record)
+            params_to_record(params, record:)
             record.save || raise(ActiveRecord::Rollback)
           end
         end

@@ -25,7 +25,7 @@ module I18nHelper
     elsif number == 1
       t("helpers.floor.one")
     elsif number > 1
-      t("helpers.floor.positive", number: number)
+      t("helpers.floor.positive", number:)
     else
       t("helpers.floor.negative", number: - number)
     end

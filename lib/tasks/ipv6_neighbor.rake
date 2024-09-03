@@ -27,7 +27,7 @@ namespace :ipv6_neighbor do
         if ipv6_neighbor.nil? ||
             ipv6_neighbor.mac_address_data != mac_address_data
           Ipv6Neighbor.create!(ipv6_data: ipv6.hton,
-            mac_address_data: mac_address_data, discovered_at: time)
+            mac_address_data:, discovered_at: time)
           results[:create] += 1
         elsif time > ipv6_neighbor.discovered_at
           ipv6_neighbor.update!(discovered_at: time)

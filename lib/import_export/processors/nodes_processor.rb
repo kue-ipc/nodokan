@@ -24,10 +24,10 @@ module ImportExport
       converter :user,
         get: ->(record) { record.user&.username },
         set: ->(record, value) {
-        return unless current_user.nil? || current_user.admin?
+          return unless current_user.nil? || current_user.admin?
 
-        record.user = value.presence && User.find_by!(username: value)
-      }
+          record.user = value.presence && User.find_by!(username: value)
+        }
 
       converter :flag, set: ->(record, value) {
         return unless current_user.nil? || current_user.admin?
@@ -86,7 +86,7 @@ module ImportExport
       private def normalize_nic_params(nic_params, nic: nil)
         network = nic_params[:network].presence
           &.then(&Network.method(:find_identifier))
-        delete_unchangable_nic_params(nic_params, nic: nic, network: network)
+        delete_unchangable_nic_params(nic_params, nic:, network:)
         nic_params[:network_id] = network&.id
         nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
           :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
@@ -106,7 +106,7 @@ module ImportExport
         nic = Nic.find_by(node_id: record.id, number: nic_number)
         return create_nic(record, nic_params) if nic.nil?
 
-        normalize_nic_params(nic_params, nic: nic)
+        normalize_nic_params(nic_params, nic:)
         nic.update!(nic_params)
       end
 

@@ -74,7 +74,7 @@ module Kea
         array
       end
 
-      def from_value(value, type: @type, array: @array)
+      def from_value(_value, type: @type, array: @array)
         raise "Conversion from value is not implemented"
       end
 
@@ -85,7 +85,7 @@ module Kea
 
         if array
           return value.split(",").map(&:strip)
-              .map { |v| from_formatted_value(v, type: type, array: false) }
+              .map { |v| from_formatted_value(v, type:, array: false) }
         end
 
         case type
@@ -105,7 +105,7 @@ module Kea
         end
       end
 
-      def to_value(obj, type: @type, array: @array)
+      def to_value(_obj, type: @type, array: @array)
         raise "Conversion to value is not implemented"
       end
 
@@ -116,7 +116,7 @@ module Kea
 
         if array
           return Array(obj)
-              .map { |v| to_formatted_value(v, type: type, array: false) }
+              .map { |v| to_formatted_value(v, type:, array: false) }
               .join(",")
         end
 

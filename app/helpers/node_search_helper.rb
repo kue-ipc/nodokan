@@ -15,10 +15,10 @@ module NodeSearchHelper
         form_contents = "".html_safe
         form_contents += f.hidden_field("per", value: per) if per
         order&.each do |name, value|
-          form_contents += f.hidden_field("order[#{name}]", value: value)
+          form_contents += f.hidden_field("order[#{name}]", value:)
         end
         condition&.each do |name, value|
-          form_contents += f.hidden_field("condition[#{name}]", value: value)
+          form_contents += f.hidden_field("condition[#{name}]", value:)
         end
         form_contents += f.search_field(:query, value: query.to_s,
           hide_label: true, append: f.primary(
@@ -61,9 +61,9 @@ module NodeSearchHelper
     end
   end
 
-  def node_search_list_col(name, value = nil, &block)
+  def node_search_list_col(name, value = nil, &)
     if block_given?
-      tag.div(class: NODE_SEARCH_LIST_COL_CLASSES[name], &block)
+      tag.div(class: NODE_SEARCH_LIST_COL_CLASSES[name], &)
     else
       tag.div(value, class: NODE_SEARCH_LIST_COL_CLASSES[name])
     end

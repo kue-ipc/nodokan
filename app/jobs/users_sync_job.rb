@@ -3,8 +3,8 @@ require "set"
 class UsersSyncJob < ApplicationJob
   queue_as :default
 
-  def perform(**opts)
-    results = sync_users(**opts)
+  def perform(**)
+    results = sync_users(**)
     counts = results.each_value.tally
     logger.info("Result: #{counts.to_json}")
     return unless counts[:error]&.positive?
@@ -67,7 +67,7 @@ class UsersSyncJob < ApplicationJob
         if deleted_users.include?(username)
           # 削除済みユーザーの復活
           logger.info("Revive, sync LDAP and unmark deleted: #{username}")
-          user = User.find_by(username: username)
+          user = User.find_by(username:)
           user.deleted = false
           user.sync_ldap!
           user.save!
@@ -75,7 +75,7 @@ class UsersSyncJob < ApplicationJob
         else
           # 新規ユーザーの作成
           logger.info("Create: #{username}")
-          user = User.new(username: username)
+          user = User.new(username:)
           user.ldap_before_save
           user.save!
           [username, :create]

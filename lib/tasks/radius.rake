@@ -74,8 +74,8 @@ namespace :radius do
         # NOTE: テーブルがVIEWであるため、作成時に `id: nil` を設定する必要がある。
         #       find_or_initilaize_byは使用できない。
         reply =
-          Radius::Radgroupreply.find_by(groupname: groupname, attr: attr) ||
-          Radius::Radgroupreply.new(id: nil, groupname: groupname, attr: attr)
+          Radius::Radgroupreply.find_by(groupname:, attr:) ||
+          Radius::Radgroupreply.new(id: nil, groupname:, attr:)
         reply.op = ":="
         reply.value = value
         reply.save!

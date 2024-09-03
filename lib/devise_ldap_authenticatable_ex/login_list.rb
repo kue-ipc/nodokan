@@ -1,4 +1,4 @@
-# devise_ldap_authenticatable_ex/login_list.rb v1.0.1 2024-04-16
+# devise_ldap_authenticatable_ex/login_list.rb v1.0.2 2024-09-03
 
 require "devise"
 require "devise_ldap_authenticatable"
@@ -18,7 +18,7 @@ module DeviseLdapAuthenticatableEx
             DeviseLdapAuthenticatable::Logger.send(
               "LDAP search all user for #{@attribute}")
             filter = Net::LDAP::Filter.pres(@attribute.to_s)
-            @ldap.search(filter: filter) do |entry|
+            @ldap.search(filter:) do |entry|
               list << entry.first(@attribute)
             end
 

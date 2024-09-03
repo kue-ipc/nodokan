@@ -1,19 +1,19 @@
 class Bulk < ApplicationRecord
   has_paper_trail
 
-  enum :status, [
-    :waiting,
-    :starting,
-    :running,
-    :stopping,
-    :stopped,
-    :succeeded,
-    :failed,
-    :cancel,
-    :error,
-    :timeout,
-    :nothing,
-  ], validate: true
+  enum :status, {
+    waiting: 0,
+    starting: 1,
+    running: 2,
+    stopping: 3,
+    stopped: 4,
+    succeeded: 5,
+    failed: 6,
+    cancel: 7,
+    error: 8,
+    timeout: 9,
+    nothing: 10,
+  }, validate: true
 
   belongs_to :user
   has_one_attached :input

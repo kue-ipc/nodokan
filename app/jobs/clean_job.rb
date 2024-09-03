@@ -1,8 +1,8 @@
 # abstract job class
 class CleanJob < ApplicationJob
-  def clean_records(model, keys = nil, **opts)
-    total = delete_expired_records(model, **opts)
-    total += compress_past_records(model, keys, **opts) if keys.present?
+  def clean_records(model, keys = nil, **)
+    total = delete_expired_records(model, **)
+    total += compress_past_records(model, keys, **) if keys.present?
     logger.info("Deleted #{model.name}: #{total}")
     total
   end

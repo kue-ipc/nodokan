@@ -44,12 +44,12 @@ module SearchHelper
       content += f.hidden_field("query", value: @query) if @query.present?
       content += f.hidden_field("per", value: @per) if @per.present?
       @order&.each do |name, value|
-        content += f.hidden_field("order[#{name}]", value: value)
+        content += f.hidden_field("order[#{name}]", value:)
       end
       @condition&.each do |name, value|
         next if name.intern == attr.intern
 
-        content += f.hidden_field("condition[#{name}]", value: value)
+        content += f.hidden_field("condition[#{name}]", value:)
       end
       model_name = collection.first&.model_name&.human
       all_text =

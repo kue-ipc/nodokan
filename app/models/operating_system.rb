@@ -37,6 +37,6 @@ class OperatingSystem < ApplicationRecord
   end
 
   def same
-    OperatingSystem.where.not(id: id).find_by(name: name)
+    OperatingSystem.where.not(id:).find_by(name:)
   end
 end

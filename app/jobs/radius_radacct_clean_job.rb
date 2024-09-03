@@ -3,6 +3,6 @@ class RadiusRadacctCleanJob < CleanJob
 
   def perform(base: Time.zone.now)
     clean_records(Radius::Radacct, [:username],
-      attr: :acctupdatetime, base: base)
+      attr: :acctupdatetime, base:)
   end
 end

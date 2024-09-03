@@ -3,6 +3,6 @@ class RadiusRadpostauthCleanJob < CleanJob
 
   def perform(base: Time.zone.now)
     clean_records(Radius::Radpostauth, [:username],
-      attr: :authdate, base: base)
+      attr: :authdate, base:)
   end
 end
