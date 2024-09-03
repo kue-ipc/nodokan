@@ -23,15 +23,24 @@ module ImportExport
           end
         end
       }, set: ->(record, value) {
-        use_ids = record.use_network_ids
-        value.each do |str|
-          manage = str.start_with?("*")
-          str = str.delete_prefix("*") if manage
-          network = Network.find_identifier(str)
-          record.add_use_network(network, manage:)
-          use_ids.delete(network.id)
+        if record.new_record?
+          record.assignments = value.map do |str|
+            manage = str.start_with?("*")
+            str = str.delete_prefix("*") if manage
+            network = Network.find_identifier(str)
+            Assignment.new(network:, auth: false, use: true, manage:)
+          end
+        else
+          use_ids = record.use_network_ids
+          value.each do |str|
+            manage = str.start_with?("*")
+            str = str.delete_prefix("*") if manage
+            network = Network.find_identifier(str)
+            record.add_use_network(network, manage:)
+            use_ids.delete(network.id)
+          end
+          use_ids.each { |network_id| record.remove_use_network_id(network_id) }
         end
-        use_ids.each { |network_id| record.remove_use_network_id(network_id) }
       }
     end
   end
