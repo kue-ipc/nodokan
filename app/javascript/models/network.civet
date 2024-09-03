@@ -5,9 +5,14 @@ import ipaddr from "ipaddr.js"
 
 namespace Network
   export interface InitParams extends ApplicationRecord.InitParams
-    readonly name: string
+    name: string
     vlan: number
     auth: boolean
+    locked: boolean
+    specific: boolean
+    global: boolean
+    dhcp: boolean
+    ra: "router" | "unmanaged" | "managed" | "assist" | "stateless" | "disabled"
     note: string
     ipv4_network_address: string?
     ipv4_prefix_length: number
@@ -34,7 +39,7 @@ class Network extends ApplicationRecord
     response := await fetch(url)
 
     if response.status is 404
-      console.log `network ${id} is not found for current user`
+      console.warn `network ${id} is not found for current user`
       @networks.set(id, undefined)
       return
 
@@ -46,6 +51,11 @@ class Network extends ApplicationRecord
   readonly name: string
   readonly vlan: number
   readonly auth: boolean
+  readonly locked: boolean
+  readonly specific: boolean
+  readonly global: boolean
+  readonly dhcp: boolean
+  readonly ra: "router" | "unmanaged" | "managed" | "assist" | "stateless" | "disabled"
   readonly note: string
   readonly current_user: Record<"auth" | "usable" | "manageable", boolean>
   readonly ipv4_network: ipaddr.IPv4?
@@ -65,6 +75,7 @@ class Network extends ApplicationRecord
     gateway: ipaddr.IPv4?
     pools: Ipv4Pool[]
     config_list: string[]
+    dhcp: boolean
   }
   readonly ipv6: {
     network: ipaddr.IPv6?
@@ -72,16 +83,18 @@ class Network extends ApplicationRecord
     gateway: ipaddr.IPv6?
     pools: Ipv6Pool[]
     config_list: string[]
+    dhcp: boolean
+    slaac: boolean
   }
 
-  @({@name, @vlan, @auth, @note,
+  @({@name, @vlan, @auth, @locked, @specific, @global, @dhcp, @ra, @note,
       ipv4_network_address, @ipv4_prefix_length, ipv4_gateway_address,
       ipv6_network_address, @ipv6_prefix_length, ipv6_gateway_address,
       ipv4_pools, ipv6_pools,
       @current_user, ...props}: Network.InitParams)
     super(props)
 
-    if ipv4_network_address 
+    if ipv4_network_address
       @ipv4_network = ipaddr.IPv4.parse(ipv4_network_address)
     if ipv4_gateway_address
       @ipv4_gateway = ipaddr.IPv4.parse(ipv4_gateway_address)
@@ -94,7 +107,8 @@ class Network extends ApplicationRecord
     @ipv6_pools = ipv6_pools.map (pool) -> new Ipv6Pool(pool)
 
     @ipv4_config_list = @availableIpConfig(@ipv4_network, @ipv4_pools)
-    @ipv6_config_list = @availableIpConfig(@ipv6_network, @ipv6_pools)
+    slaac := @ra is in ["unmanaged", "assist", "stateless"]
+    @ipv6_config_list = @availableIpConfig(@ipv6_network, @ipv6_pools, slaac)
 
     @ipv4 = {
       network: @ipv4_network
@@ -102,6 +116,7 @@ class Network extends ApplicationRecord
       gateway: @ipv4_gateway
       pools: @ipv4_pools
       config_list: @ipv4_config_list
+      dhcp: @dhcp
     }
 
     @ipv6 = {
@@ -110,18 +125,24 @@ class Network extends ApplicationRecord
       gateway: @ipv6_gateway
       pools: @ipv6_pools
       config_list: @ipv6_config_list
+      dhcp: @ra is in ["managed", "assist", "stateless"]
+      slaac: slaac
     }
 
+    console.debug @ra
+    console.debug @ipv6
+
   availableIpConfig(ip: ipaddr.IPv4 | ipaddr.IPv6 | undefined,
-    pools: Ipv4Pool[] | Ipv6Pool[]): string[]
+    pools: Ipv4Pool[] | Ipv6Pool[], slaac: boolean = false): string[]
     return [] unless @current_user.usable
     return ["disabled"] unless ip?
 
     configs := new Set(["disabled"])
     configs.add(pool.ip_config) for each pool of pools
+    configs.add("dynamic") if slaac
     configs.add("manual") if @current_user.manageable
     [...configs]
-  
+
   has(ip: "ipv4" | "ipv6"): boolean
     @[ip].network?
 

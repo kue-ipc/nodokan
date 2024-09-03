@@ -240,7 +240,7 @@ class Network < ApplicationRecord
   end
 
   def slaac?
-    ["assist", "stateless"].include?(ra)
+    ["unmanaged", "assist", "stateless"].include?(ra)
   end
 
   # network with prefix
@@ -280,7 +280,7 @@ class Network < ApplicationRecord
   def next_ipv4(ipv4_config)
     return unless has_ipv4?
 
-    selected_ipv4_pools = ipv4_pools.where(ipv4_config: ipv4_config)
+    selected_ipv4_pools = ipv4_pools.where(ipv4_config:)
       .order(:ipv4_first_data)
     return if selected_ipv4_pools.empty?
 
@@ -299,7 +299,7 @@ class Network < ApplicationRecord
   def next_ipv6(ipv6_config)
     return unless has_ipv6?
 
-    selected_ipv6_pools = ipv6_pools.where(ipv6_config: ipv6_config)
+    selected_ipv6_pools = ipv6_pools.where(ipv6_config:)
       .order(:ipv6_first_data)
     return if selected_ipv6_pools.empty?
 
@@ -325,15 +325,24 @@ class Network < ApplicationRecord
   end
 
   def ipv4_configs
-    @ipv4_configs ||=
+    if has_ipv4?
       ipv4_pools.map(&:ipv4_config)
-        .then { |list| (list + ["manual", "disabled"]).uniq }
+        .then { |list| [*list, "manual", "disabled"] }
+        .uniq
+    else
+      ["disabled"]
+    end
   end
 
   def ipv6_configs
-    @ipv6_configs ||=
+    if has_ipv6?
       ipv6_pools.map(&:ipv6_config)
-        .then { |list| (list + ["manual", "disabled"]).uniq }
+        .then { |list| [*list, ("dynamic" if slaac?), "manual", "disabled"] }
+        .compact
+        .uniq
+    else
+      ["disabled"]
+    end
   end
 
   def ipv4_include?(ip)
