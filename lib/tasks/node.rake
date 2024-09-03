@@ -3,7 +3,7 @@ require "json"
 namespace :node do
   desc "Import CSV of nodes"
   task import: :environment do
-    name = "nodes"
+    name = "node"
     processor = ImportExport::Processors::NodesProcessor.new
     file_in = "#{name}.csv"
     file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
@@ -19,7 +19,7 @@ namespace :node do
 
   desc "Export CSV of nodes"
   task export: :environment do
-    name = "nodes"
+    name = "node"
     processor = ImportExport::Processors::NodesProcessor.new
     file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
     (Rails.root / "data" / file_out).open("w") do |csv_out|

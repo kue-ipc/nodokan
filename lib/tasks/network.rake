@@ -3,7 +3,7 @@ require "json"
 namespace :network do
   desc "Import CSV of networks"
   task import: :environment do
-    name = "networks"
+    name = "network"
     processor = ImportExport::Processors::NetworksProcessor.new
     file_in = "#{name}.csv"
     file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
@@ -19,7 +19,7 @@ namespace :network do
 
   desc "Export CSV of networks"
   task export: :environment do
-    name = "networks"
+    name = "network"
     processor = ImportExport::Processors::NetworksProcessor.new
     file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
     (Rails.root / "data" / file_out).open("w") do |csv_out|

@@ -20,7 +20,7 @@ namespace :user do
 
   desc "Import CSV of users"
   task import: :environment do
-    name = "users"
+    name = "user"
     processor = ImportExport::Processors::UsersProcessor.new
     file_in = "#{name}.csv"
     file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
@@ -36,7 +36,7 @@ namespace :user do
 
   desc "Export CSV of users"
   task export: :environment do
-    name = "users"
+    name = "user"
     processor = ImportExport::Processors::UsersProcessor.new
     file_out = "#{name}_#{Time.current.strftime('%Y%m%d_%H%M%S')}.csv"
     (Rails.root / "data" / file_out).open("w") do |csv_out|
