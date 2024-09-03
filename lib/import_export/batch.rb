@@ -48,26 +48,36 @@ module ImportExport
     end
 
     # data is a string or io formatted csv
-    def import(data, &block)
+    def import(data, noop: false, &)
+      count = 0
       parse_data_each_params(data) do |params|
-        import_params(params)
-      rescue ActiveRecord::RecordNotFound
-        failed_params(params, I18n.t("errors.messages.not_found"))
-      rescue Pundit::NotAuthorizedError
-        failed_params(params, I18n.t("errors.messages.not_authorized"))
-      rescue StandardError => e
-        Rails.logger.error("Import error occured: #{params.to_json}")
-        Rails.logger.error(e.full_message)
-        error_params(params, e.message)
-      ensure
-        add_result(params, &block)
+        count += 1
+        next if noop
+
+        begin
+          import_params(params) unless noop
+        rescue ActiveRecord::RecordNotFound
+          failed_params(params, I18n.t("errors.messages.not_found"))
+        rescue Pundit::NotAuthorizedError
+          failed_params(params, I18n.t("errors.messages.not_authorized"))
+        rescue StandardError => e
+          Rails.logger.error("Import error occured: #{params.to_json}")
+          Rails.logger.error(e.full_message)
+          error_params(params, e.message)
+        ensure
+          add_result(params, &)
+        end
       end
+      count
     end
 
-    def export(&block)
+    def export(noop: false, &)
+      count = 0
       @processor.record_ids.each do |id|
-        params = {}.with_indifferent_access
-        params[:id] ||= id
+        count += 1
+        next if noop
+
+        params = {id:}.with_indifferent_access
         begin
           record = @processor.read(id)
           @processor.record_to_params(record, params:)
@@ -79,9 +89,11 @@ module ImportExport
                              "#{record.model_name.name}##{record.id}")
           Rails.logger.error(e.full_message)
           error_params(params, e.message)
+        ensure
+          add_result(params, &)
         end
-        add_result(params, &block)
       end
+      count
     end
 
     def import_params(params)

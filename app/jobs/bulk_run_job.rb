@@ -39,7 +39,15 @@ class BulkRunJob < ApplicationJob
     # do nothing
     raise
   rescue StandardError => e
-    attach_output(bulk, batch) if batch && !bulk.output.attached?
+    unless bulk.output.attached?
+      if batch
+        attach_output(bulk, batch)
+      else
+        io = StringIO.new(e.message)
+        bulk.output.attach(io:, filename: "error.txt",
+          content_type: "text/plain", identify: false)
+      end
+    end
     bulk.reload
     bulk.update(status: :error)
     Rails.logger.error(e.full_message)
@@ -55,16 +63,8 @@ class BulkRunJob < ApplicationJob
 
     # TODO: 今のところtext/csvのみ。
     #     将来はxlsxとかも対応したい。
-    if bulk.input.attached?
-      if bulk.input.content_type != "text/csv"
-        raise BulkRunError, "Unknown content type: #{bulk.file.content_type}"
-      end
-
-      bulk_number = bulk.input.open do |file|
-        CSV.table(file, header_converters: :downcase,
-          encoding: "BOM|UTF-8").size
-      end
-      bulk.update!(number: bulk_number)
+    if bulk.input.attached? && bulk.input.content_type != ("text/csv")
+      raise BulkRunError, "Unknown content type: #{bulk.file.content_type}"
     end
 
     processor =
@@ -81,7 +81,18 @@ class BulkRunJob < ApplicationJob
       else
         raise BulkRunError, "Unknow target: #{bulk.target}"
       end
-    ImportExport::Csv.new(processor, with_bom: true)
+    batch = ImportExport::Csv.new(processor, with_bom: true)
+
+    bulk_number =
+      if bulk.input.attached?
+        bulk.input.open do |file|
+          batch.import(file, noop: true)
+        end
+      else
+        batch.export(noop: true)
+      end
+    bulk.update!(number: bulk_number)
+    batch
   end
 
   # rubocop: disable Rails/SkipsModelValidations
@@ -135,15 +146,13 @@ class BulkRunJob < ApplicationJob
   end
 
   private def attach_output(bulk, batch)
-    out = batch.out
-    out.close_write
-    out.rewind
+    io = batch.out
+    io.close_write
+    io.rewind
     filename_prefix = bulk.input.filename&.base || bulk.target.underscore
-    bulk.output.attach(
-      io: out,
-      filename: filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") +
-        batch.extname,
-      content_type: batch.content_type,
+    filename = filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") +
+      batch.extname
+    bulk.output.attach(io:, filename:, content_type: batch.content_type,
       identify: false)
   end
 end

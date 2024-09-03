@@ -77,8 +77,9 @@ module ImportExport
       rows
     end
 
-    def headers(keys = @processor.keys)
-      @headers ||= ["id", *headers_from_keys(keys), "[result]", "[message]"]
+    def headers
+      @headers ||=
+        ["id", *headers_from_keys(@processor.keys), "[result]", "[message]"]
     end
 
     def headers_from_keys(keys, parent: nil)
@@ -133,6 +134,11 @@ module ImportExport
       row.to_hash.compact_blank.each do |key, value|
         next if key =~ /\A\[\w+\]\z/
 
+        if key == "id"
+          params["id"] = value
+          next
+        end
+
         cur_params = params
         cur_keys = keys
         while (m = /\A(\w+)\[(\w+)\]((?:\[\w+\])*)\z/.match(key))
@@ -164,10 +170,19 @@ module ImportExport
         value = nil if value == "!"
 
         cur_params[key] =
-          if cur_keys.grep(Hash).any? { |k| k[key.intern] == [] }
-            value.to_s.split
-          else
+          if cur_keys.include?(key.intern)
             value
+          elsif (nested_key = find_key_in_keys(key, cur_keys))
+            case nested_key
+            when []
+              value.to_s.split
+            when {}
+              JSON.parse(value.to_s)
+            else
+              raise InvalidHeaderError, "Header is not nested: #{key}"
+            end
+          else
+            raise InvalidHeaderError, "Header is not included in keys: #{key}"
           end
       end
       params
