@@ -24,19 +24,19 @@ a.btn:not(.btn-link):hover
   text-decoration: none
 
 select:invalid
-  color: $danger
+  color: var(--bs-danger)
   option
-    color: $body-color
+    color: var(--bs-body-color)
     &:first-child
-      color: $danger
+      color: var(--bs-danger)
 
 
 select.required option[value=""]
-  color: $danger
+  color: var(--bs-danger)
 
 label.form-label.required
   &::after
-    color: $danger
+    color: var(--bs-danger)
     content: " 【必須】"
 
 .form-floating
@@ -51,7 +51,7 @@ label.form-label.required
 
 
 .form-floating > label
-  color: rgba(var(--#{$prefix}body-color-rgb), #{$form-floating-label-opacity})
+  color: rgba(var(--bs-body-color-rgb), #{$form-floating-label-opacity})
 
 .form-floating > textarea.form-control
   height: calc(5.5rem + calc(var(--bs-border-width)* 2))
