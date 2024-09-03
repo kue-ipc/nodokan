@@ -60,13 +60,13 @@ module HtmlHelper
     case value
     when nil
       unless opts[:hide_blank]
-        tag.span(opts.fetch(:blank_alt, t("values.none")),
-          class: opts.fetch(:blank_class, "font-italic text-muted"))
+        tag.span(opts[:blank_alt] || t("values.none"),
+          class: opts[:blank_class] || "font-italic text-muted")
       end
     when "", [], {}
       unless opts[:hide_blank]
-        tag.span(opts.fetch(:blank_alt, t("values.empty")),
-          class: opts.fetch(:blank_class, "font-italic text-muted"))
+        tag.span(opts[:blank_alt] || t("values.empty"),
+          class: opts[:blank_class] || "font-italic text-muted")
       end
     when String
       case opts[:format]
@@ -92,7 +92,16 @@ module HtmlHelper
       end
     when IPAddr
       opts[:class] ||= []
-      opts[:class] << "text-danger-emphasis" unless value.private?
+      global = case value.family
+      in Socket::AF_INET
+        !value.loopback? && !value.link_local? && !value.private? &&
+          (1...224).cover?(value.to_i >> 24) # 1.0.0.0 <= ip < 224.0.0.0
+      in Socket::AF_INET6
+        value.to_i >> 125 == 1 # 2000::/3
+      end
+      opts[:class] << "text-danger-emphasis" if global
+      opts[:class] << "text-warning-emphasis" if value.to_i.zero?
+
       str = value.to_s
       if (value.ipv4? && value.prefix < 32) ||
           (value.ipv6? && value.prefix < 128)

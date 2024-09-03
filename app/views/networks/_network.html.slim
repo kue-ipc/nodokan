@@ -11,16 +11,19 @@
       = badge_for(network, :dhcp)
     = dt_dd_for network, :ipv4_gateway
     = dt_dd_for network, :ipv4_dns_servers, no_link: true,
-      blank_alt: t("values.inherit")
+      blank_alt: (t("values.inherit") if network.ipv4_network.to_i.positive?)
     = dt_dd_for network, :ipv6_network_prefix do |value|
       = span_value_for(value)
       = badge_for(network, :ra)
     = dt_dd_for network, :ipv6_gateway
     = dt_dd_for network, :ipv6_dns_servers, no_link: true,
-      blank_alt: t("values.inherit")
-    = dt_dd_for network, :domain, no_link: true, blank_alt: t("values.inherit")
+      blank_alt: (t("values.inherit") if network.ipv6_network.to_i.positive?)
+    = dt_dd_for network, :domain, no_link: true,
+      blank_alt: (t("values.inherit") if network.ipv4_network.to_i.positive? \
+        || network.ipv6_network.to_i.positive?)
     = dt_dd_for network, :domain_search, no_link: true,
-      blank_alt: t("values.inherit")
+      blank_alt: (t("values.inherit") if network.ipv4_network.to_i.positive? \
+        || network.ipv6_network.to_i.positive?)
     = dt_dd_for network, :note, line_break: true
 
     - if current_user.admin?

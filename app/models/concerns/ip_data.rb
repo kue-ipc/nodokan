@@ -83,7 +83,7 @@ module IpData
             !ip.loopback? && !ip.link_local? && !ip.private? &&
               (1...224).cover?(ip.to_i >> 24) # 1.0.0.0 <= ip < 224.0.0.0
           elsif ip.ipv6?
-            __send__(name)&.then { |ip| ip.to_i >> 125 == 1 } # 2000::/3
+            ip.to_i >> 125 == 1 # 2000::/3
           else
             raise AddressFamilyError, "unsupported address family"
           end
