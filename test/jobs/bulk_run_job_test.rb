@@ -12,7 +12,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
-      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
       CSV.table(file, header_converters: :downcase,
         encoding: "BOM|UTF-8").map(&:to_hash)
@@ -36,7 +36,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
-      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
       CSV.table(file, header_converters: :downcase,
         encoding: "BOM|UTF-8").map(&:to_hash)
@@ -116,7 +116,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
-      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
       CSV.table(file, header_converters: :downcase,
         encoding: "BOM|UTF-8").map(&:to_hash)
@@ -268,7 +268,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
     end
     output = bulk.output.open do |file|
-      assert_equal "\u{feff}".force_encoding("ASCII-8BIT"), file.read(3)
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
       CSV.table(file, header_converters: :downcase,
         encoding: "BOM|UTF-8").map(&:to_hash)
