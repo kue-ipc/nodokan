@@ -12,8 +12,8 @@ class OsCategory < ApplicationRecord
 
   normalizes :name, with: :strip.to_proc
   normalizes :icon, with: ->(icon) {
-    sanitize(icon, tags: %w(span i),
-      attributes: %w(class style data-fa-transform)).strip
+    sanitize(icon, tags: %w[span i],
+      attributes: %w[class style data-fa-transform]).strip
   }
 
   before_validation :auto_increment_order

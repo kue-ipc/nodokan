@@ -62,7 +62,7 @@ class User < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(username email fullname role deleted nodes_count)
+    %w[username email fullname role deleted nodes_count]
   end
 
   def self.ransackable_associations(auth_object = nil)

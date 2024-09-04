@@ -17,7 +17,7 @@ class Place < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(area building floor room confirmed nodes_count)
+    %w[area building floor room confirmed nodes_count]
   end
 
   def self.ransackable_associations(auth_object = nil)

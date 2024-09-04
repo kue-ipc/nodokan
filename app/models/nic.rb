@@ -82,7 +82,7 @@ class Nic < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(
+    %w[
       node_id network_id
       number name interface_type
       auth locked
@@ -90,7 +90,7 @@ class Nic < ApplicationRecord
       ipv4_config ipv4_data
       ipv6_config ipv6_data
       ipv4_resolved_at ipv6_discovered_at ipv4_leased_at ipv6_leased_at auth_at
-    )
+    ]
   end
 
   def self.ransackable_associations(auth_object = nil)

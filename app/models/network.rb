@@ -141,8 +141,8 @@ class Network < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(name vlan ipv4_network_data ipv6_network_data auth nics_count
-      assignments_count)
+    %w[name vlan ipv4_network_data ipv6_network_data auth nics_count
+      assignments_count]
   end
 
   def self.ransackable_associations(auth_object = nil)

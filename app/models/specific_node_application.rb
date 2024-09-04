@@ -3,13 +3,13 @@ class SpecificNodeApplication
   include ActiveModel::Attributes
   include ActiveModel::Serialization
 
-  EXTERNAL_LIST = %w(
+  EXTERNAL_LIST = %w[
     none
     nat
     napt
     through
     direct
-  ).freeze
+  ].freeze
 
   attribute :node_id, :integer
   attribute :user_id, :integer

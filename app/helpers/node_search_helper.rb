@@ -1,10 +1,10 @@
 module NodeSearchHelper
   NODE_SEARCH_LIST_COL_CLASSES = {
-    name: %w(col-6 col-md-5 col-xl-3),
-    hostname: %w(col-4 col-md-2 col-xl-2),
-    ipv4_address: %w(d-none d-md-block col-md-3 col-xl-2),
-    ipv6_address: %w(d-none d-xl-block col-xl-4),
-    action: %w(col-2 col-md-2 col-xl-1),
+    name: %w[col-6 col-md-5 col-xl-3],
+    hostname: %w[col-4 col-md-2 col-xl-2],
+    ipv4_address: %w[d-none d-md-block col-md-3 col-xl-2],
+    ipv6_address: %w[d-none d-xl-block col-xl-4],
+    action: %w[col-2 col-md-2 col-xl-1],
   }.freeze
 
   def node_search_form_for(frame_prefix = "node", query: nil, per: nil,

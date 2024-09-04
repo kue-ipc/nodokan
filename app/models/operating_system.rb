@@ -10,7 +10,7 @@ class OperatingSystem < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(name eol confirmed nodes_count os_category_id)
+    %w[name eol confirmed nodes_count os_category_id]
   end
 
   def self.ransackable_associations(auth_object = nil)

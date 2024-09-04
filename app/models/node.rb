@@ -79,7 +79,7 @@ class Node < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(
+    %w[
       name
       hostname
       domain
@@ -89,11 +89,11 @@ class Node < ApplicationRecord
       dns
       duid_data
       user_id
-    )
+    ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w(nics)
+    %w[nics]
   end
   # rubocop: enable Lint/UnusedMethodArgument
 

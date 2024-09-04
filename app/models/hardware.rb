@@ -15,7 +15,7 @@ class Hardware < ApplicationRecord
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
-    %w(device_type_id maker product_name model_number confirmed nodes_count)
+    %w[device_type_id maker product_name model_number confirmed nodes_count]
   end
 
   def self.ransackable_associations(auth_object = nil)

@@ -40,7 +40,7 @@ RailsAdmin.config do |config|
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = true
 
-  paper_trail_audit_model = %w(
+  paper_trail_audit_model = %w[
     Assignment
     Bulk
     Confirmation
@@ -57,7 +57,7 @@ RailsAdmin.config do |config|
     Place
     SecuritySoftware
     User
-  )
+  ]
 
   config.actions do
     dashboard                     # mandatory
