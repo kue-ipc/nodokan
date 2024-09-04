@@ -94,6 +94,10 @@ module ImportExport
       end
 
       private def create_nic(record, nic_params)
+        if nic_params[:number].blank?
+          nic_params[:number] = (record.nics.map(&:number).max || 0) + 1
+        end
+
         normalize_nic_params(nic_params)
         if record.new_record?
           record.nics.build(nic_params)
