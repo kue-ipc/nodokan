@@ -49,9 +49,14 @@ Rails.application.configure do
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT by default
-  config.logger = ActiveSupport::Logger.new(STDOUT)
-    .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
-    .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  if Settings.log_to_stdout
+    config.logger = ActiveSupport::Logger.new(STDOUT)
+      .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
+      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  else
+    # Use default logging formatter so that PID and timestamp are not suppressed.
+    config.log_formatter = Logger::Formatter.new
+  end
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
@@ -62,10 +67,10 @@ Rails.application.configure do
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  config.cache_store = :redis_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter = :resque
+  config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "nodokan_production"
 
   # Disable caching for Action Mailer templates even if Action Controller
@@ -75,6 +80,9 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.smtp_settings = Settings.mailer&.smtp_settings&.to_h
+  config.action_mailer.default_options = Settings.mailer&.options&.to_h
+  config.action_mailer.default_url_options = Settings.mailer&.url_options&.to_h
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -93,4 +101,7 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Use a different session store in production.
+  config.session_store :cache_store
 end
