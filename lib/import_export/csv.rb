@@ -16,8 +16,7 @@ module ImportExport
 
     attr_reader :result, :count
 
-    def initialize(*, out: String.new, with_bom: false, delimiter: "\n",
-      **)
+    def initialize(*, out: +"", with_bom: false, delimiter: "\n", **)
       # FIXME: 3.0系では`super`と引数無しで呼び出した場合、
       #        `opts`にout等が一緒に入るため、オプションを付ける。
       super(*, **)
