@@ -43,6 +43,7 @@ class NodesController < ApplicationController
       operating_system: OperatingSystem.new,
       nics: [nic],
       user: current_user)
+    @node.node_type = "mobile" if current_user.guest?
     authorize @node
   end
 
