@@ -30,13 +30,15 @@
             i.fas.fa-question-circle
           =< hardware.name
         - else
-          .text-warning-emphasis = t("messages.node_unregistered_hardware")
+          .text-warning-emphasis
+            = t("messages.node_unregistered_hardware")
       = dt_dd_for node, :operating_system do |operating_system|
         - if operating_system&.os_category
           == operating_system.os_category.icon.presence
           =< operating_system.name
         - else
-          .text-danger-emphasis = t("messages.node_unregistered_operating_system")
+          .text-danger-emphasis
+            = t("messages.node_unregistered_operating_system")
     = dt_dd_for node, :nics do |nics|
       - if nics.count.zero?
         .text-muted = t("messages.node_no_nics")
