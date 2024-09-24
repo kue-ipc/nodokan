@@ -110,6 +110,10 @@ class NodesController < ApplicationController
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       elsif @node.destroy
+        if current_user.id == @node.user_id
+          # nodes_countが変更されているため、reloadする。
+          current_user.reload
+        end
         format.turbo_stream do
           flash.now.notice = t_success(@node, :delete)
         end

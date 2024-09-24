@@ -1,0 +1,41 @@
+ul.navbar-nav.d-flex
+  li.nav-item.dropdown data-controller="theme"
+    button.btn.btn-link.nav-link.dropdown-toggle[
+      type="button"
+      aria-expanded="false" aria-label=t("messages.toggle_theme")
+      data-bs-toggle="dropdown" data-bs-display="static"]
+      i.bi.my-1.theme-icon-active.bi-circle-half[
+        data-theme-target="icon"]
+      span.d-md-none.ms-2 = t("messages.toggle_theme")
+    ul.dropdown-menu.dropdown-menu-end aria-labelledby="bd-theme-text"
+      - themes.each do |name|
+        - icon = theme_icon(name)
+        li
+          button.dropdown-item.d-flex.align-items-center[
+            type="button" aria-pressed="false"
+            data-action="theme#select" data-theme-target="button"
+            data-theme-name=name
+            data-theme-icon=icon
+          ]
+            i class="bi me-2 theme-icon bi-#{icon}"
+            = t(name, scope: "themes")
+            i.bi.ms-auto.d-none.bi-check2
+  - if user_signed_in?
+    - if current_user.admin?
+      li.nav-item
+        = link_to t("pages.admin"), rails_admin_path,
+          class: "btn btn-outline-danger my-2 my-md-0 me-2",
+          target: "_blank", rel: "noopener", data: {turbo: false}
+      li.nav-item
+        = link_to t("pages.job"), resque_server_path,
+          class: "btn btn-outline-secondary my-2 my-md-0 me-2",
+          target: "_blank", rel: "noopener", data: {turbo: false}
+    li.nav-item
+      = link_to current_user.username, "/user", class: "nav-link",
+        data: {turbo: false}
+    li.nav-item
+      = button_to destroy_user_session_path, class: "nav-link",
+        method: :delete, title: t("actions.sign_out"),
+          data: {turbo: false, "bs-toggle": "tooltip"} do
+        i.fas.fa-sign-out-alt.fa-lg
+        span.d-md-none.ms-2 = t("actions.sign_out")
