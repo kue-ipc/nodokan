@@ -1,28 +1,33 @@
 ## devise_ldap_authenticatable
 # Can not use yaml aliases
+<%
+user_ou = [Settings.ldap.user.ou, Settings.ldap.base].compact.join(',')
+group_ou = [Settings.ldap.group.ou, Settings.ldap.base].compact.join(',')
+bind_user = Rails.application.credentials.dig(:ldap, :username) ||
+  Settings.ldap.username
+bind_password = Rails.application.credentials.dig(:ldap, :password) ||
+  Settings.ldap.password
+%>
 <% %w[development test production].each do |env| %>
 <%= env %>:
   host: <%= Settings.ldap.host.to_json %>
   port: <%= Settings.ldap.port.to_json %>
   attribute: <%= Settings.ldap.user.dn.to_json %>
-  base: <%= [Settings.ldap.user.ou, Settings.ldap.base].join(',').to_json %>
+  base: <%= user_ou.to_json %>
 <% if Settings.ldap.auth == 'simple' %>
   allow_unauthenticated_bind: false
-  admin_user: <%= (Rails.application.credentials.dig(:ldap, :username) ||
-    Settings.ldap.username).to_json %>
-  admin_password: <%= (Rails.application.credentials.dig(:ldap, :password) ||
-    Settings.ldap.password).to_json %>
+  admin_user: <%= bind_user.to_json %>
+  admin_password: <%= bind_password.to_json %>
 <% elsif Settings.ldap.auth == 'anonymous' %>
   allow_unauthenticated_bind: true
 <% end %>
   ssl: <%= Settings.ldap.ssl.to_json %>
-  group_base: <%=
-    [Settings.ldap.group.ou, Settings.ldap.base].join(',').to_json %>
-  required_groups: <%=
-    Settings.ldap.restrict.auth.groups.map do |name|
-      ["#{Settings.ldap.group.dn}=#{name}", Settings.ldap.group.ou,
-        Settings.ldap.base].join(',')
-    end.to_json %>
+  group_base: <%= group_ou.to_json %>
+  required_groups: <%= Settings.ldap.restrict.auth.groups.map { |name|
+  name = "#{Settings.ldap.group.dn}=#{name}" if name.exclude?("=")
+  name = [name, group_ou].compact.join(',') if name.exclude?(",")
+  name
+}.to_json %>
   require_attribute:
     objectClass: <%= Settings.ldap.user.classes.to_json %>
   require_attribute_presence:
