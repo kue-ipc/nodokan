@@ -56,7 +56,7 @@ gem "slim-rails"
 gem "config"
 
 # i18n
-gem "rails-i18n", "~> 7.0.0"
+gem "rails-i18n", "~> 7.0"
 
 # Devise
 gem "devise"
