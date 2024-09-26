@@ -137,6 +137,7 @@ class BulkRunJobTest < ActiveJob::TestCase
 
   test "admin run import Node only admin" do
     bulk = bulks(:import_node_admin)
+    bulk.update(user: users(:admin))
     perform_enqueued_jobs do
       BulkRunJob.perform_later(bulk)
     end
