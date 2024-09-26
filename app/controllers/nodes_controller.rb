@@ -27,15 +27,13 @@ class NodesController < ApplicationController
 
   # GET /nodes/new
   def new
-    network = current_user.use_networks.first
-    nic =
-      if network
-        Nic.new(network_id: network.id, auth: network.auth,
-          ipv4_config: (Nic.ipv4_configs.keys & network.ipv4_configs).first,
-          ipv6_config: (Nic.ipv6_configs.keys & network.ipv6_configs).first)
-      else
-        Nic.new
-      end
+    new_nic_params = {}
+    if (network = current_user.use_networks.first)
+      new_nic_params.merge!({network_id: network.id, auth: network.auth,
+      ipv4_config: (Nic.ipv4_configs.keys & network.ipv4_configs).first,
+      ipv6_config: (Nic.ipv6_configs.keys & network.ipv6_configs).first,})
+    end
+    nic = Nic.new(**new_nic_params)
 
     @node = Node.new(
       place: Place.new,
