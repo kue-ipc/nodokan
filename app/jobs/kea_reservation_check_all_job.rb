@@ -31,7 +31,7 @@ class KeaReservationCheckAllJob < ApplicationJob
       network_id = key[0]
       mac_address = key[1].unpack("C*").map { |i| "%02X" % i }.join("-")
       logger.warn "Should delete DHCPv4 resevartion for " \
-                  "#{mac_adress} in Network##{network_id}"
+                  "#{mac_address} in Network##{network_id}"
       KeaReservation4DelJob.perform_later(network_id, mac_address)
     end
   end

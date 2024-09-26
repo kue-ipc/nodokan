@@ -39,13 +39,22 @@ module NodeParameter
     node_params
   end
 
-  private def delete_unchangable_nic_params(nic_params, nic: nil, network: nil)
+  # 変更不可のパラメーターを削除する。
+  private def delete_unchangable_nic_params(nic_params)
     return nic_params if current_user.nil? || current_user.admin?
 
-    nic_params.delete(:locked)
 
-    nic ||= nic_params[:id].presence&.then { |id| Nic.find(id) }
-    network ||= nic_params[:network_id].presence&.then { |id| Network.find(id) }
+    nic = nic_params[:id].presence&.then { Nic.find(_1) }
+    network = nic_params[:network_id].presence&.then { Network.find(_1) }
+
+    if nic&.locked?
+      # delete all except of :id for locked nic
+      nic_params.slice!(:id)
+      return nic_params
+    end
+
+    # 管理者以外はロック設定変更不可
+    nic_params.delete(:locked)
 
     # ゲストの制限
     if current_user.guest?
@@ -59,51 +68,38 @@ module NodeParameter
       end
     end
 
-    if nic.nil?
-      # new nic
-      if nic_params[:network_id].present? &&
-          !network.manageable?(current_user)
-        # unmanageable
+    if network.nil?
+      # no network
+    elsif network.manageable?(current_user)
+      # manageable
+    elsif network.usable?(current_user)
+      # usable
+      if network.id == nic&.network_id
+        if !nic_params.key?(:ipv4_config) ||
+            nic_params[:ipv4_config].to_s == nic.ipv4_config
+          nic_params.delete(:ipv4_address) # use same ip
+        else
+          nic_params[:ipv4_address] = nil # reset ip address
+        end
+        if !nic_params.key?(:ipv6_config) ||
+            nic_params[:ipv6_config].to_s == nic.ipv6_config
+          nic_params.delete(:ipv6_address) # use same ip
+        else
+          nic_params[:ipv6_address] = nil # reset ip address
+        end
+      else
+        # reset ip address
         nic_params[:ipv4_address] = nil
         nic_params[:ipv6_address] = nil
       end
-      return nic_params
-    end
-
-    if nic.locked?
-      # delete all except of :id for locked nic
-      nic_params.slice!(:id)
-      return nic_params
-    end
-
-    network =
-      if nic_params.key?(:network_id)
-        nic_params[:network_id].presence &&
-          Network.find(nic_params[:network_id])
-      else
-        nic.network
-      end
-
-    return nic_params if network.nil?
-    return nic_params if network.manageable?(current_user)
-
-    if network.id == nic.network_id
-      if !nic_params.key?(:ipv4_config) ||
-          nic_params[:ipv4_config].to_s == nic.ipv4_config
-        nic_params.delete(:ipv4_address) # use same ip
-      else
-        nic_params[:ipv4_address] = nil # reset ip address
-      end
-      if !nic_params.key?(:ipv6_config) ||
-          nic_params[:ipv6_config].to_s == nic.ipv6_config
-        nic_params.delete(:ipv6_address) # use same ip
-      else
-        nic_params[:ipv6_address] = nil # reset ip address
-      end
     else
-      # reset ip address
-      nic_params[:ipv4_address] = nil
-      nic_params[:ipv6_address] = nil
+      # unusable
+      nic_params.delete(:network_id)
+      nic_params.delete(:auth)
+      nic_params.delete(:ipv4_config)
+      nic_params.delete(:ipv4_address)
+      nic_params.delete(:ipv6_config)
+      nic_params.delete(:ipv6_address)
     end
     nic_params
   end

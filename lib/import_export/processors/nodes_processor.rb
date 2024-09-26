@@ -3,6 +3,8 @@ require "import_export/processors/application_processor"
 module ImportExport
   module Processors
     class NodesProcessor < ApplicationProcessor
+      class UnusableNetworkError < RuntimeError
+      end
       include NodeParameter
 
       class_name "Node"
@@ -74,7 +76,11 @@ module ImportExport
           else
             record.errors.add(:nics,
               I18n.t("errors.messages.invalid_nic_number_field"))
+            raise ActiveRecord::Rollback
           end
+        rescue UnusableNetworkError
+          record.errors.add(:nics, I18n.t("errors.messages.unusable_network"))
+          raise ActiveRecord::Rollback
         end
       }
 
@@ -83,13 +89,20 @@ module ImportExport
         {user_id: current_user&.id}
       end
 
-      private def normalize_nic_params(nic_params, nic: nil)
-        network = nic_params[:network].presence
-          &.then(&Network.method(:find_identifier))
-        delete_unchangable_nic_params(nic_params, nic:, network:)
+      private def normalize_nic_params(nic_params)
+        network =
+          nic_params[:network].presence&.then { Network.find_identifier(_1) }
         nic_params[:network_id] = network&.id
-        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
-          :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
+
+        delete_unchangable_nic_params(nic_params)
+
+        if network && nic_params[:network_id].nil?
+          raise UnusableNetworkError
+        end
+
+        nic_params.slice!(:number, :name,
+          :interface_type, :network_id, :flag, :mac_address,
+          :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
         nic_params
       end
 
@@ -110,7 +123,8 @@ module ImportExport
         nic = Nic.find_by(node_id: record.id, number: nic_number)
         return create_nic(record, nic_params) if nic.nil?
 
-        normalize_nic_params(nic_params, nic:)
+        nic_params[:id] = nic&.id
+        normalize_nic_params(nic_params)
         nic.update!(nic_params)
       end
 

@@ -43,54 +43,34 @@ feature:
 ldap:
   host: localhost
   port: 389
+  # base: dc=example,dc=jp
   # auth: anonymous
   auth: simple
   # overwritten with credentials
   # username: cn=bind,dc=example,dc=jp
   # overwritten with credentials
   # passwrdo: ********
-  # base: dc=example,dc=jp
   ssl: null
   # ssl: simple_tls
   # ssl: start_tls
   user:
-    # dn: cn
-    # ou: ou=Users
+    dn: cn
+    ou: null
     classes:
       - posixAccount
     attribute:
       mail: mail
       display_name: displayName
   group:
-    # dn: cn
-    # ou: ou=Groups
+    dn: cn
+    ou: null
     classes:
       - posixGroup
   restrict:
     auth:
       groups:
         - user
-# user_default_config:
-#   auth_network: null
-#   networks: []
-#   limit: null
-#   role: user
-# user_initial_configs:
-#   - group: cn=staff,ou=groups,dc=example,dc=jp
-#     auth_network: v102
-#     networks:
-#       - v101
-#       - v102
-#   - group: cn=user,ou=groups,dc=example,dc=jp
-#     auth_network: free
-#     networks:
-#       - auth
-#     limit: 1
-#   - group: cn=guest,ou=groups,dc=example,dc=jp
-#     networks:
-#       - v102
-#     limit: 1
-#     role: guest
+user_initial_configs: []
 additional_messages:
   nic_setting: null
 specific_node_application:

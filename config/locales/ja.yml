@@ -48,6 +48,7 @@ ja:
     reload: 再読込
     import: インポート
     export: エクスポート
+    transfer: 譲渡
   do_actions:
     close: 閉じる
     index: 一覧を表示する
@@ -78,6 +79,7 @@ ja:
     download: ダウンロードする
     upload: アップロードする
     reload: 再度読み込む
+    transfer: 譲渡する
   with_actions:
     close: "%{name}を閉じる"
     index: "%{name}の一覧を表示する"
@@ -97,7 +99,7 @@ ja:
     finish: "%{name}を完了する"
     start: "%{name}を開始する"
     cancel: "%{name}をキャンセルする"
-
+    transfer: "%{name}を譲渡する"
 
   messages:
     action: 操作
@@ -935,6 +937,9 @@ ja:
       no_allocate: 割り当てがありません。
       invalid_csv_header: CSVのヘッダが間違っています。
       invalid_id_param: 「id」の値が不正です。
+      not_found_user: 該当するユーザーがいません。
+      cannot_transfer_to_guest: ゲスト権限のユーザーに譲渡できません。
+      unusable_network: 使用できないネットワークです。
 
   forms:
     common:

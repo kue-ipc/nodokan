@@ -37,6 +37,13 @@ user_noip:
   use: true
   manage: false
 
+user_last:
+  user: user
+  network: last
+  auth: false
+  use: true
+  manage: false
+
 guest_client:
   user: guest
   network: client

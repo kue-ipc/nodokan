@@ -1,0 +1,16 @@
+ul.navbar-nav.me-auto.mb-1.mb-md-0
+  - if user_signed_in?
+    li.nav-item
+      = link_to "端末登録", new_node_path,
+        class: {"nav-link": true, disabled: !current_user.node_creatable?},
+        data: {turbo: false}
+    li.nav-item
+      = link_to "端末一覧", nodes_path, class: "nav-link",
+        data: {turbo: false}
+    - if current_user.admin?
+      li.nav-item
+        = link_to "ネットワーク一覧", networks_path, class: "nav-link",
+          data: {turbo: false}
+      li.nav-item
+        = link_to "ユーザー一覧", users_path, class: "nav-link",
+          data: {turbo: false}

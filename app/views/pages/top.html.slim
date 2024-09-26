@@ -22,7 +22,7 @@ h3 利用者メニュー
           | 端末の新規登録を行います。
           | 端末を新しく購入した場合は、こちらで登録を行ってください。
     - else
-      .card.border-primary.disabled
+      .card.border-dark.disabled
         .card-header.text-center
           | 端末の新規登録
           span.text-danger-emphasis
@@ -43,12 +43,13 @@ h3 利用者メニュー
       .card-body
         | 登録されている端末の一覧を表示します。
         | 端末の確認、変更、削除等を行いたい場合は、こちらにアクセスしてください。
-  .col-md-6.col-lg-4.my-1
-    = link_to bulks_path, class: "card border-info" do
-      .card-header.text-center
-        | 一括処理
-      .card-body
-        | CSVファイルをインポートまたはエクスポートして、複数の端末を一括で登録・変更・削除または取得を行います。
+  - unless current_user.guest?
+    .col-md-6.col-lg-4.my-1
+      = link_to bulks_path, class: "card border-info" do
+        .card-header.text-center
+          | 一括処理
+        .card-body
+          | CSVファイルをインポートまたはエクスポートして、複数の端末を一括で登録・変更・削除または取得を行います。
 
 - if current_user.admin?
   hr

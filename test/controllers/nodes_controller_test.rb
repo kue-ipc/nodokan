@@ -1891,7 +1891,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         0 => nic_to_params(@node.nics.first),
         1 => {
           interface_type: @node.nics.first.interface_type,
-          network_id: networks(:free).id,
+          network_id: networks(:last).id,
           mac_address: @node.nics.first.mac_address,
           auth: true,
         },

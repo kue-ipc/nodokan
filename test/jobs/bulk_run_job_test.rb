@@ -25,6 +25,31 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
   end
 
+  test "admin run import Node" do
+    bulk = bulks(:import_node)
+    bulk.update(user: users(:admin))
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+    assert_equal input_size, output.size
+  end
+
   test "run import Node NG" do
     bulk = bulks(:import_node_ng)
     perform_enqueued_jobs do
@@ -52,6 +77,90 @@ class BulkRunJobTest < ActiveJob::TestCase
       assert_equal "failed", result["[result]"]
     end
   end
+
+  test "admin run import Node NG" do
+    bulk = bulks(:import_node_ng)
+    bulk.update(user: users(:admin))
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "failed", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal 0, bulk.success
+    assert_equal input_size, bulk.failure
+    assert_equal input_size, output.size
+
+    output.each do |result|
+      assert_equal "failed", result["[result]"]
+    end
+  end
+
+  test "run import Node only admin" do
+    bulk = bulks(:import_node_admin)
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "failed", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal 0, bulk.success
+    assert_equal input_size, bulk.failure
+    assert_equal input_size, output.size
+
+    output.each do |result|
+      assert_equal "failed", result["[result]"]
+    end
+  end
+
+  test "admin run import Node only admin" do
+    bulk = bulks(:import_node_admin)
+    bulk.update(user: users(:admin))
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+    end
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, header_converters: :downcase,
+        encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+    assert_equal input_size, output.size
+  end
+
+
 
   test "run export Node" do
     bulk = bulks(:export_node)

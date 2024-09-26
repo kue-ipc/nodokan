@@ -123,16 +123,26 @@ class User < ApplicationRecord
       return
     end
 
+    initial_configs = Settings.user_initial_configs.select do |conf|
+      conf[:group].nil? || conf[:group] == "*" ||
+        ldap_groups.include?(conf[:group])
+    end.select do |conf|
+      conf[:attribute].nil? ||
+        conf[:attribute].all? do |k, v|
+          if v == "*"
+            !ldap_entry.first(k).nil?
+          else
+            ldap_entry[k].include?(v)
+          end
+       end
+    end
+
     config = {
       auth_network: nil,
       networks: [],
       limit: nil,
       role: "user",
-    }
-    config.merge!(
-      Settings.user_default_config || {},
-      Settings.user_initial_configs
-        &.find { |conf| ldap_groups.include?(conf[:group]) } || {})
+    }.merge(*initial_configs)
 
     @allocate_network_config = config.slice(:auth_network, :networks)
     self.limit = config[:limit]
@@ -152,13 +162,18 @@ class User < ApplicationRecord
       end
   end
 
+  def ldap_attributes
+    @ldap_attributes ||= ldap_entry&.to_h
+  end
+
   def ldap_mail
-    ldap_entry&.[]("mail")&.first
+    ldap_entry&.first(Settings.ldap.user.attribute.mail)
   end
 
   def ldap_display_name
-    ldap_entry&.[]("displayName;lang-#{I18n.default_locale}")&.first ||
-      ldap_entry&.[]("displayName")&.first
+    attr = Settings.ldap.user.attribute.display_name
+    locale_attr = "#{attr};lang-#{I18n.default_locale}"
+    ldap_entry&.first(locale_attr) || ldap_entry&.first(attr)
   end
 
   def sync_ldap!
