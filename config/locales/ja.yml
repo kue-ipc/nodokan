@@ -939,6 +939,7 @@ ja:
       invalid_id_param: 「id」の値が不正です。
       not_found_user: 該当するユーザーがいません。
       cannot_transfer_to_guest: ゲスト権限のユーザーに譲渡できません。
+      unusable_network: 使用できないネットワークです。
 
   forms:
     common:

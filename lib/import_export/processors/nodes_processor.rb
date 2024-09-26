@@ -3,6 +3,8 @@ require "import_export/processors/application_processor"
 module ImportExport
   module Processors
     class NodesProcessor < ApplicationProcessor
+      class UnusableNetworkError < RuntimeError
+      end
       include NodeParameter
 
       class_name "Node"
@@ -74,7 +76,11 @@ module ImportExport
           else
             record.errors.add(:nics,
               I18n.t("errors.messages.invalid_nic_number_field"))
+            raise ActiveRecord::Rollback
           end
+        rescue UnusableNetworkError
+          record.errors.add(:nics, I18n.t("errors.messages.unusable_network"))
+          raise ActiveRecord::Rollback
         end
       }
 
@@ -89,8 +95,14 @@ module ImportExport
         nic_params[:network_id] = network&.id
 
         delete_unchangable_nic_params(nic_params)
-        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
-          :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
+
+        if network && nic_params[:network_id].nil?
+          raise UnusableNetworkError
+        end
+
+        nic_params.slice!(:number, :name,
+          :interface_type, :network_id, :flag, :mac_address,
+          :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
         nic_params
       end
 
