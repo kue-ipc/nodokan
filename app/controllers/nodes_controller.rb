@@ -121,7 +121,7 @@ class NodesController < ApplicationController
         format.json { head :no_content }
       else
         format.html do
-          redirect_to @node, alert: "端末の削除に失敗しました。"
+          redirect_to @node, alert: t_failure(@node, :delete)
         end
         format.json { render json: @node.errors, status: :unprocessable_entity }
       end
@@ -130,9 +130,32 @@ class NodesController < ApplicationController
 
   # POST /nodes/1/tranfer
   def transfer
-    user = User.find_by(username: params[:username])
-    note = params[:note]
-    if user
+    permitted_params = params.permit(:username, :note)
+    user = User.find_by(username: permitted_params[:username])
+    note = permitted_params[:note]
+
+    if user.nil?
+      respond_to do |format|
+        format.html do
+          redirect_to @node, alert: t("errors.messages.not_found_user")
+        end
+        format.json do
+          errors = {username: t("errors.messages.not_found_user")}
+          render json: errors, status: :unprocessable_entity
+        end
+      end
+    elsif user.guest?
+      respond_to do |format|
+        format.html do
+          redirect_to(@node,
+            alert: t("errors.messages.cannot_transfer_to_guest"))
+        end
+        format.json do
+          errors = {username: t("errors.messages.cannot_transfer_to_guest")}
+          render json: errors, status: :unprocessable_entity
+        end
+      end
+    else
       @node.user = user
       @node.confirmation = nil
       if note.present?
@@ -148,26 +171,16 @@ class NodesController < ApplicationController
       respond_to do |format|
         if @node.save
           format.html do
-            redirect_to nodes_path, notice: "端末を譲渡しました。"
+            redirect_to nodes_path, notice: t_success(@node, :transfer)
           end
           format.json { render :show, status: :ok, location: @node }
         else
           format.html do
-            redirect_to @node, alert: "移譲に失敗しました。"
+            redirect_to @node, alert: t_failure(@node, :transfer)
           end
           format.json do
             render json: @node.errors, status: :unprocessable_entity
           end
-        end
-      end
-    else
-      respond_to do |format|
-        format.html do
-          redirect_to @node, alert: "該当するユーザーがいません。"
-        end
-        format.json do
-          render json: {username: "該当のユーザーがいません。"},
-            status: :unprocessable_entity
         end
       end
     end
