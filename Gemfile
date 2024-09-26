@@ -71,11 +71,11 @@ gem "paper_trail"
 gem "paper_trail-association_tracking"
 
 # Rails Admin
-gem "rails_admin", "~> 3.1"
+gem "rails_admin", "~> 3.2"
 gem "rails_admin-i18n"
 
 # Bootstrap
-gem "bootstrap_form", "~> 5.3"
+gem "bootstrap_form", "~> 5.4"
 
 # Resque
 gem "resque"

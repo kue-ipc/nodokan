@@ -407,7 +407,7 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
-  bootstrap_form (~> 5.3)
+  bootstrap_form (~> 5.4)
   brakeman
   capybara
   config
@@ -428,7 +428,7 @@ DEPENDENCIES
   pundit
   rails (~> 7.2.1)
   rails-i18n (~> 7.0)
-  rails_admin (~> 3.1)
+  rails_admin (~> 3.2)
   rails_admin-i18n
   ransack
   redis (>= 4.0.1)
