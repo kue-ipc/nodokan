@@ -83,11 +83,12 @@ module ImportExport
         {user_id: current_user&.id}
       end
 
-      private def normalize_nic_params(nic_params, nic: nil)
-        network = nic_params[:network].presence
-          &.then(&Network.method(:find_identifier))
-        delete_unchangable_nic_params(nic_params, nic:, network:)
+      private def normalize_nic_params(nic_params)
+        network =
+          nic_params[:network].presence&.then { Network.find_identifier(_1) }
         nic_params[:network_id] = network&.id
+
+        delete_unchangable_nic_params(nic_params)
         nic_params.slice!(:number, :name, :interface_type, :network_id, :flag,
           :mac_address, :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
         nic_params
@@ -110,7 +111,8 @@ module ImportExport
         nic = Nic.find_by(node_id: record.id, number: nic_number)
         return create_nic(record, nic_params) if nic.nil?
 
-        normalize_nic_params(nic_params, nic:)
+        nic_params[:id] = nic&.id
+        normalize_nic_params(nic_params)
         nic.update!(nic_params)
       end
 
