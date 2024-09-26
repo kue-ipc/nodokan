@@ -10,6 +10,11 @@ import_node_ng:
   target: Node
   status: waiting
 
+import_node_admin:
+  user: user
+  target: Node
+  status: waiting
+
 export_node:
   user: user
   target: Node

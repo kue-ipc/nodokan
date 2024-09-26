@@ -10,7 +10,5 @@
 ,user,パソコン,desktop.clients.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-D3-25-42-95-F6-64-44-A4-95-8D-E3-0A-7C-CC-9D-36,1,LAN,wired,v102,a,02-12-23-45-67-89,dynamic,,dynamic,,FQDNが重複,,
 ,user,パソコン,pc.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-3B-6E-47-FF-4E-2A-4E-2E-92-43-AF-3F-80-45-2D-96,1,LAN,wired,v102,a,02-12-23-45-67-89,dynamic,,dynamic,,DUIDが重複,,
 ,user,パソコン,pc.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-D3-25-42-95-F6-64-44-A4-95-8D-E3-0A-7C-CC-9D-36,1,LAN,wired,v102,a,00-11-22-33-44-55,dynamic,,dynamic,,MACアドレスが重複,,
-142,user,パソコン1,pc1.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-81-60-DF-32-02-FC-4A-7A-9E-4D-76-13-DD-B5-A5-C3,1,LAN,wired,v102,a,02-12-23-45-67-90,dynamic,,dynamic,,更新権限無し,,
 108,user,パソコン1,pc1.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-81-60-DF-32-02-FC-4A-7A-9E-4D-76-13-DD-B5-A5-C3,1,LAN,wired,v102,a,02-12-23-45-67-90,dynamic,,dynamic,,対象無し,,
-!142,,,,,,,,,,,,,,,,,,,,,,,,,,,,,削除権限無し,,
 !108,,,,,,,,,,,,,,,,,,,,,,,,,,,,,対象無し,,
