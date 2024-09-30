@@ -1,35 +1,36 @@
 # use ransack
 module Search
   extend ActiveSupport::Concern
+  include Page
 
-  private def set_search(order: nil, condition: nil)
+  private def set_search(order: nil, condition: nil, page: nil, per: nil)
+    set_page(page:, per:)
     @query = params[:query]&.to_s
-    @order =
-      if params[:order].present?
-        params.require(:order).permit(search_order_permitted_attributes)
-      else
-        order
-      end
-    @condition =
-      if params[:condition].present?
-        params.require(:condition)
-          .permit(search_condition_permittied_attributes)
-      else
-        condition
-      end
+    @order = params[:order].presence
+      &.permit(search_order_permitted_attributes) || order
+    @condition = params[:condition].presence
+      &.permit(search_condition_permittied_attributes) ||condition
   end
 
-  private def search_and_sort(scope)
+  private def search_params
+    page_params.merge({
+      query: @query,
+      order: @order&.to_h,
+      condition: @condition&.to_h,
+    })
+  end
+
+  private def search(scope)
     ransack_q = {}
-    ransack_q.merge!(search_query(@query, matcher: "cont"))
-    ransack_q.merge!(search_condition(@condition))
+    ransack_q.merge!(search_ransack_query(@query, matcher: "cont"))
+    ransack_q.merge!(search_ransack_condition(@condition))
     q = scope.ransack(ransack_q, auth_object: current_user.role)
-    q.sorts = search_order(@order) if @order.present?
+    q.sorts = search_sorts_order(@order) if @order.present?
     # has_manyがあると重複するのでdistinctを付ける
-    q.result.distinct
+    paginate(q.result.distinct)
   end
 
-  private def search_query(query, matcher: "cont")
+  private def search_ransack_query(query, matcher: "cont")
     return {} if query.blank?
 
     address = begin
@@ -40,19 +41,19 @@ module Search
 
     if address
       if address.ipv4?
-        search_query_ipv4(search_attributes_by_type[:ipv4], address)
+        search_ransack_query_ipv4(search_attributes_by_type[:ipv4], address)
       elsif address.ipv6?
-        search_query_ipv6(search_attributes_by_type[:ipv6], address)
+        search_ransack_query_ipv6(search_attributes_by_type[:ipv6], address)
       end
     elsif query =~ /\A\h{2}(?:[-.:]?\h{2}){5,}\z/
-      search_query_binary(search_attributes_by_type[:binary],
+      search_ransack_query_binary(search_attributes_by_type[:binary],
         [query.delete("-.:")].pack("H*"))
-    end.presence || search_query_string(
+    end.presence || search_ransack_query_string(
       search_attributes_by_type.slice(:string, :text).values.flatten, query,
       matcher:)
   end
 
-  private def search_query_string(keys, str, matcher: "cont")
+  private def search_ransack_query_string(keys, str, matcher: "cont")
     return {} if keys.blank?
 
     {"#{keys.join('_or_')}_#{matcher}" => str}
@@ -60,24 +61,24 @@ module Search
 
   # FIXME: 最後のオクテットが\0だと切り詰められる
   # TODO: /32以外の場合は範囲検索にしたい
-  private def search_query_ipv4(keys, address)
+  private def search_ransack_query_ipv4(keys, address)
     return {} if keys.blank?
 
     {"#{keys.join('_or_')}_start" => address.hton}
   end
 
-  private def search_query_ipv6(keys, address)
-    search_query_ipv4(keys, address)
+  private def search_ransack_query_ipv6(keys, address)
+    search_ransack_query_ipv4(keys, address)
   end
 
-  private def search_query_binary(keys, data)
+  private def search_ransack_query_binary(keys, data)
     return {} if keys.blank?
 
     {"#{keys.join('_or_')}_start" => data}
   end
 
   # https://activerecord-hackery.github.io/ransack/getting-started/search-matches/
-  private def search_condition(condition)
+  private def search_ransack_condition(condition)
     return {} if condition.blank?
 
     condition.compact_blank.to_h do |key, value|
@@ -96,7 +97,7 @@ module Search
     end
   end
 
-  private def search_order(order)
+  private def search_sorts_order(order)
     attributes = search_soartable_attributes.to_set
     dirs = ["asc", "desc"]
     order.to_h.map do |key, value|

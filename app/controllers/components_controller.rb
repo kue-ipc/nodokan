@@ -1,5 +1,4 @@
 class ComponentsController < ApplicationController
-  include Page
   include Search
 
   before_action :set_node
@@ -17,9 +16,8 @@ class ComponentsController < ApplicationController
 
   # GET /nodes/1/components/new
   def new
-    set_page
     set_search
-    @components = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
+    @components = search(policy_scope(Node)).includes(:nics)
   end
 
   # PATCH/PUT /nodes/1/components/1

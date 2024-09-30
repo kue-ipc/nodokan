@@ -6,6 +6,13 @@ module Page
     @per = params[:per]&.to_i || per
   end
 
+  private def page_params
+    {
+      page: @page,
+      per: @per,
+    }
+  end
+
   private def paginate(model)
     model.page(@page).per(@per)
   end

@@ -1,5 +1,4 @@
 class HostsController < ApplicationController
-  include Page
   include Search
 
   before_action :set_node
@@ -12,16 +11,14 @@ class HostsController < ApplicationController
 
   # GET /nodes/1/host/new
   def new
-    set_page
     set_search
-    @hosts = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
+    @hosts = search(policy_scope(Node)).includes(:nics)
   end
 
   # GET /nodes/1/host/edit
   def edit
-    set_page
     set_search
-    @hosts = paginate(search_and_sort(policy_scope(Node)).includes(:nics))
+    @hosts = search(policy_scope(Node)).includes(:nics)
   end
 
   # POST /nodes/1/host

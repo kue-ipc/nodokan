@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-  include Page
   include Search
 
   before_action :set_user, only: [:show, :edit, :update]
@@ -11,9 +10,8 @@ class UsersController < ApplicationController
   # GET /users.json
   # GET /users.csv
   def index
-    set_page
     set_search
-    @users = paginate(search_and_sort(policy_scope(User)))
+    @users = search(policy_scope(User))
       .includes(:auth_networks, :use_networks, :manage_networks)
   end
 

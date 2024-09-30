@@ -1,5 +1,4 @@
 class BulksController < ApplicationController
-  include Page
   include Search
 
   before_action :set_bulk, only: [:show, :destroy, :cancel]
@@ -9,9 +8,8 @@ class BulksController < ApplicationController
 
   # GET /bulks or /bulks.json
   def index
-    set_page(per: 20)
-    set_search(order: {"id" => "desc"})
-    @bulks = paginate(search_and_sort(policy_scope(Bulk)).includes(:user))
+    set_search(order: {"id" => "desc"}, per: 20)
+    @bulks = search(policy_scope(Bulk)).includes(:user)
   end
 
   # GET /bulks/1 or /bulks/1.json

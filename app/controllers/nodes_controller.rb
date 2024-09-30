@@ -1,5 +1,4 @@
 class NodesController < ApplicationController
-  include Page
   include Search
 
   include NodeParameter
@@ -13,11 +12,10 @@ class NodesController < ApplicationController
   # GET /nodes.json
   # GET /nodes.csv
   def index
-    set_page
     set_search
-    @nodes = paginate(search_and_sort(policy_scope(Node)))
-      .includes(:user, :place, :hardware, :operating_system, :confirmation,
-        nics: :network)
+    @search_params =
+    @nodes = search(policy_scope(Node)).includes(:user, :place, :hardware,
+      :operating_system, :confirmation, nics: :network)
   end
 
   # GET /nodes/1

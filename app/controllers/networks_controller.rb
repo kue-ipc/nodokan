@@ -1,7 +1,6 @@
 require "stringio"
 
 class NetworksController < ApplicationController
-  include Page
   include Search
 
   before_action :set_network, only: [:show, :edit, :update, :destroy]
@@ -13,10 +12,8 @@ class NetworksController < ApplicationController
   # GET /networks.json
   # GET /networks.csv
   def index
-    set_page
     set_search
-    @networks = paginate(search_and_sort(policy_scope(Network)))
-      .includes(:ipv4_pools, :ipv6_pools)
+    @networks = search(policy_scope(Network)).includes(:ipv4_pools, :ipv6_pools)
   end
 
   # GET /networks/1
