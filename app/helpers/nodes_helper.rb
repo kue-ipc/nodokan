@@ -1,9 +1,9 @@
 module NodesHelper
   NODE_LIST_COLS = [
-    {name: :user,         grid: [0, 0, 2, 2, 1, 1], sort: :user_username},
+    {name: :user,         grid: [0, 0, 2, 2, 1, 1]},
     {name: :name,         grid: [4, 3, 3, 3, 3, 2], sort: :name},
     {name: :hostname,     grid: [3, 3, 2, 2, 2, 1], sort: :hostname},
-    {name: :place,        grid: [0, 0, 0, 0, 0, 1], sort: :place_room},
+    {name: :place,        grid: [0, 0, 0, 0, 0, 1]},
     {name: :ipv4_address, grid: [5, 4, 3, 2, 2, 2], sort: :nics_ipv4},
     {name: :ipv6_address, grid: [0, 0, 0, 0, 3, 2], sort: :nics_ipv6},
     {name: :mac_address,  grid: [0, 0, 0, 0, 0, 2], sort: :nics_mac_address},
@@ -12,10 +12,10 @@ module NodesHelper
 
   # when confirmation feature is disabled
   NODE_WITHOUT_CONFIRMATION_LIST_COLS = [
-    {name: :user,         grid: [0, 0, 2, 2, 1, 1], sort: :user_username},
+    {name: :user,         grid: [0, 0, 2, 2, 1, 1]},
     {name: :name,         grid: [4, 4, 3, 3, 3, 2], sort: :name},
     {name: :hostname,     grid: [3, 3, 3, 3, 2, 1], sort: :hostname},
-    {name: :place,        grid: [0, 0, 0, 0, 0, 1], sort: :place_room},
+    {name: :place,        grid: [0, 0, 0, 0, 0, 1]},
     {name: :ipv4_address, grid: [5, 5, 4, 4, 2, 2], sort: :nics_ipv4},
     {name: :ipv6_address, grid: [0, 0, 0, 0, 4, 3], sort: :nics_ipv6},
     {name: :mac_address,  grid: [0, 0, 0, 0, 0, 2], sort: :nics_mac_address},

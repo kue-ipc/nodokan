@@ -66,6 +66,7 @@ module SearchHelper
   def sort_link(attr, model = nil)
     params = controller.search_params.deep_dup
     params[:order] ||= {}.with_indifferent_access
+    params[:order].slice!(attr)
     i_class = []
 
     case params.dig(:order, attr).to_s.downcase
