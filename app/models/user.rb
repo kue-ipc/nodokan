@@ -27,11 +27,11 @@ class User < ApplicationRecord
 
   has_many :assignments, dependent: :destroy
   has_many :auth_assignments, -> { where(auth: true) },
-    class_name: "Assignment", inverse_of: :user
+    class_name: "Assignment", inverse_of: :user, dependent: nil
   has_many :use_assignments, -> { where(use: true) },
-    class_name: "Assignment", inverse_of: :user
+    class_name: "Assignment", inverse_of: :user, dependent: nil
   has_many :manage_assignments, -> { where(manage: true) },
-    class_name: "Assignment", inverse_of: :user
+    class_name: "Assignment", inverse_of: :user, dependent: nil
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network

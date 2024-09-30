@@ -106,7 +106,7 @@ class UsersSyncJob < ApplicationJob
         user.destroy!
         [user.username, :destroy]
       rescue StandardError => e
-        logger.error("Failed to destroy a user: #{user.username} - #{e.message}")
+        logger.error("Failed to destroy a user: #{user.username} #{e.message}")
         logger.error(e.full_message)
         raise if stop_on_error
 

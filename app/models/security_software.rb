@@ -3,7 +3,7 @@ class SecuritySoftware < ApplicationRecord
 
   belongs_to :os_category
 
-  has_many :confirmations
+  has_many :confirmations, dependent: :nullify
 
   enum :installation_method, {
     unnecessary: 8,

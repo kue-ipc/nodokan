@@ -49,6 +49,7 @@ ja:
     import: インポート
     export: エクスポート
     transfer: 譲渡
+    assign: 割当
   do_actions:
     close: 閉じる
     index: 一覧を表示する
@@ -80,6 +81,7 @@ ja:
     upload: アップロードする
     reload: 再度読み込む
     transfer: 譲渡する
+    assign: 割り当てる
   with_actions:
     close: "%{name}を閉じる"
     index: "%{name}の一覧を表示する"
@@ -100,6 +102,7 @@ ja:
     start: "%{name}を開始する"
     cancel: "%{name}をキャンセルする"
     transfer: "%{name}を譲渡する"
+    assign: "%{name}を割り当てる。"
 
   messages:
     action: 操作
@@ -355,6 +358,9 @@ ja:
       </ul>
     toggle_theme: テーマ切替
     toggle_navigation: ナビ切替
+    has_applied_specific_node: |
+      特定端末申請を行いました。
+      申請内容はメールをご確認ください。
 
   date:
     formats:

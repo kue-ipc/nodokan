@@ -6,7 +6,7 @@ module Search
     @query = params[:query]&.to_s
     @order =
       if params[:order].present?
-        @order = params.require(:order).permit(search_order_permitted_attributes)
+        params.require(:order).permit(search_order_permitted_attributes)
       else
         order
       end

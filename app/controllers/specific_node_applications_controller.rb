@@ -15,7 +15,7 @@ class SpecificNodeApplicationsController < ApplicationController
         specific_node_application: @specific_node_application.serializable_hash)
         .apply.deliver_later
       redirect_to @node,
-        notice: "特定端末申請を行いました。申請内容はメールをご確認ください。"
+        notice: t("messages.has_applied_specific_node")
     else
       render :new
     end

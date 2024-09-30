@@ -57,11 +57,11 @@ class Network < ApplicationRecord
 
   has_many :assignments, dependent: :destroy
   has_many :auth_assignments, -> { where(auth: true).readonly },
-    class_name: "Assignment", inverse_of: :network
+    class_name: "Assignment", inverse_of: :network, dependent: nil
   has_many :use_assignments, -> { where(use: true).readonly },
-    class_name: "Assignment", inverse_of: :network
+    class_name: "Assignment", inverse_of: :network, dependent: nil
   has_many :manage_assignments, -> { where(manage: true).readonly },
-    class_name: "Assignment", inverse_of: :network
+    class_name: "Assignment", inverse_of: :network, dependent: nil
 
   has_many :users, through: :assignments
   has_many :auth_users, through: :auth_assignments, source: :user

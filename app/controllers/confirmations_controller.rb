@@ -80,7 +80,7 @@ class ConfirmationsController < ApplicationController
       end
     else
       logger.error("confirmation seve error: #{@confirmation.errors.to_json}")
-      flash[:alert] = "確認の処理に失敗しました。再度実行し直してください。"
+      flash[:alert] = t_failure(@confirmation, :save)
     end
 
     redirect_to @node

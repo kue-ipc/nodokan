@@ -114,7 +114,8 @@ module ImportExport
 
       def params_to_record(params, record: nil, keys: self.keys)
         record ||= model.new(initial_model_attributes)
-        permitted_params = ActionController::Parameters.new(params).permit(*keys)
+        permitted_params =
+          ActionController::Parameters.new(params).permit(*keys)
         permitted_params.each do |key, value|
           set_param(record, key, value)
         end
