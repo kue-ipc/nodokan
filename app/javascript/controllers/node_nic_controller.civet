@@ -149,7 +149,12 @@ export default class NodeNicController < Controller<HTMLElement>
     @requireMacAddress()
     @requireDuid()
 
-  changeAuth(): void
+  changeAuth(event: Event): void
+    console.log event.params
+    unless @authTarget.checked
+      unless window.confirm(event.params.confirm)
+        @authTarget.checked = true
+
     @requireMacAddress()
 
   changeIpv4(): void

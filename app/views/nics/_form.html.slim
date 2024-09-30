@@ -35,7 +35,9 @@
         class: [current_user.guest? && "d-none"] do
         = form.check_box :auth, label: t("with_actions.register",
           name: Nic.human_attribute_name(:mac_address)),
-          data: {node_nic_target: "auth", action: "node-nic#changeAuth"}
+          data: {node_nic_target: "auth", action: "node-nic#changeAuth",
+            node_nic_confirm_param: t("messages.confirm_disable_auth"),
+          }
 
     .col-md-4
       - ipv4_configs = t_enums(:ipv4_config, Nic).dup
