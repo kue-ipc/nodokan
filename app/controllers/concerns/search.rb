@@ -3,21 +3,38 @@ module Search
   extend ActiveSupport::Concern
   include Page
 
-  private def set_search(order: nil, condition: nil, page: nil, per: nil)
-    set_page(page:, per:)
-    @query = params[:query]&.to_s
-    @order = params[:order].presence
-      &.permit(search_order_permitted_attributes) || order
-    @condition = params[:condition].presence
-      &.permit(search_condition_permittied_attributes) ||condition
+  class_methods do
+    def search_for(model)
+      @search_model = model
+    end
+
+    def search_model
+      @search_model || (raise "No search model")
+    end
   end
 
-  private def search_params
-    page_params.merge({
+  def search_model
+    self.class.search_model
+  end
+
+  private def set_search(order: nil, condition: nil, page: nil, per: nil)
+    @query = params[:query]&.to_s
+    @condition = params[:condition].presence
+      &.permit(search_condition_permittied_attributes) ||condition
+    @order = params[:order].presence
+      &.permit(search_order_permitted_attributes) || order
+    set_page(page:, per:)
+
+    @search_params = {
       query: @query,
-      order: @order&.to_h,
       condition: @condition&.to_h,
-    })
+      order: @order&.to_h,
+      **@page_params,
+    }
+  end
+
+  def search_params
+    @search_params || (raise "No set_search")
   end
 
   private def search(scope)
@@ -29,6 +46,8 @@ module Search
     # has_manyがあると重複するのでdistinctを付ける
     paginate(q.result.distinct)
   end
+
+  ## query
 
   private def search_ransack_query(query, matcher: "cont")
     return {} if query.blank?
@@ -77,12 +96,18 @@ module Search
     {"#{keys.join('_or_')}_start" => data}
   end
 
+  ## condition
+
+  private def search_condition_permittied_attributes
+    search_attributes_by_type.values.flatten
+  end
+
   # https://activerecord-hackery.github.io/ransack/getting-started/search-matches/
   private def search_ransack_condition(condition)
     return {} if condition.blank?
 
     condition.compact_blank.to_h do |key, value|
-      type = self.class.search_model.type_for_attribute(key)
+      type = search_model.type_for_attribute(key)
       case type.type
       when :string, :text, :integer, :float, :decimal, :datetime, :date, :time
         ["#{key}_eq", value]
@@ -96,9 +121,45 @@ module Search
       end
     end
   end
+  private def search_attributes_by_type
+    @search_attributes_by_type ||= model_attributes_by_type(search_model)
+  end
+
+  private def model_attributes_by_type(model, exclude_association: false)
+    attributes_by_type = model.ransackable_attributes.group_by do |name|
+      type = model.type_for_attribute(name).type
+      if type == :binary && name.end_with?("_data")
+        type = [:ipv4, :ipv6].find do |special_type|
+          name.start_with?("#{special_type}_")
+        end || type
+      end
+      type
+    end
+
+    unless exclude_association
+      model.ransackable_associations.each do |association|
+        model_attributes_by_type(
+          association.classify.constantize, exclude_association: true)
+          .each do |type, attributes|
+          attributes_by_type[type] ||= []
+          attributes_by_type[type].concat(
+            attributes.map { |name| [association, name].join("_") })
+        end
+      end
+    end
+
+    attributes_by_type
+  end
+
+  ## order
+
+  private def search_order_permitted_attributes
+    search_sortable_attributes + search_sortable_attributes
+      .map { |name| name.dup.delete_suffix!("_data") }.compact
+  end
 
   private def search_sorts_order(order)
-    attributes = search_soartable_attributes.to_set
+    attributes = search_sortable_attributes.to_set
     dirs = ["asc", "desc"]
     order.to_h.map do |key, value|
       key = "#{key}_data" unless attributes.include?(key)
@@ -113,73 +174,22 @@ module Search
     end.compact
   end
 
-  def search_attributes_by_type
-    @search_attributes_by_type ||= search_get_attributes_by_type
+  private def search_sortable_attributes
+    @search_sortable_attributes ||= model_sortable_attributes(search_model)
   end
 
-  def search_get_attributes_by_type(model = self.class.search_model,
-    exclude_association: false)
-    attributes_by_type = model.ransackable_attributes.group_by do |name|
-      type = model.type_for_attribute(name).type
-      if type == :binary && name.end_with?("_data")
-        type = [:ipv4, :ipv6].find do |special_type|
-          name.start_with?("#{special_type}_")
-        end || type
-      end
-      type
-    end
-
-    unless exclude_association
-      model.ransackable_associations.each do |association|
-        search_get_attributes_by_type(
-          association.classify.constantize, exclude_association: true)
-          .each do |type, attributes|
-          attributes_by_type[type] ||= []
-          attributes_by_type[type].concat(
-            attributes.map { |name| [association, name].join("_") })
-        end
-      end
-    end
-
-    attributes_by_type
-  end
-
-  def search_order_permitted_attributes
-    search_soartable_attributes + search_soartable_attributes
-      .map { |name| name.dup.delete_suffix!("_data") }.compact
-  end
-
-  def search_soartable_attributes
-    @search_soartable_attributes ||= search_get_soartable_attributes
-  end
-
-  def search_get_soartable_attributes(model = self.class.search_model,
-    exclude_association: false)
+  private def model_sortable_attributes(model, exclude_association: false)
     attributes = model.ransortable_attributes(current_user.role)
 
     unless exclude_association
       model.ransackable_associations.each do |association|
         attributes.concat(
-          search_get_soartable_attributes(association.classify.constantize,
+          model_sortable_attributes(association.classify.constantize,
             exclude_association: true)
           .map { |name| [association, name].join("_") })
       end
     end
 
     attributes
-  end
-
-  def search_condition_permittied_attributes
-    search_attributes_by_type.values.flatten
-  end
-
-  class_methods do
-    def search_for(model)
-      @search_model = model
-    end
-
-    def search_model
-      @search_model || (raise "No search model")
-    end
   end
 end

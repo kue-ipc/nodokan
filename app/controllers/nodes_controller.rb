@@ -13,7 +13,6 @@ class NodesController < ApplicationController
   # GET /nodes.csv
   def index
     set_search
-    @search_params =
     @nodes = search(policy_scope(Node)).includes(:user, :place, :hardware,
       :operating_system, :confirmation, nics: :network)
   end
