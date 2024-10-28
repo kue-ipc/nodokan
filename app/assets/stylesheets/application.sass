@@ -14,6 +14,16 @@ form.button_to
 
 // custom
 
+:root
+  --bs-navbar-color: var(--bs-tertiary-color)
+  --bs-navbar-color-rgb: var(--bs-tertiary-color-rgb)
+  --bs-navbar-bg: var(--bs-tertiary-bg)
+  --bs-navbar-bg-rgb: var(--bs-tertiary-bg-rgb)
+
+nav.navbar
+  --bs-bg-opacity: 1
+  background-color: rgba(var(--bs-navbar-bg-rgb), var(--bs-bg-opacity)) !important
+
 a, .btn-link
   text-decoration: none
 

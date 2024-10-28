@@ -40,6 +40,8 @@ feature:
   user_auth_network: true
   virtual_node: true
   logical_node: true
+theme:
+  # navbar: '#faddf3'
 ldap:
   host: localhost
   port: 389

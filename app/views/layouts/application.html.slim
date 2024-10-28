@@ -8,6 +8,8 @@ html data-bs-theme="auto"
     = csp_meta_tag
     = stylesheet_link_tag "application", media: "all",
       "data-turbo-track": "reload"
+    css:
+      #{theme_css}
     = javascript_include_tag "application", defer: true,
       "data-turbo-track": "reload"
   body
