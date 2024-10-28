@@ -74,15 +74,24 @@ class ConfirmationsController < ApplicationController
     @confirmation.check_and_approve!
     if @confirmation.save
       if @confirmation.approved
-        flash[:notice] = t("messages.confirmation_approved")
+        flash.now.notice = t("messages.confirmation_approved")
       else
-        flash[:alert] = t("messages.confirmation_unapproved")
+        flash.now.alert = t("messages.confirmation_unapproved")
       end
     else
       logger.error("confirmation seve error: #{@confirmation.errors.to_json}")
-      flash[:alert] = t_failure(@confirmation, :save)
+      flash.now.alert = t_failure(@confirmation, :save)
     end
 
-    redirect_to @node
+    respond_to do |format|
+      format.turbo_stream do
+      end
+      format.html do
+        redirect_to @node, **flash.to_hash
+      end
+      format.json do
+        render json: @confirmation.errors, status: :unprocessable_entity
+      end
+    end
   end
 end
