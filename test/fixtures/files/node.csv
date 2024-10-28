@@ -3,4 +3,5 @@
 1,user,パソコン1,pc1.example.jp,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,00-04-81-60-DF-32-02-FC-4A-7A-9E-4D-76-13-DD-B5-A5-C3,1,LAN,wired,v102,a,02-12-23-45-67-90,dynamic,,dynamic,,更新,,
 1,,,,,,,,,,,,,,,,,,,,Wi-Fi,wireless,v102,a,02-12-23-45-67-91,dynamic,,dynamic,,NIC追加,,
 !2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,削除,,
-,user,作成,,normal,,,,,,,,,,,,,,,,,wired,v102,,,dynamic,,dynamic,,NIC番号無し,,
+,user,NIC番号無し,,normal,,,,,,,,,,,,,,,,,wired,v102,,,dynamic,,dynamic,,NIC番号無し,,
+,user,MACアドレスが番号,,normal,,,,,,,,,,,,,,,1,LAN,wired,v102,a,021223456792,dynamic,,dynamic,,MACアドレスが番号,,

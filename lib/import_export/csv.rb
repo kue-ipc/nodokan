@@ -122,7 +122,7 @@ module ImportExport
     end
 
     def parse_data_each_params(data)
-      CSV.table(data, header_converters: :downcase,
+      CSV.table(data, converters: [], header_converters: :downcase,
         encoding: "BOM|UTF-8").each do |row|
         yield row_to_params(row)
       end
