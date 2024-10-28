@@ -132,6 +132,46 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
+  test "should get index with query name" do
+    sign_in users(:user)
+    get nodes_url(query: @node.name)
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]"
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+  end
+
+  test "should get index with query duid" do
+    sign_in users(:user)
+    get nodes_url(query: @node.duid)
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]"
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+  end
+
+  test "should get index with query ipv4 address" do
+    sign_in users(:user)
+    get nodes_url(query: @node.nics.first.ipv4_address)
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]"
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+  end
+
+  test "should get index with query ipv6 address" do
+    sign_in users(:user)
+    get nodes_url(query: @node.nics.first.ipv6_address)
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]"
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+  end
+
+  test "should get index with query mac address" do
+    sign_in users(:user)
+    get nodes_url(query: @node.nics.first.mac_address)
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]"
+    assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
+  end
+
   # show
 
   test "should show node" do

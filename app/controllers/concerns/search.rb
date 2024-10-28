@@ -78,22 +78,23 @@ module Search
     {"#{keys.join('_or_')}_#{matcher}" => str}
   end
 
-  # FIXME: 最後のオクテットが\0だと切り詰められる
+  # FIXME: 最初や最後のオクテットが\0だと切り詰められる
   # TODO: /32以外の場合は範囲検索にしたい
   private def search_ransack_query_ipv4(keys, address)
     return {} if keys.blank?
 
-    {"#{keys.join('_or_')}_start" => address.hton}
+    {"#{keys.join('_or_')}_cont" => address.hton}
   end
 
   private def search_ransack_query_ipv6(keys, address)
     search_ransack_query_ipv4(keys, address)
   end
 
+  # FIXME: 最初や最後のオクテットが\0だと切り詰められる
   private def search_ransack_query_binary(keys, data)
     return {} if keys.blank?
 
-    {"#{keys.join('_or_')}_start" => data}
+    {"#{keys.join('_or_')}_cont" => data}
   end
 
   ## condition
