@@ -6,7 +6,7 @@
     = dt_dd_for node, :fqdn
     - case node.node_type
     - when "normal"
-      = dt_dd_for node, :place,
+      = dt_dd_for node, :place, no_link: true,
         blank_alt: t("messages.node_unregistered_place"),
         blank_class: "text-warning-emphasis"
     - when "virtual"
