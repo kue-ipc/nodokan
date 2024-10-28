@@ -7,6 +7,10 @@ ul.navbar-nav.me-auto.mb-1.mb-md-0
     li.nav-item
       = link_to "端末一覧", nodes_path, class: "nav-link",
         data: {turbo: false}
+    - unless current_user.guest?
+      li.nav-item
+        = link_to "一括処理", bulks_path, class: "nav-link",
+          data: {turbo: false}
     - if current_user.admin?
       li.nav-item
         = link_to "ネットワーク一覧", networks_path, class: "nav-link",
