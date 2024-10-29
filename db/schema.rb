@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_07_020818) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_29_033004) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -47,6 +47,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_07_020818) do
     t.boolean "manage", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "default", default: false, null: false
     t.index ["network_id"], name: "index_assignments_on_network_id"
     t.index ["user_id", "network_id"], name: "index_assignments_on_user_id_and_network_id", unique: true
     t.index ["user_id"], name: "index_assignments_on_user_id"
