@@ -11,8 +11,7 @@ class UsersController < ApplicationController
   # GET /users.csv
   def index
     set_search
-    @users = search(policy_scope(User))
-      .includes(:auth_networks, :use_networks, :manage_networks)
+    @users = search(policy_scope(User)).includes(:auth_networks, :use_networks)
   end
 
   def show
@@ -45,8 +44,7 @@ class UsersController < ApplicationController
   private def set_user
     @user =
       if params[:id]
-        User.includes(:auth_networks, :use_networks,
-          :manage_networks).find(params[:id])
+        User.includes(:auth_networks, :use_networks).find(params[:id])
       else
         current_user
       end

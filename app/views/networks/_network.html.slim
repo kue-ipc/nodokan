@@ -29,8 +29,8 @@
     - if current_user.admin?
       - if Settings.feature.user_auth_network
         = dt_dd_for network, :auth_users
+      / TODO: 管理者は色違いにするとか、そういことにすること
       = dt_dd_for network, :use_users
-      = dt_dd_for network, :manage_users
 
     = dt_dd_for network, :nodes do |value|
       = link_to nodes_path(condition: {nics_network_id: network.id}),

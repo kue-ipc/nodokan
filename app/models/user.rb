@@ -30,13 +30,10 @@ class User < ApplicationRecord
     class_name: "Assignment", inverse_of: :user, dependent: nil
   has_many :use_assignments, -> { where(use: true) },
     class_name: "Assignment", inverse_of: :user, dependent: nil
-  has_many :manage_assignments, -> { where(manage: true) },
-    class_name: "Assignment", inverse_of: :user, dependent: nil
 
   has_many :networks, through: :assignments
   has_many :auth_networks, through: :auth_assignments, source: :network
   has_many :use_networks, through: :use_assignments, source: :network
-  has_many :manage_networks, through: :manage_assignments, source: :network
 
   validates :username, presence: true,
     uniqueness: {case_sensitive: true},
@@ -350,7 +347,7 @@ class User < ApplicationRecord
       if admin?
         Network.readonly
       else
-        manage_networks
+        usable_networks.select { |network| network.assignment.manage? }
       end
   end
 

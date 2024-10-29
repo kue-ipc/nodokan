@@ -418,10 +418,12 @@ ja:
         role: 役割
         deleted: 削除済み
         networks: ネットワーク
-        use_networks: 利用可能ネットワーク
-        manage_networks: 管理可能ネットワーク
-        auth_networks: 認証ネットワーク
         auth_network: 認証ネットワーク
+        auth_networks: 認証ネットワーク
+        use_networks: 利用可能ネットワーク
+        default_network: デフォルトネットワーク
+        default_networks: デフォルトネットワーク
+        manage_networks: 管理可能ネットワーク
         admin?: 管理者権限
         nodes_count: 端末数
         limit: 制限

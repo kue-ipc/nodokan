@@ -60,13 +60,10 @@ class Network < ApplicationRecord
     class_name: "Assignment", inverse_of: :network, dependent: nil
   has_many :use_assignments, -> { where(use: true).readonly },
     class_name: "Assignment", inverse_of: :network, dependent: nil
-  has_many :manage_assignments, -> { where(manage: true).readonly },
-    class_name: "Assignment", inverse_of: :network, dependent: nil
 
   has_many :users, through: :assignments
   has_many :auth_users, through: :auth_assignments, source: :user
   has_many :use_users, through: :use_assignments, source: :user
-  has_many :manage_users, through: :manage_assignments, source: :user
 
   validates :name, presence: true, uniqueness: true
   validates :vlan, allow_nil: true, uniqueness: true,
@@ -362,7 +359,7 @@ class Network < ApplicationRecord
   end
 
   def manageable?(user)
-    user.admin? || manage_users.exists?(user.id)
+    user.admin? || assignments.find_by(user: user)&.manege?
   end
 
   def kea_subnet4
