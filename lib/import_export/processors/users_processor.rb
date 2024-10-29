@@ -14,29 +14,29 @@ module ImportExport
       }
 
       converter :networks, get: ->(record) {
-        manage_ids = record.manage_network_ids
-        record.use_networks.map do |network|
-          if manage_ids.include?(network.id)
-            "*#{network.identifier}"
-          else
-            network.identifier
-          end
+        record.use_assignments.includes(:network)
+          .sort_by { |assignment| assignment.default? ? 0 : 1 }
+          .map do |assignment|
+            prefix = assignment.manage? ? "*" : ""
+            prefix + assignment.network.identifier
         end
       }, set: ->(record, value) {
         if record.new_record?
-          record.assignments = value.map do |str|
+          record.assignments = value.with_index.map do |str, idx|
+            default = idx.zero?
             manage = str.start_with?("*")
             str = str.delete_prefix("*") if manage
             network = Network.find_identifier(str)
-            Assignment.new(network:, auth: false, use: true, manage:)
+            Assignment.new(network:, auth: false, use: true, default:, manage:)
           end
         else
           use_ids = record.use_network_ids
-          value.each do |str|
+          value.each_with_index do |str, idx|
+            default = idx.zero?
             manage = str.start_with?("*")
             str = str.delete_prefix("*") if manage
             network = Network.find_identifier(str)
-            record.add_use_network(network, manage:)
+            record.add_use_network(network, default:, manage:)
             use_ids.delete(network.id)
           end
           use_ids.each { |network_id| record.remove_use_network_id(network_id) }
