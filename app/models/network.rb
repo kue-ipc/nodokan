@@ -359,7 +359,7 @@ class Network < ApplicationRecord
   end
 
   def manageable?(user)
-    user.admin? || assignments.find_by(user: user)&.manege?
+    user.admin? || assignments.find_by(user: user)&.manage?
   end
 
   def kea_subnet4
