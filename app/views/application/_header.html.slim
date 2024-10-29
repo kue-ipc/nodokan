@@ -1,6 +1,7 @@
 = turbo_frame_tag "header"
   header.mb-2
-    nav.navbar.navbar-expand-md.bg-body-tertiary
+    = tag.nav class: "navbar navbar-expand-md",
+      data: {bs_theme: theme_navbar_theme} do
       .container-fluid
         = link_to site_title, root_path, class: "navbar-brand",
           data: {turbo: false}

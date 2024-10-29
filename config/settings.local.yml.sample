@@ -2,6 +2,8 @@ database:
   # username: (should be written in credentials)
   # password: (should be written in credentials)
   development_use_production_database: true
+theme:
+  navbar: '#343a40'
 ldap:
   # username: (should be written in credentials)
   # password: (should be written in credentials)

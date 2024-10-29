@@ -18,47 +18,41 @@ module ThemeHelper
     THEME_ICONS[name.intern] || "palette-fill"
   end
 
-  def theme_css
-    navbar = Settings.theme["navbar"]
-    return "" unless navbar
-
-    light_css = []
-    dark_css = []
-
-    light_css << "--bs-navbar-bg: #{navbar};"
-    light_css << "--bs-navbar-bg-rgb: #{to_rgb(navbar).map(&:to_s).join(", ")};"
-    dark_css << "--bs-navbr-bg: \##{to_color(to_dark(navbar))};"
-    dark_css << "--bs-navbar-bg-rgb: #{to_dark(navbar).map(&:to_s).join(", ")};"
-
-    <<~CSS
-      :root, [data-bs-theme=light] {
-      #{light_css.join("\n")}
-      }
-      [data-bs-theme=dark] {
-      #{dark_css.join("\n")}
-      }
-    CSS
+  def theme_navbar_color
+    @theme_navbar_color ||=
+      Settings.theme.navbar&.then { |color| Color::RGB.by_css(color) }
   end
 
-  def to_rgb(color)
-    case color
-    when /\A\s*\#(\h{2})(\h{2})(\h{2})\s*\z/
-      [$1.to_i(16), $2.to_i(16), $3.to_i(16)]
-    when /\A\s*rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\)\s*\z/
-      [$1.to_i(16), $2.to_i(16), $3.to_i(16)]
-    when /\A\s*rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*\d+\s*\)\)\s*\z/
-      [$1.to_i(16), $2.to_i(16), $3.to_i(16)]
+  def theme_css
+    css = []
+
+    navbar_color = theme_navbar_color
+    if navbar_color
+      css << "--theme-navbar-bg: #{navbar_color.html};"
+      css << "--theme-navbar-bg-rgb: " \
+        "#{navbar_color.to_a.map { |f| (f * 0xff).to_i }.join(", ")};"
+    end
+
+    if css.present?
+      <<~CSS
+        :root {
+        #{css.join("\n")}
+        }
+      CSS
     else
-    raise "not a color: #{color}"
+      ""
     end
   end
 
-  def to_color(rgb)
-    "\#%02x%02x%02x" % [rgb[0], rgb[1], rgb[2]]
-  end
-
-  def to_dark(color)
-    color = to_rgb(color) if color.is_a?(String)
-    color.map { |i| i / 4 }
+  # TODO: 0.5でいいのかどうかはわからない
+  def theme_navbar_theme
+    case theme_navbar_color&.to_hsl&.l&.>=(0.5)
+    in true
+      :light
+    in false
+      :dark
+    in nil
+      nil
+    end
   end
 end

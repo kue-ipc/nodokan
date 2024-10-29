@@ -87,6 +87,9 @@ gem "ransack"
 # Whenever
 gem "whenever", require: false
 
+# Color
+gem "color"
+
 ## Bundled gems
 gem "csv"
 
