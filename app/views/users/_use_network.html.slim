@@ -35,6 +35,7 @@
     - if current_user.admin?
       p ユーザーの紐付けを解除しても、端末への紐付けは削除されません。
 
+  / TODO: モーダルで選択できるようにする
   - if current_user.admin?
     .mb-2
       - unregistered_networks = Network.where.not(id: @user.use_network_ids)

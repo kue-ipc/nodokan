@@ -616,6 +616,7 @@ ja:
         network: ネットワーク
         auth: 認証
         use: 利用
+        default: デフォルト
         manage: 管理
       confirmation:
         node: 端末

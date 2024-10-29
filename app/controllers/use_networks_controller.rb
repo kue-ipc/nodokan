@@ -1,10 +1,14 @@
 class UseNetworksController < ApplicationController
   before_action :set_user
-  before_action :set_network
+  before_action :set_network, only: [:update, :destroy]
 
+  # TODO: createをやめてputとpatchに統一する。
   def create
+    permitted_params =
+      params.require(:assignment).permit(:network_id, :default, :manage).to_h
+    @network = Network.find(permitted_params.delete(:network_id))
     respond_to do |format|
-      if @user.add_use_network(@network, **use_network_params.to_h)
+      if @user.add_use_network(@network, permitted_params)
         format.html do
           redirect_to @user, notice: t_success(Assignment, :add)
         end
@@ -20,7 +24,7 @@ class UseNetworksController < ApplicationController
 
   def update
     respond_to do |format|
-      if @user.add_use_network(@network, **use_network_params.to_h)
+      if @user.add_use_network(@network, use_network_params)
         format.html do
           redirect_to @user, notice: t_success(Assignment, :update)
         end
