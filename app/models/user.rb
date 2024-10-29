@@ -304,28 +304,30 @@ class User < ApplicationRecord
     clear_auth_network_change
   end
 
-  def add_use_network(network, manage: false)
-    assignment = assignments.find_or_initialize_by(network:)
-    assignment.update(use: true, manage:)
+  def add_use_network(network, params)
+    add_use_network_id(network.id, params)
   end
 
   def remove_use_network(network)
-    assignment = assignments.find_by(network:)
-    return if assignment.nil?
-
-    assignment.update(use: false, manage: false)
+    remove_use_network_id(network.id)
   end
 
-  def add_use_network_id(network_id, manage: false)
+  def add_use_network_id(network_id, params)
     assignment = assignments.find_or_initialize_by(network_id:)
-    assignment.update(use: true, manage:)
+    assignment.use = true
+    assignment.assign_attributes(params)
+    assignment.save
   end
 
   def remove_use_network_id(network_id)
     assignment = assignments.find_by(network_id:)
     return if assignment.nil?
 
-    assignment.update(use: false, manage: false)
+    if assignment.auth?
+      assignment.update(use: false)
+    else
+      assignment.destroy
+    end
   end
 
   def clear_use_networks

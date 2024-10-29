@@ -6,12 +6,21 @@ class Assignment < ApplicationRecord
 
   validates :network, uniqueness: {scope: :user}
 
-  scope :unassigned, -> { where(auth: false, use: false, manage: false) }
+  # neither auth nor use is not assigned
+  scope :unassigned, -> { where(auth: false, use: false) }
 
+  before_save :overwrite_if_no_use
   after_save :destroy_if_no_assigned
 
   def assigned?
-    auth || use || manage
+    auth || use
+  end
+
+  def overwrite_if_no_use
+    return if use
+
+    self.default = false
+    self.manage = false
   end
 
   def destroy_if_no_assigned

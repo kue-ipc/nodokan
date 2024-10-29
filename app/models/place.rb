@@ -5,9 +5,7 @@ class Place < ApplicationRecord
 
   validates :area, length: {maximum: 255}
   validates :building, length: {maximum: 255}
-  validates :floor, numericality: {
-    only_integer: true,
-  }
+  validates :floor, numericality: {only_integer: true}
   validates :room, length: {maximum: 255}, uniqueness: {
     scope: [:area, :building, :floor],
     case_sensitive: true,

@@ -4,7 +4,7 @@ class UseNetworksController < ApplicationController
 
   def create
     respond_to do |format|
-      if @user.add_use_network(@network, manage: params[:manage])
+      if @user.add_use_network(@network, **use_network_params.to_h)
         format.html do
           redirect_to @user, notice: t_success(Assignment, :add)
         end
@@ -20,7 +20,7 @@ class UseNetworksController < ApplicationController
 
   def update
     respond_to do |format|
-      if @user.add_use_network(@network, manage: params[:manage])
+      if @user.add_use_network(@network, **use_network_params.to_h)
         format.html do
           redirect_to @user, notice: t_success(Assignment, :update)
         end
@@ -56,6 +56,10 @@ class UseNetworksController < ApplicationController
   end
 
   private def set_network
-    @network = Network.find(params[:id] || params[:network_id])
+    @network = Network.find(params[:id])
+  end
+
+  private def use_network_params
+    params.require(:assignment).permit(:default, :manage)
   end
 end
