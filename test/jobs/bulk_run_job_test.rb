@@ -379,8 +379,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     output = bulk.output.open do |file|
       assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
 
     assert_equal "succeeded", bulk.status
@@ -397,16 +396,16 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     assert_equal "succeeded", bulk.status
     assert_equal 1, output.size
-    assert_equal bulk.user.username, output[0]["username"]
+    assert_equal bulk.user.username, output.first[:username]
+    assert_equal bulk.user.default_network.identifier,
+      output.first[:networks].split.first
   end
 
   test "admin run export all User" do
@@ -424,6 +423,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       csv = CSV.new(data, headers: :first_row)
       csv.read.map(&:to_hash)
     end
+    warn output
     assert_equal "succeeded", bulk.status
     assert_equal User.count, output.size
   end

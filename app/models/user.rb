@@ -313,18 +313,27 @@ class User < ApplicationRecord
     assignment = assignments.find_or_initialize_by(network_id:)
     assignment.use = true
     assignment.assign_attributes(params)
-    assignment.save
+
+    result = assignment.save
+    if result
+      @usable_networks = nil
+      @default_network = nil
+      @manageable_networks = nil
+    end
+    result
   end
 
   def remove_use_network_id(network_id)
     assignment = assignments.find_by(network_id:)
     return if assignment.nil?
 
-    if assignment.auth?
-      assignment.update(use: false)
-    else
-      assignment.destroy
+    result = assignment.update(use: false)
+    if result
+      @usable_networks = nil
+      @default_network = nil
+      @manageable_networks = nil
     end
+    result
   end
 
   def clear_use_networks
@@ -344,7 +353,8 @@ class User < ApplicationRecord
 
   # NOTE: デフォルトネットワークがない場合は、最初のネットワークになる。
   def default_network
-    use_assignments.order(default: :desc, id: :asc).first&.network
+    @default_network ||=
+      use_assignments.order(default: :desc, id: :asc).first&.network
   end
 
   def manageable_networks
@@ -355,6 +365,19 @@ class User < ApplicationRecord
         usable_networks.select { |network| network.assignment.manage? }
       end
   end
+
+  def usable_network_ids
+    usable_networks.map(&:id)
+  end
+
+  def default_network_id
+    default_network&.id
+  end
+
+  def manageable_network_ids
+    manageable_networks.map(&:id)
+  end
+
 
   def radius_user
     return unless Settings.feature.user_auth_network
