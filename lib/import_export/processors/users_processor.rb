@@ -36,7 +36,7 @@ module ImportExport
             manage = str.start_with?("*")
             str = str.delete_prefix("*") if manage
             network = Network.find_identifier(str)
-            record.add_use_network(network, default:, manage:)
+            record.add_use_network(network, {default:, manage:})
             use_ids.delete(network.id)
           end
           use_ids.each { |network_id| record.remove_use_network_id(network_id) }

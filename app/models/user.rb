@@ -83,14 +83,14 @@ class User < ApplicationRecord
       save_auth_network!
     end
 
-    @allocate_network_config[:networks]&.each do |net|
+    @allocate_network_config[:networks]&.each_with_index do |net, idx|
       network = find_network(net)
       unless network
         errors.add(:use_networks, I18n.t("errors.messages.no_allocate"))
         throw :abort
       end
 
-      add_use_network(network) || throw(:abort)
+      add_use_network(network, default: idx == 0) || throw(:abort)
     end
   end
 
@@ -301,7 +301,7 @@ class User < ApplicationRecord
     clear_auth_network_change
   end
 
-  def add_use_network(network, params)
+  def add_use_network(network, params = {})
     add_use_network_id(network.id, params)
   end
 
@@ -309,7 +309,7 @@ class User < ApplicationRecord
     remove_use_network_id(network.id)
   end
 
-  def add_use_network_id(network_id, params)
+  def add_use_network_id(network_id, params = {})
     assignment = assignments.find_or_initialize_by(network_id:)
     assignment.use = true
     assignment.assign_attributes(params)
