@@ -350,8 +350,27 @@ class Network < ApplicationRecord
     ipv6_network_prefix&.include?(ip)
   end
 
+  # OPTIMIZE: assigment周りを4回も検索してしまうので無駄が多い。
+  def assignment_for(user)
+    assignments.find_by(user:)
+  end
+
+  def use_assignment_for(user)
+    use_assignments.find_by(user:)
+  end
+
   def auth?(user)
-    auth_users.exists?(user.id)
+    if user.auth_network_changed?
+      # NOTE: userのauth_networkはsave前は変更されている場合があるため、
+      #   assignmentから取得せずにuser側で確認する。
+      self == user.auth_network
+    else
+      auth_users.exists?(user.id)
+    end
+  end
+
+  def default?(user)
+    use_assignment_for(user)&.default? || false
   end
 
   def usable?(user)
@@ -359,7 +378,7 @@ class Network < ApplicationRecord
   end
 
   def manageable?(user)
-    user.admin? || assignments.find_by(user: user)&.manage?
+    user.admin? || use_assignment_for(user)&.manage? || false
   end
 
   def kea_subnet4

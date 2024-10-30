@@ -39,7 +39,7 @@ class NicsController < ApplicationController
   # GET /nics/new
   def new
     new_nic_params = {node: Node.new(user: current_user)}
-    if (network = current_user.use_networks.first)
+    if (network = current_user.default_network)
       new_nic_params.merge!({network_id: network.id, auth: network.auth,
       ipv4_config: (Nic.ipv4_configs.keys & network.ipv4_configs).first,
       ipv6_config: (Nic.ipv6_configs.keys & network.ipv6_configs).first,})

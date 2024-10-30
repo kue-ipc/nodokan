@@ -342,6 +342,10 @@ class User < ApplicationRecord
       end
   end
 
+  def default_network
+    use_assignments.find_by(default: true)&.network
+  end
+
   def manageable_networks
     @manageable_networks ||=
       if admin?

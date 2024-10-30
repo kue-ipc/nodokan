@@ -22,7 +22,7 @@ namespace Network
     ipv6_gateway_address: string?
     ipv4_pools: Ipv4Pool.InitParams[]
     ipv6_pools: Ipv6Pool.InitParams[]
-    current_user: Record<"auth" | "usable" | "manageable", boolean>
+    current_user: Record<"auth" | "usable" | "default" | "manageable", boolean>
 
 class Network extends ApplicationRecord
   @networks: Map<string, Network?> := new Map
@@ -55,9 +55,9 @@ class Network extends ApplicationRecord
   readonly specific: boolean
   readonly global: boolean
   readonly dhcp: boolean
-  readonly ra: "router" | "unmanaged" | "managed" | "assist" | "stateless" | "disabled"
+  readonly ra: Network.InitParams."ra"
   readonly note: string
-  readonly current_user: Record<"auth" | "usable" | "manageable", boolean>
+  readonly current_user: Network.InitParams."current_user"
   readonly ipv4_network: ipaddr.IPv4?
   readonly ipv4_prefix_length: number
   readonly ipv4_gateway: ipaddr.IPv4?
@@ -128,9 +128,6 @@ class Network extends ApplicationRecord
       dhcp: @ra is in ["managed", "assist", "stateless"]
       slaac: slaac
     }
-
-    console.debug @ra
-    console.debug @ipv6
 
   availableIpConfig(ip: ipaddr.IPv4 | ipaddr.IPv6 | undefined,
     pools: Ipv4Pool[] | Ipv6Pool[], slaac: boolean = false): string[]
