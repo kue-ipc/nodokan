@@ -21,7 +21,8 @@
           - if (network = assignment.network)
             tr
               td
-                = link_to network.name, network_path(network)
+                = link_to network.name, network_path(network),
+                  data: {turbo: false}
               td = network.vlan
               td = network.ipv4_network&.to_s
               td = network.ipv6_network&.to_s
