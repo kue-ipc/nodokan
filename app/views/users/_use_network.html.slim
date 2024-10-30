@@ -18,20 +18,20 @@
               | 操作
       tbody
         - @user.use_assignments.each do |assignment|
-          - network = assignment.network
-          tr
-            td
-              = link_to network.name, network_path(network)
-            td = network.vlan
-            td = network.ipv4_network&.to_s
-            td = network.ipv6_network&.to_s
-            td = use_network_switch(assignment, :default)
-            td = use_network_switch(assignment, :manage)
-            - if current_user.admin?
+          - if (network = assignment.network)
+            tr
               td
-                = button_to "解除", user_use_network_path(@user, network),
-                  data: {turbo_confirm: "本当に解除しますか？"},
-                  method: :delete, class: "btn btn-danger"
+                = link_to network.name, network_path(network)
+              td = network.vlan
+              td = network.ipv4_network&.to_s
+              td = network.ipv6_network&.to_s
+              td = use_network_switch(assignment, :default)
+              td = use_network_switch(assignment, :manage)
+              - if current_user.admin?
+                td
+                  = button_to "解除", user_use_network_path(@user, network),
+                    data: {turbo_confirm: "本当に解除しますか？"},
+                    method: :delete, class: "btn btn-danger"
     - if current_user.admin?
       p ユーザーの紐付けを解除しても、端末への紐付けは削除されません。
 

@@ -15,14 +15,15 @@ module ImportExport
 
       converter :networks, get: ->(record) {
         record.use_assignments.includes(:network)
-          .sort_by { |assignment| assignment.default? ? 0 : 1 }
+          .order(default: :desc, id: :asc)
+          .select(&:network)
           .map do |assignment|
             prefix = assignment.manage? ? "*" : ""
             prefix + assignment.network.identifier
         end
       }, set: ->(record, value) {
         if record.new_record?
-          record.assignments = value.with_index.map do |str, idx|
+          record.assignments = value.each_with_index.map do |str, idx|
             default = idx.zero?
             manage = str.start_with?("*")
             str = str.delete_prefix("*") if manage

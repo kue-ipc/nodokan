@@ -397,7 +397,6 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-    assert_equal "succeeded", bulk.status
     output = bulk.output.open do |data|
       data.set_encoding("UTF-8", "UTF-8")
       first_char = data.getc
@@ -405,6 +404,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       csv = CSV.new(data, headers: :first_row)
       csv.read.map(&:to_hash)
     end
+    assert_equal "succeeded", bulk.status
     assert_equal 1, output.size
     assert_equal bulk.user.username, output[0]["username"]
   end
@@ -417,7 +417,6 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-    assert_equal "succeeded", bulk.status
     output = bulk.output.open do |data|
       data.set_encoding("UTF-8", "UTF-8")
       first_char = data.getc
@@ -425,6 +424,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       csv = CSV.new(data, headers: :first_row)
       csv.read.map(&:to_hash)
     end
+    assert_equal "succeeded", bulk.status
     assert_equal User.count, output.size
   end
 end
