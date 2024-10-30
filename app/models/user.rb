@@ -342,8 +342,9 @@ class User < ApplicationRecord
       end
   end
 
+  # NOTE: デフォルトネットワークがない場合は、最初のネットワークになる。
   def default_network
-    use_assignments.find_by(default: true)&.network
+    use_assignments.order(default: :desc, id: :asc).first&.network
   end
 
   def manageable_networks
