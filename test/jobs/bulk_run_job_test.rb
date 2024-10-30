@@ -387,6 +387,9 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, bulk.success
     assert_equal 0, bulk.failure
     assert_equal input_size, output.size
+
+    user01 = User.find_by(username: "user01")
+    assert_equal "v102", user01.default_network.identifier
   end
 
   test "run export User" do
@@ -423,7 +426,6 @@ class BulkRunJobTest < ActiveJob::TestCase
       csv = CSV.new(data, headers: :first_row)
       csv.read.map(&:to_hash)
     end
-    warn output
     assert_equal "succeeded", bulk.status
     assert_equal User.count, output.size
   end
