@@ -11,7 +11,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "coffeescript": "^2.7.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "esbuild-coffeescript": "^2.2.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.2.0",
