@@ -3,21 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@danielx/civet": "^0.8.10",
-    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@danielx/civet": "^0.10.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.12",
+    "@hotwired/turbo-rails": "^8.0.13",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "coffeescript": "^2.7.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.1",
     "esbuild-coffeescript": "^2.2.0",
     "hyperapp": "^2.0.22",
     "ipaddr.js": "^2.2.0",
-    "rails_admin": "^3.2.1",
-    "sass": "^1.80.5",
-    "typescript": "^5.6.3"
+    "rails_admin": "^3.3.0",
+    "sass": "^1.86.0",
+    "typescript": "^5.8.2"
   },
   "scripts": {
     "build": "node esbuild.build.mjs",
@@ -29,11 +29,11 @@
   "devDependencies": {
     "@coffeelint/cli": "^5.2.11",
     "@types/bootstrap": "^5.2.10",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.3",
     "postcss-sass": "^0.5.0",
-    "stylelint": "^16.10.0",
-    "stylelint-config-standard": "^36.0.1",
-    "stylelint-config-standard-scss": "^13.1.0"
+    "stylelint": "^16.16.0",
+    "stylelint-config-standard": "^37.0.0",
+    "stylelint-config-standard-scss": "^14.0.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
