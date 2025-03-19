@@ -13,7 +13,7 @@
 
 ```
 bundle install
-rails yarn:instnall
+rails yarn:install
 rails db:setup
 rails radius:setup
 bin/dev
@@ -23,7 +23,7 @@ bin/dev
 
 ```
 bundle install
-rails yarn:instnall
+rails yarn:install
 rails db:setup
 RAILS_ENV=test rails radius:setup
 rails test
