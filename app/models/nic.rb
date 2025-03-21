@@ -113,13 +113,13 @@ class Nic < ApplicationRecord
   end
 
   def radius_mac
-    return if network.nil?
+    return unless network&.vlan
 
     if mac_address_data.present?
       if !destroyed? && auth
         RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
       else
-        RadiusMacDelJob.perform_later(mac_address_raw)
+        RadiusMacDelJob.perform_later(mac_address_raw, network.vlan)
       end
     end
   end
