@@ -4,11 +4,12 @@ class RadiusCheckAllJob < RadiusJob
   def perform
     # MACアドレス
     mac_address_list = Nic.where.not(mac_address_data: nil).where(auth: true)
-      .map(&:mac_address_raw)
+      .pluck(:mac_address_data)
+      .map { |data| Nic.hex_data_to_str(data, char_case: :lower, sep: "") }
 
     # ユーザー名
     username_list =  User.includes(:assignments)
-      .where(assignments: {auth: true}).where(deleted: false).map(&:username)
+      .where(assignments: {auth: true}).where(deleted: false).pluck(:username)
 
     all_list = mac_address_list + username_list
 
