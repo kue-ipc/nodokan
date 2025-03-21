@@ -16,5 +16,7 @@ class RadiusCheckAllJob < RadiusJob
     Radius::Radcheck.where.not(username: all_list).destroy_all
     Radius::Radreply.where.not(username: all_list).destroy_all
     Radius::Radusergroup.where.not(username: all_list).destroy_all
+
+    # TODO: RADIUS側にレコードがなかった場合に追加する処理の追加
   end
 end
