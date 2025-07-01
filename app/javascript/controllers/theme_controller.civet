@@ -4,11 +4,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class ThemeController < Controller
   @targets := ["icon", "button"]
 
-  // TODO: 下記のようにすべきだが、Civetがうまく動かない
-  // https://stimulus.hotwired.dev/reference/using-typescript
-
-  // declare readonly iconTarget: HTMLButtonElement[] // button
-  // declare readonly buttonTargets: HTMLButtonElement[] // button
+  declare readonly iconTarget: HTMLButtonElement[] // button
+  declare readonly buttonTargets: HTMLButtonElement[] // button
 
   connect(): void
     name := localStorage.getItem("theme") || "auto"

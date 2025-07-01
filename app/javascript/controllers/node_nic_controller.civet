@@ -35,26 +35,23 @@ export default class NodeNicController < Controller<HTMLElement>
   @targets := [...@names, "destroy", "ipv4Help", "ipv6Help",
     "messages", "messageTemplate"]
 
-  // TODO: 下記のようにすべきだが、Civetがうまく動かない
-  // https://stimulus.hotwired.dev/reference/using-typescript
+  declare readonly lockedTarget: HTMLInputElement // checkbox
+  declare readonly interfaceTypeTarget: HTMLSelectElement
+  declare readonly nameTarget: HTMLInputElement // text
+  declare readonly networkIdTarget: HTMLSelectElement
+  declare readonly macAddressTarget: HTMLInputElement // text
+  declare readonly authTarget: HTMLInputElement // checkbox
+  declare readonly ipv4ConfigTarget: HTMLSelectElement
+  declare readonly ipv4AddressTarget: HTMLInputElement // text
+  declare readonly ipv6ConfigTarget: HTMLSelectElement
+  declare readonly ipv6AddressTarget: HTMLInputElement // text
 
-  // declare readonly lockedTarget: HTMLInputElement // checkbox
-  // declare readonly interfaceTypeTarget: HTMLSelectElement
-  // declare readonly nameTarget: HTMLInputElement // text
-  // declare readonly networkIdTarget: HTMLSelectElement
-  // declare readonly macAddressTarget: HTMLInputElement // text
-  // declare readonly authTarget: HTMLInputElement // checkbox
-  // declare readonly ipv4ConfigTarget: HTMLSelectElement
-  // declare readonly ipv4AddressTarget: HTMLInputElement // text
-  // declare readonly ipv6ConfigTarget: HTMLSelectElement
-  // declare readonly ipv6AddressTarget: HTMLInputElement // text
+  declare readonly destroyTarget: HTMLInputElement // checkbox
+  declare readonly ipv4HelpTarget: HTMLDivElement // checkbox
+  declare readonly ipv6HelpTarget: HTMLDivElement // checkbox
 
-  // declare readonly destroyTarget: HTMLInputElement // checkbox
-  // declare readonly ipv4HelpTarget: HTMLDivElement // checkbox
-  // declare readonly ipv6HelpTarget: HTMLDivElement // checkbox
-
-  // declare readonly messagesTarget: HTMLDivElement
-  // declare readonly messageTemplateTarget: HTMLTemplateElement
+  declare readonly messagesTarget: HTMLDivElement
+  declare readonly messageTemplateTarget: HTMLTemplateElement
 
   network?: Network
   messageStore?: MessageStore

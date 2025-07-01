@@ -19,27 +19,24 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     "collapseAppUpdateSecured"
   ]
 
-  // TODO: 下記のようにすべきだが、Civetがうまく動かない
-  // https://stimulus.hotwired.dev/reference/using-typescript
+  declare readonly existenceTargets: HTMLInputElement[] // radio list
+  declare readonly contentTargets: HTMLInputElement[] // radio list
+  declare readonly osUpdateTargets: HTMLInputElement[] // radio list
+  declare readonly appUpdateTargets: HTMLInputElement[] // radio list
+  declare readonly softwareTargets: HTMLInputElement[] // radio list
+  declare readonly securityHardwaresTargets: HTMLInputElement[] // checkbox list
+  declare readonly securityUpdateTargets: HTMLInputElement[] // radio list
+  declare readonly securityScanTargets: HTMLInputElement[] // radio list
 
-  // declare readonly existenceTargets: HTMLInputElement[] // radio list
-  // declare readonly contentTargets: HTMLInputElement[] // radio list
-  // declare readonly osUpdateTargets: HTMLInputElement[] // radio list
-  // declare readonly appUpdateTargets: HTMLInputElement[] // radio list
-  // declare readonly softwareTargets: HTMLInputElement[] // radio list
-  // declare readonly securityHardwaresTargets: HTMLInputElement[] // checkbox list
-  // declare readonly securityUpdateTargets: HTMLInputElement[] // radio list
-  // declare readonly securityScanTargets: HTMLInputElement[] // radio list
+  declare readonly securitySoftwareInstallationMethodTarget: HTMLSelectElement
+  declare readonly securitySoftwareNameTarget: HTMLInputElement // text
 
-  // declare readonly securitySoftwareInstallationMethodTarget: HTMLSelectElement
-  // declare readonly securitySoftwareNameTarget: HTMLInputElement // text
+  declare readonly collapseTarget: HTMLDivElement
+  declare readonly collapseOsUpdateSecuredTarget: HTMLDivElement
+  declare readonly collapseAppUpdateSecuredTarget: HTMLDivElement
 
-  // declare readonly collapseTarget: HTMLDivElement
-  // declare readonly collapseOsUpdateSecuredTarget: HTMLDivElement
-  // declare readonly collapseAppUpdateSecuredTarget: HTMLDivElement
-
-  // declare readonly hasCollapseOsUpdateSecuredTarget: boolean
-  // declare readonly hasCollapseAppUpdateSecuredTarget: boolean
+  declare readonly hasCollapseOsUpdateSecuredTarget: boolean
+  declare readonly hasCollapseAppUpdateSecuredTarget: boolean
 
   collapse?: Collapse
   collapseOsUpdateSecured?: Collapse

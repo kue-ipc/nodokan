@@ -48,11 +48,7 @@ export default class NodeController < Controller<HTMLFormElement>
     ...@collapseTargets
   ] as const
 
-  // TODO: 下記のようにすべきだが、Civetがうまく動かない
-  // https://stimulus.hotwired.dev/reference/using-typescript
-
-  // declare readonly nodeTypeTarget: HTMLSelectElement
-  // ...
+  declare readonly nodeTypeTarget: HTMLSelectElement
 
   collapseHelpNormal?: Collapse
   collapseHelpMobile?: Collapse
