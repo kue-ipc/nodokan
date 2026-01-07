@@ -51,7 +51,7 @@ class OperatingSystemsController < ApplicationController
     if @operating_system.save
       render :show, status: :ok, location: @operating_system
     else
-      render json: @operating_system.errors, status: :unprocessable_entity
+      render json: @operating_system.errors, status: :unprocessable_content
     end
   end
 
@@ -70,7 +70,7 @@ class OperatingSystemsController < ApplicationController
     elsif @operating_system.save
       render :show, status: :ok, location: @operating_system
     else
-      render json: @operating_system.errors, status: :unprocessable_entity
+      render json: @operating_system.errors, status: :unprocessable_content
     end
   end
 
@@ -78,7 +78,7 @@ class OperatingSystemsController < ApplicationController
     if @operating_system.destroy
       render head :no_content
     else
-      render json: @operating_system.errors, status: :unprocessable_entity
+      render json: @operating_system.errors, status: :unprocessable_content
     end
   end
 

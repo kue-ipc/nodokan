@@ -38,9 +38,9 @@ class BulksController < ApplicationController
         end
         format.html do
           flash.alert = t_failure(@bulk, :register)
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
-        format.json { render json: @bulk.errors, status: :unprocessable_entity }
+        format.json { render json: @bulk.errors, status: :unprocessable_content }
       end
     end
   end
@@ -63,9 +63,9 @@ class BulksController < ApplicationController
         end
         format.html do
           flash.alert = t_failure(@bulk, :cancel)
-          render :show, status: :unprocessable_entity
+          render :show, status: :unprocessable_content
         end
-        format.json { render json: @bulk.errors, status: :unprocessable_entity }
+        format.json { render json: @bulk.errors, status: :unprocessable_content }
       end
     end
   end
@@ -90,7 +90,7 @@ class BulksController < ApplicationController
         format.html do
           redirect_to bulks_url, alert: t_failure(@bulk, :delete)
         end
-        format.json { render json: @bulk.errors, status: :unprocessable_entity }
+        format.json { render json: @bulk.errors, status: :unprocessable_content }
       end
     end
   end

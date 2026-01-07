@@ -32,7 +32,7 @@ class UsersController < ApplicationController
           flash.now.alert = t_failure(@user, :update)
           render :show
         end
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_content }
       end
     end
   end

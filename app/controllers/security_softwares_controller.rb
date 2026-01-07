@@ -50,7 +50,7 @@ class SecuritySoftwaresController < ApplicationController
     if @security_software.save
       render :show, status: :ok, location: @security_software
     else
-      render json: @security_software.errors, status: :unprocessable_entity
+      render json: @security_software.errors, status: :unprocessable_content
     end
   end
 
@@ -69,7 +69,7 @@ class SecuritySoftwaresController < ApplicationController
     elsif @security_software.save
       render :show, status: :ok, location: @security_software
     else
-      render json: @security_software.errors, status: :unprocessable_entity
+      render json: @security_software.errors, status: :unprocessable_content
     end
   end
 
@@ -77,7 +77,7 @@ class SecuritySoftwaresController < ApplicationController
     if @security_software.destroy
       render head :no_content
     else
-      render json: @security_software.errors, status: :unprocessable_entity
+      render json: @security_software.errors, status: :unprocessable_content
     end
   end
 

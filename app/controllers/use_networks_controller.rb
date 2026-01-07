@@ -17,7 +17,7 @@ class UseNetworksController < ApplicationController
         format.html do
           redirect_to @user, alert: t_failure(Assignment, :add)
         end
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_content }
       end
     end
   end
@@ -33,7 +33,7 @@ class UseNetworksController < ApplicationController
         format.html do
           redirect_to @user, alert: t_failure(Assignment, :update)
         end
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_content }
       end
     end
   end
@@ -49,7 +49,7 @@ class UseNetworksController < ApplicationController
         format.html do
           redirect_to @user, alert: t_failure(Assignment, :release)
         end
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_content }
       end
     end
   end

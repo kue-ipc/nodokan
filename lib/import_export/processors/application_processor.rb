@@ -58,13 +58,9 @@ module ImportExport
         @user
       end
 
-      def model
-        self.class.model
-      end
+      delegate :model, to: :class
 
-      def keys
-        self.class.keys
-      end
+      delegate :keys, to: :class
 
       def key_converter(key, method)
         case method

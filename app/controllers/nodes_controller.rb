@@ -67,7 +67,7 @@ class NodesController < ApplicationController
           flash.now.alert = t_failure(@node, :register)
           render :new
         end
-        format.json { render json: @node.errors, status: :unprocessable_entity }
+        format.json { render json: @node.errors, status: :unprocessable_content }
       end
     end
   end
@@ -89,7 +89,7 @@ class NodesController < ApplicationController
           flash.now.alert = t_failure(@node, :update)
           render :edit
         end
-        format.json { render json: @node.errors, status: :unprocessable_entity }
+        format.json { render json: @node.errors, status: :unprocessable_content }
       end
     end
   end
@@ -103,7 +103,7 @@ class NodesController < ApplicationController
           redirect_to @node,
             alert: t("errors.messages.not_delete_specific_node")
         end
-        format.json { render json: @node.errors, status: :unprocessable_entity }
+        format.json { render json: @node.errors, status: :unprocessable_content }
       elsif @node.destroy
         if current_user.id == @node.user_id
           # nodes_countが変更されているため、reloadする。
@@ -120,7 +120,7 @@ class NodesController < ApplicationController
         format.html do
           redirect_to @node, alert: t_failure(@node, :delete)
         end
-        format.json { render json: @node.errors, status: :unprocessable_entity }
+        format.json { render json: @node.errors, status: :unprocessable_content }
       end
     end
   end
@@ -138,7 +138,7 @@ class NodesController < ApplicationController
         end
         format.json do
           errors = {username: t("errors.messages.not_found_user")}
-          render json: errors, status: :unprocessable_entity
+          render json: errors, status: :unprocessable_content
         end
       end
     elsif user.guest?
@@ -149,7 +149,7 @@ class NodesController < ApplicationController
         end
         format.json do
           errors = {username: t("errors.messages.cannot_transfer_to_guest")}
-          render json: errors, status: :unprocessable_entity
+          render json: errors, status: :unprocessable_content
         end
       end
     else
@@ -176,7 +176,7 @@ class NodesController < ApplicationController
             redirect_to @node, alert: t_failure(@node, :transfer)
           end
           format.json do
-            render json: @node.errors, status: :unprocessable_entity
+            render json: @node.errors, status: :unprocessable_content
           end
         end
       end

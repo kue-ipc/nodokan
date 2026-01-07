@@ -90,7 +90,7 @@ class ConfirmationsController < ApplicationController
         redirect_to @node, **flash.to_hash
       end
       format.json do
-        render json: @confirmation.errors, status: :unprocessable_entity
+        render json: @confirmation.errors, status: :unprocessable_content
       end
     end
   end
