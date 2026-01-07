@@ -92,11 +92,11 @@ class OperatingSystemsController < ApplicationController
   end
 
   private def operating_system_params
-    params.require(:operating_system).permit(
-      :os_category_id,
+    params.expect(
+      operating_system: [:os_category_id,
       :name,
       :eol,
       :confirmed,
-      :description)
+      :description,])
   end
 end

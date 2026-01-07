@@ -50,6 +50,6 @@ class HostsController < ApplicationController
   end
 
   private def host_params
-    params.require(:host).permit(:id)
+    params.expect(host: [:id])
   end
 end

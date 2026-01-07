@@ -27,14 +27,14 @@ class SpecificNodeApplicationsController < ApplicationController
   end
 
   private def specific_node_application_params
-    params.require(:specific_node_application).permit(
-      :action,
+    params.expect(
+      specific_node_application: [:action,
       :reason,
       :rule_set,
       :rule_list,
       :external,
       :register_dns,
       :fqdn,
-      :note)
+      :note,])
   end
 end

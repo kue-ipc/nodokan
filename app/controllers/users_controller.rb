@@ -56,11 +56,11 @@ class UsersController < ApplicationController
   end
 
   private def user_params
-    permitted_params = params.require(:user).permit(
-      :limit,
+    permitted_params = params.expect(
+      user: [:limit,
       :unlimited,
       :role,
-      :auth_network_id)
+      :auth_network_id,])
     if ActiveRecord::Type::Boolean.new.cast(permitted_params.delete(:unlimited))
       permitted_params[:limit] = nil
     end

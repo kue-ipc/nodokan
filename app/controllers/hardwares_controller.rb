@@ -92,11 +92,11 @@ class HardwaresController < ApplicationController
   end
 
   private def hardware_params
-    params.require(:hardware).permit(
-      :device_type_id,
+    params.expect(
+      hardware: [:device_type_id,
       :maker,
       :product_name,
       :model_number,
-      :confirmed)
+      :confirmed,])
   end
 end

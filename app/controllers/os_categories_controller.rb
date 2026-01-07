@@ -47,11 +47,11 @@ class OsCategoriesController < ApplicationController
   end
 
   private def os_category_params
-    params.require(:os_category).permit(
-      :name,
+    params.expect(
+      os_category: [:name,
       :icon,
       :order,
       :locked,
-      :description)
+      :description,])
   end
 end

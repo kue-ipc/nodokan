@@ -47,11 +47,11 @@ class DeviceTypesController < ApplicationController
   end
 
   private def device_type_params
-    params.require(:device_type).permit(
-      :name,
+    params.expect(
+      device_type: [:name,
       :icon,
       :order,
       :locked,
-      :description)
+      :description,])
   end
 end
