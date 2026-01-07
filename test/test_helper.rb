@@ -28,7 +28,10 @@ ActiveRecord::FixtureSet.context_class.include FixtureAddressHelper
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
-    parallelize(workers: :number_of_processors)
+    # parallelize(workers: :number_of_processors)
+    # FIXME: 並列処理にすると`database_tasks: false`なデータベースに対して複製せずに複製バージョンを見に行って失敗する。
+    # 　　　 Ralis8.0以前は複製バージョンを見に行かなかったが、時々デッドロックが発生していた。
+    parallelize(workers: 1)
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
