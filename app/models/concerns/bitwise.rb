@@ -6,7 +6,6 @@ module Bitwise
     # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
     def bitwise(name, values, prefix: nil, suffix: nil, scopes: true,
       instance_methods: true, validate: false)
-
       name = name.intern
       unless values.is_a?(Hash)
         values = values.each_with_index

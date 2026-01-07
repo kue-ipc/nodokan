@@ -54,7 +54,7 @@ class NetworksController < ApplicationController
           render :new
         end
         format.json do
-          render json: @network.errors, status: :unprocessable_entity
+          render json: @network.errors, status: :unprocessable_content
         end
       end
     end
@@ -78,7 +78,7 @@ class NetworksController < ApplicationController
           render :edit
         end
         format.json do
-          render json: @network.errors, status: :unprocessable_entity
+          render json: @network.errors, status: :unprocessable_content
         end
       end
     end

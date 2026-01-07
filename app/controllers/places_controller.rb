@@ -48,7 +48,7 @@ class PlacesController < ApplicationController
     if @place.save
       render :show, status: :ok, location: @place
     else
-      render json: @place.errors, status: :unprocessable_entity
+      render json: @place.errors, status: :unprocessable_content
     end
   end
 
@@ -67,7 +67,7 @@ class PlacesController < ApplicationController
     elsif @place.save
       render :show, status: :ok, location: @place
     else
-      render json: @place.errors, status: :unprocessable_entity
+      render json: @place.errors, status: :unprocessable_content
     end
   end
 
@@ -75,7 +75,7 @@ class PlacesController < ApplicationController
     if @place.destroy
       render head :no_content
     else
-      render json: @place.errors, status: :unprocessable_entity
+      render json: @place.errors, status: :unprocessable_content
     end
   end
 

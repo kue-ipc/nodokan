@@ -51,7 +51,7 @@ class HardwaresController < ApplicationController
     if @hardware.save
       render :show, status: :ok, location: @hardware
     else
-      render json: @hardware.errors, status: :unprocessable_entity
+      render json: @hardware.errors, status: :unprocessable_content
     end
   end
 
@@ -70,7 +70,7 @@ class HardwaresController < ApplicationController
     elsif @hardware.save
       render :show, status: :ok, location: @hardware
     else
-      render json: @hardware.errors, status: :unprocessable_entity
+      render json: @hardware.errors, status: :unprocessable_content
     end
   end
 
@@ -78,7 +78,7 @@ class HardwaresController < ApplicationController
     if @hardware.destroy
       render head :no_content
     else
-      render json: @hardware.errors, status: :unprocessable_entity
+      render json: @hardware.errors, status: :unprocessable_content
     end
   end
 

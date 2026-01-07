@@ -22,13 +22,9 @@ module ImportExport
       @extname = str
     end
 
-    def content_type
-      self.class.content_type
-    end
+    delegate :content_type, to: :class
 
-    def extname
-      self.class.extname
-    end
+    delegate :extname, to: :class
 
     attr_reader :result, :count
 

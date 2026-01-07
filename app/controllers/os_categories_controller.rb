@@ -17,7 +17,7 @@ class OsCategoriesController < ApplicationController
     if @os_category.save
       render :show, status: :ok, location: @os_category
     else
-      render json: @os_category.errors, status: :unprocessable_entity
+      render json: @os_category.errors, status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class OsCategoriesController < ApplicationController
     if @os_category.update(os_category_params)
       render :show, status: :ok, location: @os_category
     else
-      render json: @os_category.errors, status: :unprocessable_entity
+      render json: @os_category.errors, status: :unprocessable_content
     end
   end
 
@@ -33,7 +33,7 @@ class OsCategoriesController < ApplicationController
     if @os_category.destroy
       render head :no_content
     else
-      render json: @os_category.errors, status: :unprocessable_entity
+      render json: @os_category.errors, status: :unprocessable_content
     end
   end
 

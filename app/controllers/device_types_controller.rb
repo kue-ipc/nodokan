@@ -17,7 +17,7 @@ class DeviceTypesController < ApplicationController
     if @device_type.save
       render :show, status: :ok, location: @device_type
     else
-      render json: @device_type.errors, status: :unprocessable_entity
+      render json: @device_type.errors, status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class DeviceTypesController < ApplicationController
     if @device_type.update(device_type_params)
       render :show, status: :ok, location: @device_type
     else
-      render json: @device_type.errors, status: :unprocessable_entity
+      render json: @device_type.errors, status: :unprocessable_content
     end
   end
 
@@ -33,7 +33,7 @@ class DeviceTypesController < ApplicationController
     if @device_type.destroy
       render head :no_content
     else
-      render json: @device_type.errors, status: :unprocessable_entity
+      render json: @device_type.errors, status: :unprocessable_content
     end
   end
 
