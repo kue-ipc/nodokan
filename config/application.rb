@@ -18,9 +18,6 @@ module Nodokan
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
-    # FIXME: ガイド記載の方法だが、二重ロードになって動かない
-    # config.autoload_once_paths << Rails.root.join('app', 'serializers')
-
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
