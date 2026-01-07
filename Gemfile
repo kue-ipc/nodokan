@@ -90,6 +90,9 @@ gem "whenever", require: false
 # Color
 gem "color"
 
+# TODO: remove when redis_cache_store supports connection_pool 3+ (Rails 8.1.2+)
+gem "connection_pool", "< 3.0"
+
 ## Bundled gems
 gem "csv"
 
