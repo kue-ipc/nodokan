@@ -6,12 +6,12 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 AllCops:
   TargetRubyVersion: 3.3
   NewCops: enable
-  SuggestExtensions: false
   Exclude:
-    - 'bin/**/*'
-    - 'node_modules/**/*'
-    - 'db/schema.rb'
-    - 'vender/**/*'
+    - bin/**/*
+    - node_modules/**/*
+    - db/schema.rb
+    - db/*_schema.rb
+    - vender/**/*
 
 # Layout
 
@@ -35,7 +35,7 @@ Layout/EndOfLine:
 
 Layout/ExtraSpacing:
   Exclude:
-    - 'db/migrate/*.rb'
+    - db/migrate/*.rb
 
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
@@ -50,12 +50,14 @@ Layout/FirstMethodParameterLineBreak:
   Enabled: false
 
 Layout/IndentationConsistency:
+  Enabled: true
   EnforcedStyle: indented_internal_methods
 
 Layout/LineLength:
-  Max: 80
-  AllowedPatterns:
-    - '^\s*#'
+  Enabled: true
+  Max: 120
+  # AllowedPatterns:
+  #   - ^\s*#
 
 Layout/MultilineMethodCallBraceLayout:
   EnforcedStyle: same_line
@@ -78,7 +80,7 @@ Layout/SpaceInsideHashLiteralBraces:
 # Metrics double
 
 Metrics/AbcSize:
-  Max: 34 # 17
+  Max: 30 # 15
 
 Metrics/BlockLength:
   Max: 50 # 25
@@ -87,7 +89,7 @@ Metrics/BlockLength:
     - module_eval
     - class_eval
   Exclude:
-    - 'lib/tasks/*.rake'
+    - lib/tasks/*.rake
 
 Metrics/BlockNesting:
   Max: 6 # 3
@@ -95,17 +97,17 @@ Metrics/BlockNesting:
 Metrics/ClassLength:
   Max: 200 # 100
   Exclude:
-    - 'test/**/*.rb'
-    - 'app/controllers/*.rb'
+    - test/**/*.rb
+    - app/controllers/*.rb
 
 Metrics/CyclomaticComplexity:
-  Max: 14 # 7
+  Max: 12 # 6
 
 Metrics/MethodLength:
   Max: 20 # 10
   CountAsOne: ['array', 'hash', 'heredoc']
   Exclude:
-    - 'db/migrate/*.rb'
+    - db/migrate/*.rb
 
 Metrics/ModuleLength:
   Max: 200 # 100
@@ -115,7 +117,7 @@ Metrics/ParameterLists:
   MaxOptionalParameters: 6 # 3
 
 Metrics/PerceivedComplexity:
-  Max: 16 # 8
+  Max: 14 # 7
 
 # Style
 
@@ -215,6 +217,10 @@ Rails:
 
 Rails/BulkChangeTable:
   Enabled: false
+
+Rails/Delegate:
+  Exclude:
+    - test/mailers/previews/**/*.rb
 
 Rails/FilePath:
   EnforcedStyle: slashes
