@@ -8,7 +8,7 @@ class AdminMailerTest < ActionMailer::TestCase
     assert_equal ["admin@example.jp"], mail.to
     assert_nil mail.from
 
-    assert_equal <<~MESSAGE.gsub(/\R/, "\r\n"), mail.body.encoded
+    assert_equal <<~MESSAGE, mail.body.encoded.gsub(/\R/, "\n")
       端末管理システムで、下記のジョブが失敗しました。
 
       Job: job
