@@ -1,6 +1,6 @@
 # MySQL
 default: &default
-  adapter: mysql2
+  adapter: trilogy
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: <%= (Rails.application.credentials.dig(:database, :username) ||
