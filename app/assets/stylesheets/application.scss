@@ -1,8 +1,6 @@
 @charset "utf-8";
-
 @import "color";
 @import "font";
-
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons";
 @import "rails_bootstrap_forms";
@@ -81,11 +79,11 @@ label.form-label.required {
 }
 
 .form-floating > label {
-  color: rgba(var(--bs-body-color-rgb), #{$form-floating-label-opacity});
+  color: rgb(var(--bs-body-color-rgb), #{$form-floating-label-opacity});
 }
 
 .form-floating > textarea.form-control {
-  height: calc(5.5rem + calc(var(--bs-border-width)* 2));
+  height: calc(5.5rem + calc(var(--bs-border-width) * 2));
 }
 
 .clickable-row {
@@ -97,7 +95,7 @@ label.form-label.required {
     &:hover {
       text-decoration: none;
       color: color-contrast($value) !important;
-      background-color: rgba(var(--bs-#{$color}-rgb), var(--bs-bg-opacity, 1)) !important;
+      background-color: rgb(var(--bs-#{$color}-rgb), var(--bs-bg-opacity, 1)) !important;
     }
   }
 }
