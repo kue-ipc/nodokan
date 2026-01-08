@@ -28,7 +28,9 @@ module Nodokan
     # config.eager_load_paths << Rails.root.join("extras")
 
     # pundit NotAuthorizedError => forbidden
-    config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] =
-      :forbidden
+    config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] = :forbidden
+
+    # Disable Active Storage variants.
+    config.active_storage.variant_processor = :disabled
   end
 end
