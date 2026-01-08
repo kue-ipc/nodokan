@@ -153,10 +153,7 @@ class User < ApplicationRecord
 
   # TODO: devise_ldap_authenticatableのをそのまま使うのに変更予定
   def ldap_groups
-    @ldap_groups ||=
-      Devise::LDAP::Adapter.get_group_list(username).map do |name|
-        name.split(",").first.split("=").second
-      end
+    @ldap_groups ||= Devise::LDAP::Adapter.get_group_list(username)
   end
 
   def ldap_attributes
