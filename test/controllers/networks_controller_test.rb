@@ -493,29 +493,29 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to network_url(Network.last)
   end
 
-    test "admin should create network ipv6 with pools hash" do
-    sign_in users(:admin)
-    assert_difference("Network.count") do
-      post networks_url, params: {network: {
-        name: "name",
-        ra: "managed",
-        ipv4_network_address: "10.10.10.0",
-        ipv4_prefix_length: 24,
-        ipv6_network_address: "fd01:1::",
-        ipv6_prefix_length: 64,
-        ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
-          1 => pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
-          2 => pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
-          3 => pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
-          4 => pool_params(6, "manual", "fd01:1::1:3:0", "fd01:1::1:3:ffff"),
-          5 => pool_params(6, "disabled", "fd01:1::1:4:0", "fd01:1::1:4:ffff"),
-        },
-      }}
-    end
-    assert_redirected_to network_url(Network.last)
+  test "admin should create network ipv6 with pools hash" do
+  sign_in users(:admin)
+  assert_difference("Network.count") do
+    post networks_url, params: {network: {
+      name: "name",
+      ra: "managed",
+      ipv4_network_address: "10.10.10.0",
+      ipv4_prefix_length: 24,
+      ipv6_network_address: "fd01:1::",
+      ipv6_prefix_length: 64,
+      ipv6_gateway_address: "fd01:1::1",
+      ipv6_pools_attributes: {
+        0 => pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
+        1 => pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
+        2 => pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
+        3 => pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
+        4 => pool_params(6, "manual", "fd01:1::1:3:0", "fd01:1::1:3:ffff"),
+        5 => pool_params(6, "disabled", "fd01:1::1:4:0", "fd01:1::1:4:ffff"),
+      },
+    }}
   end
+  assert_redirected_to network_url(Network.last)
+end
 
   test "admin should create NOT network ipv6 with out range pool" do
     sign_in users(:admin)

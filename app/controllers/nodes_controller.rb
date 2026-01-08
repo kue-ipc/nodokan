@@ -222,7 +222,8 @@ class NodesController < ApplicationController
         :ipv4_address,
         :ipv6_config,
         :ipv6_address,
-      ]]])
+      ]],
+    ])
 
     normalize_node_params(permitted_params)
   end
