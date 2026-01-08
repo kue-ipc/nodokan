@@ -1,4 +1,4 @@
-# devise_ldap_authenticatable_ex/login_list.rb v1.0.2 2024-09-03
+# devise_ldap_authenticatable_ex/login_list.rb v1.1.0 2026-01-08
 
 require "devise"
 require "devise_ldap_authenticatable"
@@ -12,11 +12,10 @@ module DeviseLdapAuthenticatableEx
 
     def self.create_devise_ldap_connection_instance_methods
       Devise::LDAP::Connection.class_eval do
-        def login_list
-          @login_list ||= begin
+        def login_list(force: false)
+          Rails.cache.fetch("devise_ldap_connection/login_list", force:, expires_in: 1.hour) do
             list = []
-            DeviseLdapAuthenticatable::Logger.send(
-              "LDAP search all user for #{@attribute}")
+            DeviseLdapAuthenticatable::Logger.send("LDAP search all user for #{@attribute}")
             filter = Net::LDAP::Filter.pres(@attribute.to_s)
             @ldap.search(filter:) do |entry|
               list << entry.first(@attribute)
@@ -24,8 +23,7 @@ module DeviseLdapAuthenticatableEx
 
             op_result = @ldap.get_operation_result
             if op_result.code != 0
-              DeviseLdapAuthenticatable::Logger.send(
-                "LDAP Error #{op_result.code}: #{op_result.message}")
+              DeviseLdapAuthenticatable::Logger.send("LDAP Error #{op_result.code}: #{op_result.message}")
             end
             DeviseLdapAuthenticatable::Logger.send("Found #{list.size} users")
 
@@ -38,8 +36,8 @@ module DeviseLdapAuthenticatableEx
     def self.create_devise_ldap_adapter_class_methods
       Devise::LDAP::Adapter.class_eval do
         # rubocop: disable Naming/AccessorMethodName
-        def self.get_login_list
-          ldap_connect(nil).login_list
+        def self.get_login_list(force: false)
+          ldap_connect(nil).login_list(force:)
         end
         # rubocop: enable Naming/AccessorMethodName
 

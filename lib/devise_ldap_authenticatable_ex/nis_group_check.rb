@@ -1,4 +1,4 @@
-# devise_ldap_authenticatable_ex/nis_group_check.rb v1.1.0 2025-11-20
+# devise_ldap_authenticatable_ex/nis_group_check.rb v1.2.0 2026-01-08
 
 # RFC 2307 LDAP as a NIS
 # setting: config.ldap_nis_group_check
@@ -48,22 +48,31 @@ module DeviseLdapAuthenticatableEx
 
     def self.create_devise_ldap_connection_search_for_nis_group
       Devise::LDAP::Connection.class_eval do
-        def search_for_nis_group(group_name, ldap: @ldap)
-          group_attribute = Devise::LDAP::DEFAULT_NIS_GROUP_NAME_KEY
-          DeviseLdapAuthenticatable::Logger.send("LDAP search for nis group: #{group_attribute}=#{group_name}")
-          filter = Net::LDAP::Filter.eq(group_attribute, group_name)
-          ldap_entry = nil
-          match_count = 0
-          ldap.search(base: @group_base, filter: filter) do |entry|
-            ldap_entry = entry
-            match_count += 1
+        def search_for_nis_group(group_name)
+          ldap, cache_opts =
+            if @check_group_membership_without_admin
+              [@ldap, {force: true, skip_nil: true}]
+            else
+              [Devise::LDAP::Connection.admin, {}]
+            end
+
+          Rails.cache.fetch("devise_ldap_connection/nis_group/#{group_name}", expires_in: 1.hour, **cache_opts) do
+            group_attribute = Devise::LDAP::DEFAULT_NIS_GROUP_NAME_KEY
+            DeviseLdapAuthenticatable::Logger.send("LDAP search for nis group: #{group_attribute}=#{group_name}")
+            filter = Net::LDAP::Filter.eq(group_attribute, group_name)
+            ldap_entry = nil
+            match_count = 0
+            ldap.search(base: @group_base, filter:) do |entry|
+              ldap_entry = entry
+              match_count += 1
+            end
+            op_result = ldap.get_operation_result
+            if op_result.code != 0
+              DeviseLdapAuthenticatable::Logger.send("LDAP Error #{op_result.code}: #{op_result.message}")
+            end
+            DeviseLdapAuthenticatable::Logger.send("LDAP search yielded #{match_count} matches")
+            ldap_entry
           end
-          op_result = ldap.get_operation_result
-          if op_result.code != 0
-            DeviseLdapAuthenticatable::Logger.send("LDAP Error #{op_result.code}: #{op_result.message}")
-          end
-          DeviseLdapAuthenticatable::Logger.send("LDAP search yielded #{match_count} matches")
-          ldap_entry
         end
       end
     end
@@ -87,30 +96,20 @@ module DeviseLdapAuthenticatableEx
     def self.create_devise_ldap_connection_in_group_nis
       Devise::LDAP::Connection.class_eval do
         def in_group_nis?(group_name)
-          in_group = false
-
-          group_checking_ldap =
-            if @check_group_membership_without_admin
-              @ldap
-            else
-              Devise::LDAP::Connection.admin
-            end
-
-          group_entry = search_for_nis_group(group_name, ldap: group_checking_ldap)
+          group_entry = search_for_nis_group(group_name)
           if group_entry.nil?
             DeviseLdapAuthenticatable::Logger.send("Not found group: #{group_name}")
+            false
           elsif group_entry.first(Devise::LDAP::DEFAULT_NIS_GID_KEY).to_i == nis_gid
             DeviseLdapAuthenticatable::Logger.send("User #{dn} IS included in nis primary group: #{group_name}")
-            in_group = true
+            true
           elsif group_entry[Devise::LDAP::DEFAULT_NIS_USER_LIST_KEY].include?(nis_username)
             DeviseLdapAuthenticatable::Logger.send("User #{dn} IS included in nis group: #{group_name}")
-            in_group = true
-          end
-
-          unless in_group
+            true
+          else
             DeviseLdapAuthenticatable::Logger.send("User #{dn} is not in nis group: #{group_name}")
+            false
           end
-          in_group
         end
       end
     end
