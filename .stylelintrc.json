@@ -1,5 +1,8 @@
 {
   "extends": "stylelint-config-standard",
+  "rules": {
+    "selector-class-pattern": null
+  },
   "overrides": [
     {
       "files": [
@@ -7,18 +10,6 @@
         "**/*.scss"
       ],
       "extends": "stylelint-config-standard-scss"
-    },
-    {
-      "files": [
-        "*.sass",
-        "**/*.sass"
-      ],
-      "customSyntax": "postcss-sass",
-      "rules": {
-        "selector-class-pattern": null,
-        "annotation-no-unknown": null,
-        "value-keyword-case": null
-      }
     }
   ]
 }
