@@ -1024,3 +1024,8 @@ ja:
       subject: 【端末管理システム管理通知】ジョブ失敗
       message: |
         端末管理システムで、下記のジョブが失敗しました。
+
+  # override devise messages
+  devise:
+    failure:
+      unauthenticated: ログインしてください。
