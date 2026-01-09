@@ -1,21 +1,20 @@
 ul.navbar-nav.d-flex
-  li.nav-item.dropdown data-controller="theme"
+  li.nav-item.dropdown data-controller="theme" data-theme-themes-value="#{themes.to_json}"
     button.btn.btn-link.nav-link.dropdown-toggle[
       type="button"
       aria-expanded="false" aria-label=t("messages.toggle_theme")
-      data-bs-toggle="dropdown" data-bs-display="static"]
-      i.bi.my-1.theme-icon-active.bi-circle-half[
-        data-theme-target="icon"]
+      data-bs-toggle="dropdown" data-bs-display="static"
+    ]
+      i class="bi my-1 theme-icon-active bi-#{theme_icon(default_theme)}" data-theme-target="icon"
       span.d-md-none.ms-2 = t("messages.toggle_theme")
     ul.dropdown-menu.dropdown-menu-end aria-labelledby="bd-theme-text"
-      - themes.each do |name|
+      - theme_names.each do |name|
         - icon = theme_icon(name)
         li
           button.dropdown-item.d-flex.align-items-center[
             type="button" aria-pressed="false"
-            data-action="theme#select" data-theme-target="button"
-            data-theme-name=name
-            data-theme-icon=icon
+            data-action="theme#selectTheme" data-theme-target="button"
+            data-theme-name-param=name
           ]
             i class="bi me-2 theme-icon bi-#{icon}"
             = t(name, scope: "themes")
