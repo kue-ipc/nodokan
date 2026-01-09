@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class ThemeController < Controller
   @targets := ["icon", "button"]
 
-  declare readonly iconTarget: HTMLButtonElement[] // button
+  declare readonly iconTarget: HTMLButtonElement // button
   declare readonly buttonTargets: HTMLButtonElement[] // button
 
   connect(): void
@@ -30,14 +30,13 @@ export default class ThemeController < Controller
     document.documentElement.setAttribute("data-bs-theme", theme)
 
     // ボタンのアクティブ化とアインコん変更
-    for each button of @buttonTargets
+    for button of @buttonTargets
       if button.dataset.themeName is name
         button.classList.add("active")
 
-        for each token of @iconTarget.classList
+        for each token of @iconTarget.classList when token?
           if /^bi-/.test(token)
-            @iconTarget.classList
-              .replace(token, `bi-${button.dataset.themeIcon}`)
+            @iconTarget.classList.replace(token, `bi-${button.dataset.themeIcon}`)
             break
       else
         button.classList.remove("active")

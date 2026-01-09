@@ -17,6 +17,9 @@ getMessageStore := ->
     messageStore = new MessageStore(messages)
   messageStore
 
+confirmParams ::=
+  confirm: string
+
 // Connects to data-controller="node-nic"
 export default class NodeNicController < Controller<HTMLElement>
   @names := [
@@ -32,8 +35,7 @@ export default class NodeNicController < Controller<HTMLElement>
     "ipv6Address"
   ] as const
 
-  @targets := [...@names, "destroy", "ipv4Help", "ipv6Help",
-    "messages", "messageTemplate"]
+  @targets := [...@names, "destroy", "ipv4Help", "ipv6Help", "messages", "messageTemplate"]
 
   declare readonly lockedTarget: HTMLInputElement // checkbox
   declare readonly interfaceTypeTarget: HTMLSelectElement
@@ -53,8 +55,8 @@ export default class NodeNicController < Controller<HTMLElement>
   declare readonly messagesTarget: HTMLDivElement
   declare readonly messageTemplateTarget: HTMLTemplateElement
 
-  network?: Network
-  messageStore?: MessageStore
+  network?: Network?
+  messageStore?: MessageStore?
   initValue?: {
     interfaceType: number
     networkId: number
@@ -146,10 +148,9 @@ export default class NodeNicController < Controller<HTMLElement>
     @requireMacAddress()
     @requireDuid()
 
-  changeAuth(event: Event): void
-    console.log event.params
+  changeAuth({params:: confirmParams}): void
     unless @authTarget.checked
-      unless window.confirm(event.params.confirm)
+      unless window.confirm(params.confirm)
         @authTarget.checked = true
 
     @requireMacAddress()

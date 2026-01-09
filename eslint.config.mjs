@@ -27,6 +27,11 @@ export default defineConfig([
     processor: "civet/civet",
   },
   {
+    rules: {
+      "max-len": ["error", {code: 120}],
+    }
+  },
+  {
     ignores: ["app/assets/builds", "node_modules"]
   },
 ]);

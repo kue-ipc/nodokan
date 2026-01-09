@@ -37,6 +37,8 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
 
   declare readonly hasCollapseOsUpdateSecuredTarget: boolean
   declare readonly hasCollapseAppUpdateSecuredTarget: boolean
+  declare readonly hasSecuritySoftwareInstallationMethodTarget: boolean
+  declare readonly hasSecuritySoftwareNameTarget: boolean
 
   collapse?: Collapse
   collapseOsUpdateSecured?: Collapse
