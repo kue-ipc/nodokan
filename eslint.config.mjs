@@ -26,4 +26,7 @@ export default defineConfig([
     plugins: {civet},
     processor: "civet/civet",
   },
+  {
+    ignores: ["app/assets/builds", "node_modules"]
+  },
 ]);

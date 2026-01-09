@@ -2,7 +2,6 @@ import {Application} from "@hotwired/stimulus"
 
 const application = Application.start()
 
-
 // Configure Stimulus development experience
 declare var RAILS_ENV: string
 application.debug = RAILS_ENV != "production"

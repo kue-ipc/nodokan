@@ -14,9 +14,12 @@ module DatalistCandidateHelper
       **opts,
     }
     attr_name = [*parents, name, target].join("_")
+    # tag.div(
+    #   id: "#{attr_name}-app",
+    #   class: ["datalist-candidate", "d-none"],
+    #   "data-params": params.to_json)
     tag.div(
       id: "#{attr_name}-app",
-      class: ["datalist-candidate", "d-none"],
-      "data-params": params.to_json)
+      data: {controller: "datalist-candidate"})
   end
 end
