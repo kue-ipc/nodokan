@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node esbuild.build.mjs",
+    "lint": "eslint ./app/javascript/**/*.civet",
     "build:css": "sass ./app/assets/stylesheets/:./app/assets/builds/ --no-source-map --load-path=node_modules --silence-deprecation=import --silence-deprecation=global-builtin --silence-deprecation=color-functions --silence-deprecation=if-function",
     "lint:css": "stylelint ./app/assets/stylesheets/"
   },
@@ -23,16 +24,21 @@
   "devDependencies": {
     "@coffeelint/cli": "^5.2.11",
     "@danielx/civet": "^0.11.1",
+    "@eslint/js": "^9.39.2",
     "@types/bootstrap": "^5.2.10",
     "coffeescript": "^2.7.0",
     "esbuild": "^0.27.2",
     "esbuild-coffeescript": "^3.0.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-civet": "^0.0.6",
+    "globals": "^17.0.0",
     "postcss": "^8.5.6",
     "postcss-sass": "^0.5.0",
     "sass": "^1.97.2",
     "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
     "stylelint-config-standard-scss": "^16.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0"
   }
 }
