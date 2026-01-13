@@ -85,7 +85,7 @@ jobs:
           bundler-cache: true
 
       - name: Set up DB for Kea
-        run: kea-admin db-init mysql -u kea -p keapass -n kea_test
+        run: kea-admin db-init mysql -u root -h localhost -n kea_test
 
       - name: Set up DB for FreeRADIUS
         run: |
