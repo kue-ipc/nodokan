@@ -9,7 +9,7 @@ ruby ">= 3.3.0"
 # skip: solid
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.1"
+gem "rails", "~> 8.1.2"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use mariadb-trilogy as the database for Active Record
@@ -90,9 +90,6 @@ gem "whenever", require: false
 # Color
 gem "color"
 
-# TODO: remove when redis_cache_store supports connection_pool 3+ (Rails 8.1.2+)
-gem "connection_pool", "< 3.0"
-
 ## Bundled gems
 gem "csv"
 
@@ -127,8 +124,4 @@ group :test do
 
   ## Other gems
   gem "minitest-stub-const"
-
-  # TODO: remove when minitest rails supports Minitest 6+
-  # https://github.com/minitest/minitest/issues/1045
-  gem "minitest", "< 6.0"
 end
