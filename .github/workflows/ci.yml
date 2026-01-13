@@ -89,8 +89,8 @@ jobs:
 
       - name: Set up DB for FreeRADIUS
         run: |
-          mysql -u root -e "CREATE DATABASE radius_test;"
-          mysql -u root radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+          mysql -u root -h localhost -e "CREATE DATABASE radius_test;"
+          mysql -u root -h localhost radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
 
       - name: Run tests
         env:
