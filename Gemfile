@@ -130,5 +130,5 @@ group :test do
 
   # TODO: remove when minitest rails supports Minitest 6+
   # https://github.com/minitest/minitest/issues/1045
-  gem "minitest", "< 6.0"
+  gem "minitest", "< 7.0"
 end
