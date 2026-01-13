@@ -85,12 +85,14 @@ jobs:
           bundler-cache: true
 
       - name: Set up DB for Kea
-        run: kea-admin db-init mysql -u root -h localhost -n kea_test
+        run: |
+          mysql -u root -h localhost -P 3306 -e "CREATE DATABASE kea_test;"
+          kea-admin db-init mysql -u root -h localhost -P 3306 -n kea_test
 
       - name: Set up DB for FreeRADIUS
         run: |
-          mysql -u root -h localhost -e "CREATE DATABASE radius_test;"
-          mysql -u root -h localhost radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+          mysql -u root -h localhost -P 3306 -e "CREATE DATABASE radius_test;"
+          mysql -u root -h localhost -P 3306 radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
 
       - name: Run tests
         env:
