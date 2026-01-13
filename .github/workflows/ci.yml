@@ -71,7 +71,9 @@ jobs:
 
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y node-gyp
+        run: >-
+          sudo apt-get update && sudo apt-get install --no-install-recommends -y
+            node-gyp kea freeradius freeradius-mysql
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -82,12 +84,20 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - name: Set up DB for Kea
+        run: kea-admin db-init mysql -u kea -p keapass -n kea_test
+
+      - name: Set up DB for FreeRADIUS
+        run: >-
+          mysql -u root -e "CREATE DATABASE radius_test;" &&
+          mysql -u root radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+
       - name: Run tests
         env:
           RAILS_ENV: test
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test
+        run: bin/rails db:test:prepare radius:setup test
 
   # system-test:
   #   runs-on: ubuntu-latest
