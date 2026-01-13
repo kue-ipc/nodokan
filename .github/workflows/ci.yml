@@ -71,8 +71,8 @@ jobs:
 
     steps:
       - name: Install packages
-        run: >-
-          sudo apt-get update && sudo apt-get install --no-install-recommends -y
+        run: |
+          sudo apt-get update && sudo apt-get install --no-install-recommends -y \
             node-gyp kea freeradius freeradius-mysql
 
       - name: Checkout code
@@ -88,8 +88,8 @@ jobs:
         run: kea-admin db-init mysql -u kea -p keapass -n kea_test
 
       - name: Set up DB for FreeRADIUS
-        run: >-
-          mysql -u root -e "CREATE DATABASE radius_test;" &&
+        run: |
+          mysql -u root -e "CREATE DATABASE radius_test;"
           mysql -u root radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
 
       - name: Run tests
