@@ -55,8 +55,7 @@ module Bitwise
             end
           end
           if scopes
-            scope(attr_name,
-              -> { where("#{name} > 0 AND #{name} & #{value} > 0") })
+            scope(attr_name, -> { where(":name > 0 AND :name & :value > 0", name:, value:) })
           end
         else
           if instance_methods

@@ -44,13 +44,15 @@ module UniqueIdentifier
 
     def find_ip_address(value, ipv4: :ipv4, ipv6: :ipv6)
       ip = IPAddr.new(value)
-      if ip.ipv4?
-        find_by!({"#{ipv4}_data" => value.hton})
-      elsif ip.ipv6?
-        find_by!({"#{ipv6}_data" => value.hton})
-      else
-        raise ArgumentError, "Unknown IP version: #{str}"
-      end
+      name =
+        if ip.ipv4?
+          "#{ipv4}_data"
+        elsif ip.ipv6?
+          "#{ipv6}_data"
+        else
+          raise ArgumentError, "Unknown IP version: #{str}"
+        end
+      where(":name = :value", name:, value: ip.hton).first!
     rescue IPAddr::InvalidAddressError
       raise ArgumentError, "Invalid IP address: #{str}"
     end

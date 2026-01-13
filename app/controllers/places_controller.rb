@@ -20,7 +20,7 @@ class PlacesController < ApplicationController
 
     @places = policy_scope(Place)
 
-    @places = @places.where(@condition) if @condition
+    @places = @places.where(@condition.to_h) if @condition
 
     @places = @places.order(@order.to_h) if @order
 

@@ -21,7 +21,7 @@ class SecuritySoftwaresController < ApplicationController
 
     @security_softwares = policy_scope(SecuritySoftware)
 
-    @security_softwares = @security_softwares.where(@condition) if @condition
+    @security_softwares = @security_softwares.where(@condition.to_h) if @condition
 
     @security_softwares = @security_softwares.order(@order.to_h) if @order
 

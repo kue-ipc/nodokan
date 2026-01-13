@@ -23,7 +23,7 @@ class HardwaresController < ApplicationController
 
     @hardwares = policy_scope(Hardware).includes(:device_type)
 
-    @hardwares = @hardwares.where(@condition) if @condition
+    @hardwares = @hardwares.where(@condition.to_h) if @condition
 
     @hardwares = @hardwares.order(@order.to_h) if @order
 
