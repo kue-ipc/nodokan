@@ -200,6 +200,7 @@ GEM
     mini_mime (1.1.5)
     minitest (6.0.1)
       prism (~> 1.5)
+    minitest-mock (5.27.0)
     minitest-stub-const (0.6)
     mono_logger (1.1.2)
     msgpack (1.8.0)
@@ -479,6 +480,7 @@ DEPENDENCIES
   jbuilder
   jsbundling-rails
   kamal
+  minitest-mock
   minitest-stub-const
   paper_trail
   paper_trail-association_tracking

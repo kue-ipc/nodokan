@@ -124,4 +124,5 @@ group :test do
 
   ## Other gems
   gem "minitest-stub-const"
+  gem "minitest-mock"
 end
