@@ -1,7 +1,10 @@
 - content_for :heading
   h1 NIC情報
 
-= render @nic
+/ FIXME: Brakemanで警告が出るため、一時的に無効化
+/   本当は下記のように書きたい。
+/   = render @nic
+= render partial: "nics/nic", locals: {nic: @nic}
 
 h3 = Nic.human_attribute_name(:connection_info)
 
