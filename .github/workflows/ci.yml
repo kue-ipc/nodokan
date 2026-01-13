@@ -56,10 +56,12 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      # TODO: パスワード無しではkea-adimnが動かない
       mariadb:
         image: mariadb
         env:
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
+          MARIADB_ROOT_PASSWORD: pass
+          # MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
         ports:
           - 3306:3306
 
@@ -86,17 +88,18 @@ jobs:
 
       - name: Set up DB for Kea
         run: |
-          mysql -u root -h 127.0.0.1 -e "CREATE DATABASE kea_test;"
-          kea-admin db-init mysql -u root -h 127.0.0.1 -n kea_test
+          mysql -u root -p pass -h 127.0.0.1 -e "CREATE DATABASE kea_test;"
+          kea-admin db-init mysql -u root -p pass -h 127.0.0.1 -n kea_test
 
       - name: Set up DB for FreeRADIUS
         run: |
-          mysql -u root -h 127.0.0.1 -e "CREATE DATABASE radius_test;"
-          mysql -u root -h 127.0.0.1 radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+          mysql -u root -p pass -h 127.0.0.1 -e "CREATE DATABASE radius_test;"
+          mysql -u root -p pass -h 127.0.0.1 radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
 
       - name: Run tests
         env:
           RAILS_ENV: test
+          DATABASE_URL: trilogy://root:pass@127.0.0.1/
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare radius:setup test
