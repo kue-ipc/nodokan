@@ -89,11 +89,11 @@ class PlacesController < ApplicationController
   end
 
   private def place_params
-    params.require(:place).permit(
-      :area,
+    params.expect(
+      place: [:area,
       :building,
       :floor,
       :room,
-      :confirmed)
+      :confirmed,])
   end
 end

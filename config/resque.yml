@@ -1,0 +1,9 @@
+development:
+  url: localhost:6379
+  namespace: nodokan:resque
+test:
+  url: localhost:6379
+  namespace: nodokan:resque
+production:
+  url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379/0") %>
+  namespace: nodokan:resque

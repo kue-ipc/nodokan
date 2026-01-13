@@ -37,6 +37,8 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
 
   declare readonly hasCollapseOsUpdateSecuredTarget: boolean
   declare readonly hasCollapseAppUpdateSecuredTarget: boolean
+  declare readonly hasSecuritySoftwareInstallationMethodTarget: boolean
+  declare readonly hasSecuritySoftwareNameTarget: boolean
 
   collapse?: Collapse
   collapseOsUpdateSecured?: Collapse
@@ -65,7 +67,7 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
       @collapseAppUpdateSecured?.show()
 
   setRequiredAll(required: boolean): void
-    e.required = required for each e of [
+    e.required = required for e of [
       ...@contentTargets
       ...@osUpdateTargets
       ...@appUpdateTargets
@@ -125,19 +127,17 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
     exclusiveValues := ["none", "unknown"]
     if target.checked
       if target.value is in exclusiveValues
-        for each e of @securityHardwaresTargets
-          if e.value is not target.value
-            e.checked = false
+        for e of @securityHardwaresTargets when e.value is not target.value
+          e.checked = false
       else
-        for each e of @securityHardwaresTargets
-          if e.value is in exclusiveValues
-            e.checked = false
+        for e of @securityHardwaresTargets when e.value is in exclusiveValues
+          e.checked = false
 
     @checkSecurityHardwares()
 
   checkSecurityHardwares(required: boolean = true): void
     checked .= false
-    for each e of @securityHardwaresTargets
+    for e of @securityHardwaresTargets
       if e.checked
         checked = true
         e.required = required
@@ -151,44 +151,44 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
 
     switch @securitySoftwareInstallationMethodTarget.value
       "", "other"
-        for each e of @securityUpdateTargets
+        for e of @securityUpdateTargets
           e.disabled = false
-        for each e of @securityScanTargets
+        for e of @securityScanTargets
           e.disabled = false
       "unnecessary", "not_installed"
-        for each e of @securityUpdateTargets
+        for e of @securityUpdateTargets
           if e.value is "not_implemented"
             e.checked = true
             e.disabled = false
           else
             e.disabled = true
-        for each e of @securityScanTargets
+        for e of @securityScanTargets
           if e.value is "not_implemented"
             e.checked = true
             e.disabled = false
           else
             e.disabled = true
       "unknown"
-        for each e of @securityUpdateTargets
+        for e of @securityUpdateTargets
           if e.value is "unknown"
             e.checked = true
             e.disabled = false
           else
             e.disabled = true
-        for each e of @securityScanTargets
+        for e of @securityScanTargets
           if e.value is "unknown"
             e.checked = true
             e.disabled = false
           else
             e.disabled = true
       else
-        for each e of @securityUpdateTargets
+        for e of @securityUpdateTargets
           if e.value is "not_implemented"
             e.checked = false
             e.disabled = true
           else
             e.disabled = false
-        for each e of @securityScanTargets
+        for e of @securityScanTargets
           if e.value is "not_implemented"
             e.checked = false
             e.disabled = true

@@ -2,9 +2,11 @@ module NodeParameter
   extend ActiveSupport::Concern
 
   private def normalize_node_params(node_params)
+    node_params[:nics_attributes] = normalize_array_param(node_params[:nics_attributes])
+
     delete_unchangable_node_params(node_params)
 
-    number_nics(node_params[:nics_attributes]&.values || [])
+    number_nics(node_params[:nics_attributes])
 
     if node_params.key?(:component_ids)
       node_params[:component_ids] = node_params[:component_ids]&.uniq
@@ -26,6 +28,18 @@ module NodeParameter
     node_params
   end
 
+  private def normalize_array_param(list)
+    case list
+    in nil
+      []
+    in Array
+      list
+    in Hash | ActionController::Parameters
+      list.values
+    end
+  end
+
+
   private def delete_unchangable_node_params(node_params)
     return node_params if current_user.nil? || current_user.admin?
 
@@ -33,7 +47,7 @@ module NodeParameter
     node_params.delete(:public)
     node_params.delete(:dns)
     node_params.delete(:user_id)
-    node_params[:nics_attributes]&.each_value do |nic_params|
+    node_params[:nics_attributes]&.each do |nic_params|
       delete_unchangable_nic_params(nic_params)
     end
     node_params

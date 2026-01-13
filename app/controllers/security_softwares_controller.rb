@@ -91,11 +91,11 @@ class SecuritySoftwaresController < ApplicationController
   end
 
   private def security_software_params
-    params.require(:security_software).permit(
-      :area,
+    params.expect(
+      security_software: [:area,
       :building,
       :floor,
       :room,
-      :confirmed)
+      :confirmed,])
   end
 end

@@ -364,6 +364,27 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv4_network_address: "10.10.10.0",
         ipv4_prefix_length: 24,
         ipv4_gateway_address: "10.10.10.254",
+        ipv4_pools_attributes: [
+          pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
+          pool_params(4, "reserved", "10.10.10.11", "10.10.10.20"),
+          pool_params(4, "static", "10.10.10.21", "10.10.10.30"),
+          pool_params(4, "manual", "10.10.10.31", "10.10.10.40"),
+          pool_params(4, "disabled", "10.10.10.41", "10.10.10.50"),
+        ],
+      }}
+    end
+    assert_redirected_to network_url(Network.last)
+  end
+
+  test "admin should create network ipv4 with pools hash" do
+    sign_in users(:admin)
+    assert_difference("Network.count") do
+      post networks_url, params: {network: {
+        name: "name",
+        dhcp: true,
+        ipv4_network_address: "10.10.10.0",
+        ipv4_prefix_length: 24,
+        ipv4_gateway_address: "10.10.10.254",
         ipv4_pools_attributes: {
           0 => pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
           1 => pool_params(4, "reserved", "10.10.10.11", "10.10.10.20"),
@@ -385,9 +406,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv4_network_address: "10.10.10.0",
         ipv4_prefix_length: 24,
         ipv4_gateway_address: "10.10.10.254",
-        ipv4_pools_attributes: {
-          0 => pool_params(4, "dynamic", "10.10.20.1", "10.10.20.10"),
-        },
+        ipv4_pools_attributes: [
+          pool_params(4, "dynamic", "10.10.20.1", "10.10.20.10"),
+        ],
       }}
     end
     assert_response :success
@@ -403,9 +424,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv4_network_address: "10.10.10.0",
         ipv4_prefix_length: 24,
         ipv4_gateway_address: "10.10.10.254",
-        ipv4_pools_attributes: {
-          0 => pool_params(4, "dynamic", "10.10.10.10", "10.10.20.1"),
-        },
+        ipv4_pools_attributes: [
+          pool_params(4, "dynamic", "10.10.10.10", "10.10.20.1"),
+        ],
       }}
     end
     assert_response :success
@@ -421,9 +442,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv4_network_address: "10.10.10.0",
         ipv4_prefix_length: 24,
         ipv4_gateway_address: "10.10.10.254",
-        ipv4_pools_attributes: {
-          0 => pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
-        },
+        ipv4_pools_attributes: [
+          pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
+        ],
       }}
     end
     assert_response :success
@@ -439,9 +460,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv4_network_address: "10.10.10.0",
         ipv4_prefix_length: 24,
         ipv4_gateway_address: "10.10.10.254",
-        ipv4_pools_attributes: {
-          0 => pool_params(4, "reserved", "10.10.10.1", "10.10.10.10"),
-        },
+        ipv4_pools_attributes: [
+          pool_params(4, "reserved", "10.10.10.1", "10.10.10.10"),
+        ],
       }}
     end
     assert_response :success
@@ -459,18 +480,42 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
-          1 => pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
-          2 => pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
-          3 => pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
-          4 => pool_params(6, "manual", "fd01:1::1:3:0", "fd01:1::1:3:ffff"),
-          5 => pool_params(6, "disabled", "fd01:1::1:4:0", "fd01:1::1:4:ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
+          pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
+          pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
+          pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
+          pool_params(6, "manual", "fd01:1::1:3:0", "fd01:1::1:3:ffff"),
+          pool_params(6, "disabled", "fd01:1::1:4:0", "fd01:1::1:4:ffff"),
+        ],
       }}
     end
     assert_redirected_to network_url(Network.last)
   end
+
+  test "admin should create network ipv6 with pools hash" do
+  sign_in users(:admin)
+  assert_difference("Network.count") do
+    post networks_url, params: {network: {
+      name: "name",
+      ra: "managed",
+      ipv4_network_address: "10.10.10.0",
+      ipv4_prefix_length: 24,
+      ipv6_network_address: "fd01:1::",
+      ipv6_prefix_length: 64,
+      ipv6_gateway_address: "fd01:1::1",
+      ipv6_pools_attributes: {
+        0 => pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
+        1 => pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
+        2 => pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
+        3 => pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
+        4 => pool_params(6, "manual", "fd01:1::1:3:0", "fd01:1::1:3:ffff"),
+        5 => pool_params(6, "disabled", "fd01:1::1:4:0", "fd01:1::1:4:ffff"),
+      },
+    }}
+  end
+  assert_redirected_to network_url(Network.last)
+end
 
   test "admin should create NOT network ipv6 with out range pool" do
     sign_in users(:admin)
@@ -481,9 +526,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "dynamic", "fd01:2::1:0", "fd01:2::1:ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "dynamic", "fd01:2::1:0", "fd01:2::1:ffff"),
+        ],
       }}
     end
     assert_response :success
@@ -499,9 +544,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "dynamic", "fd01:1::1:ffff", "fd0:1::1:0"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "dynamic", "fd01:1::1:ffff", "fd0:1::1:0"),
+        ],
       }}
     end
     assert_response :success
@@ -517,9 +562,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "dynamic", "fd01:1::1:0", "fd01:1::1:ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "dynamic", "fd01:1::1:0", "fd01:1::1:ffff"),
+        ],
       }}
     end
     assert_response :success
@@ -535,9 +580,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "reserved", "fd01:1::1:0", "fd01:1::1:ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "reserved", "fd01:1::1:0", "fd01:1::1:ffff"),
+        ],
       }}
     end
     assert_response :success
@@ -555,9 +600,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff"),
+        ],
       }}
     end
     assert_response :success
@@ -573,9 +618,9 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "mapped", "fd01:1::", "fd01:1::ffff:ffff"),
+        ],
       }}
     end
     assert_response :success
@@ -591,11 +636,11 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv4_network_address: "10.10.10.0",
         ipv4_prefix_length: 24,
         ipv4_gateway_address: "10.10.10.254",
-        ipv4_pools_attributes: {
-          0 => pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
-          1 => pool_params(4, "reserved", "10.10.10.11", "10.10.10.20"),
-          2 => pool_params(4, "static", "10.10.10.21", "10.10.10.30"),
-        },
+        ipv4_pools_attributes: [
+          pool_params(4, "dynamic", "10.10.10.1", "10.10.10.10"),
+          pool_params(4, "reserved", "10.10.10.11", "10.10.10.20"),
+          pool_params(4, "static", "10.10.10.21", "10.10.10.30"),
+        ],
       }}
     end
     perform_enqueued_jobs
@@ -628,11 +673,11 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
         ipv6_network_address: "fd01:1::",
         ipv6_prefix_length: 64,
         ipv6_gateway_address: "fd01:1::1",
-        ipv6_pools_attributes: {
-          0 => pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
-          1 => pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
-          2 => pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
-        },
+        ipv6_pools_attributes: [
+          pool_params(6, "dynamic", "fd01:1::1:0:0", "fd01:1::1:0:ffff"),
+          pool_params(6, "reserved", "fd01:1::1:1:0", "fd01:1::1:1:ffff"),
+          pool_params(6, "static", "fd01:1::1:2:0", "fd01:1::1:2:ffff"),
+        ],
       }}
     end
     perform_enqueued_jobs

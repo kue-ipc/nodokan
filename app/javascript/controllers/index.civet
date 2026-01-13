@@ -4,6 +4,9 @@
 
 import { application } from "./application.civet"
 
+import DatalistCandidateController from "./datalist_candidate_controller.civet"
+application.register("datalist-candidate", DatalistCandidateController)
+
 import ModalController from "./modal_controller.civet"
 application.register("modal", ModalController)
 

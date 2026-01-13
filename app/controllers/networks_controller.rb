@@ -107,7 +107,7 @@ class NetworksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   private def network_params
-    params.require(:network).permit(
+    params.expect(network: [
       :name,
       :vlan,
       :domain,
@@ -126,20 +126,21 @@ class NetworksController < ApplicationController
       :ipv6_gateway_address,
       :ipv6_dns_servers,
       :note,
-      ipv4_pools_attributes: [
+      ipv4_pools_attributes: [[
         :id,
         :_destroy,
         :ipv4_config,
         :ipv4_first_address,
         :ipv4_last_address,
-      ],
-      ipv6_pools_attributes: [
+      ]],
+      ipv6_pools_attributes: [[
         :id,
         :_destroy,
         :ipv6_config,
         :ipv6_first_address,
         :ipv6_last_address,
-      ])
+      ]],
+    ])
   end
 
   private def authorize_network

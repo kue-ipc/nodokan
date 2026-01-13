@@ -193,8 +193,8 @@ class NodesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   private def node_params
-    permitted_params = params.require(:node).permit(
-      :name,
+    permitted_params = params.expect(
+      node: [:name,
       :hostname,
       :domain,
       :duid,
@@ -209,7 +209,7 @@ class NodesController < ApplicationController
       place: [:area, :building, :floor, :room],
       hardware: [:device_type_id, :maker, :product_name, :model_number],
       operating_system: [:os_category_id, :name],
-      nics_attributes: [
+      nics_attributes: [[
         :id,
         :_destroy,
         :name,
@@ -222,7 +222,8 @@ class NodesController < ApplicationController
         :ipv4_address,
         :ipv6_config,
         :ipv6_address,
-      ])
+      ]],
+    ])
 
     normalize_node_params(permitted_params)
   end

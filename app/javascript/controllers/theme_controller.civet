@@ -4,22 +4,36 @@ import { Controller } from "@hotwired/stimulus"
 export default class ThemeController < Controller
   @targets := ["icon", "button"]
 
-  declare readonly iconTarget: HTMLButtonElement[] // button
+  @values =
+    themes: Array
+
+  declare readonly iconTarget: HTMLButtonElement // button
   declare readonly buttonTargets: HTMLButtonElement[] // button
 
+  declare readonly themesValue: {name: string; icon: string}[]
+
+  themeMap?: Map<string, string>
+
   connect(): void
-    name := localStorage.getItem("theme") || "auto"
-    @change(name)
+    @themeMap = new Map(@themesValue.map (theme) -> [theme.name, theme.icon])
 
-  select(event?: Event): void
-    return unless event?.target <? HTMLButtonElement
+    name := localStorage.getItem("theme")
+    @reflect(name) if name?
 
-    name := event.target.dataset.themeName
+  selectTheme({params:: {name: string}}): void
+    name := params.name
     localStorage.setItem("theme", name)
-    @change(name)
+    @reflect(name)
 
-  change(name: string): void
-    // テーマ反映
+  reflect(name: string): void
+    // Update icon
+    icon := @themeMap?.get(name)
+    if icon?
+      for each token of @iconTarget.classList when token? and /^bi-/.test(token)
+        @iconTarget.classList.replace(token, `bi-${icon}`)
+        break
+
+    // Update data-bs-theme attribute
     theme :=
       if name is not "auto"
         name
@@ -29,15 +43,9 @@ export default class ThemeController < Controller
         "light"
     document.documentElement.setAttribute("data-bs-theme", theme)
 
-    // ボタンのアクティブ化とアインコん変更
-    for each button of @buttonTargets
-      if button.dataset.themeName is name
+    // Update active button
+    for button of @buttonTargets
+      if button.dataset.themeNameParam is name
         button.classList.add("active")
-
-        for each token of @iconTarget.classList
-          if /^bi-/.test(token)
-            @iconTarget.classList
-              .replace(token, `bi-${button.dataset.themeIcon}`)
-            break
       else
         button.classList.remove("active")

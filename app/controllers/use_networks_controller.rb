@@ -5,7 +5,7 @@ class UseNetworksController < ApplicationController
   # TODO: createをやめてputとpatchに統一する。
   def create
     permitted_params =
-      params.require(:assignment).permit(:network_id, :default, :manage).to_h
+      params.expect(assignment: [:network_id, :default, :manage]).to_h
     @network = Network.find(permitted_params.delete(:network_id))
     respond_to do |format|
       if @user.add_use_network(@network, permitted_params)
@@ -64,6 +64,6 @@ class UseNetworksController < ApplicationController
   end
 
   private def use_network_params
-    params.require(:assignment).permit(:default, :manage)
+    params.expect(assignment: [:default, :manage])
   end
 end

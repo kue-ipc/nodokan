@@ -1,35 +1,70 @@
-## devise_ldap_authenticatable
-# Can not use yaml aliases
-<%
-user_ou = [Settings.ldap.user.ou, Settings.ldap.base].compact.join(',')
-group_ou = [Settings.ldap.group.ou, Settings.ldap.base].compact.join(',')
-bind_user = Rails.application.credentials.dig(:ldap, :username) ||
-  Settings.ldap.username
-bind_password = Rails.application.credentials.dig(:ldap, :password) ||
-  Settings.ldap.password
-%>
-<% %w[development test production].each do |env| %>
-<%= env %>:
-  host: <%= Settings.ldap.host.to_json %>
-  port: <%= Settings.ldap.port.to_json %>
+## Authorizations
+
+authorizations: &AUTHORIZATIONS
   attribute: <%= Settings.ldap.user.dn.to_json %>
-  base: <%= user_ou.to_json %>
-<% if Settings.ldap.auth == 'simple' %>
-  allow_unauthenticated_bind: false
-  admin_user: <%= bind_user.to_json %>
-  admin_password: <%= bind_password.to_json %>
-<% elsif Settings.ldap.auth == 'anonymous' %>
-  allow_unauthenticated_bind: true
-<% end %>
-  ssl: <%= Settings.ldap.ssl.to_json %>
-  group_base: <%= group_ou.to_json %>
-  required_groups: <%= Settings.ldap.restrict.auth.groups.map { |name|
-  name = "#{Settings.ldap.group.dn}=#{name}" if name.exclude?("=")
-  name = [name, group_ou].compact.join(',') if name.exclude?(",")
-  name
-}.to_json %>
+  required_groups: <%= Settings.ldap.restrict.auth.groups.to_json %>
   require_attribute:
     objectClass: <%= Settings.ldap.user.classes.to_json %>
   require_attribute_presence:
     <%= Settings.ldap.user.attribute.mail.to_s %>: true
+
+## Environment
+
+development:
+  host: localhost
+  port: 389
+  allow_unauthenticated_bind: false
+  admin_user: cn=admin,dc=example,dc=jp
+  admin_password: admin_password
+  base: <%= "#{Settings.ldap.user.ou},dc=example,dc=jp" %>
+  group_base: <%= "#{Settings.ldap.group.ou},dc=example,dc=jp" %>
+  <<: *AUTHORIZATIONS
+
+test:
+  host: localhost
+  port: 1389
+  allow_unauthenticated_bind: false
+  admin_user: cn=admin,dc=example,dc=jp
+  admin_password: admin_password
+  base: <%= "#{Settings.ldap.user.ou},dc=example,dc=jp" %>
+  group_base: <%= "#{Settings.ldap.group.ou},dc=example,dc=jp" %>
+  <<: *AUTHORIZATIONS
+
+<%
+require "uri"
+
+ldap_uri = ENV["LDAP_URL"]&.then { |str| URI(str) }
+
+ldap_protocol = ldap_uri&.scheme || Settings.ldap.protocol.presence || "ldap"
+ldap_host = ldap_uri&.host || Settings.ldap.host || "localhost"
+ldap_port = ldap_uri&.port || Settings.ldap.port ||
+  case ldap_protocol
+  in "ldap" then 389
+  in "ldaps" then 636
+  end
+ldap_base = ldap_uri&.dn.presence&.then { |str| URI.decode_www_form_component(str) } ||
+  Settings.ldap.base
+ldap_username = ldap_uri&.user&.then { |str| URI.decode_www_form_component(str) } ||
+  Rails.application.credentials.dig(:ldap, :username)
+ldap_password = ldap_uri&.password&.then { |str| URI.decode_www_form_component(str) } ||
+  Rails.application.credentials.dig(:ldap, :password)
+%>
+
+production:
+  host: <%= ldap_host %>
+  port: <%= ldap_port %>
+<% if ldap_protocol == "ldaps" %>
+  encryption: simple_tls
+<% elsif ldap_host != "localhost" %>
+  encryption: start_tls
 <% end %>
+<% if ldap_username %>
+  allow_unauthenticated_bind: false
+  admin_user: <%= ldap_username.to_json %>
+  admin_password: <%= ldap_password.to_json %>
+<% else %>
+  allow_unauthenticated_bind: true
+<% end %>
+  base: <%= "#{Settings.ldap.user.ou},#{ldap_base}".to_json %>
+  group_base: <%= "#{Settings.ldap.group.ou},#{ldap_base}".to_json %>
+  <<: *AUTHORIZATIONS

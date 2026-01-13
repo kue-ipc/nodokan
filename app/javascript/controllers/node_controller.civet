@@ -46,9 +46,35 @@ export default class NodeController < Controller<HTMLFormElement>
     ...@selectTargets
     ...@flagTargets
     ...@collapseTargets
-  ] as const
+  ]
 
   declare readonly nodeTypeTarget: HTMLSelectElement
+
+  declare readonly collapseHelpNormalTarget: HTMLDivElement
+  declare readonly collapseHelpMobileTarget: HTMLDivElement
+  declare readonly collapseHelpVirtualTarget: HTMLDivElement
+  declare readonly collapseHelpLogicalTarget: HTMLDivElement
+  declare readonly collapseHelpSpecificTarget: HTMLDivElement
+  declare readonly collapseHelpPublicTarget: HTMLDivElement
+  declare readonly collapseHelpDnsTarget: HTMLDivElement
+  declare readonly collapseSubFormPlaceTarget: HTMLDivElement
+  declare readonly collapseSubFormHostTarget: HTMLDivElement
+  declare readonly collapseSubFormComponentsTarget: HTMLDivElement
+  declare readonly collapseSubFormHardwareTarget: HTMLDivElement
+  declare readonly collapseSubFormOperatingSystemTarget: HTMLDivElement
+
+  declare readonly hasCollapseHelpNormalTarget: boolean
+  declare readonly hasCollapseHelpMobileTarget: boolean
+  declare readonly hasCollapseHelpVirtualTarget: boolean
+  declare readonly hasCollapseHelpLogicalTarget: boolean
+  declare readonly hasCollapseHelpSpecificTarget: boolean
+  declare readonly hasCollapseHelpPublicTarget: boolean
+  declare readonly hasCollapseHelpDnsTarget: boolean
+  declare readonly hasCollapseSubFormPlaceTarget: boolean
+  declare readonly hasCollapseSubFormHostTarget: boolean
+  declare readonly hasCollapseSubFormComponentsTarget: boolean
+  declare readonly hasCollapseSubFormHardwareTarget: boolean
+  declare readonly hasCollapseSubFormOperatingSystemTarget: boolean
 
   collapseHelpNormal?: Collapse
   collapseHelpMobile?: Collapse
@@ -64,9 +90,8 @@ export default class NodeController < Controller<HTMLFormElement>
   collapseSubFormOperatingSystem?: Collapse
 
   connect(): void
-    for each name of NodeController.collapseTargets
-      if @[`has${capitalize(name)}Target`]
-        @[name] = new Collapse(@[`${name}Target`], toggle: false)
+    for name of NodeController.collapseTargets
+      @[name] = new Collapse(@[`${name}Target`], toggle: false)
 
   changeNodeType(event?: Event): Promise<void>
     @dispatch("changeNodeType", {detail: {nodeType: @nodeTypeTarget.value}})
@@ -127,19 +152,20 @@ export default class NodeController < Controller<HTMLFormElement>
 
   chackCollapsing(): boolean
       NodeController.collapseTargets.some (name) =>
-        if @[`has${capitalize(name)}Target`]
-          @[`${name}Target`].classList.contains("collapsing")
+        @[`${name}Target`].classList.contains("collapsing")
 
   changeFlag(event?: Event): Promise<void>
     return unless event?.target <? HTMLInputElement
 
     name := event.target.dataset.nodeTarget ?? ""
-    if name is not in NodeController.flagTargets
-      console.warn `unknown flag name: ${name}`
-      return
+    switch name
+      "specific", "public", "dns"
+        // valid
+      else
+        console.warn `unknown flag target: ${name}`
+        return
 
     await @waitCollapsing()
-
 
     if event.target.checked
       @[NodeController.flagCollapseHelps[name]]?.show()

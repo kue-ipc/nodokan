@@ -11,15 +11,12 @@ module Nodokan
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.1
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
-
-    # FIXME: ガイド記載の方法だが、二重ロードになって動かない
-    # config.autoload_once_paths << Rails.root.join('app', 'serializers')
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -31,7 +28,9 @@ module Nodokan
     # config.eager_load_paths << Rails.root.join("extras")
 
     # pundit NotAuthorizedError => forbidden
-    config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] =
-      :forbidden
+    config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] = :forbidden
+
+    # Disable Active Storage variants.
+    config.active_storage.variant_processor = :disabled
   end
 end

@@ -17,6 +17,12 @@ getMessageStore := ->
     messageStore = new MessageStore(messages)
   messageStore
 
+confirmParams ::=
+  confirm: string
+
+export namespace NodeNicController
+  export Name ::= typeof NodeNicController.names[number]
+
 // Connects to data-controller="node-nic"
 export default class NodeNicController < Controller<HTMLElement>
   @names := [
@@ -32,9 +38,9 @@ export default class NodeNicController < Controller<HTMLElement>
     "ipv6Address"
   ] as const
 
-  @targets := [...@names, "destroy", "ipv4Help", "ipv6Help",
-    "messages", "messageTemplate"]
+  @targets := [...@names, "destroy", "ipv4Help", "ipv6Help", "messages", "messageTemplate"]
 
+  // names targets
   declare readonly lockedTarget: HTMLInputElement // checkbox
   declare readonly interfaceTypeTarget: HTMLSelectElement
   declare readonly nameTarget: HTMLInputElement // text
@@ -53,11 +59,14 @@ export default class NodeNicController < Controller<HTMLElement>
   declare readonly messagesTarget: HTMLDivElement
   declare readonly messageTemplateTarget: HTMLTemplateElement
 
-  network?: Network
-  messageStore?: MessageStore
+  network?: Network?
+  messageStore?: MessageStore?
   initValue?: {
+    locked: boolean
     interfaceType: number
+    name: string
     networkId: number
+    macAddress: string
     auth: boolean
     ipv4Config: number
     ipv4Address: string
@@ -68,8 +77,11 @@ export default class NodeNicController < Controller<HTMLElement>
   connect(): void
     @messageStore = getMessageStore()
     @initValue = {
+      locked: @lockedTarget.checked
       interfaceType: @interfaceTypeTarget.selectedIndex
+      name: @nameTarget.value
       networkId: @networkIdTarget.selectedIndex
+      macAddress: @macAddressTarget.value
       auth: @authTarget.checked
       ipv4Config: @ipv4ConfigTarget.selectedIndex
       ipv4Address: @ipv4AddressTarget.value
@@ -146,10 +158,9 @@ export default class NodeNicController < Controller<HTMLElement>
     @requireMacAddress()
     @requireDuid()
 
-  changeAuth(event: Event): void
-    console.log event.params
+  changeAuth({params:: confirmParams}): void
     unless @authTarget.checked
-      unless window.confirm(event.params.confirm)
+      unless window.confirm(params.confirm)
         @authTarget.checked = true
 
     @requireMacAddress()
@@ -162,38 +173,33 @@ export default class NodeNicController < Controller<HTMLElement>
     @adjustAddress("ipv6")
     @requireDuid()
 
-  enableInputs(names: string[]): void
+  enableInputs(names: readonly NodeNicController.Name[]): void
     for name of names
-      continue unless @[`has${capitalize(name)}Target`]
-
       console.debug `enable: ${name}`
-      target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
+      target := @[`${name}Target`]
 
       // チェックボックスはhiddenを0に戻す
       if target <? HTMLInputElement and target.type is "checkbox" and
-        target.previousElementSibling <? HTMLInputElement and
-        target.previousElementSibling.type is "hidden"
+          target.previousElementSibling <? HTMLInputElement and
+          target.previousElementSibling.type is "hidden"
         target.previousElementSibling.value = "0"
 
       target.disabled = false
 
-  disableInputs(names: string[]): void
+  disableInputs(names: readonly NodeNicController.Name[]): void
     for name of names
-      continue unless @[`has${capitalize(name)}Target`]
-
       console.debug `disable: ${name}`
-      target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
+      target := @[`${name}Target`]
 
       // チェックボックスはhiddenに現在の設定値を入れて固定化する
       if target <? HTMLInputElement and target.type is "checkbox" and
-        target.previousElementSibling <? HTMLInputElement and
-        target.previousElementSibling.type is "hidden"
-        target.previousElementSibling.value =
-          if target.checked then "1" else "0"
+          target.previousElementSibling <? HTMLInputElement and
+          target.previousElementSibling.type is "hidden"
+        target.previousElementSibling.value = if target.checked then "1" else "0"
 
       target.disabled = true
 
-  getMessageElement(key: string): Element?
+  getMessageElement(key: string): Element??
     @messagesTarget.querySelector(`[data-message-key="${key}"]`)
 
   addMessage(key: string, message?: string): void
@@ -232,31 +238,31 @@ export default class NodeNicController < Controller<HTMLElement>
       last := @messagesTarget.lastChild
       @messagesTarget.removeChild(last) if last?
 
-  setInitInput(name: string): void
-    return unless @[`has${capitalize(name)}Target`]
+  setInitInput(name: NodeNicController.Name): void
+    target := @[`${name}Target`]
+    initValue := @initValue?[name]
 
-    target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
     switch target
       <? HTMLInputElement
         if target.type is "checkbox"
-          target.checked = @initValue[name] ?? false
+          target.checked = Boolean(initValue ?? false)
         else
-          target.value = @initValue[name] ?? ""
+          target.value = String(initValue ?? "")
       <? HTMLSelectElement
-        target.selectedIndex = @initValue[name] ?? -1
+        target.selectedIndex = Number(initValue ?? -1)
 
-  checkInitInput(name: string): boolean
-    return false unless @[`has${capitalize(name)}Target`]
+  checkInitInput(name: NodeNicController.Name): boolean
+    target := @[`${name}Target`]
+    initValue := @initValue?[name]
 
-    target := @[`${name}Target`] as HTMLInputElement | HTMLSelectElement
     switch target
       <? HTMLInputElement
         if target.type is "checkbox"
-          target.checked is @initValue[name]
+          target.checked is initValue
         else
-          target.value is @initValue[name]
+          target.value is initValue
       <? HTMLSelectElement
-        target.selectedIndex is @initValue[name]
+        target.selectedIndex is initValue
       else
         false
 
@@ -268,7 +274,7 @@ export default class NodeNicController < Controller<HTMLElement>
 
     list := @network?[`${ip}_config_list`] ?? ["disabled"]
 
-    for each el of target.options
+    for each el of target.options when el?
       if list.includes(el.value)
         el.disabled = false
       else
@@ -318,7 +324,7 @@ export default class NodeNicController < Controller<HTMLElement>
         target.disabled = true
       else
         target.required = false
-        if @network.current_user.manageable
+        if @network?.current_user.manageable
           target.disabled = false
         else
           target.required = false
@@ -346,7 +352,7 @@ export default class NodeNicController < Controller<HTMLElement>
       @removeMessage("helps.require_duid")
 
   changeNodeType({detail: {nodeType}}: {detail: {nodeType: string}}): void
-    return if @interfaceTypeTarget[@initValue.interfaceType].value
+    return if @interfaceTypeTarget.options[@initValue?.interfaceType ?? -1]?.value
 
     options := [...@interfaceTypeTarget.options]
     switch nodeType

@@ -75,7 +75,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       user = User.new(username:, email: "#{username}@exmaple.jp",
         fullname: username)
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
-      adapter.expect(:get_group_list, ["cn=admin,ou=groups,dc=example,dc=jp"],
+      adapter.expect(:get_group_list, ["admin"],
         [username])
     end
     Devise::LDAP.stub_const :Adapter, adapter do
@@ -108,7 +108,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       user = User.new(username:, email: "#{username}@exmaple.jp",
         fullname: username)
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
-      adapter.expect(:get_group_list, ["cn=staff,ou=groups,dc=example,dc=jp"],
+      adapter.expect(:get_group_list, ["staff"],
         [username])
     end
     Devise::LDAP.stub_const :Adapter, adapter do
@@ -141,7 +141,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       user = User.new(username:, email: "#{username}@exmaple.jp",
         fullname: username)
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
-      adapter.expect(:get_group_list, ["cn=user,ou=groups,dc=example,dc=jp"],
+      adapter.expect(:get_group_list, ["user"],
         [username])
     end
     Devise::LDAP.stub_const :Adapter, adapter do

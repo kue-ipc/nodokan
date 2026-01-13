@@ -1,0 +1,7 @@
+import {Controller} from "@hotwired/stimulus"
+
+// Connects to data-controller="datalist-candidate"
+export default class DatalistCandidateController < Controller
+  connect(): void
+    // Initialization code for the datalist candidate controller can be added here
+    console.log("DatalistCandidateController connected")

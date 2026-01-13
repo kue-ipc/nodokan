@@ -1,4 +1,4 @@
-# sinatra
+# resque
 
 # TODO: issueの対応状況に応じて変更すること
 # sinatra used by resque serevr, but dose not set permitted_hosts

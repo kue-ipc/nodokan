@@ -1,12 +1,10 @@
 # MySQL
 default: &default
-  adapter: mysql2
+  adapter: trilogy
   encoding: utf8mb4
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= (Rails.application.credentials.dig(:database, :username) ||
-    Settings.database.username).to_json %>
-  password: <%= (Rails.application.credentials.dig(:database, :password) ||
-    Settings.database.password).to_json %>
+  username: <%= (Rails.application.credentials.dig(:database, :username) || Settings.database.username).to_json %>
+  password: <%= (Rails.application.credentials.dig(:database, :password) || Settings.database.password).to_json %>
   <% Settings.database.option.each do |key, value| %>
   <%= key.to_s %>: <%= value.to_json %>
   <% end %>
