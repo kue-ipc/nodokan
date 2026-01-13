@@ -91,8 +91,7 @@ export default class NodeController < Controller<HTMLFormElement>
 
   connect(): void
     for name of NodeController.collapseTargets
-      if @[`has${capitalize(name)}Target`]
-        @[name] = new Collapse(@[`${name}Target`], toggle: false)
+      @[name] = new Collapse(@[`${name}Target`], toggle: false)
 
   changeNodeType(event?: Event): Promise<void>
     @dispatch("changeNodeType", {detail: {nodeType: @nodeTypeTarget.value}})
@@ -153,19 +152,20 @@ export default class NodeController < Controller<HTMLFormElement>
 
   chackCollapsing(): boolean
       NodeController.collapseTargets.some (name) =>
-        if @[`has${capitalize(name)}Target`]
-          @[`${name}Target`].classList.contains("collapsing")
+        @[`${name}Target`].classList.contains("collapsing")
 
   changeFlag(event?: Event): Promise<void>
     return unless event?.target <? HTMLInputElement
 
     name := event.target.dataset.nodeTarget ?? ""
-    if name is not in NodeController.flagTargets
-      console.warn `unknown flag name: ${name}`
-      return
+    switch name
+      "specific", "public", "dns"
+        // valid
+      else
+        console.warn `unknown flag target: ${name}`
+        return
 
     await @waitCollapsing()
-
 
     if event.target.checked
       @[NodeController.flagCollapseHelps[name]]?.show()
