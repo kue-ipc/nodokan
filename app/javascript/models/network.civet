@@ -135,7 +135,7 @@ class Network extends ApplicationRecord
     return ["disabled"] unless ip?
 
     configs := new Set(["disabled"])
-    configs.add(pool.ip_config) for each pool of pools
+    configs.add(pool.ip_config) for pool of pools
     configs.add("dynamic") if slaac
     configs.add("manual") if @current_user.manageable
     [...configs]
