@@ -88,12 +88,12 @@ jobs:
 
       - name: Set up DB for FreeRADIUS
         run: |
-          mysql -u root -p pass -h 127.0.0.1 -e "CREATE DATABASE radius_test;"
-          mysql -u root -p pass -h 127.0.0.1 radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+          mysql -u root --password=pass -h 127.0.0.1 -e "CREATE DATABASE radius_test;"
+          mysql -u root --password=pass -h 127.0.0.1 radius_test < /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
 
       - name: Set up DB for Kea
         run: |
-          mysql -u root -p pass -h 127.0.0.1 -e "CREATE DATABASE kea_test;"
+          mysql -u root --password=pass -h 127.0.0.1 -e "CREATE DATABASE kea_test;"
           kea-admin db-init mysql -u root -p pass -h 127.0.0.1 -n kea_test
 
       - name: Run tests
