@@ -97,10 +97,15 @@ jobs:
           mysql -u root --password=pass -h 127.0.0.1 -e "CREATE DATABASE kea_test;"
           kea-admin db-init mysql -u root -p pass -h 127.0.0.1 -n kea_test
 
+      - name: Create settings/test.local.yml
+        run: |
+          echo "database:" > ./config/settings/test.local.yml
+          echo "  username: root" >> ./config/settings/test.local.yml
+          echo "  password: pass" >> ./config/settings/test.local.yml
+
       - name: Run tests
         env:
           RAILS_ENV: test
-          DATABASE_URL: trilogy://root:pass@127.0.0.1/
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare radius:setup test
