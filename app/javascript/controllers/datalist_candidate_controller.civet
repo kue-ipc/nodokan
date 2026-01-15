@@ -1,7 +1,108 @@
 import {Controller} from "@hotwired/stimulus"
 
+// previous: 前の値が必要かどうか
+// clear: 変更時にクリアまたは初期値に戻すかどうか
+// per: 検索するアイテム数上限
+// order: リストの順番
+
+// name: モデルの名前 [必須]
+// target: 対象となる属性 [必須]
+// url: indexのJSONのパス [必須]
+// parent: 親のモデルの名前
+// parents: 親のモデルの名前のリスト
+// inputList: 条件の参照となるinputのリスト
+// requiredInput: 検索するときに入力が必須であるinput
+// description: 説明があるかどうか
+// locked: 変更不可になるもの
+// required: 入力必須になるもの
+
+export namespace DatalistCandidateController
+  export OrpderParams ::= {[key: string]: string}
+  export ConditionParams ::= {[key: string]: number | string}
+
 // Connects to data-controller="datalist-candidate"
 export default class DatalistCandidateController < Controller
+  @targets = ["input", "datalist", "description"]
+
+  @values = {
+    url: String,
+    previous: Boolean,
+    clear: Boolean,
+    per: {type: Number, per: 1000},
+    order: Object,
+
+    // prerequisite: Boolean,
+    // lockedList: Array,
+
+    // name: String,
+
+    // // target: String,
+    // parent: {type:String, default: null},
+    // parents: {type: Array, default: []},
+    // order: {type:String, default: null},
+    // inputList: {type: Array, default: []},
+    // requiredInput: {type: String, default: null},
+    // description: {type: Boolean, default: false},
+    // clear: {type: Boolean, default: false},
+    // locked: Boolean,
+    // required: Boolean
+  }
+
+  declare readonly inputTargets: (HTMLInputElement | HTMLSelectElement)[]
+  declare readonly datalistTarget: HTMLDataListElement
+  declare readonly descriptionTarget: HTMLElement
+  declare readonly hasDatalistTarget: boolean
+  declare readonly hasDescriptionTarget: boolean
+
+  declare readonly urlValue: string
+  declare readonly previousValue: boolean
+  declare readonly clearValue: boolean
+  declare readonly perValue: number
+  declare readonly orderValue: DatalistCandidateController.OrpderParams
+
+  url?: URL
+
   connect(): void
+    // create base url
+    @url := new URL(@urlValue, globalThis.location.href)
+    params := new URLSearchParams
+    params.append("per", @perValue.toString())
+    for k, v in @orderValue when v?
+      params.append(`order[${k}]`, v)
+    @url.search = params.toString()
+
     // Initialization code for the datalist candidate controller can be added here
     console.log("DatalistCandidateController connected")
+
+  createUrl({target:: string, condition:: DatalistCandidateController.ConditionParams}): URL
+    throw new Error("url is not intialized") unless @url?
+
+    url := new URL(@url) // clone
+    params := url.searchParams
+    params.append("target", target)
+    for k, v in condition when v? and v is not ""
+      params.append(`condition[${k}]`, v.toString())
+
+    url
+
+  getList({target:: string, condition:: DatalistCandidateController.ConditionParams}): Promise<object[]>
+    url := @createUrl({target, condition})
+    response := await fetch(url)
+    result := await response.json()
+    data := result["data"]
+    throw new Error("Invalid data format") unless data? and Array.isArray(data)
+
+    data as object[]
+
+  changeInput(): void
+
+  updateDatalist(): void
+    // TODO: ここまで
+
+    // Code to update the datalist based on input can be added here
+    console.log("Updating datalist from URL:", @urlValue)
+
+  updateDescription(): void
+    if @hasDescriptionTarget
+      // Code to update the description can be added here
+      console.log("Updating description")
