@@ -66,7 +66,7 @@ export default class DatalistCandidateController < Controller
     url: String,
     previous: Boolean,
     clear: Boolean,
-    per: {type: Number, per: 100},
+    per: {type: Number, default: 100},
     order: Object,
 
     // prerequisite: Boolean,
@@ -102,13 +102,14 @@ export default class DatalistCandidateController < Controller
   index?: Index
 
   connect(): void
-    // create base url
     url := new URL(@urlValue, globalThis.location.href)
     @index = new Index(url, {per: @perValue, order: @orderValue})
 
+    @updateInputs()
+
   // abc[def][ghi] -> abc
   #getName(input: HTMLInputElement | HTMLSelectElement): string
-    input.name.replace(/^\s*([^\[\]]+).*$/, "$1")
+    input.name.replace(/^.*\[([^\]]+)\]$/, "$1")
 
   #createCondition(inputs: (HTMLInputElement | HTMLSelectElement)[]): Index.ConditionParams
     condition: Index.ConditionParams := {}
@@ -129,7 +130,7 @@ export default class DatalistCandidateController < Controller
           condition[name] = input.value
     condition
 
-  changeInput(): void
+  changeInput({target:: HTMLElement}): void
     // if @clearValue
     //   for input of @inputTargets
     //     switch input
@@ -141,15 +142,38 @@ export default class DatalistCandidateController < Controller
     //             input.value = ""
     //       <? HTMLSelectElement
     //         input.selectedIndex = 0
+    unless target <? HTMLInputElement or target <? HTMLSelectElement
+      console.warn "Unsupported target type:", target
+      return
 
-    @updateDatalist()
-    // @updateDescription()
+    @updateInputs(target)
 
-  updateDatalist(): void
+  updateInputs(changedInput?: HTMLInputElement | HTMLSelectElement): void
     inputs: (HTMLInputElement | HTMLSelectElement)[] := []
+    disabled .= false
+    changed .= not changedInput?
+
     for input of @inputTargets
       preInputs: (HTMLInputElement | HTMLSelectElement)[] := [...inputs]
       inputs.push(input)
+      input.disabled = disabled
+      // disable next input if previous is true and input is empty
+      disabled = true if @previousValue and input.value is ""
+      needUpdate := changed
+      changed = true if not changed and input is changedInput
+
+      continue unless needUpdate
+
+      if @clearValue
+        switch input
+          <? HTMLInputElement
+            switch input.type
+              "checkbox", "radio"
+                input.checked = false
+              else
+                input.value = ""
+          <? HTMLSelectElement
+            input.selectedIndex = 0
 
       continue unless input <? HTMLInputElement
       continue unless input.type is in ["text", "search", "url", "tel", "email", "number", "range", "color"]
