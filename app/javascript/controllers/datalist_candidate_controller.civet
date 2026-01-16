@@ -1,21 +1,5 @@
 import {Controller} from "@hotwired/stimulus"
 
-// previous: 前の値が必要かどうか
-// clear: 変更時にクリアまたは初期値に戻すかどうか
-// per: 検索するアイテム数上限
-// order: リストの順番
-
-// name: モデルの名前 [必須]
-// target: 対象となる属性 [必須]
-// url: indexのJSONのパス [必須]
-// parent: 親のモデルの名前
-// parents: 親のモデルの名前のリスト
-// inputList: 条件の参照となるinputのリスト
-// requiredInput: 検索するときに入力が必須であるinput
-// description: 説明があるかどうか
-// locked: 変更不可になるもの
-// required: 入力必須になるもの
-
 // Index calss for controller#index API access with per, order, target, condition params
 namespace Index
   export Name ::= string
@@ -50,6 +34,7 @@ class Index
 
   getEntries({target:: string, condition:: Index.ConditionParams}): Promise<Index.Entry[]>
     url := @createUrl({target, condition})
+    console.debug "fetch GET", url.toString()
     response := await fetch(url)
     result := await response.json()
     data := result["data"]
@@ -57,6 +42,12 @@ class Index
 
     // FIMXE: 型チェックしていない。型チェックが必要と思われる。
     data as Index.Entry[]
+
+// url: indexのJSONのパス [必須]
+// previous: 前の値が必要かどうか
+// clear: 変更時にクリアまたは初期値に戻すかどうか
+// per: 検索するアイテム数上限
+// order: リストの順番
 
 // Connects to data-controller="datalist-candidate"
 export default class DatalistCandidateController < Controller
@@ -68,22 +59,6 @@ export default class DatalistCandidateController < Controller
     clear: Boolean,
     per: {type: Number, default: 100},
     order: Object,
-
-    // prerequisite: Boolean,
-    // lockedList: Array,
-
-    // name: String,
-
-    // // target: String,
-    // parent: {type:String, default: null},
-    // parents: {type: Array, default: []},
-    // order: {type:String, default: null},
-    // inputList: {type: Array, default: []},
-    // requiredInput: {type: String, default: null},
-    // description: {type: Boolean, default: false},
-    // clear: {type: Boolean, default: false},
-    // locked: Boolean,
-    // required: Boolean
   }
 
   declare readonly inputTargets: (HTMLInputElement | HTMLSelectElement)[]
@@ -155,6 +130,17 @@ export default class DatalistCandidateController < Controller
       // next changed
       changed = true if not changed and input is changedInput
 
+      if @clearValue and changedInput? and needUpdate
+        switch input
+          <? HTMLInputElement
+            switch input.type
+              "checkbox", "radio"
+                input.checked = false
+              else
+                input.value = ""
+          <? HTMLSelectElement
+            input.selectedIndex = 0
+
       async do
         entries :=
         if needUpdate
@@ -181,13 +167,3 @@ export default class DatalistCandidateController < Controller
             break
           for element of @descriptionTargets when element.id is describedby
             element.textContent = description ?? ""
-      // if @clearValue
-      //   switch input
-      //     <? HTMLInputElement
-      //       switch input.type
-      //         "checkbox", "radio"
-      //           input.checked = false
-      //         else
-      //           input.value = ""
-      //     <? HTMLSelectElement
-      //       input.selectedIndex = 0
