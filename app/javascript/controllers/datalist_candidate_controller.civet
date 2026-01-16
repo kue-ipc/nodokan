@@ -20,9 +20,9 @@ import {Controller} from "@hotwired/stimulus"
 namespace Index
   export Name ::= string
   export Value ::= null | boolean | string | number
-  export Entry ::= {[key: Name]: Value}
-  export OrpderParams ::= {[key: Name]: "asc" | "desc"}
-  export ConditionParams ::= {[key: Name]: Value}
+  export Entry ::= Record<Name, Value>
+  export OrpderParams ::= Record<Name, "asc" | "desc">
+  export ConditionParams ::= Record<Name, Value>
 
 class Index
   url: URL
@@ -48,7 +48,7 @@ class Index
       params.append(name, value) if value?
     url
 
-  getList({target:: string, condition:: Index.ConditionParams}): Promise<Index.Entry[]>
+  getEntries({target:: string, condition:: Index.ConditionParams}): Promise<Index.Entry[]>
     url := @createUrl({target, condition})
     response := await fetch(url)
     result := await response.json()
@@ -87,10 +87,8 @@ export default class DatalistCandidateController < Controller
   }
 
   declare readonly inputTargets: (HTMLInputElement | HTMLSelectElement)[]
-  declare readonly datalistTarget: HTMLDataListElement
-  declare readonly descriptionTarget: HTMLElement
-  declare readonly hasDatalistTarget: boolean
-  declare readonly hasDescriptionTarget: boolean
+  declare readonly datalistTargets: HTMLDataListElement[]
+  declare readonly descriptionTargets: HTMLElement[]
 
   declare readonly urlValue: string
   declare readonly previousValue: boolean
@@ -100,6 +98,7 @@ export default class DatalistCandidateController < Controller
   declare readonly orderValue: Index.OrpderParams
 
   index?: Index
+  entriesMap: Map<Index.Name, Index.Entry[]> = new Map()
 
   connect(): void
     url := new URL(@urlValue, globalThis.location.href)
@@ -131,17 +130,6 @@ export default class DatalistCandidateController < Controller
     condition
 
   changeInput({target:: HTMLElement}): void
-    // if @clearValue
-    //   for input of @inputTargets
-    //     switch input
-    //       <? HTMLInputElement
-    //         switch input.type
-    //           "checkbox", "radio"
-    //             input.checked = false
-    //           else
-    //             input.value = ""
-    //       <? HTMLSelectElement
-    //         input.selectedIndex = 0
     unless target <? HTMLInputElement or target <? HTMLSelectElement
       console.warn "Unsupported target type:", target
       return
@@ -149,62 +137,57 @@ export default class DatalistCandidateController < Controller
     @updateInputs(target)
 
   updateInputs(changedInput?: HTMLInputElement | HTMLSelectElement): void
+    throw new Error("DatalistCandidateController: index is not initialized") unless @index?
+
     inputs: (HTMLInputElement | HTMLSelectElement)[] := []
     disabled .= false
     changed .= not changedInput?
 
     for input of @inputTargets
+      name := #getName(input)
       preInputs: (HTMLInputElement | HTMLSelectElement)[] := [...inputs]
       inputs.push(input)
       input.disabled = disabled
       // disable next input if previous is true and input is empty
       disabled = true if @previousValue and input.value is ""
+      // need update if previous changed
       needUpdate := changed
+      // next changed
       changed = true if not changed and input is changedInput
 
-      continue unless needUpdate
-
-      if @clearValue
-        switch input
-          <? HTMLInputElement
-            switch input.type
-              "checkbox", "radio"
-                input.checked = false
-              else
-                input.value = ""
-          <? HTMLSelectElement
-            input.selectedIndex = 0
-
-      continue unless input <? HTMLInputElement
-      continue unless input.type is in ["text", "search", "url", "tel", "email", "number", "range", "color"]
-      continue unless input.list?
-
       async do
-        if @index and input.list?
-          target := #getName(input)
-          list := await @index.getList({target, condition: #createCondition(preInputs)})
-          newList := input.list.cloneNode(false)
-          for entry of list
-            option := document.createElement("option")
-            option.textContent = entry[target]?.toString() ?? ""
-            newList.appendChild(option)
-          input.list.replaceWith(newList)
+        entries :=
+        if needUpdate
+          newEntries := await @index!getEntries({target: name, condition: #createCondition(preInputs)})
+          @entriesMap.set(name, newEntries)
+          if input <? HTMLInputElement and input.list?
+            newDatalist := input.list.cloneNode(false)
+            for entry of newEntries
+              option := document.createElement("option")
+              option.textContent = entry[name]?.toString() ?? ""
+              newDatalist.appendChild(option)
+            input.list.replaceWith(newDatalist)
+          newEntries
+        else
+          @entriesMap.get(name)
 
+        return unless entries?
 
-
-      // datalist := @datalistTargets.find (datalist) => datalist.id is input.attriib
-      // switch input.type
-      //   when "checkbox", "radio"
-      //     console.log `${input.name} = ${input.checked}`
-      //   else
-      //     console.log `${input.name} = ${input.value}`
-
-//  text, search, url, tel, email, date, month, week, time, datetime-local, number, range, color
-
-    // Code to update the datalist based on input can be added here
-    // console.log("Updating datalist from URL:", @urlValue)
-
-  // updateDescription(): void
-  //   if @hasDescriptionTarget
-  //     // Code to update the description can be added here
-  //     console.log("Updating description")
+        describedby := input.getAttribute("aria-describedby")
+        if describedby?
+          description: string?? .= null
+          for entry of entries when entry[name] is input.value
+            description = entry.description?toString()
+            break
+          for element of @descriptionTargets when element.id is describedby
+            element.textContent = description ?? ""
+      // if @clearValue
+      //   switch input
+      //     <? HTMLInputElement
+      //       switch input.type
+      //         "checkbox", "radio"
+      //           input.checked = false
+      //         else
+      //           input.value = ""
+      //     <? HTMLSelectElement
+      //       input.selectedIndex = 0

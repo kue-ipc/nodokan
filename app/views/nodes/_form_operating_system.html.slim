@@ -15,15 +15,7 @@
         = field.text_field :name,
           floating: true, disabled: true, required: false,
           list: "node_operating_system_name-list",
+          aria: {describedby: "node_operating_system-description"},
           data: {datalist_candidate_target: "input", action: "datalist-candidate#changeInput"}
         datalist#node_operating_system_name-list data-datalist-candidate-target="datalist"
-        / = datalist_candidate :operating_system, :name,
-        /   operating_systems_path, parents: [:node],
-        /   order: {nodes_count: "desc"},
-        /   inputList: [:os_category_id],
-        /   requiredInput: :os_category_id,
-        /   description: true,
-        /   clear: true,
-        /   locked: {name: :os_category_id,
-        /     list: OsCategory.where(locked: true).map(&:id).map(&:to_s),}
   small#node_operating_system-description.form-text data-datalist-candidate-target="description"
