@@ -4,10 +4,7 @@ class OperatingSystemsController < ApplicationController
 
   def index
     permitted_params = params.permit(
-      :page,
-      :per,
-      :target,
-      :format,
+      :page, :per, :target, :format,
       order: [:id, :os_category_id, :name, :nodes_count],
       condition: [:os_category_id, :name])
 
@@ -26,17 +23,15 @@ class OperatingSystemsController < ApplicationController
 
     if @target
       if [:name].include?(@target)
-        @operating_systems = @operating_systems
-          .select(:os_category_id, @target, :description).distinct
+        @operating_systems = @operating_systems.select(:os_category_id, @target, :description).distinct
       else
-        raise ActionController::BadRequest,
-          "[operating_systems#index] invalid target: #{@target}"
+        raise ActionController::BadRequest, "invalid target: #{@target}"
       end
     end
 
-    unless permitted_params[:format] == "csv"
-      @operating_systems = @operating_systems.page(@page).per(@per)
-    end
+    return if permitted_params[:format] == "csv"
+
+    @operating_systems = @operating_systems.page(@page).per(@per)
   end
 
   def show

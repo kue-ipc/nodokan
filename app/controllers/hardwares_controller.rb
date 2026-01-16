@@ -4,14 +4,8 @@ class HardwaresController < ApplicationController
 
   def index
     permitted_params = params.permit(
-      :page,
-      :per,
-      :target,
-      :format,
-      order: [
-        :id, :device_type_id, :maker, :product_name, :model_number,
-        :nodes_count,
-      ],
+      :page, :per, :target, :format,
+      order: [:id, :device_type_id, :maker, :product_name, :model_number, :nodes_count],
       condition: [:device_type_id, :maker, :product_name, :model_number])
 
     @page = permitted_params[:page]
@@ -31,8 +25,7 @@ class HardwaresController < ApplicationController
       if [:maker, :product_name, :model_number].include?(@target)
         @hardwares = @hardwares.select(:device_type_id, @target).distinct
       else
-        raise ActionController::BadRequest,
-          "invalid target: #{@target}"
+        raise ActionController::BadRequest, "invalid target: #{@target}"
       end
     end
 
