@@ -104,18 +104,15 @@ export default class DatalistCandidateController < Controller
           condition[name] = input.value
     condition
 
-  changeInput({target:: HTMLElement}): void
-    unless target <? HTMLInputElement or target <? HTMLSelectElement
-      console.warn "Unsupported target type:", target
-      return
-
-    @updateInputs(target)
-
-  updateInputs(changedInput?: HTMLInputElement | HTMLSelectElement): void
+  // TODO: paramsでlockedの指定を受け取るのがまだ
+  updateInputs({target: changedInput?:: HTMLElement, params?:: {locked: Index.Value[]}} = {}): void
     throw new Error("DatalistCandidateController: index is not initialized") unless @index?
+
+    console.debug params
 
     inputs: (HTMLInputElement | HTMLSelectElement)[] := []
     disabled .= false
+    locked .= false
     changed .= not changedInput?
 
     for input of @inputTargets
