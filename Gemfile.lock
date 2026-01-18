@@ -236,7 +236,7 @@ GEM
     paper_trail-association_tracking (2.3.0)
       paper_trail (>= 12.0)
     parallel (1.27.0)
-    parser (3.3.10.0)
+    parser (3.3.10.1)
       ast (~> 2.4.1)
       racc
     pp (0.6.3)
@@ -318,7 +318,7 @@ GEM
       i18n
     rbs (3.10.2)
       logger
-    rdoc (7.0.3)
+    rdoc (7.1.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -344,10 +344,12 @@ GEM
       redis (>= 4.0)
       redis-namespace (~> 1.6)
       sinatra (>= 2.0)
-    resque-scheduler (4.11.0)
+    resque-scheduler (5.0.0)
+      base64 (~> 0.1)
+      logger
       mono_logger (~> 1.0)
-      redis (>= 3.3)
-      resque (>= 1.27)
+      redis (>= 4.0)
+      resque (>= 3.0)
       rufus-scheduler (~> 3.2, != 3.3)
     rexml (3.4.4)
     rubocop (1.82.1)
@@ -390,7 +392,7 @@ GEM
     rufus-scheduler (3.9.2)
       fugit (~> 1.1, >= 1.11.1)
     securerandom (0.4.1)
-    selenium-webdriver (4.39.0)
+    selenium-webdriver (4.40.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -432,7 +434,7 @@ GEM
     trilogy (2.10.0)
       bigdecimal
     tsort (0.2.0)
-    turbo-rails (2.0.20)
+    turbo-rails (2.0.21)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
     tzinfo (2.0.6)
@@ -454,7 +456,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    whenever (1.1.1)
+    whenever (1.1.2)
       chronic (>= 0.6.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
