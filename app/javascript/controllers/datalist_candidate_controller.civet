@@ -1,7 +1,166 @@
 import {Controller} from "@hotwired/stimulus"
 
+// Index calss for controller#index API access with per, order, target, condition params
+namespace Index
+  export Name ::= string
+  export Value ::= null | boolean | string | number
+  export Entry ::= Record<Name, Value>
+  export OrpderParams ::= Record<Name, "asc" | "desc">
+  export ConditionParams ::= Record<Name, Value>
+
+class Index
+  url: URL
+
+  @(url: URL, {per:: number = 100, order:: Index.OrpderParams = {}} = {})
+    @url = new URL(url) // clone
+    params := @url.searchParams
+    params.append("per", per.toString())
+    for k, v in order when v?
+      params.append(`order[${k}]`, v)
+
+  createUrl({target:: Index.Name, condition:: Index.ConditionParams}): URL
+    url := new URL(@url) // clone
+    params := url.searchParams
+    params.append("target", target)
+    for k, v in condition when v?
+      name := `condition[${k}]`
+      value := switch v
+        <? "string" then v
+        <? "number" then v.toString()
+        true then "1"
+        false then "0"
+      params.append(name, value) if value?
+    url
+
+  getEntries({target:: string, condition:: Index.ConditionParams}): Promise<Index.Entry[]>
+    url := @createUrl({target, condition})
+    console.debug "fetch GET", url.toString()
+    response := await fetch(url)
+    result := await response.json()
+    data := result["data"]
+    throw new Error("Invalid data format") unless data? and Array.isArray(data)
+
+    // FIMXE: 型チェックしていない。型チェックが必要と思われる。
+    data as Index.Entry[]
+
+// url: indexのJSONのパス [必須]
+// previous: 前の値が必要かどうか
+// clear: 変更時にクリアまたは初期値に戻すかどうか
+// per: 検索するアイテム数上限
+// order: リストの順番
+
 // Connects to data-controller="datalist-candidate"
 export default class DatalistCandidateController < Controller
+  @targets = ["input", "datalist", "description"]
+
+  @values = {
+    url: String,
+    previous: Boolean,
+    clear: Boolean,
+    per: {type: Number, default: 100},
+    order: Object,
+  }
+
+  declare readonly inputTargets: (HTMLInputElement | HTMLSelectElement)[]
+  declare readonly datalistTargets: HTMLDataListElement[]
+  declare readonly descriptionTargets: HTMLElement[]
+
+  declare readonly urlValue: string
+  declare readonly previousValue: boolean
+  declare readonly clearValue: boolean
+  declare readonly perValue: number
+  // not check type because of Object type
+  declare readonly orderValue: Index.OrpderParams
+
+  index?: Index
+  entriesMap: Map<Index.Name, Index.Entry[]> = new Map()
+
   connect(): void
-    // Initialization code for the datalist candidate controller can be added here
-    console.log("DatalistCandidateController connected")
+    url := new URL(@urlValue, globalThis.location.href)
+    @index = new Index(url, {per: @perValue, order: @orderValue})
+
+    @updateInputs()
+
+  // abc[def][ghi] -> abc
+  #getName(input: HTMLInputElement | HTMLSelectElement): string
+    input.name.replace(/^.*\[([^\]]+)\]$/, "$1")
+
+  #createCondition(inputs: (HTMLInputElement | HTMLSelectElement)[]): Index.ConditionParams
+    condition: Index.ConditionParams := {}
+
+    for input of inputs
+      name := #getName(input)
+      switch input
+        <? HTMLInputElement
+          switch input.type
+            "checkbox"
+              condition[name] = if input.checked then 1 else 0
+            "radio"
+              if input.checked
+                condition[name] = input.value
+            else
+              condition[name] = input.value
+        <? HTMLSelectElement
+          condition[name] = input.value
+    condition
+
+  // TODO: paramsでlockedの指定を受け取るのがまだ
+  updateInputs({target: changedInput?:: HTMLElement, params?:: {locked: Index.Value[]}} = {}): void
+    throw new Error("DatalistCandidateController: index is not initialized") unless @index?
+
+    console.debug params
+
+    inputs: (HTMLInputElement | HTMLSelectElement)[] := []
+    disabled .= false
+    locked .= false
+    changed .= not changedInput?
+
+    for input of @inputTargets
+      name := #getName(input)
+      preInputs: (HTMLInputElement | HTMLSelectElement)[] := [...inputs]
+      inputs.push(input)
+      input.disabled = disabled
+      // disable next input if previous is true and input is empty
+      disabled = true if @previousValue and input.value is ""
+      // need update if previous changed
+      needUpdate := changed
+      // next changed
+      changed = true if not changed and input is changedInput
+
+      if @clearValue and changedInput? and needUpdate
+        switch input
+          <? HTMLInputElement
+            switch input.type
+              "checkbox", "radio"
+                input.checked = false
+              else
+                input.value = ""
+          <? HTMLSelectElement
+            input.selectedIndex = 0
+
+      async do
+        entries :=
+        if needUpdate
+          newEntries := await @index!getEntries({target: name, condition: #createCondition(preInputs)})
+          @entriesMap.set(name, newEntries)
+          if input <? HTMLInputElement and input.list?
+            newDatalist := input.list.cloneNode(false)
+            for entry of newEntries
+              option := document.createElement("option")
+              option.textContent = entry[name]?.toString() ?? ""
+              newDatalist.appendChild(option)
+            input.list.replaceWith(newDatalist)
+          newEntries
+        else
+          @entriesMap.get(name)
+
+        return unless entries?
+
+        describedby := input.getAttribute("aria-describedby")
+        if describedby?
+          description: string?? .= null
+          for entry of entries when entry[name] is input.value
+            description = entry.description?toString()
+            break
+          for element of @descriptionTargets when element.id is describedby
+            element.textContent = description ?? ""

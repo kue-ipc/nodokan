@@ -8,11 +8,10 @@ json.model do
 end
 if @target
   json.data do
-    json.array! @operating_systems, :id, @target, :description
+    json.array! @operating_systems, @target, :description
   end
 else
   json.entities do
-    json.array! @operating_systems,
-      partial: "operating_systems/operating_system", as: :operating_system
+    json.array! @operating_systems, partial: "operating_systems/operating_system", as: :operating_system
   end
 end
