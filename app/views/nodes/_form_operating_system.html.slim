@@ -1,5 +1,6 @@
 - locked_os_category_ids = OsCategory.where(locked: true).pluck(:id)
-.rounded.border.p-2.mb-2[data-controller="datalist-candidate"
+.rounded.border.p-2.mb-2[
+  data-controller="datalist-candidate"
   data-datalist-candidate-url-value="#{operating_systems_path}"
   data-datalist-candidate-previous-value="ture"
   data-datalist-candidate-clear-value="ture"
@@ -9,22 +10,22 @@
     h4 = t("forms.node.operating_system.title")
     .mb-2: small.text-muted = t("forms.node.operating_system.help")
     .row
-        .col-md-4
-          = field.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
-            {include_blank: "(未選択)", floating: true}, required: false,
-            data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
-        .col-md-3
-          = field.text_field :name,
-            floating: true,
-            disabled: field.object.os_category_id.nil?,
-            required: false,
-            readonly: field.object.os_category&.locked?,
-            list: "node_operating_system_name-list",
-            aria: {describedby: "node_operating_system-description"},
-            data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
-          datalist#node_operating_system_name-list data-datalist-candidate-target="datalist"
-            - policy_scope(OperatingSystem).where(os_category: field.object.os_category).order(nodes_count: :desc) \
-                .limit(100).distinct.pluck(:name).each do |name|
-              option = name
-    small#node_operating_system-description.form-text data-datalist-candidate-target="description"
+      .col-md-4
+        = field.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
+          {include_blank: "(未選択)", floating: true}, required: false,
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+      .col-md-3
+        = field.text_field :name,
+          floating: true,
+          disabled: field.object.os_category_id.nil?,
+          required: false,
+          readonly: field.object.os_category&.locked?,
+          list: "#{field.field_id(:name)}-list",
+          aria: {describedby: "#{field.field_id(:name)}-description"},
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+        datalist id="#{field.field_id(:name)}-list" data-datalist-candidate-target="datalist"
+          - policy_scope(OperatingSystem).where(os_category: field.object.os_category).order(nodes_count: :desc) \
+              .limit(100).distinct.pluck(:name).each do |name|
+            option = name
+    small.form-text id="#{field.field_id(:name)}-description" data-datalist-candidate-target="description"
       = field.object.description

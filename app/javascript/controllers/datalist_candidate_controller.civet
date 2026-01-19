@@ -149,10 +149,12 @@ export default class DatalistCandidateController < Controller
     input.list.replaceWith(datalist)
 
   #updateDescription(input: HTMLInputElement | HTMLSelectElement, entries: Index.Entry[]): void
+    console.debug [input, entries]
     describedby := input.getAttribute("aria-describedby")
     return unless describedby?
 
     name := #getName(input)
+    console.debug ["updateDescription", name]
 
     // FIXME: entryのvalueがstring以外の場合は、文字列との比較になるため、うまく動かない。
     description: string? := entries.find(&[name] is input.value)?description?toString()
@@ -195,7 +197,7 @@ export default class DatalistCandidateController < Controller
 
       async do
         entries := await #getEntries(name, #createCondition(preInputs))
+        #updateDescription(input, entries)
         if needUpdate
           #updateDatalist(input, entries) if input <? HTMLInputElement
-          #updateDescription(input, entries)
           input.value = entries[0]?[name]?toString() ?? "" if needOverwrite
