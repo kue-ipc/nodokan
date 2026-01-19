@@ -175,8 +175,11 @@ export default class DatalistCandidateController < Controller
       preInputs: (HTMLInputElement | HTMLSelectElement)[] := [...inputs]
       inputs.push(input)
 
-      // set disabled or locked state
-      input.disabled = disabled or locked
+      // set disabled state
+      input.disabled = disabled
+      // set locked state
+      input.readOnly = locked if input <? HTMLInputElement
+      needOverwrite := locked
       // need update if previous changed
       needUpdate := changed
 
@@ -184,7 +187,7 @@ export default class DatalistCandidateController < Controller
       // disable next input if previous is true and input is empty
       disabled = true if not disabled and @previousValue and input.value is ""
       // lock next input if params.locked includes current value
-      locked = true if not locked and @lockedValue[name]? and input.value in @lockedValue[name]
+      locked = true if not locked and @lockedValue[name]? and input.value is in @lockedValue[name]
       // changed next inputs if current input is changed
       changed = true if not changed and input is changedInput
 
@@ -192,5 +195,7 @@ export default class DatalistCandidateController < Controller
 
       async do
         entries := await #getEntries(name, #createCondition(preInputs))
-        #updateDatalist(input, entries) if needUpdate and input <? HTMLInputElement
-        #updateDescription(input, entries) if needUpdate
+        if needUpdate
+          #updateDatalist(input, entries) if input <? HTMLInputElement
+          #updateDescription(input, entries)
+          input.value = entries[0]?[name]?toString() ?? "" if needOverwrite
