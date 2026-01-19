@@ -1,27 +1,38 @@
-.rounded.border.p-2.mb-2
-  h4 = t("forms.node.hardware.title")
-  .mb-2: small.text-muted = t("forms.node.hardware.help")
-  .row
-    = form.fields_for :hardware, form.object.hardware || Hardware.new do |field|
+.rounded.border.p-2.mb-2[data-controller="datalist-candidate"
+  data-datalist-candidate-url-value="#{hardwares_path}"
+]
+  = form.fields_for :hardware, form.object.hardware || Hardware.new do |field|
+    h4 = t("forms.node.hardware.title")
+    .mb-2: small.text-muted = t("forms.node.hardware.help")
+    .row
       .col-md-3
-        = field.collection_select :device_type_id,
-          DeviceType.order(:order), :id, :name,
-          include_blank: "(未選択)", floating: true, required: false
+        = field.collection_select :device_type_id, DeviceType.order(:order), :id, :name,
+          {include_blank: "(未選択)", floating: true}, required: false,
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
       .col-md-2
-        = field.text_field :maker, list: "node_hardware_maker-list",
-          floating: true
-        = datalist_candidate :hardware, :maker, hardwares_path,
-          parents: [:node], inputList: [:device_type_id]
+        = field.text_field :maker,
+          floating: true,
+          list: "#{field.field_id(:maker)}-list",
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+        datalist id="#{field.field_id(:maker)}-list" data-datalist-candidate-target="datalist"
+          - policy_scope(Hardware).where(device_type: field.object.device_type).order(nodes_count: :desc) \
+              .limit(100).distinct.pluck(:maker).each do |name|
+            option = name
       .col-md-4
         = field.text_field :product_name,
-          list: "node_hardware_product_name-list",
-          floating: true
-        = datalist_candidate :hardware, :product_name, hardwares_path,
-          parents: [:node], inputList: [:device_type_id, :maker]
+          floating: true,
+          list: "#{field.field_id(:product_name)}-list",
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+        datalist id="#{field.field_id(:product_name)}-list" data-datalist-candidate-target="datalist"
+          - policy_scope(Hardware).where(device_type: field.object.device_type, maker: field.object.maker) \
+              .order(nodes_count: :desc).limit(100).distinct.pluck(:product_name).each do |name|
+            option = name
       .col-md-3
         = field.text_field :model_number,
-          list: "node_hardware_model_number-list",
-          floating: true
-        = datalist_candidate :hardware, :model_number, hardwares_path,
-          parents: [:node],
-          inputList: [:device_type_id, :maker, :product_name]
+          floating: true,
+          list: "#{field.field_id(:model_number)}-list",
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+        datalist id="#{field.field_id(:model_number)}-list" data-datalist-candidate-target="datalist"
+          - policy_scope(Hardware).where(device_type: field.object.device_type, maker: field.object.maker, model_number: field.object.maker) \
+              .order(nodes_count: :desc).limit(100).distinct.pluck(:model_number).each do |name|
+            option = name
