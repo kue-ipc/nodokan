@@ -2,6 +2,7 @@
   data-datalist-candidate-url-value="#{operating_systems_path}"
   data-datalist-candidate-previous-value="ture"
   data-datalist-candidate-clear-value="ture"
+  data-datalist-candidate-locked-value="#{{os_category_id: OsCategory.where(locked: true).pluck(:id).map(&:to_s)}.to_json}"
 ]
   h4 = t("forms.node.operating_system.title")
   .mb-2: small.text-muted = t("forms.node.operating_system.help")
@@ -10,16 +11,12 @@
       .col-md-4
         = field.collection_select :os_category_id, OsCategory.order(:order), :id, :name,
           {include_blank: "(未選択)", floating: true}, required: false,
-          data: { \
-            datalist_candidate_target: "input",
-            action: "datalist-candidate#updateInputs",
-            datalist_candidate_locked_param: OsCategory.where(locked: true).pluck(:id).to_json,
-          }
+          data: {datalist_candidate_target: "input",action: "datalist-candidate#checkInputs"}
       .col-md-3
         = field.text_field :name,
           floating: true, disabled: true, required: false,
           list: "node_operating_system_name-list",
           aria: {describedby: "node_operating_system-description"},
-          data: {datalist_candidate_target: "input", action: "datalist-candidate#updateInputs"}
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
         datalist#node_operating_system_name-list data-datalist-candidate-target="datalist"
   small#node_operating_system-description.form-text data-datalist-candidate-target="description"
