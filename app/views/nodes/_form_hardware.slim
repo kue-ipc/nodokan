@@ -31,7 +31,7 @@
         = field.text_field :model_number,
           floating: true,
           list: "#{field.field_id(:model_number)}-list",
-          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+          data: {datalist_candidate_target: "input"}
         datalist id="#{field.field_id(:model_number)}-list" data-datalist-candidate-target="datalist"
           - policy_scope(Hardware).where(device_type: field.object.device_type, maker: field.object.maker, model_number: field.object.maker) \
               .order(nodes_count: :desc).limit(100).distinct.pluck(:model_number).each do |name|

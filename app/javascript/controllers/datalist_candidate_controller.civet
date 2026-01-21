@@ -90,7 +90,7 @@ export default class DatalistCandidateController < Controller
       <? HTMLInputElement
         switch input.type
           "checkbox"
-            if input.checked then 1 else 0
+            input.checked
           "radio"
             if input.checked
               input.value
@@ -103,6 +103,19 @@ export default class DatalistCandidateController < Controller
       else
         null
 
+  #setValue(input: HTMLInputElement | HTMLSelectElement, value: Index.Value): void
+    switch input
+      <? HTMLInputElement
+        switch input.type
+          "checkbox"
+            input.checked = value is true
+          "radio"
+            input.checked = input.value is value?toString()
+          else
+            input.value = value?toString() ?? ""
+      <? HTMLSelectElement
+        input.value = value?toString() ?? ""
+
   #clearValue(input: HTMLInputElement | HTMLSelectElement): void
     switch input
       <? HTMLInputElement
@@ -113,7 +126,6 @@ export default class DatalistCandidateController < Controller
             input.value = ""
       <? HTMLSelectElement
         input.selectedIndex = 0
-
 
   #createCondition(inputs: (HTMLInputElement | HTMLSelectElement)[]): Index.ConditionParams
     condition: Index.ConditionParams := {}
@@ -136,6 +148,21 @@ export default class DatalistCandidateController < Controller
     @entriesMap.set(key, entries)
     entries
 
+  #findeEntry(input: HTMLInputElement | HTMLSelectElement, entries: Index.Entry[]): Index.Entry?
+    name := #getName(input)
+    switch input
+      <? HTMLInputElement
+        switch input.type
+          "checkbox"
+            entries.find(&[name] is input.checked)
+          "radio"
+            if input.checked
+              entries.find(&[name] is input.value)
+          else
+            entries.find(&[name]?.toString() is input.value)
+      <? HTMLSelectElement
+        entries.find(&[name]?.toString() is input.value)
+
   #updateDatalist(input: HTMLInputElement, entries: Index.Entry[]): void
     return unless input.list?
 
@@ -148,25 +175,22 @@ export default class DatalistCandidateController < Controller
       datalist.appendChild(option)
     input.list.replaceWith(datalist)
 
-  #updateDescription(input: HTMLInputElement | HTMLSelectElement, entries: Index.Entry[]): void
-    console.debug [input, entries]
+  #updateDescription(input: HTMLInputElement | HTMLSelectElement, entry: Index.Entry?): void
     describedby := input.getAttribute("aria-describedby")
     return unless describedby?
 
-    name := #getName(input)
-    console.debug ["updateDescription", name]
-
-    // FIXME: entryのvalueがstring以外の場合は、文字列との比較になるため、うまく動かない。
-    description: string? := entries.find(&[name] is input.value)?description?toString()
+    description: string? := entry?description?toString()
     for element of @descriptionTargets when element.id is describedby
       element.textContent = description ?? ""
 
-  checkInputs({target: changedInput?:: HTMLElement}): void
-    throw new Error("DatalistCandidateController: index is not initialized") unless @index?
-    unless changedInput <? HTMLInputElement or changedInput <? HTMLSelectElement
-      throw new Error("DatalistCandidateController: event target is not input or select element")
+  checkInputs({target?:: HTMLElement}): void
+    unless target <? HTMLInputElement or target <? HTMLSelectElement
+      throw new Error("event target is not input or select element")
 
-    inputs: (HTMLInputElement | HTMLSelectElement)[] := []
+    #updateInputs(target)
+    #updateInputsAsyc(target)
+
+  #updateInputs(changedInput: HTMLInputElement | HTMLSelectElement): void
     // flags
     disabled .= false
     locked .= false
@@ -174,16 +198,13 @@ export default class DatalistCandidateController < Controller
 
     for input of @inputTargets
       name := #getName(input)
-      preInputs: (HTMLInputElement | HTMLSelectElement)[] := [...inputs]
-      inputs.push(input)
 
       // set disabled state
       input.disabled = disabled
       // set locked state
       input.readOnly = locked if input <? HTMLInputElement
-      needOverwrite := locked
-      // need update if previous changed
-      needUpdate := changed
+      // clear value if previous changed
+      #clearValue(input) if changed and @clearValue
 
       // update flags for next input
       // disable next input if previous is true and input is empty
@@ -193,11 +214,38 @@ export default class DatalistCandidateController < Controller
       // changed next inputs if current input is changed
       changed = true if not changed and input is changedInput
 
-      #clearValue(input) if needUpdate and @clearValue
+  #updateInputsAsyc(changedInput: HTMLInputElement | HTMLSelectElement): Promise<void>
+    // collected inputs
+    inputs: (HTMLInputElement | HTMLSelectElement)[] := []
+    // flags
+    absent .= false
+    locked .= false
+    changed .= false
 
-      async do
-        entries := await #getEntries(name, #createCondition(preInputs))
-        #updateDescription(input, entries)
-        if needUpdate
-          #updateDatalist(input, entries) if input <? HTMLInputElement
-          input.value = entries[0]?[name]?toString() ?? "" if needOverwrite
+    for input of @inputTargets
+      name := #getName(input)
+      entries :=
+        if absent
+          [] as Index.Entry[]
+        else
+          await #getEntries(name, #createCondition(inputs))
+      entry := #findeEntry(input, entries)
+      #updateDescription(input, entry)
+      if changed
+        #updateDatalist(input, entries) if input <? HTMLInputElement
+        // overwire value if locked
+        #setValue(input, entries[0]?[name] ?? null) if locked
+
+      // collect inputs for next
+      inputs.push(input)
+
+      // update flags for next input
+      // absent next input if no entry found
+      absent = true if not absent and not entry?
+      // lock next input if params.locked includes current value
+      locked = true if not locked and @lockedValue[name]? and input.value is in @lockedValue[name]
+      // changed next inputs if current input is changed
+      changed = true if not changed and input is changedInput
+
+      console.debug "datalist-candidate:", name, entry, absent, locked, changed
+

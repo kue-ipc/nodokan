@@ -16,20 +16,18 @@ class OperatingSystemsController < ApplicationController
     @condition = permitted_params[:condition]
 
     @operating_systems = policy_scope(OperatingSystem).includes(:os_category)
-
     @operating_systems = @operating_systems.where(@condition.to_h) if @condition
-
     @operating_systems = @operating_systems.order(@order.to_h) if @order
 
-    if @target
-      case @target
-      in :os_category_id
-        @operating_systems = @operating_systems.select(:os_category_id, :description).distinct
-      in :name
-        @operating_systems = @operating_systems.select(:os_category_id, @target, :description).distinct
-      else
-        raise ActionController::BadRequest, "invalid target: #{@target}"
-      end
+    case @target
+    in nil
+      # do nothing
+    in :os_category_id
+      @operating_systems = @operating_systems.select(:os_category_id, :description).distinct
+    in :name
+      @operating_systems = @operating_systems.select(:os_category_id, @target, :description).distinct
+    else
+      raise ActionController::BadRequest, "invalid target: #{@target}"
     end
 
     return if permitted_params[:format] == "csv"
