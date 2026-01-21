@@ -2,6 +2,7 @@
   data-datalist-candidate-url-value="#{hardwares_path}"
 ]
   = form.fields_for :hardware, form.object.hardware || Hardware.new do |field|
+    - order = {nodes_count: :desc}
     h4 = t("forms.node.hardware.title")
     .mb-2: small.text-muted = t("forms.node.hardware.help")
     .row
@@ -15,8 +16,7 @@
           list: "#{field.field_id(:maker)}-list",
           data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
         datalist id="#{field.field_id(:maker)}-list" data-datalist-candidate-target="datalist"
-          - policy_scope(Hardware).where(device_type: field.object.device_type).order(nodes_count: :desc) \
-              .limit(100).distinct.pluck(:maker).each do |name|
+          - candidate_values(field.object, :maker, [:device_type_id], order:).each do |name|
             option = name
       .col-md-4
         = field.text_field :product_name,
@@ -24,8 +24,7 @@
           list: "#{field.field_id(:product_name)}-list",
           data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
         datalist id="#{field.field_id(:product_name)}-list" data-datalist-candidate-target="datalist"
-          - policy_scope(Hardware).where(device_type: field.object.device_type, maker: field.object.maker) \
-              .order(nodes_count: :desc).limit(100).distinct.pluck(:product_name).each do |name|
+          - candidate_values(field.object, :product_name, [:device_type_id, :maker], order:).each do |name|
             option = name
       .col-md-3
         = field.text_field :model_number,
@@ -33,6 +32,6 @@
           list: "#{field.field_id(:model_number)}-list",
           data: {datalist_candidate_target: "input"}
         datalist id="#{field.field_id(:model_number)}-list" data-datalist-candidate-target="datalist"
-          - policy_scope(Hardware).where(device_type: field.object.device_type, maker: field.object.maker, model_number: field.object.maker) \
-              .order(nodes_count: :desc).limit(100).distinct.pluck(:model_number).each do |name|
+          - candidate_values(field.object, :model_number, [:device_type_id, :maker, :product_name],
+              order:).each do |name|
             option = name

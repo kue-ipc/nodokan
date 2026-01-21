@@ -12,4 +12,12 @@ module ApplicationHelper
       model
     end
   end
+
+  def candidate_values(model, target, list = [], order: nil, limit: 100)
+    condition = list.index_with { |name| model.__send__(name) }
+    models = policy_scope(model.class)
+    models = models.where(condition) if condition.present?
+    models = models.order(order) if order
+    models.limit(limit).distinct.pluck(target)
+  end
 end

@@ -24,8 +24,7 @@
           aria: {describedby: "#{field.field_id(:name)}-description"},
           data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
         datalist id="#{field.field_id(:name)}-list" data-datalist-candidate-target="datalist"
-          - policy_scope(OperatingSystem).where(os_category: field.object.os_category).order(nodes_count: :desc) \
-              .limit(100).distinct.pluck(:name).each do |name|
+          - candidate_values(field.object, :name, [:os_category_id], order: {nodes_count: :desc}).each do |name|
             option = name
     small.form-text id="#{field.field_id(:name)}-description" data-datalist-candidate-target="description"
       = field.object.description
