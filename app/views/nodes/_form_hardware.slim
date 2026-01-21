@@ -1,4 +1,5 @@
-.rounded.border.p-2.mb-2[data-controller="datalist-candidate"
+.rounded.border.p-2.mb-2[
+  data-controller="datalist-candidate"
   data-datalist-candidate-url-value="#{hardwares_path}"
 ]
   = form.fields_for :hardware, form.object.hardware || Hardware.new do |field|
