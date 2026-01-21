@@ -1,0 +1,42 @@
+.row
+  = form.fields_for :security_software, form.object.security_software do |field|
+    = field.hidden_field :os_category_id
+
+    - name = "security_software_installation_method"
+    .col-md-4
+      = field.collection_select :installation_method,
+        t_enums(:installation_method, SecuritySoftware, keys: installation_methods(node)),
+        :first, :second,
+        {floating: true,
+          prompt: t("messages.prompt_required_selection"),},
+        data: { \
+          node_confirmation_target: name.camelize(:lower),
+          action: "node-confirmation#check#{name.camelize}",
+        }
+    .col-md-8
+      = field.text_field :name,
+        list: "confirmation_security_software_name-list",
+        floating: true,
+        disabled: true,
+        data: {node_confirmation_target: "securitySoftwareName"}
+
+    = datalist_candidate :security_software, :name,
+      security_softwares_path,
+      parents: [:confirmation],
+      order: {confirmations_count: "desc"},
+      inputList: [:os_category_id, :installation_method],
+      requiredInput: :installation_method,
+      description: true,
+      clear: true,
+      locked: { \
+        name: :installation_method,
+        list: SecuritySoftware.conf_installation_methods \
+          .select { |_, v| v[:locked] }.keys,
+      },
+      required: { \
+        name: :installation_method,
+        list: SecuritySoftware.conf_installation_methods \
+          .select { |_, v| v[:required] }.keys,
+      }
+
+small#confirmation_security_software_name-description.form-text.text-muted
