@@ -1,0 +1,47 @@
+div[
+  data-controller="datalist-candidate"
+  data-datalist-candidate-url-value="#{security_softwares_path}"
+  data-datalist-candidate-previous-value="ture"
+  data-datalist-candidate-clear-value="ture"
+  data-datalist-candidate-locked-value="#{
+    {installation_method: SecuritySoftware.conf_installation_methods.select { |_, v| v[:locked] }.keys}.to_json
+  }"
+  data-datalist-candidate-required-value="#{
+    {installation_method: SecuritySoftware.conf_installation_methods.select { |_, v| v[:required] }.keys}.to_json
+  }"
+]
+  = form.fields_for :security_software, form.object.security_software do |field|
+    .row
+      = field.hidden_field :os_category_id
+
+      - name = "security_software_installation_method"
+      .col-md-4
+        = field.select :installation_method,
+          t_enums(:installation_method, SecuritySoftware, keys: installation_methods(node)).map(&:reverse),
+          {floating: true, prompt: t("messages.prompt_required_selection")},
+          data: { \
+            node_confirmation_target: name.camelize(:lower),
+            datalist_candidate_target: "input",
+            action: "node-confirmation#check#{name.camelize},datalist-candidate#checkInputs",
+          }
+
+      .col-md-8
+        = field.text_field :name,
+          floating: true,
+          disabled: field.object.installation_method.nil?,
+          required: false,
+          readonly: field.object.conf[:locked],
+          list: "#{field.field_id(:name)}-list",
+          aria: {describedby: "#{field.field_id(:name)}-description"},
+          data: { \
+            node_confirmation_target: "securitySoftwareName",
+            datalist_candidate_target: "input",
+            action: "datalist-candidate#checkInputs",
+          }
+        datalist id="#{field.field_id(:name)}-list" data-datalist-candidate-target="datalist"
+          - candidate_values(field.object, :name, [:os_category_id, :installation_method],
+            order: {confirmations_count: :desc}).each do |name|
+            option = name
+
+    small.form-text.text-muted id="#{field.field_id(:name)}-description" data-datalist-candidate-target="description"
+      = field.object.description

@@ -1,25 +1,38 @@
-.rounded.border.p-2.mb-2
-  h4 = t("forms.node.place.title")
-  .mb-2: small.text-muted = t("forms.node.place.help")
-  .row
-    = form.fields_for :place, form.object.place || Place.new do |field|
+.rounded.border.p-2.mb-2[
+  data-controller="datalist-candidate"
+  data-datalist-candidate-url-value="#{places_path}"
+]
+  = form.fields_for :place, form.object.place || Place.new do |field|
+    - order = {nodes_count: :desc}
+    h4 = t("forms.node.place.title")
+    .mb-2: small.text-muted = t("forms.node.place.help")
+    .row
       .col-md-3
-        = field.text_field :area, list: "node_place_area-list",
-          floating: true
-        = datalist_candidate :place, :area, places_path,
-          parents: [:node]
+        = field.text_field :area,
+          floating: true,
+          list: "#{field.field_id(:area)}-list",
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+        datalist id="#{field.field_id(:area)}-list" data-datalist-candidate-target="datalist"
+          - candidate_values(field.object, :area, order:).each do |name|
+            option = name
       .col-md-3
         = field.text_field :building,
-          list: "node_place_building-list",
-          floating: true
-        = datalist_candidate :place, :building, places_path,
-          parents: [:node], inputList: [:area]
+          floating: true,
+          list: "#{field.field_id(:building)}-list",
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
+        datalist id="#{field.field_id(:building)}-list" data-datalist-candidate-target="datalist"
+          - candidate_values(field.object, :building, [:area], order:).each do |name|
+            option = name
       .col-md-2
         - floor_list = 10.downto(-5).map { |i| [t_floor(i), i] }
-        = field.select :floor, floor_list, floating: true
+        = field.select :floor, floor_list,
+          {floating: true},
+          data: {datalist_candidate_target: "input", action: "datalist-candidate#checkInputs"}
       .col-md-4
-        = field.text_field :room, list: "node_place_room-list",
-          floating: true
-        = datalist_candidate :place, :room, places_path,
-          parents: [:node], order: {nodes_count: "desc"},
-          inputList: [:area, :building, :floor]
+        = field.text_field :room,
+          floating: true,
+          list: "#{field.field_id(:room)}-list",
+          data: {datalist_candidate_target: "input"}
+        datalist id="#{field.field_id(:room)}-list" data-datalist-candidate-target="datalist"
+          - candidate_values(field.object, :room, [:area, :building, :floor], order:).each do |name|
+            option = name

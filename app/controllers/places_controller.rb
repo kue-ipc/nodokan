@@ -4,10 +4,7 @@ class PlacesController < ApplicationController
 
   def index
     permitted_params = params.permit(
-      :page,
-      :per,
-      :target,
-      :format,
+      :page, :per, :target, :format,
       order: [:id, :area, :building, :floor, :room, :nodes_count],
       condition: [:area, :building, :floor, :room])
 
@@ -19,18 +16,16 @@ class PlacesController < ApplicationController
     @condition = permitted_params[:condition]
 
     @places = policy_scope(Place)
-
     @places = @places.where(@condition.to_h) if @condition
-
     @places = @places.order(@order.to_h) if @order
 
-    if @target
-      if [:area, :building, :room].include?(@target)
-        @places = @places.select(@target).distinct
-      else
-        raise ActionController::BadRequest,
-          "[places#index] invalid target: #{@target}"
-      end
+    case @target
+    in nil
+      # do nothing
+    in :area | :building | :floor | :room
+      @places = @places.select(@target).distinct
+    else
+      raise ActionController::BadRequest, "invalid target: #{@target}"
     end
 
     unless permitted_params[:format] == "csv"

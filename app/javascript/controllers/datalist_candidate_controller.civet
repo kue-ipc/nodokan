@@ -55,10 +55,11 @@ export default class DatalistCandidateController < Controller
 
   @values = {
     url: String,
-    previous: Boolean,
-    clear: Boolean,
     per: {type: Number, default: 100},
     order: Object,
+    clear: Boolean,
+    previous: Boolean,
+    locked: Object,
   }
 
   declare readonly inputTargets: (HTMLInputElement | HTMLSelectElement)[]
@@ -66,11 +67,12 @@ export default class DatalistCandidateController < Controller
   declare readonly descriptionTargets: HTMLElement[]
 
   declare readonly urlValue: string
-  declare readonly previousValue: boolean
-  declare readonly clearValue: boolean
   declare readonly perValue: number
-  // not check type because of Object type
-  declare readonly orderValue: Index.OrpderParams
+  declare readonly orderValue: Index.OrpderParams // not check type because of Object type
+  declare readonly clearValue: boolean
+  declare readonly previousValue: boolean
+  declare readonly lockedValue: Record<Index.Name, Index.Value[]> // not check type because of Object type
+
 
   index?: Index
   entriesMap: Map<Index.Name, Index.Entry[]> = new Map()
@@ -79,88 +81,171 @@ export default class DatalistCandidateController < Controller
     url := new URL(@urlValue, globalThis.location.href)
     @index = new Index(url, {per: @perValue, order: @orderValue})
 
-    @updateInputs()
-
   // abc[def][ghi] -> abc
   #getName(input: HTMLInputElement | HTMLSelectElement): string
     input.name.replace(/^.*\[([^\]]+)\]$/, "$1")
+
+  #getValue(input: HTMLInputElement | HTMLSelectElement): Index.Value
+    switch input
+      <? HTMLInputElement
+        switch input.type
+          "checkbox"
+            input.checked
+          "radio"
+            if input.checked
+              input.value
+            else
+              null
+          else
+            input.value
+      <? HTMLSelectElement
+        input.value
+      else
+        null
+
+  #setValue(input: HTMLInputElement | HTMLSelectElement, value: Index.Value): void
+    switch input
+      <? HTMLInputElement
+        switch input.type
+          "checkbox"
+            input.checked = value is true
+          "radio"
+            input.checked = input.value is value?toString()
+          else
+            input.value = value?toString() ?? ""
+      <? HTMLSelectElement
+        input.value = value?toString() ?? ""
+
+  #clearValue(input: HTMLInputElement | HTMLSelectElement): void
+    switch input
+      <? HTMLInputElement
+        switch input.type
+          "checkbox", "radio"
+            input.checked = false
+          else
+            input.value = ""
+      <? HTMLSelectElement
+        input.selectedIndex = 0
 
   #createCondition(inputs: (HTMLInputElement | HTMLSelectElement)[]): Index.ConditionParams
     condition: Index.ConditionParams := {}
 
     for input of inputs
       name := #getName(input)
-      switch input
-        <? HTMLInputElement
-          switch input.type
-            "checkbox"
-              condition[name] = if input.checked then 1 else 0
-            "radio"
-              if input.checked
-                condition[name] = input.value
-            else
-              condition[name] = input.value
-        <? HTMLSelectElement
-          condition[name] = input.value
+      value := #getValue(input)
+      condition[name] = value
+
     condition
 
-  // TODO: paramsでlockedの指定を受け取るのがまだ
-  updateInputs({target: changedInput?:: HTMLElement, params?:: {locked: Index.Value[]}} = {}): void
-    throw new Error("DatalistCandidateController: index is not initialized") unless @index?
+  #getEntries(target: Index.Name, condition: Index.ConditionParams): Index.Entry[]
+    throw new Error("this.index is not initialized") unless @index?
 
-    console.debug params
+    key := `${target}:${JSON.stringify(condition)}`
+    return @entriesMap.get(key) ?? [] if @entriesMap.has(key)
 
-    inputs: (HTMLInputElement | HTMLSelectElement)[] := []
+    // get entries from index API
+    entries := await @index.getEntries({target, condition})
+    @entriesMap.set(key, entries)
+    entries
+
+  #findeEntry(input: HTMLInputElement | HTMLSelectElement, entries: Index.Entry[]): Index.Entry?
+    name := #getName(input)
+    switch input
+      <? HTMLInputElement
+        switch input.type
+          "checkbox"
+            entries.find(&[name] is input.checked)
+          "radio"
+            if input.checked
+              entries.find(&[name] is input.value)
+          else
+            entries.find(&[name]?.toString() is input.value)
+      <? HTMLSelectElement
+        entries.find(&[name]?.toString() is input.value)
+
+  #updateDatalist(input: HTMLInputElement, entries: Index.Entry[]): void
+    return unless input.list?
+
+    name := #getName(input)
+
+    datalist := input.list.cloneNode(false)
+    for entry of entries
+      option := document.createElement("option")
+      option.textContent = entry[name]?toString() ?? ""
+      datalist.appendChild(option)
+    input.list.replaceWith(datalist)
+
+  #updateDescription(input: HTMLInputElement | HTMLSelectElement, entry: Index.Entry?): void
+    describedby := input.getAttribute("aria-describedby")
+    return unless describedby?
+
+    description: string? := entry?description?toString()
+    for element of @descriptionTargets when element.id is describedby
+      element.textContent = description ?? ""
+
+  checkInputs({target?:: HTMLElement}): void
+    unless target <? HTMLInputElement or target <? HTMLSelectElement
+      throw new Error("event target is not input or select element")
+
+    #updateInputs(target)
+    #updateInputsAsyc(target)
+
+  #updateInputs(changedInput: HTMLInputElement | HTMLSelectElement): void
+    // flags
     disabled .= false
     locked .= false
-    changed .= not changedInput?
+    changed .= false
 
     for input of @inputTargets
       name := #getName(input)
-      preInputs: (HTMLInputElement | HTMLSelectElement)[] := [...inputs]
-      inputs.push(input)
+
+      // set disabled state
       input.disabled = disabled
+      // set locked state
+      input.readOnly = locked if input <? HTMLInputElement
+      // clear value if previous changed
+      #clearValue(input) if changed and @clearValue
+
+      // update flags for next input
       // disable next input if previous is true and input is empty
-      disabled = true if @previousValue and input.value is ""
-      // need update if previous changed
-      needUpdate := changed
-      // next changed
+      disabled = true if not disabled and @previousValue and input.value is ""
+      // lock next input if params.locked includes current value
+      locked = true if not locked and @lockedValue[name]? and input.value is in @lockedValue[name]
+      // changed next inputs if current input is changed
       changed = true if not changed and input is changedInput
 
-      if @clearValue and changedInput? and needUpdate
-        switch input
-          <? HTMLInputElement
-            switch input.type
-              "checkbox", "radio"
-                input.checked = false
-              else
-                input.value = ""
-          <? HTMLSelectElement
-            input.selectedIndex = 0
+  #updateInputsAsyc(changedInput: HTMLInputElement | HTMLSelectElement): Promise<void>
+    // collected inputs
+    inputs: (HTMLInputElement | HTMLSelectElement)[] := []
+    // flags
+    absent .= false
+    locked .= false
+    changed .= false
 
-      async do
-        entries :=
-        if needUpdate
-          newEntries := await @index!getEntries({target: name, condition: #createCondition(preInputs)})
-          @entriesMap.set(name, newEntries)
-          if input <? HTMLInputElement and input.list?
-            newDatalist := input.list.cloneNode(false)
-            for entry of newEntries
-              option := document.createElement("option")
-              option.textContent = entry[name]?.toString() ?? ""
-              newDatalist.appendChild(option)
-            input.list.replaceWith(newDatalist)
-          newEntries
+    for input of @inputTargets
+      name := #getName(input)
+      entries :=
+        if absent
+          [] as Index.Entry[]
         else
-          @entriesMap.get(name)
+          await #getEntries(name, #createCondition(inputs))
+      entry := #findeEntry(input, entries)
+      #updateDescription(input, entry)
+      if changed
+        #updateDatalist(input, entries) if input <? HTMLInputElement
+        // overwire value if locked
+        #setValue(input, entries[0]?[name] ?? null) if locked
 
-        return unless entries?
+      // collect inputs for next
+      inputs.push(input)
 
-        describedby := input.getAttribute("aria-describedby")
-        if describedby?
-          description: string?? .= null
-          for entry of entries when entry[name] is input.value
-            description = entry.description?toString()
-            break
-          for element of @descriptionTargets when element.id is describedby
-            element.textContent = description ?? ""
+      // update flags for next input
+      // absent next input if no entry found
+      absent = true if not absent and not entry?
+      // lock next input if params.locked includes current value
+      locked = true if not locked and @lockedValue[name]? and input.value is in @lockedValue[name]
+      // changed next inputs if current input is changed
+      changed = true if not changed and input is changedInput
+
+      console.debug "datalist-candidate:", name, entry, absent, locked, changed
+

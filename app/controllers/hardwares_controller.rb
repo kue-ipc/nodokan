@@ -16,17 +16,18 @@ class HardwaresController < ApplicationController
     @condition = permitted_params[:condition]
 
     @hardwares = policy_scope(Hardware).includes(:device_type)
-
     @hardwares = @hardwares.where(@condition.to_h) if @condition
-
     @hardwares = @hardwares.order(@order.to_h) if @order
 
-    if @target
-      if [:maker, :product_name, :model_number].include?(@target)
-        @hardwares = @hardwares.select(:device_type_id, @target).distinct
-      else
-        raise ActionController::BadRequest, "invalid target: #{@target}"
-      end
+    case @target
+    in nil
+      # do nothing
+    in :device_type_id
+      @hardwares = @hardwares.select(:device_type_id).distinct
+    in :maker | :product_name | :model_number
+      @hardwares = @hardwares.select(:device_type_id, @target).distinct
+    else
+      raise ActionController::BadRequest, "invalid target: #{@target}"
     end
 
     return if permitted_params[:format] == "csv"

@@ -1,97 +1,45 @@
 - confirmation = init_confirmation(node)
-= bootstrap_form_with model: confirmation,
+= bootstrap_form_with(model: confirmation,
   url: node_confirmation_path(node),
-  data: { \
-    turbo_frame: dom_id(node),
-    controller: "node-confirmation",
-    action: "turbo:submit-end->modal#close",
-  } do |f|
-  p
-    = t("messages.node_confirmation")
+  data: {turbo_frame: dom_id(node), controller: "node-confirmation", action: "turbo:submit-end->modal#close"}) do |form|
+  p = t("messages.node_confirmation")
 
   - count = 1
-  = confirmation_question_enum(f, :existence, count: count,
-    action: "changeExistence")
+
+  = confirmation_question_enum(form, :existence, count:, action: "changeExistence")
   - count += 1
+
   .collapse.show data-node-confirmation-target="collapse"
-    = confirmation_question_enum(f, :content, count: count)
+    = confirmation_question_enum(form, :content, count:)
     - count += 1
 
     - unless node.logical?
       - [:os_update, :app_update].each do |name|
-        = confirmation_question_enum(f, name,
-          count: count, excludes: ["unnecessary"],
+        = confirmation_question_enum(form, name, count:, excludes: ["unnecessary"],
           action: "change#{name.to_s.camelize}")
-        .collapse[
-          data-node-confirmation-target="collapse#{name.to_s.camelize}Secured"]
-          .card
-            .card-body.text-danger-emphasis
-              == t("messages.update_secured")
+        .collapse data-node-confirmation-target="collapse#{name.to_s.camelize}Secured"
+          .card: .card-body.text-danger-emphasis: = t("messages.update_secured")
         - count += 1
 
-      = confirmation_question_enum(f, :software, count: count)
+      = confirmation_question_enum(form, :software, count:)
       - count += 1
 
-      = confirmation_question_bitwise(f, :security_hardwares,
-        count: count, required: true, action: "changeSecurityHardwares")
+      = confirmation_question_bitwise(form, :security_hardwares, count:, required: true,
+        action: "changeSecurityHardwares")
       - count += 1
 
       - if confirmation.security_software
-        = confirmation_question_group(f, :security_software,
-          count: count, required: true) do
-          .row
-            = f.fields_for :security_software,
-              confirmation.security_software do |security_software_f|
-              = security_software_f.hidden_field :os_category_id
-
-              - name = "security_software_installation_method"
-              .col-md-4
-                = security_software_f.collection_select :installation_method,
-                  t_enums(:installation_method, SecuritySoftware,
-                    keys: installation_methods(node)),
-                  :first, :second,
-                  {floating: true,
-                    prompt: t("messages.prompt_required_selection"),},
-                  data: { \
-                    node_confirmation_target: name.camelize(:lower),
-                    action: "node-confirmation#check#{name.camelize}",
-                  }
-              .col-md-8
-                = security_software_f.text_field :name,
-                  list: "confirmation_security_software_name-list",
-                  floating: true,
-                  disabled: true,
-                  data: {node_confirmation_target: "securitySoftwareName"}
-
-              = datalist_candidate :security_software, :name,
-                security_softwares_path,
-                parents: [:confirmation],
-                order: {confirmations_count: "desc"},
-                inputList: [:os_category_id, :installation_method],
-                requiredInput: :installation_method,
-                description: true,
-                clear: true,
-                locked: { \
-                  name: :installation_method,
-                  list: SecuritySoftware.conf_installation_methods \
-                    .select { |_, v| v[:locked] }.keys,
-                },
-                required: { \
-                  name: :installation_method,
-                  list: SecuritySoftware.conf_installation_methods \
-                    .select { |_, v| v[:required] }.keys,
-                }
-
-          small#confirmation_security_software_name-description.form-text.text-muted
+        = confirmation_question_group(form, :security_software, count:, required: true) do
+          = render "form_security_software", form:, node:
         - count += 1
 
         - [:security_update, :security_scan].each do |name|
-          = confirmation_question_enum(f, name,
-            count: count, required: true)
+          = confirmation_question_enum(form, name, count:, required: true)
           - count += 1
+
       - else
         p.text-danger-emphasis
           | OS情報が登録されていないため、
           | セキュリティソフトウェアに関する確認ができません。
           | OS情報を登録後に再度確認作業を実施してください。
-  = f.submit "確認終了", class: "btn btn-primary"
+  = form.submit "確認終了", class: "btn btn-primary"
