@@ -75,7 +75,7 @@ gem "rails_admin", "~> 3.3"
 gem "rails_admin-i18n"
 
 # Bootstrap
-gem "bootstrap_form", "~> 5.5"
+gem "bootstrap_form", "~> 5.6"
 
 # Resque
 gem "resque"
