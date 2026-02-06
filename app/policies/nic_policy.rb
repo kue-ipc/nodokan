@@ -4,7 +4,7 @@ class NicPolicy < ApplicationPolicy
       if user.admin?
         scope.all
       else
-        scope.where(user:)
+        scope.joins(node: :user).where(node: {user:})
       end
     end
   end

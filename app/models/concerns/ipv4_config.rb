@@ -20,7 +20,7 @@ module Ipv4Config
   end
 
   def ipv4_config_prefix
-    Ipv4Config::IDENTIFIER_TYPES.fetch(ipv4_config.intern)
+    Ipv4Config::IDENTIFIER_TYPES.fetch(ipv4_config&.intern, "?")
   end
 
   class_methods do

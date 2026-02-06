@@ -22,7 +22,7 @@ module Ipv6Config
   end
 
   def ipv6_config_prefix
-    Ipv6Config::IDENTIFIER_TYPES.fetch(ipv6_config.intern)
+    Ipv6Config::IDENTIFIER_TYPES.fetch(ipv6_config&.intern, "?")
   end
 
   class_methods do

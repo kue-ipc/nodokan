@@ -4,7 +4,7 @@ class Ipv6PoolPolicy < ApplicationPolicy
       if user.admin?
         scope.all
       else
-        scope.joins(:users, :networks).where(network: {users: user})
+        scope.joins(network: :users).where(network: {users: user})
       end
     end
   end
