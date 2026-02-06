@@ -13,7 +13,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.20",
+    "@hotwired/turbo-rails": "^8.0.23",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
@@ -23,22 +23,22 @@
   },
   "devDependencies": {
     "@coffeelint/cli": "^5.2.11",
-    "@danielx/civet": "^0.11.1",
+    "@danielx/civet": "^0.11.2",
     "@eslint/js": "^9.39.2",
     "@types/bootstrap": "^5.2.10",
     "coffeescript": "^2.7.0",
-    "esbuild": "^0.27.2",
+    "esbuild": "^0.27.3",
     "esbuild-coffeescript": "^3.0.1",
     "eslint": "^9.39.2",
     "eslint-plugin-civet": "^0.0.6",
-    "globals": "^17.0.0",
+    "globals": "^17.3.0",
     "postcss": "^8.5.6",
     "postcss-sass": "^0.5.0",
-    "sass": "^1.97.2",
-    "stylelint": "^16.26.1",
-    "stylelint-config-standard": "^39.0.1",
-    "stylelint-config-standard-scss": "^16.0.0",
+    "sass": "^1.97.3",
+    "stylelint": "^17.1.1",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0"
+    "typescript-eslint": "^8.54.0"
   }
 }
