@@ -27,6 +27,9 @@ module Nodokan
     config.active_record.default_timezone = :local
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Add app/serializers to autoload paths
+    config.autoload_once_paths << "#{root}/app/serializers"
+
     # pundit NotAuthorizedError => forbidden
     config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] = :forbidden
 
