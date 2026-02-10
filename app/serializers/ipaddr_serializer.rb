@@ -1,8 +1,4 @@
 class IpaddrSerializer < ActiveJob::Serializers::ObjectSerializer
-  def serialize?(argument)
-    argument.is_a? IPAddr
-  end
-
   def serialize(ip)
     hash = {
       "addr" => ip.to_i,
@@ -18,5 +14,9 @@ class IpaddrSerializer < ActiveJob::Serializers::ObjectSerializer
     ip.prefix = hash["prefix"]
     ip.zone_id = hash["zone_id"] if hash["zone_id"]
     ip
+  end
+
+  def klass
+    IPAddr
   end
 end
