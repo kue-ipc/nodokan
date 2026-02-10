@@ -23,9 +23,9 @@ class OperatingSystemsController < ApplicationController
     in nil
       # do nothing
     in :os_category_id
-      @operating_systems = @operating_systems.select(:os_category_id, :description).distinct
+      @operating_systems = @operating_systems.select(:os_category_id).distinct
     in :name
-      @operating_systems = @operating_systems.select(:os_category_id, @target, :description).distinct
+      @operating_systems = @operating_systems.select(:os_category_id, :name, :description).distinct
     else
       raise ActionController::BadRequest, "invalid target: #{@target}"
     end

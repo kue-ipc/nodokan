@@ -44,10 +44,10 @@ class Index
     data as Index.Entry[]
 
 // url: indexのJSONのパス [必須]
-// previous: 前の値が必要かどうか
-// clear: 変更時にクリアまたは初期値に戻すかどうか
 // per: 検索するアイテム数上限
 // order: リストの順番
+// previous: 前の値が必要かどうか
+// clear: 変更時にクリアまたは初期値に戻すかどうか
 
 // Connects to data-controller="datalist-candidate"
 export default class DatalistCandidateController < Controller
@@ -57,9 +57,8 @@ export default class DatalistCandidateController < Controller
     url: String,
     per: {type: Number, default: 100},
     order: Object,
-    clear: Boolean,
     previous: Boolean,
-    locked: Object,
+    clear: Boolean,
   }
 
   declare readonly inputTargets: (HTMLInputElement | HTMLSelectElement)[]
@@ -69,10 +68,8 @@ export default class DatalistCandidateController < Controller
   declare readonly urlValue: string
   declare readonly perValue: number
   declare readonly orderValue: Index.OrpderParams // not check type because of Object type
-  declare readonly clearValue: boolean
   declare readonly previousValue: boolean
-  declare readonly lockedValue: Record<Index.Name, Index.Value[]> // not check type because of Object type
-
+  declare readonly clearValue: boolean
 
   index?: Index
   entriesMap: Map<Index.Name, Index.Entry[]> = new Map()
@@ -163,6 +160,18 @@ export default class DatalistCandidateController < Controller
       <? HTMLSelectElement
         entries.find(&[name]?.toString() is input.value)
 
+  #updateInputStatus(input: HTMLInputElement, status: {disabled: boolean, "readonly": boolean, required: boolean}): void
+    input.disabled = status.disabled
+    input.readOnly = status.readonly
+    input.required = status.required
+    for each label of input.labels ?? [] when label?
+      for [key, value] of Object.entries(status)
+        if value
+          label.classList.add(key)
+        else
+          label.classList.remove(key)
+
+
   #updateDatalist(input: HTMLInputElement, entries: Index.Entry[]): void
     return unless input.list?
 
@@ -187,65 +196,54 @@ export default class DatalistCandidateController < Controller
     unless target <? HTMLInputElement or target <? HTMLSelectElement
       throw new Error("event target is not input or select element")
 
-    #updateInputs(target)
     #updateInputsAsyc(target)
-
-  #updateInputs(changedInput: HTMLInputElement | HTMLSelectElement): void
-    // flags
-    disabled .= false
-    locked .= false
-    changed .= false
-
-    for input of @inputTargets
-      name := #getName(input)
-
-      // set disabled state
-      input.disabled = disabled
-      // set locked state
-      input.readOnly = locked if input <? HTMLInputElement
-      // clear value if previous changed
-      #clearValue(input) if changed and @clearValue
-
-      // update flags for next input
-      // disable next input if previous is true and input is empty
-      disabled = true if not disabled and @previousValue and input.value is ""
-      // lock next input if params.locked includes current value
-      locked = true if not locked and @lockedValue[name]? and input.value is in @lockedValue[name]
-      // changed next inputs if current input is changed
-      changed = true if not changed and input is changedInput
 
   #updateInputsAsyc(changedInput: HTMLInputElement | HTMLSelectElement): Promise<void>
     // collected inputs
     inputs: (HTMLInputElement | HTMLSelectElement)[] := []
     // flags
+    disabled .= false
     absent .= false
     locked .= false
     changed .= false
+    required .= false
 
     for input of @inputTargets
       name := #getName(input)
+
+      if input <? HTMLInputElement
+        #updateInputStatus(input, {disabled: disabled, "readonly": locked,
+          required: required and !disabled and !locked})
+
+      #clearValue(input) if @clearValue and changed
+
       entries :=
         if absent
           [] as Index.Entry[]
         else
           await #getEntries(name, #createCondition(inputs))
       entry := #findeEntry(input, entries)
-      #updateDescription(input, entry)
       if changed
-        #updateDatalist(input, entries) if input <? HTMLInputElement
-        // overwire value if locked
+        // overwrite value if locked
         #setValue(input, entries[0]?[name] ?? null) if locked
+
+        #updateDatalist(input, entries) if input <? HTMLInputElement
+
+      #updateDescription(input, entry)
 
       // collect inputs for next
       inputs.push(input)
 
       // update flags for next input
+      // disable next input if previous is true and input is empty
+      disabled = true if not disabled and @previousValue and input.value is ""
       // absent next input if no entry found
       absent = true if not absent and not entry?
-      // lock next input if params.locked includes current value
-      locked = true if not locked and @lockedValue[name]? and input.value is in @lockedValue[name]
+      // lock next input if current entry is locked
+      locked = true if not locked and entry?.locked
       // changed next inputs if current input is changed
       changed = true if not changed and input is changedInput
+      // required next input if current entry is required
+      required = true if not required and entry?.required
 
-      console.debug "datalist-candidate:", name, entry, absent, locked, changed
-
+      console.debug "datalist-candidate:", {name, entry, disabled, absent, locked, changed, required}

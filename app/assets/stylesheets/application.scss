@@ -78,6 +78,13 @@ label.form-label.required {
   content: "";
 }
 
+label.form-label.readonly {
+  &::after {
+    color: var(--bs-warning-text-emphasis);
+    content: " 【変更不可】";
+  }
+}
+
 .form-floating > label {
   color: rgb(var(--bs-body-color-rgb), #{$form-floating-label-opacity});
 }

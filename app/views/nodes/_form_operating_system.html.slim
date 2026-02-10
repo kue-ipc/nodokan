@@ -4,7 +4,6 @@
   data-datalist-candidate-url-value="#{operating_systems_path}"
   data-datalist-candidate-previous-value="ture"
   data-datalist-candidate-clear-value="ture"
-  data-datalist-candidate-locked-value="#{{os_category_id: locked_os_category_ids.map(&:to_s)}.to_json}"
 ]
   = form.fields_for :operating_system, form.object.operating_system || OperatingSystem.new do |field|
     h4 = t("forms.node.operating_system.title")
