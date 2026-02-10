@@ -406,7 +406,7 @@ margeAll = (state, data) ->
 
 LOADED_ELEMENTS = new WeakSet()
 
-export loadManageTable = (element) ->
+export loadManageTable = (element?: Element): void ->
   node = document.getElementById('manage-table')
   return unless node?
 

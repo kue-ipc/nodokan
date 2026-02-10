@@ -13,7 +13,6 @@ document.addEventListener "turbo:load", (_e)->
   console.debug "[application] turbo:load event occured "
   loadApplySpecifiNode()
   loadBootstrapComponents()
-  loadDatalistCandidate()
   loadManageTable()
 
 document.addEventListener "turbo:frame-load", (e)->
@@ -24,5 +23,4 @@ document.addEventListener "turbo:frame-load", (e)->
   console.debug `[application] turbo:frame-load event occured on ${e.target.id}`
   loadApplySpecifiNode(e.target)
   loadBootstrapComponents(e.target)
-  loadDatalistCandidate(e.target)
   loadManageTable(e.target)
