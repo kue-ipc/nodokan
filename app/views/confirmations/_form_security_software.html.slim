@@ -3,16 +3,10 @@ div[
   data-datalist-candidate-url-value="#{security_softwares_path}"
   data-datalist-candidate-previous-value="ture"
   data-datalist-candidate-clear-value="ture"
-  data-datalist-candidate-locked-value="#{
-    {installation_method: SecuritySoftware.conf_installation_methods.select { |_, v| v[:locked] }.keys}.to_json
-  }"
-  data-datalist-candidate-required-value="#{
-    {installation_method: SecuritySoftware.conf_installation_methods.select { |_, v| v[:required] }.keys}.to_json
-  }"
 ]
   = form.fields_for :security_software, form.object.security_software do |field|
     .row
-      = field.hidden_field :os_category_id
+      = field.hidden_field :os_category_id, data: {datalist_candidate_target: "input"}
 
       - name = "security_software_installation_method"
       .col-md-4
@@ -22,7 +16,7 @@ div[
           data: { \
             node_confirmation_target: name.camelize(:lower),
             datalist_candidate_target: "input",
-            action: "node-confirmation#check#{name.camelize},datalist-candidate#checkInputs",
+            action: "node-confirmation#check#{name.camelize} datalist-candidate#checkInputs",
           }
 
       .col-md-8
@@ -30,7 +24,7 @@ div[
           floating: true,
           disabled: field.object.installation_method.nil?,
           required: false,
-          readonly: field.object.conf[:locked],
+          readonly: field.object.conf&.fetch(:locked, false),
           list: "#{field.field_id(:name)}-list",
           aria: {describedby: "#{field.field_id(:name)}-description"},
           data: { \

@@ -27,16 +27,14 @@ class SecuritySoftware < ApplicationRecord
   before_save :auto_approve
 
   def os_category_name
-    @os_category_name ||= os_category&.name
+    os_category&.name
   end
 
   def os_category_name=(str)
     if str.present?
       self.os_category = OsCategory.find_by!(name: str)
-      @os_category_name = os_category&.name
     else
-      self.device_type = nil
-      @device_type_name = nil
+      self.os_category = nil
     end
   end
 
@@ -50,6 +48,12 @@ class SecuritySoftware < ApplicationRecord
 
   # class method
   def self.conf_installation_methods
+    # attributes:
+    #   locked: boolean
+    #   required: boolean
+    #   updatable: boolean
+    #   scanable: boolean
+    #   auto_approve: boolean
     @@conf_installation_methods ||= {
       unnecessary: {
         locked: true,
@@ -97,7 +101,6 @@ class SecuritySoftware < ApplicationRecord
   end
 
   def same
-    SecuritySoftware.where.not(id:).find_by(os_category_id:,
-      installation_method:, name:)
+    SecuritySoftware.where.not(id:).find_by(os_category_id:, installation_method:, name:)
   end
 end

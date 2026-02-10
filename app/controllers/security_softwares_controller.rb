@@ -8,8 +8,7 @@ class SecuritySoftwaresController < ApplicationController
       :per,
       :target,
       :format,
-      order: [:id, :os_category_id, :installation_method, :name,
-        :confirmations_count,],
+      order: [:id, :os_category_id, :installation_method, :name, :confirmations_count],
       condition: [:os_category_id, :installation_method, :name])
 
     @page = permitted_params[:page]
@@ -20,19 +19,18 @@ class SecuritySoftwaresController < ApplicationController
     @condition = permitted_params[:condition]
 
     @security_softwares = policy_scope(SecuritySoftware)
-
     @security_softwares = @security_softwares.where(@condition.to_h) if @condition
-
     @security_softwares = @security_softwares.order(@order.to_h) if @order
 
-    if @target
-      if [:name].include?(@target)
-        @security_softwares = @security_softwares
-          .select(@target, :description).distinct
-      else
-        raise ActionController::BadRequest,
-          "[security_softwares#index] invalid target: #{@target}"
-      end
+    case @target
+    in nil
+      # do nothing
+    in :os_category_id | :installation_method
+      @security_softwares = @security_softwares.select(@target).distinct
+    in :name
+      @security_softwares = @security_softwares.select(@target, :description).distinct
+    else
+      raise ActionController::BadRequest, "invalid target: #{@target}"
     end
 
     unless permitted_params[:format] == "csv"

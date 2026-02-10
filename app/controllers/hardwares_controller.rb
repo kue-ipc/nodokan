@@ -23,7 +23,7 @@ class HardwaresController < ApplicationController
     in nil
       # do nothing
     in :device_type_id
-      @hardwares = @hardwares.select(:device_type_id).distinct
+      @hardwares = @hardwares.select(@target).distinct
     in :maker | :product_name | :model_number
       @hardwares = @hardwares.select(:device_type_id, @target).distinct
     else
