@@ -1,4 +1,3 @@
-json.ignore_nil!
 json.url request.url
 json.params params
 json.page do
@@ -13,6 +12,7 @@ in nil
     json.array! @operating_systems, partial: "operating_systems/operating_system", as: :operating_system
   end
 in :os_category_id
+  json.ignore_nil!
   json.data do
     json.array! @operating_systems do |operating_system|
       json.os_category_id operating_system.os_category_id
@@ -23,6 +23,7 @@ in :os_category_id
     end
   end
 in :name
+  json.ignore_nil!
   json.data do
     json.array! @operating_systems do |operating_system|
       json.name operating_system.name

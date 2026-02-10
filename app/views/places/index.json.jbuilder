@@ -3,15 +3,17 @@ json.params params
 json.page do
   json.partial! "page", entities: @places
 end
-json.model do
-  json.partial! "model", model: Place
-end
-if @target
-  json.data do
-    json.array! @places, @target
+case @target
+in nil
+  json.model do
+    json.partial! "model", model: Place
   end
-else
   json.entities do
     json.array! @places, partial: "places/place", as: :place
+  end
+in :area | :building | :floor | :room
+  json.ignore_nil!
+  json.data do
+    json.array! @places, @target
   end
 end
