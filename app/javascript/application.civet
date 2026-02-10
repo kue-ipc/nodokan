@@ -5,7 +5,7 @@ import "./controllers/index.civet"
 import {loadBootstrapComponents} from "./operators/bootstrap_components.civet"
 import "./operators/icon_font.civet"
 
-import {loadManageTable} from "./views/manage_table.coffee"
+import {loadManageTable} from "./views/manage_table.civet"
 
 import {loadApplySpecifiNode} from "./views/apply_specific_node.civet"
 

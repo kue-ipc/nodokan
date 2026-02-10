@@ -1,7 +1,9 @@
+"civet coffeeCompat"
+
 import {app, h, text} from 'hyperapp'
 import csrf from '../utils/csrf.civet'
 
-HIDDEN_ATTRIBUTES = new Set([
+HIDDEN_ATTRIBUTES := new Set([
   'created_at'
   'updated_at'
 ])
