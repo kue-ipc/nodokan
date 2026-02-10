@@ -22,13 +22,10 @@
     "rails_admin": "^3.3.0"
   },
   "devDependencies": {
-    "@coffeelint/cli": "^5.2.11",
     "@danielx/civet": "^0.11.2",
     "@eslint/js": "^9.39.2",
     "@types/bootstrap": "^5.2.10",
-    "coffeescript": "^2.7.0",
     "esbuild": "^0.27.3",
-    "esbuild-coffeescript": "^3.0.1",
     "eslint": "^9.39.2",
     "eslint-plugin-civet": "^0.0.6",
     "globals": "^17.3.0",
