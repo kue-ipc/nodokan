@@ -1,3 +1,7 @@
+# 管理用コントローラー
+# FIXME: SecuritySoftwareはうまく言っていない。
+# TODO: turboを利用して各コントローラーで独立させる。
+
 class ManageController < ApplicationController
   def places
     authorize Place, :manage?
