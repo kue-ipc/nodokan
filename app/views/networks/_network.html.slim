@@ -3,7 +3,7 @@
   dl
     = dt_dd_for network, :name do |value|
       = value
-      - [:auth, :locked, :specific, :global].each do |attr|
+      - [:disabled, :unverifiable, :auth, :locked, :specific, :global].each do |attr|
         = badge_for(network, attr)
     = dt_dd_for network, :vlan
     = dt_dd_for network, :ipv4_network_prefix do |value|

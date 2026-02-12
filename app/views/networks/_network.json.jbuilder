@@ -1,4 +1,5 @@
-json.extract! network, :id, :name, :vlan, :auth, :locked, :specific, :global,
+json.extract! network, :id, :name, :vlan,
+  :disabled, :unverifiable, :auth, :locked, :specific, :global,
   :dhcp, :ra,
   :ipv4_network_address, :ipv4_netmask,
   :ipv4_prefix_length, :ipv4_gateway_address,

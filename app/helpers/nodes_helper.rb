@@ -69,9 +69,9 @@ module NodesHelper
 
   def node_flag_attributes
     if Settings.feature.specific_node
-      [:specific, :global, :public, :dns]
+      [:disabled, :permanent, :specific, :global, :public, :dns]
     else
-      [:global, :public, :dns]
+      [:disabled, :permanent, :global, :public, :dns]
     end
   end
 

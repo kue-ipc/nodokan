@@ -22,6 +22,12 @@
             :first, :second, {floating: true},
             data: {node_target: "nodeType", action: "node#changeNodeType"}
         - if current_user.admin?
+          .col-md-2.d-flex.align-items-center
+            = f.check_box :disabled,
+              data: {node_target: "disabled", action: "node#changeFlag"}
+          .col-md-2.d-flex.align-items-center
+            = f.check_box :permanent,
+              data: {node_target: "permanent", action: "node#changeFlag"}
           - if Settings.feature.specific_node
             .col-md-2.d-flex.align-items-center
               = f.check_box :specific,

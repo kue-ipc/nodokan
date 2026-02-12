@@ -112,6 +112,8 @@ class NetworksController < ApplicationController
       :vlan,
       :domain,
       :domain_search,
+      :disabled,
+      :unverifiable,
       :auth,
       :locked,
       :specific,

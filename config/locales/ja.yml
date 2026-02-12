@@ -186,6 +186,10 @@ ja:
       logical: |
         論理上の端末です。実際には存在せず、他の端末と結び付けて管理します。
         (複数端末をまとめたクラスタ、冗長化の仮想IP、IPアドレスの予約等)
+      disabled: |
+        この端末は無効とされているため、ネットワークに接続できません。
+      permanent: |
+        この端末が自動で削除されることはありません。
       specific: |
         この端末は特定端末として登録されています。
         (解除したい場合は、閲覧画面から特定端末の申請を行ってください。)
@@ -470,6 +474,8 @@ ja:
         vlan: VLAN番号
         auth: 認証
         locked: ロック
+        disabled: 無効
+        unverifiable: 検証不可
         specific: 特定
         global: 外部
         dhcp: DHCP
@@ -556,6 +562,8 @@ ja:
         confirmation: 確認
         user: 所有者
         user_id: 所有者
+        disabled: 無効
+        permanent: 永続
         specific: 特定
         global: 外部
         public: 公開

@@ -7,6 +7,8 @@ export default class NodeController < Controller<HTMLFormElement>
   @selectTargets = ["nodeType"] as const
 
   @flagTargets = [
+    "disabled"
+    "permanent"
     "specific"
     "public"
     "dns"
@@ -17,12 +19,16 @@ export default class NodeController < Controller<HTMLFormElement>
     "collapseHelpMobile"
     "collapseHelpVirtual"
     "collapseHelpLogical"
+    "collapseHelpDisabled"
+    "collapseHelpPermanent"
     "collapseHelpSpecific"
     "collapseHelpPublic"
     "collapseHelpDns"
   ] as const
 
   @flagCollapseHelps := {
+    disabled: "collapseHelpDisabled"
+    permanent: "collapseHelpPermanent"
     specific: "collapseHelpSpecific"
     public: "collapseHelpPublic"
     dns: "collapseHelpDns"
@@ -54,6 +60,8 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly collapseHelpMobileTarget: HTMLDivElement
   declare readonly collapseHelpVirtualTarget: HTMLDivElement
   declare readonly collapseHelpLogicalTarget: HTMLDivElement
+  declare readonly collapseHelpDisabledTarget: HTMLDivElement
+  declare readonly collapseHelpPermanentTarget: HTMLDivElement
   declare readonly collapseHelpSpecificTarget: HTMLDivElement
   declare readonly collapseHelpPublicTarget: HTMLDivElement
   declare readonly collapseHelpDnsTarget: HTMLDivElement
@@ -67,6 +75,8 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly hasCollapseHelpMobileTarget: boolean
   declare readonly hasCollapseHelpVirtualTarget: boolean
   declare readonly hasCollapseHelpLogicalTarget: boolean
+  declare readonly hasCollapseHelpDisabledTarget: boolean
+  declare readonly hasCollapseHelpPermanentTarget: boolean
   declare readonly hasCollapseHelpSpecificTarget: boolean
   declare readonly hasCollapseHelpPublicTarget: boolean
   declare readonly hasCollapseHelpDnsTarget: boolean
@@ -80,6 +90,8 @@ export default class NodeController < Controller<HTMLFormElement>
   collapseHelpMobile?: Collapse
   collapseHelpVirtual?: Collapse
   collapseHelpLogical?: Collapse
+  collapseHelpDisabled?: Collapse
+  collapseHelpPermanent?: Collapse
   collapseHelpSpecific?: Collapse
   collapseHelpPublic?: Collapse
   collapseHelpDns?: Collapse
@@ -159,7 +171,7 @@ export default class NodeController < Controller<HTMLFormElement>
 
     name := event.target.dataset.nodeTarget ?? ""
     switch name
-      "specific", "public", "dns"
+      "disabled", "permanent", "specific", "public", "dns"
         // valid
       else
         console.warn `unknown flag target: ${name}`

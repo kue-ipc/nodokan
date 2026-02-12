@@ -13,6 +13,10 @@
         = f.text_field :domain_search, wrapper: {class: "col-md-8"}
       .row
         .col-md-2
+          = f.check_box :disabled
+        .col-md-2
+          = f.check_box :unverifiable
+        .col-md-2
           = f.check_box :auth
         .col-md-2
           = f.check_box :locked
