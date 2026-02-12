@@ -41,6 +41,8 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       domain: node.domain,
       duid: node.duid,
       node_type: node.node_type,
+      disabled: node.disabled,
+      permanent: node.permanent,
       specific: node.specific,
       public: node.public,
       dns: node.dns,

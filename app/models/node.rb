@@ -18,7 +18,7 @@ class Node < ApplicationRecord
     read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
-  flag :flag, {specific: "s", public: "p", dns: "d"}
+  flag :flag, {disabled: "x", permanent: "8", public: "p", dns: "d", specific: "s"}
 
   has_paper_trail
 

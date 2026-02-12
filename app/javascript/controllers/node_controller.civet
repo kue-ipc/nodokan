@@ -170,17 +170,14 @@ export default class NodeController < Controller<HTMLFormElement>
     return unless event?.target <? HTMLInputElement
 
     name := event.target.dataset.nodeTarget ?? ""
-    switch name
-      "disabled", "permanent", "specific", "public", "dns"
-        // valid
-      else
-        console.warn `unknown flag target: ${name}`
-        return
+    if name is not in NodeController.flagTargets as readonly string[]
+      console.warn `unknown flag target: ${name}`
+      return
 
     await @waitCollapsing()
 
+    collapseHelp := @[NodeController.flagCollapseHelps[name as typeof NodeController.flagTargets[number]]]
     if event.target.checked
-      @[NodeController.flagCollapseHelps[name]]?.show()
+      collapseHelp?.show()
     else
-      @[NodeController.flagCollapseHelps[name]]?.hide()
-
+      collapseHelp?.hide()

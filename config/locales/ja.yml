@@ -476,7 +476,6 @@ ja:
         locked: ロック
         disabled: 無効
         unverifiable: 検証不可
-        specific: 特定
         global: 外部
         dhcp: DHCP
         ra: ルーター広告
