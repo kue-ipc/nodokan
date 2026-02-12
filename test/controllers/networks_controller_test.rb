@@ -34,9 +34,10 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
     {
       name: network.name,
       vlan: network.vlan,
+      disabled: network.disabled,
+      unverifiable: network.unverifiable,
       auth: network.auth,
       locked: network.locked,
-      specific: network.specific,
       dhcp: network.dhcp,
       ra: network.ra,
       ipv4_network_address: network.ipv4_network_address,

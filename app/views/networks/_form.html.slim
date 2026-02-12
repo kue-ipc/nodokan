@@ -12,16 +12,9 @@
         = f.text_field :domain, wrapper: {class: "col-md-4"}
         = f.text_field :domain_search, wrapper: {class: "col-md-8"}
       .row
-        .col-md-2
-          = f.check_box :disabled
-        .col-md-2
-          = f.check_box :unverifiable
-        .col-md-2
-          = f.check_box :auth
-        .col-md-2
-          = f.check_box :locked
-        .col-md-2
-          = f.check_box :specific
+        - network_flag_names.each do |name|
+          .col-md-2
+            = f.check_box name
 
     .rounded.border.p-2.mb-2
       h4 = t("forms.network.ipv4_network.title")

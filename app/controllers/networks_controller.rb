@@ -116,7 +116,6 @@ class NetworksController < ApplicationController
       :unverifiable,
       :auth,
       :locked,
-      :specific,
       :dhcp,
       :ra,
       :ipv4_network_address,

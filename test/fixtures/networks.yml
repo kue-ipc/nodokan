@@ -5,9 +5,10 @@ all:
   name: 全設定
   domain: test.example.jp
   domain_search_data: <%= ["service.example.jp", "example.jp"].to_json.inspect %>
+  disabled: false
+  unverifiable: false
   auth: false
   locked: true
-  specific: false
   dhcp: true
   ra: stateless
   ipv4_network_data: <%= ipv4_address('0.0.0.0') %>
@@ -21,9 +22,10 @@ all:
 extra:
   name: 外部ネットワーク
   vlan: 99
+  disabled: false
+  unverifiable: false
   auth: false
   locked: true
-  specific: true
   dhcp: false
   ra: disabled
   ipv4_network_data: <%= ipv4_address('192.0.2.0') %>
@@ -37,9 +39,10 @@ extra:
 server:
   name: サーバーネットワーク
   vlan: 101
+  disabled: false
+  unverifiable: false
   auth: false
   locked: false
-  specific: false
   dhcp: false
   ra: router
   ipv4_network_data: <%= ipv4_address('192.168.1.0') %>
@@ -55,9 +58,10 @@ client:
   vlan: 102
   domain: client.example.jp
   domain_search_data: <%= ["service.example.jp", "server.example.jp", "example.jp"].to_json.inspect %>
+  disabled: false
+  unverifiable: false
   auth: true
   locked: false
-  specific: false
   dhcp: true
   ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.2.0') %>
@@ -73,9 +77,10 @@ client:
 free:
   name: 空いているネットワーク
   vlan: 103
+  disabled: false
+  unverifiable: false
   auth: true
   locked: false
-  specific: false
   dhcp: true
   ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.3.0') %>
@@ -89,9 +94,10 @@ free:
 ipv4only:
   name: IPv4のみのネットワーク
   vlan: 110
+  disabled: false
+  unverifiable: false
   auth: false
   locked: false
-  specific: false
   dhcp: false
   ra: disabled
   ipv4_network_data: <%= ipv4_address('192.168.10.0') %>
@@ -104,9 +110,10 @@ ipv4only:
 ipv6only:
   name: IPv6のみのネットワーク
   vlan: 120
+  disabled: false
+  unverifiable: false
   auth: false
   locked: false
-  specific: false
   dhcp: false
   ra: stateless
   ipv4_network_data:
@@ -119,9 +126,10 @@ ipv6only:
 noip:
   name: IP無しネットワーク
   vlan: 130
+  disabled: false
+  unverifiable: false
   auth: false
   locked: false
-  specific: false
   dhcp: false
   ra: disabled
   ipv4_network_data:
@@ -135,9 +143,10 @@ target:
   id: 42
   name: ターゲットネットワーク
   vlan: 140
+  disabled: false
+  unverifiable: false
   auth: true
   locked: false
-  specific: false
   dhcp: true
   ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.100.0') %>
@@ -150,9 +159,10 @@ target:
 last:
   name: 最後のネットワーク
   vlan: 200
+  disabled: false
+  unverifiable: false
   auth: true
   locked: false
-  specific: false
   dhcp: true
   ra: managed
   ipv4_network_data: <%= ipv4_address('192.168.200.0') %>

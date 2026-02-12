@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_12_031725) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_12_054148) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -185,7 +185,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_031725) do
     t.integer "nics_count", default: 0, null: false
     t.text "note"
     t.integer "ra", default: -1, null: false
-    t.boolean "specific", default: false, null: false
     t.boolean "unverifiable", default: false, null: false
     t.datetime "updated_at", null: false
     t.integer "vlan", limit: 2

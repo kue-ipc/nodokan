@@ -18,7 +18,7 @@ class Network < ApplicationRecord
       find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network)
     }
 
-  flag :flag, {auth: "a", dhcp: "d", locked: "l", specific: "s"}
+  flag :flag, {disabled: "x", unverifiable: "u", auth: "a", locked: "l", dhcp: "d"}
 
   has_paper_trail
 
