@@ -35,8 +35,8 @@
                 = f.submit button_txt, class: "btn btn-primary btn-sm"
         div class=(node_hosts_list_col_classes(:name))
           = host.name
-          - node_flag_attributes.each do |attr|
-            = badge_for(host, attr)
+          - node_flag_names.each do |name|
+            = badge_for(host, name)
         div class=(node_hosts_list_col_classes(:hostname)) = host.hostname
         div class=(node_hosts_list_col_classes(:ipv4_address))
           - host.nics.each do |nic|

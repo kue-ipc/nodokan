@@ -37,8 +37,8 @@ p
       @node.nics.find(&:ipv6_data)&.ipv6_address
     | )
 
-    - node_flag_attributes.each do |attr|
-      = badge_for(@node, attr)
+    - node_flag_names.each do |name|
+      = badge_for(@node, name)
 
 = bootstrap_form_with model: @specific_node_application,
   url: node_specific_node_application_path(@node),

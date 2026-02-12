@@ -22,22 +22,10 @@
             :first, :second, {floating: true},
             data: {node_target: "nodeType", action: "node#changeNodeType"}
         - if current_user.admin?
-          .col-md-2.d-flex.align-items-center
-            = f.check_box :disabled,
-              data: {node_target: "disabled", action: "node#changeFlag"}
-          .col-md-2.d-flex.align-items-center
-            = f.check_box :permanent,
-              data: {node_target: "permanent", action: "node#changeFlag"}
-          - if Settings.feature.specific_node
+          - node_flag_names.each do |name|
             .col-md-2.d-flex.align-items-center
-              = f.check_box :specific,
-                data: {node_target: "specific", action: "node#changeFlag"}
-          .col-md-2.d-flex.align-items-center
-            = f.check_box :public,
-              data: {node_target: "public", action: "node#changeFlag"}
-          .col-md-2.d-flex.align-items-center
-            = f.check_box :dns,
-              data: {node_target: "dns", action: "node#changeFlag"}
+              = f.check_box name,
+                data: {node_target: "#{name}", action: "node#changeFlag"}
 
       - Node.node_types.each_key do |name|
         = tag.div class: {collapse: true, show: node.node_type == name},
@@ -46,7 +34,7 @@
             = badge_for(node, :node_type, name)
             small.text-body-emphasis< = t(name, scope: "messages.node_helps")
 
-      - node_flag_attributes.each do |name|
+      - node_flag_names.each do |name|
         = tag.div class: {collapse: true, show: node.send(name)},
           data: {node_target: "collapseHelp#{name.to_s.camelize}"}
           .row: .col-12

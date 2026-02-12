@@ -3,8 +3,8 @@
   dl
     = dt_dd_for network, :name do |value|
       = value
-      - [:disabled, :unverifiable, :auth, :locked, :specific, :global].each do |attr|
-        = badge_for(network, attr)
+      - network_flag_names.each do |name|
+        = badge_for(network, name)
     = dt_dd_for network, :vlan
     = dt_dd_for network, :ipv4_network_prefix do |value|
       = span_value_for(value)

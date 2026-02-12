@@ -84,6 +84,8 @@ class Node < ApplicationRecord
       hostname
       domain
       node_type
+      disabled
+      permanent
       specific
       pubilc
       dns
