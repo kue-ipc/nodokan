@@ -34,6 +34,31 @@ config:
   destroy_deleted_user: false
   destroy_deleted_user_without_node: false
   destroy_nodes_of_deleted_user: false
+  # confirmation period
+  confirmation_period:
+    approved: P1Y1M
+    unapproved: P1M
+    expire_soon: P1M
+  # auto action and warning
+  auto_destroy_node: false
+  auto_disable_node: false
+  warning_confirmation_expired: false
+  warning_confirmation_expire_soon: false
+  # period
+  destroy_node_period:
+    grace: P1M
+    unconfirmed: P1M
+    expried: P1Y
+    not_connected: P1M
+    last_connection: P1Y
+  disable_node_period:
+    grace: P1M
+    unconfirmed: P1Y
+    expried: P1Y
+  notice_interval: P1M
+  warning_interval: P1M
+  user_can_enable_node: false
+  enable_node_upon_confirmation: false
 feature:
   confirmation: true
   specific_node: true

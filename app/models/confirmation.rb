@@ -1,5 +1,6 @@
 class Confirmation < ApplicationRecord
   include Bitwise
+  include Duration
 
   has_paper_trail
 
@@ -176,7 +177,7 @@ class Confirmation < ApplicationRecord
       :expired
     elsif !approved
       :unapproved
-    elsif expiration <= Time.current.days_since(30)
+    elsif expiration <= duration(Settings.config.confirmation_period.expire_soon).ago
       :expire_soon
     else
       :approved
@@ -196,9 +197,9 @@ class Confirmation < ApplicationRecord
 
   def validity_period
     if approved
-      396.days
+      duration(Settings.config.confirmation_period.approved)
     else
-      30.days
+      duration(Settings.config.confirmation_period.unapproved)
     end
   end
 
