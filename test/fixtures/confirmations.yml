@@ -12,7 +12,6 @@ desktop:
   security_update: :auto
   security_scan: :auto
   confirmed_at: <%= (Time.current - 2.month).to_json %>
-  expiration: <%= (Time.current + 1.year).to_json %>
   approved: true
 
 note:
@@ -27,5 +26,4 @@ note:
   security_update: :not_do
   security_scan: :not_do
   confirmed_at: <%= (Time.current - 2.month).to_json %>
-  expiration: <%= (Time.current - 1.month).to_json %>
   approved: true
