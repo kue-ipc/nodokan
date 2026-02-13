@@ -551,6 +551,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
 
+"@types/hotwired__turbo@^8.0.6":
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/@types/hotwired__turbo/-/hotwired__turbo-8.0.6.tgz#735424cd923a9a11c54d319d546c7f3f7edd9725"
+  integrity sha512-jqWRyXz+wAa7E3iB3WKcpXjVUgfLt2zGO68x3ANPtM4JSVDOT/q9GhPQzXf3EtPOkdiHfUp7JAC0EU5bSwluFA==
+
 "@types/json-schema@^7.0.15":
   version "7.0.15"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"

@@ -1,0 +1,18 @@
+{StreamActions, visit, type Action} from @hotwired/turbo
+
+StreamActions.visit = ->
+  target := @getAttribute("target")
+  url := @getAttribute("url")
+  autoscroll := @getAttribute("autoscroll")
+
+  turbo_action := @getAttribute("data-turbo-action")
+
+  if url <? "string" and turbo_action? is in ["advance", "replace"]
+    visit(url, {action: turbo_action as Action})
+
+  if target <? "string" and autoscroll is "true"
+    el := document.getElementById(target)
+    block := @getAttribute("data-autoscroll-block") or "end"
+    behavior := @getAttribute("data-autoscroll-behavior") or "auto"
+
+    el.scrollIntoView({block as ScrollLogicalPosition ,behavior as ScrollBehavior}) if el?

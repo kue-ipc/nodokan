@@ -25,6 +25,7 @@
     "@danielx/civet": "^0.11.2",
     "@eslint/js": "^10.0.1",
     "@types/bootstrap": "^5.2.10",
+    "@types/hotwired__turbo": "^8.0.6",
     "esbuild": "^0.27.3",
     "eslint": "^10.0.0",
     "eslint-plugin-civet": "^0.0.6",
