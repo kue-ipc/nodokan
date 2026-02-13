@@ -95,6 +95,22 @@ class Confirmation < ApplicationRecord
   validates :security_update, presence: true
   validates :security_scan, presence: true
 
+  def self.approved_period
+    @approved_period = nil if Rails.env.test?
+    @approved_period ||= period(Settings.config.confirmation_period.approved)
+  end
+
+  def self.unapproved_period
+    @unapproved_period = nil if Rails.env.test?
+    @unapproved_period ||= period(Settings.config.confirmation_period.unapproved)
+  end
+
+  def self.expire_soon_period
+    @expire_soon_period = nil if Rails.env.test?
+    @expire_soon_period ||= period(Settings.config.confirmation_period.expire_soon)
+  end
+
+
   def check(num)
     if num.nil? || num.negative?
       :unknown
@@ -172,9 +188,9 @@ class Confirmation < ApplicationRecord
 
   def validity_period
     if approved
-      period(Settings.config.confirmation_period.approved)
+      Confirmation.approved_period
     else
-      period(Settings.config.confirmation_period.unapproved)
+      Confirmation.unapproved_period
     end
   end
 
@@ -193,7 +209,7 @@ class Confirmation < ApplicationRecord
       :expired
     elsif !approved
       :unapproved
-    elsif expiration - expire_soon_period <= time
+    elsif expiration - Confirmation.expire_soon_period <= time
       :expire_soon
     else
       :approved

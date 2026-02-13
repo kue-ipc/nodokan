@@ -1,4 +1,6 @@
 class Bulk < ApplicationRecord
+  include CleanRecord
+
   has_paper_trail
 
   enum :status, {
