@@ -170,18 +170,48 @@ class Confirmation < ApplicationRecord
     ALL_ATTRS.any? { |name| self[name] == "unknown" }
   end
 
-  def status
+  def validity_period
+    if approved
+      duration(Settings.config.confirmation_period.approved)
+    else
+      duration(Settings.config.confirmation_period.unapproved)
+    end
+  end
+
+  def expire_soon_period
+    duration(Settings.config.confirmation_period.expire_soon)
+  end
+
+  def expiration
+    validity_period.after(confirmed_at)
+  end
+
+  def status(time = Time.current)
     if confirmed_at.blank?
       :unconfirmed
-    elsif expiration <= Time.current
+    elsif expiration <= time
       :expired
     elsif !approved
       :unapproved
-    elsif expiration <= duration(Settings.config.confirmation_period.expire_soon).ago
+    elsif expiration <= expire_soon_period.after(time)
       :expire_soon
     else
       :approved
     end
+  end
+
+  def status_duration(time = Time.current)
+    start_time = case status(time)
+    in :approved | :unapproved
+      confirmed_at
+    in :expire_soon
+      expire_soon_period.before(expiration)
+    in :expired
+      expiration
+    in :unconfirmed
+      node.created_at
+    end
+    time - start_time
   end
 
   def destroyable?
@@ -195,15 +225,7 @@ class Confirmation < ApplicationRecord
     existence_not_my_own?
   end
 
-  def validity_period
-    if approved
-      duration(Settings.config.confirmation_period.approved)
-    else
-      duration(Settings.config.confirmation_period.unapproved)
-    end
-  end
-
-  def check_and_approve!
+  def check_and_approve!(time = Time.current)
     if !exist?
       self.content = :unknown
       self.os_update = :unknown
@@ -227,7 +249,6 @@ class Confirmation < ApplicationRecord
 
     self.approved = approvable?
 
-    self.confirmed_at = Time.current
-    self.expiration = Time.current + validity_period
+    self.confirmed_at = time
   end
 end
