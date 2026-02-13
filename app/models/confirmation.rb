@@ -1,6 +1,6 @@
 class Confirmation < ApplicationRecord
   include Bitwise
-  include Duration
+  include Period
 
   has_paper_trail
 
@@ -172,18 +172,18 @@ class Confirmation < ApplicationRecord
 
   def validity_period
     if approved
-      duration(Settings.config.confirmation_period.approved)
+      period(Settings.config.confirmation_period.approved)
     else
-      duration(Settings.config.confirmation_period.unapproved)
+      period(Settings.config.confirmation_period.unapproved)
     end
   end
 
   def expire_soon_period
-    duration(Settings.config.confirmation_period.expire_soon)
+    period(Settings.config.confirmation_period.expire_soon)
   end
 
   def expiration
-    validity_period.after(confirmed_at)
+    confirmed_at + validity_period
   end
 
   def status(time = Time.current)
@@ -193,25 +193,25 @@ class Confirmation < ApplicationRecord
       :expired
     elsif !approved
       :unapproved
-    elsif expiration <= expire_soon_period.after(time)
+    elsif expiration - expire_soon_period <= time
       :expire_soon
     else
       :approved
     end
   end
 
-  def status_duration(time = Time.current)
+  def status_period(time = Time.current)
     start_time = case status(time)
     in :approved | :unapproved
       confirmed_at
     in :expire_soon
-      expire_soon_period.before(expiration)
+      expiration - expire_soon_period
     in :expired
       expiration
     in :unconfirmed
       node.created_at
     end
-    time - start_time
+    (time - start_time).to_i
   end
 
   def destroyable?
