@@ -4,6 +4,6 @@ class AdminMailer < ApplicationMailer
     @job_id = params[:job_id]
     @time = params[:time]
     @exception = params[:exception]
-    mail to: Settings.admin.email
+    mail subject: subject_with_site_title, to: Settings.admin.email
   end
 end

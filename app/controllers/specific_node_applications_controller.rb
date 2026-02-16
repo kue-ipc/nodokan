@@ -6,8 +6,7 @@ class SpecificNodeApplicationsController < ApplicationController
   end
 
   def create
-    @specific_node_application =
-      SpecificNodeApplication.new(specific_node_application_params)
+    @specific_node_application = SpecificNodeApplication.new(specific_node_application_params)
     @specific_node_application.node_id = @node.id
     @specific_node_application.user_id = current_user.id
     if @specific_node_application.valid?
@@ -27,14 +26,15 @@ class SpecificNodeApplicationsController < ApplicationController
   end
 
   private def specific_node_application_params
-    params.expect(
-      specific_node_application: [:action,
+    params.expect(specific_node_application: [
+      :action,
       :reason,
       :rule_set,
       :rule_list,
       :external,
       :register_dns,
       :fqdn,
-      :note,])
+      :note,
+    ])
   end
 end

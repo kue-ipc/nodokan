@@ -1037,9 +1037,52 @@ ja:
   # mailer
   admin_mailer:
     job_failure:
-      subject: 【端末管理システム管理通知】ジョブ失敗
+      subject: ジョブ失敗
       message: |
         端末管理システムで、下記のジョブが失敗しました。
+    notice_nodes:
+      subject: 要確認端末(管理者)
+      message: |
+        確認が必要な端末があります。
+        下記の端末について、状態を確認してください。
+        適切な所有者への委任や、端末の削除を行ってください。
+      notices:
+        unowned: 所有者がいません。
+        deleted_owner: 所有者が既に削除されました。
+
+  user_mailer:
+    notice_nodes:
+      subject: 要確認端末
+      message: |
+        確認が必要な端末があります。
+        下記の端末について、状態を確認してください。
+        対応しなかった場合、端末の無効化や削除が行われる場合があります。
+      how_to:
+        with_confirmation: |
+          端末で「確認」を実施してください。
+          もし、使用しない端末であれば、「確認」で適切な項目を選び、後に削除してください。
+        withou_confirmation: |
+          端末ネットワークに接続してください。
+          もし、使用していない端末であれば削除してくください。
+
+      reesons:
+        unconfirmed: 確認が一度も実施させれずに一定期間が過ぎたため、
+        expried: 確認の有効期限が切れてから長期間放置されているため、
+        not_connected: 端末作成後に一度も接続されずに一定時間が過ぎたため、
+        last_connection: 端末が長期間接続されていないため、
+      notices:
+        destroied: 端末は削除されました。
+        disabled: 端末は無効化されました。
+        expired: 有効期限が切れました。
+        destroy_soon: まもなく削除されます。
+        disbale_soon: まもなく無効化されます。
+        expire_soon: まもなく有効期限が切れます。
+
+
+
+  specific_node_mailer:
+    apply:
+      subject: 特定端末申請
 
   # override devise messages
   devise:
