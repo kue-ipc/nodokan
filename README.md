@@ -29,6 +29,14 @@ RAILS_ENV=test rails radius:setup
 rails test
 ```
 
+## ジョブのキューの優先順位
+
+resqueでのキューのゆーせん順位は次のようにすることをお勧めします。
+
+```env
+QUEUE=register,*,check,clean
+```
+
 ## 変更点
 
 前のバージョンから標準の動作が変わったところのみ記載しています。機能追加は記載していません。
