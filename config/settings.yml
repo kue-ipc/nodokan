@@ -60,7 +60,6 @@ config:
     unconfirmed: P1Y
     expried: P1Y
   notice_interval: P1M
-  warning_interval: P1M
   user_can_enable_node: false
   enable_node_upon_confirmation: false
 feature:

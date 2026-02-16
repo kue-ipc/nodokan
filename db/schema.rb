@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_13_044819) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_045835) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -231,6 +231,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_044819) do
     t.boolean "dns", default: false, null: false
     t.string "domain"
     t.binary "duid_data", limit: 130
+    t.timestamp "execution_at"
     t.bigint "hardware_id"
     t.bigint "host_id"
     t.string "hostname"
@@ -238,6 +239,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_044819) do
     t.integer "nics_count", default: 0, null: false
     t.integer "node_type", default: 0, null: false
     t.text "note"
+    t.integer "notice", limit: 1, default: 0, null: false
+    t.timestamp "noticed_at"
     t.bigint "operating_system_id"
     t.boolean "permanent", default: false, null: false
     t.bigint "place_id"

@@ -96,20 +96,19 @@ class Confirmation < ApplicationRecord
   validates :security_scan, presence: true
 
   def self.approved_period
-    @approved_period = nil if Rails.env.test?
+    @approved_period = nil unless Rails.env.production?
     @approved_period ||= period(Settings.config.confirmation_period.approved)
   end
 
   def self.unapproved_period
-    @unapproved_period = nil if Rails.env.test?
+    @unapproved_period = nil unless Rails.env.production?
     @unapproved_period ||= period(Settings.config.confirmation_period.unapproved)
   end
 
   def self.expire_soon_period
-    @expire_soon_period = nil if Rails.env.test?
+    @expire_soon_period = nil unless Rails.env.production?
     @expire_soon_period ||= period(Settings.config.confirmation_period.expire_soon)
   end
-
 
   def check(num)
     if num.nil? || num.negative?
