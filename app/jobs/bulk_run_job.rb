@@ -64,7 +64,7 @@ class BulkRunJob < ApplicationJob
     # TODO: 今のところtext/csvのみ。
     #     将来はxlsxとかも対応したい。
     if bulk.input.attached? && bulk.input.content_type != ("text/csv")
-      raise BulkRunError, "Unknown content type: #{bulk.file.content_type}"
+      raise BulkRunError, "Unknown content type: #{bulk.input.content_type}"
     end
 
     processor =

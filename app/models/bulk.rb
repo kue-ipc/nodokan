@@ -21,8 +21,8 @@ class Bulk < ApplicationRecord
   has_one_attached :input
   has_one_attached :output
 
-  validates :target,
-    inclusion: {in: ["Node", "Confirmation", "Network", "User"]}
+  validates :target, inclusion: {in: ["Node", "Confirmation", "Network", "User"]}
+  validates :content_type, inclusion: {in: ["text/csv"]}
 
   before_update :check_status_transition
 
