@@ -8,7 +8,7 @@ class NodeCheckAllJob < ApplicationJob
   end
 
   def check_nodes_owned_by_existing_users(time = Time.current)
-    per_user_jobs = Uesr.where(deleted: false).map { |user| NodeCheckPerUserJob.new(user) }
+    per_user_jobs = Uesr.where(deleted: false).map { |user| NodeCheckPerUserJob.new(user, time) }
     ActiveJob.perform_all_later(per_user_jobs)
   end
 
@@ -28,6 +28,5 @@ class NodeCheckAllJob < ApplicationJob
       .where(user: nil)
       .ids
     NoticeNodesMaler.with(ids:).unowned.deliver_later if count.positive?
-    end
   end
 end

@@ -32,7 +32,7 @@ class Node < ApplicationRecord
 
   enum :notice, {
     none: 0,
-    destroied: 1, # maybe not used
+    destroyed: 1, # maybe not used
     disabled: 2,
     expired: 3,
     # none_soon: 4, # not used

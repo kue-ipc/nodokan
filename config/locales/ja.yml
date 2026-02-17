@@ -1071,7 +1071,7 @@ ja:
         not_connected: 端末作成後に一度も接続されずに一定時間が過ぎたため、
         last_connection: 端末が長期間接続されていないため、
       notices:
-        destroied: 端末は削除されました。
+        destroyed: 端末は削除されました。
         disabled: 端末は無効化されました。
         expired: 有効期限が切れました。
         destroy_soon: まもなく削除されます。
