@@ -10,8 +10,7 @@ class SpecificNodeApplicationsController < ApplicationController
     @specific_node_application.node_id = @node.id
     @specific_node_application.user_id = current_user.id
     if @specific_node_application.valid?
-      SpecificNodeMailer.with(
-        specific_node_application: @specific_node_application.serializable_hash)
+      SpecificNodeMailer.with(specific_node_application: @specific_node_application.serializable_hash)
         .apply.deliver_later
       redirect_to @node,
         notice: t("messages.has_applied_specific_node")

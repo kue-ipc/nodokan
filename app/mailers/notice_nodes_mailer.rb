@@ -1,34 +1,74 @@
 class NoticeNodesMailer < ApplicationMailer
-  # Subject can be set in your I18n file at config/locales/en.yml
-  # with the following lookup:
-  #
-  #   en.notice_nodes_mailer.user.subject
-  #
-  def user
-    @greeting = "Hi"
+  after_deliver :update_notice_status
 
-    mail to: "to@example.org"
+  def destroied
+    @notice = "destroide"
+    @user = params[:user]
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: @user.email
   end
 
-  # Subject can be set in your I18n file at config/locales/en.yml
-  # with the following lookup:
-  #
-  #   en.notice_nodes_mailer.deleted_users.subject
-  #
-  def deleted_users
-    @greeting = "Hi"
-
-    mail to: "to@example.org"
+  def disbaled
+    @notice = "disabled"
+    @user = params[:user]
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: @user.email
   end
 
-  # Subject can be set in your I18n file at config/locales/en.yml
-  # with the following lookup:
-  #
-  #   en.notice_nodes_mailer.unowned.subject
-  #
+  def expired
+    @notice = "expired"
+    @user = params[:user]
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: @user.email
+  end
+
+  def destroy_soon
+    @notice = "destroy_soon"
+    @user = params[:user]
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: @user.email
+  end
+
+  def disbale_soon
+    @notice = "disable_soon"
+    @user = params[:user]
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: @user.email
+  end
+
+  def expire_soon
+    @notice = "expire_soon"
+    @user = params[:user]
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: @user.email
+  end
+
   def unowned
-    @greeting = "Hi"
+    @notice = "unowned"
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: Settings.admin.email
+  end
 
-    mail to: "to@example.org"
+  def deleted_owner
+    @notice = "deleted_owner"
+    @ids = params[:ids]
+    @nodes = Node.where(id: params[:ids]).to_a
+    mail subject: subject_with_site_title, to: Settings.admin.email
+  end
+
+  def update_notice_status
+    # do nothing if notice is destroied, because destroied nodes has already been deleted.
+    return if @notice == "destroied"
+
+    # rubocop:disable Rails/SkipsModelValidations
+    Node.where(id: @ids).update_all(notice: @notice, noticed_at: Time.current)
+    # rubocop:enable Rails/SkipsModelValidations
   end
 end

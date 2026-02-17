@@ -32,9 +32,9 @@ module UniqueIdentifier
       raise ArgumentError, "Invalid identifier format: #{str}" unless m
 
       if (proc = @id_find_map[m[:key]])
-        class_exec(m[:value], &proc) ||
-          raise(ActiveRecord::RecordNotFound,
-            "Couldn't find #{model_name} with 'identifier'=#{str}")
+        unless class_exec(m[:value], &proc)
+          raise(ActiveRecord::RecordNotFound, "Couldn't find #{model_name} with 'identifier'=#{str}")
+        end
       elsif m[:key] == "#"
         find(m[:value])
       else
