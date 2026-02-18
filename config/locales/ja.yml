@@ -886,6 +886,11 @@ ja:
       previous: "&lsaquo; 前"
       next: "次 &rsaquo;"
       truncate: "&hellip;"
+    bulks:
+      index:
+        note: |
+            一括処理の保存期間は%{period}です。
+            削除される前に出力をダウンロードしてください。
 
   values:
     none: (無し)
@@ -1025,10 +1030,11 @@ ja:
       ipv6_pools:
         title: IPv6プール
     bulk:
+      export: 一括出力
+      import: 一括入力
       help: |
         CSVファイルを選択して「登録する」と、CSVファイルの内容に基づき処理が実行されます。
         対象の一覧を取得したい場合は、一覧の画面でエクスポートしてください。
-
   themes:
     light: ライト
     dark: ダーク
@@ -1077,8 +1083,6 @@ ja:
         destroy_soon: まもなく削除されます。
         disbale_soon: まもなく無効化されます。
         expire_soon: まもなく有効期限が切れます。
-
-
 
   specific_node_mailer:
     apply:

@@ -40,6 +40,8 @@ module BulksHelper
   def bulk_content_type_list
     [
       ["CSV", "text/csv"],
+      ["YAML", "application/yaml"],
+      ["JSONL", "application/jsonl"],
     ]
   end
 end
