@@ -1,5 +1,5 @@
 class KeaSubnetCheckAllJob < ApplicationJob
-  queue_as :default
+  queue_as :check
 
   def perform
     check_subnet4

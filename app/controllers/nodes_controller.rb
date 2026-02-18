@@ -193,12 +193,14 @@ class NodesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   private def node_params
-    permitted_params = params.expect(
-      node: [:name,
+    permitted_params = params.expect(node: [
+      :name,
       :hostname,
       :domain,
       :duid,
       :node_type,
+      :disabled,
+      :permanent,
       :specific,
       :public,
       :dns,

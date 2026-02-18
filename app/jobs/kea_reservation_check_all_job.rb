@@ -1,5 +1,5 @@
 class KeaReservationCheckAllJob < ApplicationJob
-  queue_as :default
+  queue_as :check
 
   def perform
     check_reservation4

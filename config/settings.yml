@@ -19,21 +19,49 @@ config:
   radius_mac_password: null
   node_require_nic: false
   nic_require_network: false
+  # period
+  #   numeber ... secs
+  #   string ... ISO 8601 duraiton
+  #   null ... forever
   retention_period:
-    ipv4_arp: null # forever
-    ipv6_neighbor: null # forever
-    radius_radacct: null # forever
-    radius_radpostauth: null # forever
-    bulk: 2629746 # 1 month
+    ipv4_arp: null
+    ipv6_neighbor: null
+    radius_radacct: null
+    radius_radpostauth: null
+    bulk: P1M
   nocompress_period:
-    ipv4_arp: 31556952 # 1 year
-    ipv6_neighbor: 31556952 # 1 year
-    radius_radacct: 2629746 # 1 month
+    ipv4_arp: P1Y
+    ipv6_neighbor: P1Y
+    radius_radacct: P1M
     radius_radpostauth: 0 # last
-    bulk: null # forever
+    bulk: null
   destroy_deleted_user: false
   destroy_deleted_user_without_node: false
   destroy_nodes_of_deleted_user: false
+  # confirmation period
+  confirmation_period:
+    approved: P1Y1M
+    unapproved: P1M
+    expire_soon: P1M
+  # auto action and warning
+  auto_destroy_node: false
+  auto_disable_node: false
+  warning_confirmation_expired: false
+  warning_confirmation_expire_soon: false
+  # period
+  destroy_node_period:
+    grace: P1M
+    unconfirmed: P1M
+    expried: P1Y
+    not_connected: P1M
+    last_connection: P1Y
+  disable_node_period:
+    grace: P1M
+    unconfirmed: P1Y
+    expried: P1Y
+  notice_interval: P1M
+  user_can_enable_node: false
+  enable_node_upon_confirmation: false
 feature:
   confirmation: true
   specific_node: true

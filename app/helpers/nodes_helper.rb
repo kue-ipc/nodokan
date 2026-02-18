@@ -41,15 +41,14 @@ module NodesHelper
   ].freeze
 
   LIST_COL_CLASSES = {
-    user: %w[d-none d-md-block col-md-2 col-lg-2 col-xl-1 col-xxl-1],
-    name: %w[col-4 col-sm-3 col-md-3 col-lg-3 col-xl-3 col-xxl-2],
-    hostname: %w[col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 col-xxl-1],
-    place: %w[d-none d-xxl-block col-xxl-1],
+    user:         %w[d-none d-md-block col-md-2 col-lg-2 col-xl-1 col-xxl-1],
+    name:         %w[col-4 col-sm-3 col-md-3 col-lg-3 col-xl-3 col-xxl-2],
+    hostname:     %w[col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 col-xxl-1],
+    place:        %w[d-none d-xxl-block col-xxl-1],
     ipv4_address: %w[col-5 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2],
     ipv6_address: %w[d-none d-xl-block col-xl-3 col-xxl-2],
-    mac_address: %w[d-none d-xxl-block col-xxl-2],
-    confirmation: %w[d-none d-sm-block col-sm-2 col-md-2 col-lg-2 col-xl-1
-      col-xxl-1],
+    mac_address:  %w[d-none d-xxl-block col-xxl-2],
+    confirmation: %w[d-none d-sm-block col-sm-2 col-md-2 col-lg-2 col-xl-1 col-xxl-1],
   }.freeze
 
   def node_list_cols
@@ -61,18 +60,16 @@ module NodesHelper
   end
 
   def node_type_names
-    names = [:normal, :mobile]
+    names = %i[normal mobile]
     names << :virtual if Settings.feature.virtual_node
     names << :logical if Settings.feature.logical_node
     names
   end
 
-  def node_flag_attributes
-    if Settings.feature.specific_node
-      [:specific, :global, :public, :dns]
-    else
-      [:global, :public, :dns]
-    end
+  def node_flag_names
+    attributes = %i[disabled permanent public dns]
+    attributes << :specific if Settings.feature.specific_node
+    attributes
   end
 
   def list_col_classes(name, cols: node_list_cols)
@@ -120,8 +117,7 @@ module NodesHelper
 
   def node_name_decorated(node)
     type_badge = badge_for(node, :node_type, hidden: node.normal?)
-    node_flag_attributes.map { |attr| badge_for(node, attr) }
-      .inject(h(node.name) + type_badge, :+)
+    node_flag_names.map { |name| badge_for(node, name) }.inject(h(node.name) + type_badge, :+)
   end
 
   def node_ipv4_address_decorated(node)

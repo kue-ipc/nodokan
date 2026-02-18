@@ -1,6 +1,7 @@
 class Ipv6Neighbor < ApplicationRecord
   include IpData
   include MacAddressData
+  include CleanRecord
 
   ipv6_data :ipv6
 

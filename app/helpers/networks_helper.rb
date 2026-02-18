@@ -1,4 +1,8 @@
 module NetworksHelper
+  def network_flag_names
+    %i[disabled unverifiable auth locked]
+  end
+
   def pool_range(pool)
     case pool
     when Ipv4Pool

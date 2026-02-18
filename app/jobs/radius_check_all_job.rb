@@ -1,5 +1,5 @@
 class RadiusCheckAllJob < RadiusJob
-  queue_as :default
+  queue_as :check
 
   def perform
     # MACアドレス

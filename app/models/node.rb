@@ -2,6 +2,7 @@ class Node < ApplicationRecord
   include DuidData
   include UniqueIdentifier
   include Flag
+  include Period
 
   unique_identifier "@",
     read: ->(record) { record.fqdn if record.domain.present? },
@@ -18,7 +19,7 @@ class Node < ApplicationRecord
     read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
-  flag :flag, {specific: "s", public: "p", dns: "d"}
+  flag :flag, {disabled: "x", permanent: "8", public: "p", dns: "d", specific: "s"}
 
   has_paper_trail
 
@@ -28,6 +29,19 @@ class Node < ApplicationRecord
     virtual: 2,
     logical: 3,
   }, validate: true
+
+  enum :notice, {
+    none: 0,
+    destroyed: 1, # maybe not used
+    disabled: 2,
+    expired: 3,
+    # none_soon: 4, # not used
+    destroy_soon: 5,
+    disbale_soon: 6,
+    expire_soon: 7,
+    unowned: 8,
+    deleted_owner: 9,
+  }, prefix: true, validate: true
 
   belongs_to :user, optional: true, counter_cache: true
 
@@ -77,6 +91,11 @@ class Node < ApplicationRecord
 
   # class methods
 
+  def self.notice_interval
+    @notice_interval = nil unless Rails.env.production?
+    @notice_interval ||= period(Settings.config.notice_interval)
+  end
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w[
@@ -84,6 +103,8 @@ class Node < ApplicationRecord
       hostname
       domain
       node_type
+      disabled
+      permanent
       specific
       pubilc
       dns

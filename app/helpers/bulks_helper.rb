@@ -33,7 +33,13 @@ module BulksHelper
 
   def bulk_target_list
     bulk_targets.map do |target|
-      [target, t(target.underscore, scope: "activerecord.models")]
+      [t(target.underscore, scope: "activerecord.models"), target]
     end
+  end
+
+  def bulk_content_type_list
+    [
+      ["CSV", "text/csv"],
+    ]
   end
 end

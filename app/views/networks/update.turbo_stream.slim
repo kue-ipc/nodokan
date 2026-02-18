@@ -1,2 +1,4 @@
 = turbo_stream.replace @network
 = turbo_stream.update "flash", partial: "flash"
+= turbo_stream_action_tag "visit", target: @network, url: network_path(@network), autoscroll: true,
+  data: {turbo_action: :advance, autoscroll_block: "start"}

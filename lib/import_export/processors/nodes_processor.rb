@@ -38,7 +38,7 @@ module ImportExport
       }
 
       converter :host, set: ->(record, value) {
-        record.host = Node.find_identifier(value)
+        record.host = value && Node.find_identifier(value)
       }
 
       converter :components, set: ->(record, value) {

@@ -1,5 +1,4 @@
-= turbo_frame_tag node, autoscroll: true,
-  data: {autoscroll_block: "start", turbo_action: :advance} do
+= turbo_frame_tag node, autoscroll: true, data: {turbo_action: :advance, autoscroll_block: "start"} do
   dl
     = dt_dd_for node, :name do |_name|
       = node_name_decorated(node)

@@ -74,9 +74,11 @@ class ConfirmationsController < ApplicationController
     @confirmation.check_and_approve!
     if @confirmation.save
       if @confirmation.approved
-        flash.now.notice = t("messages.confirmation_approved")
+        flash.now.notice = t("messages.confirmation_approved",
+          period: helpers.distance_of_time_in_words(@confirmation.expiration, Time.current))
       else
-        flash.now.alert = t("messages.confirmation_unapproved")
+        flash.now.alert = t("messages.confirmation_unapproved",
+          period: helpers.distance_of_time_in_words(@confirmation.expiration, Time.current))
       end
     else
       logger.error("confirmation seve error: #{@confirmation.errors.to_json}")

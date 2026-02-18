@@ -1,6 +1,7 @@
 class Ipv4Arp < ApplicationRecord
   include IpData
   include MacAddressData
+  include CleanRecord
 
   ipv4_data :ipv4
 

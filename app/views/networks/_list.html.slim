@@ -28,8 +28,10 @@
       = link_to network, data: {turbo: false}, class: "row py-1 border-top" do
         .col-2 = network.name
         .col-2
-          - [:auth, :dhcp, :locked, :specific, :global, :ra].each do |attr|
-            = badge_for(network, attr)
+          - network_flag_names.each do |name|
+            = badge_for(network, name)
+          = badge_for(network, :dhcp)
+          = badge_for(network, :ra)
         .col-1 = network.vlan
         .col-2 = span_value_for(network.ipv4_network_prefix, hide_blank: true)
         .col-2 = span_value_for(network.ipv6_network_prefix, hide_blank: true)

@@ -1,3 +1,4 @@
 = turbo_stream.update Node.new, @node
 = turbo_stream.update "flash", partial: "flash"
-= turbo_stream.update "header", partial: "header"
+= turbo_stream_action_tag "visit", target: @node, url: node_path(@node), autoscroll: true,
+  data: {turbo_action: :advance, autoscroll_block: "start"}

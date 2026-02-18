@@ -1,5 +1,6 @@
 class Confirmation < ApplicationRecord
   include Bitwise
+  include Period
 
   has_paper_trail
 
@@ -94,6 +95,21 @@ class Confirmation < ApplicationRecord
   validates :security_update, presence: true
   validates :security_scan, presence: true
 
+  def self.approved_period
+    @approved_period = nil unless Rails.env.production?
+    @approved_period ||= period(Settings.config.confirmation_period.approved)
+  end
+
+  def self.unapproved_period
+    @unapproved_period = nil unless Rails.env.production?
+    @unapproved_period ||= period(Settings.config.confirmation_period.unapproved)
+  end
+
+  def self.expire_soon_period
+    @expire_soon_period = nil unless Rails.env.production?
+    @expire_soon_period ||= period(Settings.config.confirmation_period.expire_soon)
+  end
+
   def check(num)
     if num.nil? || num.negative?
       :unknown
@@ -169,18 +185,48 @@ class Confirmation < ApplicationRecord
     ALL_ATTRS.any? { |name| self[name] == "unknown" }
   end
 
-  def status
+  def validity_period
+    if approved
+      Confirmation.approved_period
+    else
+      Confirmation.unapproved_period
+    end
+  end
+
+  def expire_soon_period
+    period(Settings.config.confirmation_period.expire_soon)
+  end
+
+  def expiration
+    confirmed_at + validity_period
+  end
+
+  def status(time = Time.current)
     if confirmed_at.blank?
       :unconfirmed
-    elsif expiration <= Time.current
+    elsif expiration <= time
       :expired
     elsif !approved
       :unapproved
-    elsif expiration <= Time.current.days_since(30)
+    elsif expiration - Confirmation.expire_soon_period <= time
       :expire_soon
     else
       :approved
     end
+  end
+
+  def status_period(time = Time.current)
+    start_time = case status(time)
+    in :approved | :unapproved
+      confirmed_at
+    in :expire_soon
+      expiration - expire_soon_period
+    in :expired
+      expiration
+    in :unconfirmed
+      node.created_at
+    end
+    (time - start_time).to_i
   end
 
   def destroyable?
@@ -194,15 +240,7 @@ class Confirmation < ApplicationRecord
     existence_not_my_own?
   end
 
-  def validity_period
-    if approved
-      396.days
-    else
-      30.days
-    end
-  end
-
-  def check_and_approve!
+  def check_and_approve!(time = Time.current)
     if !exist?
       self.content = :unknown
       self.os_update = :unknown
@@ -226,7 +264,6 @@ class Confirmation < ApplicationRecord
 
     self.approved = approvable?
 
-    self.confirmed_at = Time.current
-    self.expiration = Time.current + validity_period
+    self.confirmed_at = time
   end
 end
