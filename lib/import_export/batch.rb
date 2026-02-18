@@ -1,3 +1,4 @@
+require "stringio"
 require "active_support"
 
 module ImportExport
@@ -8,7 +9,6 @@ module ImportExport
     # define instance methods
     #   def add_to_out(params)
     #   def parse_data_each_params(data)
-    #   def out
 
     def self.content_type(str = nil)
       return @content_type if str.nil?
@@ -26,10 +26,15 @@ module ImportExport
 
     delegate :extname, to: :class
 
-    attr_reader :result, :count
+    attr_reader :result, :count, :out
 
-    def initialize(processor, **_opts)
+    def initialize(processor, out: StringIO.new)
       @processor = processor
+      @out = if out.is_a?(String)
+        StringIO.new(+out)
+      else
+        out
+      end
       @count = 0
       @result = Hash.new(0)
     end
@@ -51,7 +56,7 @@ module ImportExport
         next if noop
 
         begin
-          import_params(params) unless noop
+          import_params(params)
         rescue ActiveRecord::RecordNotFound
           failed_params(params, I18n.t("errors.messages.not_found"))
         rescue Pundit::NotAuthorizedError
@@ -92,7 +97,7 @@ module ImportExport
       count
     end
 
-    def import_params(params)
+    private def import_params(params)
       id = params[:id]
       id = id.strip if id.is_a?(String)
       case id

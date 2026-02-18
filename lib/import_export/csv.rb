@@ -1,6 +1,8 @@
 require "fileutils"
 require "logger"
 
+require "csv"
+
 require "import_export/batch"
 
 module ImportExport
@@ -16,36 +18,34 @@ module ImportExport
 
     attr_reader :result, :count
 
-    def initialize(*, out: +"", with_bom: false, delimiter: "\n", **)
-      # FIXME: 3.0系では`super`と引数無しで呼び出した場合、
-      #        `opts`にout等が一緒に入るため、オプションを付ける。
+    def initialize(*, with_bom: false, delimiter: "\n", **)
       super(*, **)
 
       if with_bom
-        out = StringIO.new(out) if out.is_a?(String)
-        out << "\u{feff}"
+        @out << "\u{feff}"
       end
-      @csv = CSV.new(out, headers:, write_headers: true, **)
+      @csv = CSV.new(@out, headers:, write_headers: true, **)
       @delimiter = delimiter
     end
 
+    # override
     def out
       @csv.to_io
     end
 
-    def add_to_out(params)
+    private def add_to_out(params)
       params_each_row(params) do |row|
         @csv << row
       end
     end
 
-    def params_each_row(params, &)
+    private def params_each_row(params, &)
       rows = [empty_row]
       put_in_rows(rows, params)
       rows.each(&)
     end
 
-    def put_in_rows(rows, params, parent: nil)
+    private def put_in_rows(rows, params, parent: nil)
       params.each do |key, value|
         next if value.blank?
 
@@ -76,12 +76,12 @@ module ImportExport
       rows
     end
 
-    def headers
+    private def headers
       @headers ||=
         ["id", *headers_from_keys(@processor.keys), "[result]", "[message]"]
     end
 
-    def headers_from_keys(keys, parent: nil)
+    private def headers_from_keys(keys, parent: nil)
       keys.flat_map do |key|
         case key
         in Symbol
@@ -99,7 +99,7 @@ module ImportExport
       end
     end
 
-    def key_to_header(key, parent: nil)
+    private def key_to_header(key, parent: nil)
       if parent
         "#{parent}[#{key}]"
       else
@@ -107,28 +107,24 @@ module ImportExport
       end
     end
 
-    def header_row(headers_or_row = headers)
+    private def header_row(headers_or_row = headers)
       headers_or_row = headers_or_row.headers if headers_or_row.is_a?(CSV::Row)
       CSV::Row.new(headers_or_row, headers_or_row, true)
     end
 
-    def empty_row(headers_or_row = headers)
+    private def empty_row(headers_or_row = headers)
       headers_or_row = headers_or_row.headers if headers_or_row.is_a?(CSV::Row)
       CSV::Row.new(headers_or_row, [])
     end
 
-    def delimiter
-      "\n"
-    end
-
-    def parse_data_each_params(data)
+    private def parse_data_each_params(data)
       CSV.table(data, converters: [], header_converters: :downcase,
         encoding: "BOM|UTF-8").each do |row|
         yield row_to_params(row)
       end
     end
 
-    def row_to_params(row, params: nil, keys: @processor.keys)
+    private def row_to_params(row, params: nil, keys: @processor.keys)
       params ||= {}.with_indifferent_access
       row.to_hash.compact_blank.each do |key, value|
         next if key =~ /\A\[\w+\]\z/
@@ -187,7 +183,7 @@ module ImportExport
       params
     end
 
-    def find_key_in_keys(key, keys)
+    private def find_key_in_keys(key, keys)
       key = key.intern
       keys.grep(Hash).find { |k| k.key?(key) }&.fetch(key)
     end

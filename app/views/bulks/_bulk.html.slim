@@ -16,7 +16,7 @@
         - when :input, :output
           - attachment = bulk.__send__(col[:name])
           - if attachment.attached?
-           = link_to attachment, class: "btn btn-primary" do
+           = link_to attachment, class: "btn btn-primary", download: attachment.filename do
             i.fa-solid.fa-download
         - when :action
           - if %w(waiting starting running stopping).include?(bulk.status)

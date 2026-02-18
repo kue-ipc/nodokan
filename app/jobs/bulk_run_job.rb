@@ -13,25 +13,24 @@ class BulkRunJob < ApplicationJob
   discard_on DuplicateRunError, BulkRunError
 
   def perform(bulk, retry_count = 10)
+    batch = nil
+
     PaperTrail.request.disable_model(Bulk)
     if bulk.input.attached? && bulk.input.content_type.nil?
       if bulk.input.analized?
-        raise BulkRunError,
-          "Do not know content type of input file after analized"
+        raise BulkRunError, "Do not know content type of input file after analized"
       end
 
       retry_count -= 1
       if retry_count.negative?
-        raise BulkRunError,
-          "Do not analyze input file or unknown content type"
+        raise BulkRunError, "Do not analyze input file or unknown content type"
       end
 
-      Rails.logger.warn do
-        "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}"
-      end
+      Rails.logger.warn { "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}" }
       BulkRunJob.set(wait: 10.seconds).perform_later(bulk, retry_count)
       return
     end
+
     batch = start(bulk)
     run(bulk, batch)
     stop(bulk, batch)
@@ -39,18 +38,16 @@ class BulkRunJob < ApplicationJob
     # do nothing
     raise
   rescue StandardError => e
-    unless bulk.output.attached?
-      if batch
-        attach_output(bulk, batch)
-      else
-        io = StringIO.new(e.message)
-        bulk.output.attach(io:, filename: "error.txt",
-          content_type: "text/plain", identify: false)
-      end
-    end
-    bulk.reload
-    bulk.update(status: :error)
+    # rubocop:disable Rails/SkipsModelValidations
+    bulk.update_attribute(:status, :error)
+    # rubocop:enable Rails/SkipsModelValidations
     Rails.logger.error(e.full_message)
+    begin
+      attach_output(bulk, batch)
+    rescue
+      io = StringIO.new(e.message)
+      bulk.output.attach(io:, filename: "error.txt", content_type: "text/plain", identify: false)
+    end
     raise BulkRunError, e.message
   end
 
@@ -60,7 +57,6 @@ class BulkRunJob < ApplicationJob
     end
 
     bulk.update!(status: :starting)
-
 
     if bulk.input.attached?
       if bulk.content_type.nil?
@@ -75,8 +71,7 @@ class BulkRunJob < ApplicationJob
       when "Node"
         ImportExport::Processors::NodesProcessor.new(bulk.user)
       when "Confirmation"
-        raise BulkRunError, "Not implemented target: #{bulk.target}"
-        # ImportExport::Processors::ConfirmationsProcessor.new(bulk.user)
+        ImportExport::Processors::ConfirmationsProcessor.new(bulk.user)
       when "Network"
         ImportExport::Processors::NetworksProcessor.new(bulk.user)
       when "User"
@@ -84,7 +79,17 @@ class BulkRunJob < ApplicationJob
       else
         raise BulkRunError, "Unknow target: #{bulk.target}"
       end
-    batch = ImportExport::Csv.new(processor, with_bom: true)
+    batch =
+      case Mime::Type.lookup(bulk.content_type).symbol
+      when :csv
+        ImportExport::Csv.new(processor, with_bom: true)
+      when :yaml
+        ImportExport::Yaml.new(processor)
+      when :jsonl
+        ImportExport::Jsonl.new(processor)
+      else
+        raise BulkRunError, "Unknown content type: #{bulk.content_type}"
+      end
 
     bulk_number =
       if bulk.input.attached?
@@ -149,13 +154,13 @@ class BulkRunJob < ApplicationJob
   end
 
   private def attach_output(bulk, batch)
+    return if bulk.output.attached?
+
     io = batch.out
     io.close_write
     io.rewind
     filename_prefix = bulk.input.filename&.base || bulk.target.underscore
-    filename = filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") +
-      batch.extname
-    bulk.output.attach(io:, filename:, content_type: batch.content_type,
-      identify: false)
+    filename = filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") + batch.extname
+    bulk.output.attach(io:, filename:, content_type: batch.content_type, identify: false)
   end
 end
