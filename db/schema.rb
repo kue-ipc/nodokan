@@ -54,7 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_064345) do
   end
 
   create_table "bulks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.string "content_type", null: false
+    t.string "content_type"
     t.datetime "created_at", null: false
     t.integer "failure", default: 0, null: false
     t.integer "lock_version", default: 0, null: false

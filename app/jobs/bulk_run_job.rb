@@ -61,10 +61,13 @@ class BulkRunJob < ApplicationJob
 
     bulk.update!(status: :starting)
 
-    # TODO: 今のところtext/csvのみ。
-    #     将来はxlsxとかも対応したい。
-    if bulk.input.attached? && bulk.input.content_type != ("text/csv")
-      raise BulkRunError, "Unknown content type: #{bulk.input.content_type}"
+
+    if bulk.input.attached?
+      if bulk.content_type.nil?
+        bulk.update!(content_type: bulk.input.content_type)
+      elsif bulk.content_type != bulk.input.content_type
+        raise BulkRunError, "Content type mismatch: #{bulk.content_type} != #{bulk.input.content_type}"
+      end
     end
 
     processor =

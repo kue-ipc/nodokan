@@ -5,11 +5,8 @@
       .col-sm-4.col-md-3.col-xl-2
           = form.select :target, bulk_target_list,
             hide_label: true, prepend: Bulk.human_attribute_name(:target)
-      .col-sm-4.col-md-3.col-xl-2
-          = form.select :conte_type, bulk_content_type_list,
-            hide_label: true, prepend: Bulk.human_attribute_name(:contet_type)
       .col-sm-8.col-md-7.col-lg-6.col-xl-5
-        = form.file_field :input, hide_label: true, accept: "text/csv"
+        = form.file_field :input, hide_label: true, accept: ".csv,.jsonl,.yaml,.yml"
       .col-sm-2
         = form.submit
   p
