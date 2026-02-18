@@ -1,6 +1,5 @@
 require "fileutils"
 require "logger"
-
 require "yaml"
 
 require "import_export/batch"
@@ -12,7 +11,7 @@ module ImportExport
 
     attr_reader :result, :count
 
-    YAML_OPTIONS = [:indentation, :line_width, :canonical, :header, :stringify_names].freeze
+    YAML_OPTIONS = %i[indentation line_width canonical header stringify_names].freeze
 
     def initialize(*, **opts)
       super(*, **opts.except(*YAML_OPTIONS))

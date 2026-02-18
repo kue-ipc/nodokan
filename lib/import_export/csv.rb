@@ -1,6 +1,5 @@
 require "fileutils"
 require "logger"
-
 require "csv"
 
 require "import_export/batch"
