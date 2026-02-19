@@ -174,14 +174,14 @@ module HtmlHelper
     time.xmlschema
   end
 
-  def badge_tag(value, color: :primary, disbaled: false, hidden: false,
+  def badge_tag(value, color: :primary, disabled: false, hidden: false,
     **opts, &)
     opts = opts.dup
     badge_classes = opts.delete(:class) || []
     badge_classes = badge_classes.to_s.split unless badge_classes.is_a?(Array)
 
     badge_classes << "badge"
-    if disbaled
+    if disabled
       badge_classes << "bg-light" << "text-muted"
     else
       badge_classes << "text-bg-#{color}"

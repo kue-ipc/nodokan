@@ -9,7 +9,7 @@ class NoticeNodesMailer < ApplicationMailer
     mail subject: subject_with_site_title, to: @user.email
   end
 
-  def disbaled
+  def disabled
     @notice = "disabled"
     @user = params[:user]
     @ids = params[:ids]

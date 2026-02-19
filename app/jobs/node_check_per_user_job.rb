@@ -2,114 +2,126 @@ class NodeCheckPerUserJob < ApplicationJob
   queue_as :check
 
   def perform(user, time = Time.current)
+    unless Settings.feature.node_check
+      Ralis.logger.info "Node check is disabled. Skipping NodeCheckPerUserJob for user #{user.username}."
+      return
+    end
+
+    updates, notices, destroy_nodes = check_nodes_per_user(user, time:)
+    updates.each { |update| update.run }
+    notices.each { |notice| notice.deliver_mail(user) }
+    destroy(destroy_nodes, user)
+  end
+
+  def check_nodes_per_user(user, time: Time.current)
+    update_dict = {
+      reset_notice: Update.new({notice: :none, noticed_at: nil},
+        codition: ->(node) { !node.notice_none? || !node.notice_at.nil? }),
+      reset_execution: Update.new({execution_at: nil},
+        codition: ->(node) { !node.execution_at.nil? }),
+      disable: Update.new({disabled: true, execution_at: nil},
+        codition: ->(node) { !node.disabled? }),
+      schedule_destroy: Update.new({execution_at: time + Node.destroy_grace_period},
+        codition: ->(node) { node.execution_at.nil? || !node.notice_destroy_soon? }),
+      schedule_disable: Update.new({execution_at: time + Node.disable_grace_period},
+        codition: ->(node) { node.execution_at.nil? || !node.notice_disable_soon? }),
+    }
+    notice_dict = Node.notices.valuse.to_h do |name, _|
+      name = name.intern
+      [name, Notice.new(name, time:)]
+    end
     destroy_nodes = []
 
-    action_node_ids = {
-      reset_notice: [],
-      reset_execution: [],
-      # destroy: [],
-      disable: [],
-      schedule_destroy: [],
-      schedule_disable: [],
-    }
-
-    notice_node_ids = {
-      # destroyed: [],
-      disabled: [],
-      expired: [],
-      destroy_soon: [],
-      disable_soon: [],
-      expire_soon: [],
-    }
-
-    user.nodes.includes(nics: :network).find_each do |node|
-      if node.should_destroy?
+    user.nodes.includes(:confirmation, nics: :network).find_each do |node|
+      if Settings.config.auto_destroy_node && node.should_destroy?
         if Node.destroy_grace_period <= 0 || (node.execution_at&.<=(time) && node.notice_destroy_soon?)
           destroy_nodes << node
-        elsif node.execution_at.nil? || !node.notice_destroy_soon?
-          action_node_ids[:schedule_destroy] << node.id
-          notice_node_ids[:destroy_soon] << node.id
-        elsif node.need_notice?(:destroy_soon, time)
-          notice_node_ids[:destroy_soon] << node.id
+        else
+          update_dict[:schedule_destroy].add(node)
+          notice_dict[:destroy_soon].add(node)
         end
       elsif node.disabled?
-        action_node_ids[:reset_execution] << node.id unless node.execution_at.nil?
-        notice_node_ids[:disabled] << node.id if node.need_notice?(:disabled, time)
-      elsif node.should_disable?
+        update_dict[:reset_execution].add(node)
+        notice_dict[:disabled].add(node)
+      elsif Settings.config.auto_disable_node && node.should_disable?
         if Node.disable_grace_period <= 0 || (node.execution_at&.<=(time) && node.notice_disable_soon?)
-          action_node_ids[:disable] << node.id
-          notice_node_ids[:disabled] << node.id
-        elsif node.execution_at.nil? || !node.notice_disable_soon?
-          action_node_ids[:schedule_disable] << node.id
-          notice_node_ids[:disable_soon] << node.id
-        elsif node.need_notice?(:disable_soon, time)
-          notice_node_ids[:disable_soon] << node.id
+          update_dict[:disable].add(node)
+          notice_dict[:disabled].add(node)
+        else
+          update_dict[:schedule_disable].add(node)
+          notice_dict[:disable_soon].add(node)
         end
-      elsif node.expired?
-        action_node_ids[:reset_execution] << node.id unless node.execution_at.nil?
-        notice_node_ids[:expired] << node.id if node.need_notice?(:expired, time)
-      elsif node.expire_soon?
-        action_node_ids[:reset_execution] << node.id unless node.execution_at.nil?
-        notice_node_ids[:expire_soon] << node.id if node.need_notice?(:expire_soon, time)
+      elsif Settings.feature.confirmation
+        update_dict[:reset_execution].add(node)
+        case (status = node.confirmation&.status || :unconfirmed)
+        when :unconfirmed, :expired, :expire_soon
+          notice_dict[status].add(node)
+        else
+          update_dict[:reset_notice].add(node)
+        end
       else
-        action_node_ids[:reset_execution] << node.id unless node.execution_at.nil?
-        notice_node_ids[:reset_notice] << node.id unless node.notice_none? && node.notice_at.nil?
+        update_dict[:reset_execution].add(node)
+        update_dict[:reset_notice].add(node)
       end
     end
+    [update_dict.values, notice_dict.values, destroy_nodes]
+  end
 
-    # actions
-    # rubocop:disable Rails/SkipsModelValidations
-    if action_node_ids[:reset_notice].present?
-      Node.where(id: action_node_ids[:reset_notice]).update_all(notice: :none, noticed_at: nil)
-    end
-    if action_node_ids[:reset_execution].present?
-      Node.where(id: action_node_ids[:reset_execution]).update_all(execution_at: nil)
-    end
-    if action_node_ids[:disable].present?
-      Node.where(id: action_node_ids[:disable]).update_all(disabled: true, execution_at: nil)
-    end
-    if action_node_ids[:schedule_destroy].present?
-      Node.where(id: action_node_ids[:schedule_destroy]).update_all(execution_at: time + Node.destroy_grace_period)
-    end
-    if action_node_ids[:schedule_disable].present?
-      Node.where(id: action_node_ids[:schedule_disable]).update_all(execution_at: time + Node.disable_grace_period)
-    end
-    # rubocop:enable Rails/SkipsModelValidations
+  def destroy(nodes, user)
+    return if nodes.blank?
 
-    # notices
-    if notice_node_ids[:disabled].present?
-      NoticeNodesMaler.with(ids: notice_node_ids[:disabled], user:).disbaled.deliver_later
+    error_count = 0
+    processor = ImportExport::Processors::NodesProcessor.new
+    destroyed_nodes_params = []
+    @destroy_nodes.each do |node|
+      params = processor.record_to_params(node)
+      node.destroy!
+      destroyed_nodes_params << params
+    rescue StandardError => e
+      logger.error("Failed to destroy a node: #{node.id} - #{e.message}")
+      error_count += 1
     end
-    if notice_node_ids[:expired].present?
-      NoticeNodesMaler.with(ids: notice_node_ids[:expired], user:).expired.deliver_later
+    NoticeNodesMaler.with(nodes_params: destroyed_nodes_params, user:).destroyed.deliver_later
+
+    if error_count.positive?
+      raise "error occurred while destroying nodes for user #{user.username}."
     end
-    if notice_node_ids[:destroy_soon].present?
-      NoticeNodesMaler.with(ids: notice_node_ids[:destroy_soon], user:).destroy_soon.deliver_later
-    end
-    if notice_node_ids[:disable_soon].present?
-      NoticeNodesMaler.with(ids: notice_node_ids[:disable_soon], user:).disbale_soon.deliver_later
-    end
-    if notice_node_ids[:expire_soon].present?
-      NoticeNodesMaler.with(ids: notice_node_ids[:expire_soon], user:).expire_soon.deliver_later
+  end
+
+  class Update
+    def initialize(updates, codition: nil)
+      @updates = updates
+      @condition = codition&.to_proc
+      @node_ids = []
     end
 
-    # destroy
-    if destroy_nodes.present?
-      error_count = 0
-      processor = ImportExport::Processors::NodesProcessor.new
-      destroyed_nodes_params = []
-      destroy_nodes.each do |node|
-        params = processor.record_to_params(node)
-        node.destroy!
-        destroyed_nodes_params << params
-      rescue StandardError => e
-        logger.error("Failed to destroy a node: #{node.id} - #{e.message}")
-        error_count += 1
+    def add(node, force: false)
+      @node_ids << node.id if force || @condition.nil? || @condition.call(node)
+    end
+
+    def run
+      if @node_ids.present?
+        # rubocop:disable Rails/SkipsModelValidations
+        Node.where(id: @node_ids).update_all(updates)
+        # rubocop:enable Rails/SkipsModelValidations
       end
-      NoticeNodesMaler.with(nodes_params: destroyed_nodes_params, user:).destroyed.deliver_later
+    end
+  end
 
-      if error_count.positive?
-        raise "error occurred while destroying nodes for user #{user.username}."
+  class Notice
+    def initialize(name, time: Time.current)
+      @name = name
+      @time = time
+      @node_ids
+    end
+
+    def add(node, force: false)
+      @node_ids << node.id if force || node.need_notice?(@notice, @time)
+    end
+
+    def deliver_mail(user)
+      if @node_ids.present?
+        NoticeNodesMaler.with(ids: @node_ids, user:).__send__(@name).deliver_later
       end
     end
   end

@@ -7,8 +7,7 @@ class Confirmation < ApplicationRecord
   belongs_to :node
   belongs_to :security_software, optional: true
 
-  NUM_ATTRS = %w[existence content os_update app_update software
-    security_update security_scan].freeze
+  NUM_ATTRS = %w[existence content os_update app_update software security_update security_scan].freeze
 
   ALL_ATTRS = (NUM_ATTRS + %w[security_hardware security_software]).freeze
 
@@ -110,6 +109,11 @@ class Confirmation < ApplicationRecord
     @expire_soon_period ||= period(Settings.config.confirmation_period.expire_soon)
   end
 
+  def self.continuation_period
+    @continuation_period = nil unless Rails.env.production?
+    @continuation_period ||= period(Settings.config.confirmation_period.continuation)
+  end
+
   def check(num)
     if num.nil? || num.negative?
       :unknown
@@ -197,21 +201,37 @@ class Confirmation < ApplicationRecord
     period(Settings.config.confirmation_period.expire_soon)
   end
 
-  def expiration
+  def expired_time
     confirmed_at + validity_period
+  end
+  alias expiration expired_time
+
+  def expire_soon_time
+    confirmed_at + [
+      Confirmation.continuation_period,
+      validity_period - Confirmation.expire_soon_period,
+    ].max
+  end
+
+  def expired?(time = Time.current)
+    expired_time <= time
+  end
+
+  def expire_soon?(time = Time.current)
+    expire_soon_time <= time
   end
 
   def status(time = Time.current)
     if confirmed_at.blank?
       :unconfirmed
-    elsif expiration <= time
+    elsif expired(time)
       :expired
-    elsif !approved
-      :unapproved
-    elsif expiration - Confirmation.expire_soon_period <= time
+    elsif expire_soon?(time)
       :expire_soon
-    else
+    elsif approved
       :approved
+    else
+      :unapproved
     end
   end
 
@@ -220,9 +240,9 @@ class Confirmation < ApplicationRecord
     in :approved | :unapproved
       confirmed_at
     in :expire_soon
-      expiration - expire_soon_period
+      expire_soon_time
     in :expired
-      expiration
+      expired_time
     in :unconfirmed
       node.created_at
     end

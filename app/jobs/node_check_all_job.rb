@@ -2,17 +2,22 @@ class NodeCheckAllJob < ApplicationJob
   queue_as :check
 
   def perform(time = Time.current)
-    check_nodes_owned_by_existing_users(time)
-    check_nodes_owned_by_deleted_users(time)
+    unless Settings.feature.node_check
+      Ralis.logger.info "Node check is disabled. Skipping NodeCheckAllJob."
+      return
+    end
+
+    check_nodes_per_user(time)
+    check_deleted_owner_nodes(time)
     check_unowned_nodes(time)
   end
 
-  def check_nodes_owned_by_existing_users(time = Time.current)
+  def check_nodes_per_user(time = Time.current)
     per_user_jobs = Uesr.where(deleted: false).map { |user| NodeCheckPerUserJob.new(user, time) }
     ActiveJob.perform_all_later(per_user_jobs)
   end
 
-  def check_nodes_owned_by_deleted_users(time = Time.current)
+  def check_deleted_owner_nodes(time = Time.current)
     ids = Node.where.not(notice: "deleted_owner")
       .or(Node.where(noticed_at: nil))
       .or(Node.where(noticed_at: ...(time - Node.notice_interval)))

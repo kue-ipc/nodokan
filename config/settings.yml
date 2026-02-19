@@ -43,11 +43,10 @@ config:
     approved: P1Y1M
     unapproved: P1M
     expire_soon: P1M
-  # auto action and warning
+    continuation: P1M
+  # auto action
   auto_destroy_node: false
   auto_disable_node: false
-  warning_confirmation_expired: false
-  warning_confirmation_expire_soon: false
   # period
   destroy_node_period:
     grace: P1M
@@ -60,7 +59,7 @@ config:
     unconfirmed: P1Y
     expried: P1Y
   notice_interval: P1M
-  user_can_enable_node: false
+  enable_node_by_user: false
   enable_node_upon_confirmation: false
 feature:
   confirmation: true
@@ -68,6 +67,7 @@ feature:
   user_auth_network: true
   virtual_node: true
   logical_node: true
+  check_node: true
 theme:
   navbar: null
 ldap:

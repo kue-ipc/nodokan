@@ -31,16 +31,18 @@ class Node < ApplicationRecord
   }, validate: true
 
   enum :notice, {
-    none: 0,
-    destroyed: 1, # maybe not used
-    disabled: 2,
-    expired: 3,
-    # none_soon: 4, # not used
-    destroy_soon: 5,
-    disbale_soon: 6,
-    expire_soon: 7,
-    unowned: 8,
-    deleted_owner: 9,
+    none: 0,           # 0b0000
+    destroyed: 2,      # 0b0010 maybe not set
+    destroy_soon: 3,   # 0b0011
+    disabled: 4,       # 0b0100
+    disable_soon: 5,   # 0b0101
+    unconfirmed: 8,    # 0b1000
+    approved: 9,       # 0b1001
+    unapproved: 11,    # 0b1011
+    expired: 12,       # 0b1100
+    expire_soon: 13,   # 0b1101
+    unowned: 16,       # 0b1_0000
+    deleted_owner: 17, # 0b1_0001
   }, prefix: true, validate: true
 
   belongs_to :user, optional: true, counter_cache: true
@@ -158,6 +160,23 @@ class Node < ApplicationRecord
     @connected_at_checked = true
     @connected_at
   end
+
+  def should_destroy?
+
+  end
+
+  def should_disable?
+
+  end
+
+  def expired?
+
+  end
+
+  def need_notice?(notice, time = Time.current)
+  end
+
+  d
 
   private def reset_attributes_for_node_type
     case node_type
