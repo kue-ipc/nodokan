@@ -1,6 +1,10 @@
 class NoticeNodesMailer < ApplicationMailer
-  after_deliver :update_notice_status
+  after_deliver :update_notice
 
+  # no notice
+  def none = nil
+
+  # spcifided notice
   def destroyed
     @notice = "destroyed"
     @user = params[:user]
@@ -9,61 +13,27 @@ class NoticeNodesMailer < ApplicationMailer
     mail subject: subject_with_site_title, to: @user.email
   end
 
-  def disabled
-    @notice = "disabled"
+  # normal notice
+  def destroy_soon = nromal_notice("destroy_soon")
+  def disabled = nromal_notice("disabled")
+  def disable_soon = nromal_notice("disable_soon")
+  def unconfirmed = nromal_notice("unconfirmed")
+  def approved = nromal_notice("approved")
+  def unapproved = nromal_notice("unapproved")
+  def expired = nromal_notice("expired")
+  def expire_soon = nromal_notice("expire_soon")
+  def unowned = nromal_notice("unowned")
+  def deleted_owner = nromal_notice("deleted_owner")
+
+  private def nromal_notice(name)
+    @notice = name
     @user = params[:user]
     @ids = params[:ids]
     @nodes = Node.where(id: params[:ids]).to_a
     mail subject: subject_with_site_title, to: @user.email
   end
 
-  def expired
-    @notice = "expired"
-    @user = params[:user]
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: @user.email
-  end
-
-  def destroy_soon
-    @notice = "destroy_soon"
-    @user = params[:user]
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: @user.email
-  end
-
-  def disbale_soon
-    @notice = "disable_soon"
-    @user = params[:user]
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: @user.email
-  end
-
-  def expire_soon
-    @notice = "expire_soon"
-    @user = params[:user]
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: @user.email
-  end
-
-  def unowned
-    @notice = "unowned"
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: Settings.admin.email
-  end
-
-  def deleted_owner
-    @notice = "deleted_owner"
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: Settings.admin.email
-  end
-
-  def update_notice_status
+  private def update_notice
     # do nothing if notice is destroyed, because destroyed nodes has already been deleted.
     return if @notice == "destroyed"
 
