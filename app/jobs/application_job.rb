@@ -11,9 +11,7 @@ class ApplicationJob < ActiveJob::Base
   # Send mail if job is failed
   rescue_from(StandardError) do |exception|
     if Rails.env.production?
-      AdminMailer
-        .with(job: self.class.name, job_id:, time: Time.current,
-          exception: exception.message)
+      AdminMailer.with(job: self.class.name, job_id:, time: Time.current, exception: exception.message)
         .job_failure.deliver_later
     end
     raise exception

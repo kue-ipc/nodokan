@@ -114,6 +114,26 @@ class Confirmation < ApplicationRecord
     @continuation_period ||= period(Settings.config.confirmation_period.continuation)
   end
 
+  def self.destroy_node_unconfromed_period
+    @destroy_node_unconfromed_period = nil unless Rails.env.production?
+    @destroy_node_unconfromed_period ||= period(Settings.config.destroy_node_period.unconformed)
+  end
+
+  def self.destroy_node_expired_period
+    @destroy_node_expired_period = nil unless Rails.env.production?
+    @destroy_node_expired_period ||= period(Settings.config.destroy_node_period.expired)
+  end
+
+  def self.disable_node_unconfromed_period
+    @disable_node_unconfromed_period = nil unless Rails.env.production?
+    @disable_node_unconfromed_period ||= period(Settings.config.disable_node_period.unconformed)
+  end
+
+  def self.disable_node_expired_period
+    @disable_node_expired_period = nil unless Rails.env.production?
+    @disable_node_expired_period ||= period(Settings.config.disable_node_period.expired)
+  end
+
   def check(num)
     if num.nil? || num.negative?
       :unknown
@@ -213,40 +233,26 @@ class Confirmation < ApplicationRecord
     ].max
   end
 
-  def expired?(time = Time.current)
+  def expired?(time: Time.current)
     expired_time <= time
   end
 
-  def expire_soon?(time = Time.current)
+  def expire_soon?(time: Time.current)
     expire_soon_time <= time
   end
 
-  def status(time = Time.current)
+  def status(time: Time.current)
     if confirmed_at.blank?
       :unconfirmed
-    elsif expired(time)
+    elsif expired?(time:)
       :expired
-    elsif expire_soon?(time)
+    elsif expire_soon?(time:)
       :expire_soon
     elsif approved
       :approved
     else
       :unapproved
     end
-  end
-
-  def status_period(time = Time.current)
-    start_time = case status(time)
-    in :approved | :unapproved
-      confirmed_at
-    in :expire_soon
-      expire_soon_time
-    in :expired
-      expired_time
-    in :unconfirmed
-      node.created_at
-    end
-    (time - start_time).to_i
   end
 
   def destroyable?
@@ -260,7 +266,7 @@ class Confirmation < ApplicationRecord
     existence_not_my_own?
   end
 
-  def check_and_approve!(time = Time.current)
+  def check_and_approve!(time: Time.current)
     if !exist?
       self.content = :unknown
       self.os_update = :unknown
@@ -285,5 +291,27 @@ class Confirmation < ApplicationRecord
     self.approved = approvable?
 
     self.confirmed_at = time
+  end
+
+  def should_destory_node?(time: Time.current)
+    case status(time:)
+    when :unconfirmed
+      time >= node.created_at + Confirmation.destroy_node_unconfromed_period
+    when :expired
+      time >= expired_time + Confirmation.destroy_node_expired_period
+    else
+      false
+    end
+  end
+
+  def should_disable_node?(time: Time.current)
+    case status(time:)
+    when :unconfirmed
+      time >= node.created_at + Confirmation.disable_node_unconfromed_period
+    when :expired
+      time >= expired_time + Confirmation.disable_node_expired_period
+    else
+      false
+    end
   end
 end

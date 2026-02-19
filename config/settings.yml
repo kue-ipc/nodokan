@@ -50,10 +50,10 @@ config:
   # period
   destroy_node_period:
     grace: P1M
-    unconfirmed: P1M
-    expried: P1Y
     not_connected: P1M
     last_connection: P1Y
+    unconfirmed: P1M
+    expried: P1Y
   disable_node_period:
     grace: P1M
     unconfirmed: P1Y

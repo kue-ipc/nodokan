@@ -93,6 +93,26 @@ class Node < ApplicationRecord
 
   # class methods
 
+  def self.destroy_grace_period
+    @destroy_grace_period = nil unless Rails.env.production?
+    @destroy_grace_period ||= period(Settings.config.destroy_node_period.grace)
+  end
+
+  def self.disable_grace_period
+    @disable_grace_period = nil unless Rails.env.production?
+    @disable_grace_period ||= period(Settings.config.disable_node_period.grace)
+  end
+
+  def self.destroy_not_connected_period
+    @destroy_not_connected_period = nil unless Rails.env.production?
+    @destroy_not_connected_period ||= period(Settings.config.destroy_node_period.not_connected)
+  end
+
+  def self.destroy_last_connection_period
+    @destroy_last_connection_period = nil unless Rails.env.production?
+    @destroy_last_connection_period ||= period(Settings.config.destroy_node_period.last_connection)
+  end
+
   def self.notice_interval
     @notice_interval = nil unless Rails.env.production?
     @notice_interval ||= period(Settings.config.notice_interval)
@@ -161,22 +181,37 @@ class Node < ApplicationRecord
     @connected_at
   end
 
-  def should_destroy?
-
+  def solid_confirmation
+    @solid_confirmation = confirmation || build_confirmation
   end
 
-  def should_disable?
+  def should_destroy?(time: Time.current)
+    # sholud not destroy node with nics connected to unverifeable newtworks
+    return false if nics.any? { |nic| nic.network&.unverifiable }
+    # should not destroy node if it has recent creation history
+    return false if connected_at.nil? && created_at > time - Node.destroy_not_connected_period
+    # should not destroy node if it has recent connection history
+    return false if connected_at&.>(time - Node.destroy_last_connection_period)
 
+    # always destroy node if confirmation is disbaled
+    return true unless Settings.feature.confirmation
+
+    solid_confirmation.should_destory_node?(time:)
   end
 
-  def expired?
+  def should_disable?(time: Time.current)
+    # always dose not disable node if confirmation is disbaled
+    return false unless Settings.feature.confirmation
 
+    solid_confirmation.should_disable_node?(time:)
   end
 
-  def need_notice?(notice, time = Time.current)
-  end
+  def need_notice?(name, time: Time.current)
+    return true if notice != name.to_s
+    return true if noticed_at&.>(time - Node.notice_interval)
 
-  d
+    false
+  end
 
   private def reset_attributes_for_node_type
     case node_type

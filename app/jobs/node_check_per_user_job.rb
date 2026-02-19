@@ -1,7 +1,7 @@
 class NodeCheckPerUserJob < ApplicationJob
   queue_as :check
 
-  def perform(user, time = Time.current)
+  def perform(user, time: Time.current)
     unless Settings.feature.node_check
       Ralis.logger.info "Node check is disabled. Skipping NodeCheckPerUserJob for user #{user.username}."
       return
@@ -33,7 +33,7 @@ class NodeCheckPerUserJob < ApplicationJob
     destroy_nodes = []
 
     user.nodes.includes(:confirmation, nics: :network).find_each do |node|
-      if Settings.config.auto_destroy_node && node.should_destroy?
+      if Settings.config.auto_destroy_node && node.should_destroy?(time:)
         if Node.destroy_grace_period <= 0 || (node.execution_at&.<=(time) && node.notice_destroy_soon?)
           destroy_nodes << node
         else
@@ -43,7 +43,7 @@ class NodeCheckPerUserJob < ApplicationJob
       elsif node.disabled?
         update_dict[:reset_execution].add(node)
         notice_dict[:disabled].add(node)
-      elsif Settings.config.auto_disable_node && node.should_disable?
+      elsif Settings.config.auto_disable_node && node.should_disable?(time:)
         if Node.disable_grace_period <= 0 || (node.execution_at&.<=(time) && node.notice_disable_soon?)
           update_dict[:disable].add(node)
           notice_dict[:disabled].add(node)
@@ -53,7 +53,7 @@ class NodeCheckPerUserJob < ApplicationJob
         end
       elsif Settings.feature.confirmation
         update_dict[:reset_execution].add(node)
-        case (status = node.confirmation&.status || :unconfirmed)
+        case (status = node.solid_confirmation.status(time:))
         when :unconfirmed, :expired, :expire_soon
           notice_dict[status].add(node)
         else
@@ -70,10 +70,11 @@ class NodeCheckPerUserJob < ApplicationJob
   def destroy(nodes, user)
     return if nodes.blank?
 
+    # TODO: Bulkにしてもいいかもしれない？
     error_count = 0
     processor = ImportExport::Processors::NodesProcessor.new
     destroyed_nodes_params = []
-    @destroy_nodes.each do |node|
+    nodes.each do |node|
       params = processor.record_to_params(node)
       node.destroy!
       destroyed_nodes_params << params
@@ -115,8 +116,8 @@ class NodeCheckPerUserJob < ApplicationJob
       @node_ids
     end
 
-    def add(node, force: false)
-      @node_ids << node.id if force || node.need_notice?(@notice, @time)
+    def add(node, force: false, time: @time)
+      @node_ids << node.id if force || node.need_notice?(@notice, time:)
     end
 
     def deliver_mail(user)

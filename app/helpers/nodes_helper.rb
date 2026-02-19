@@ -94,11 +94,8 @@ module NodesHelper
       confirmation.security_software = nil
       confirmation.security_update = nil
       confirmation.security_scan = nil
-    elsif confirmation.security_software&.os_category !=
-        node.operating_system.os_category
-
-      confirmation.security_software =
-        SecuritySoftware.new(os_category: node.operating_system.os_category)
+    elsif confirmation.security_software&.os_category != node.operating_system.os_category
+      confirmation.security_software = SecuritySoftware.new(os_category: node.operating_system.os_category)
       confirmation.security_update = nil
       confirmation.security_scan = nil
     end
@@ -109,9 +106,7 @@ module NodesHelper
     Confirmation::NUM_ATTRS.each do |name|
       confirmation.send("#{name}=", nil) if confirmation.send(name) == "unknown"
     end
-    if confirmation.security_hardwares&.include?("unknown")
-      confirmation.security_hardware = nil
-    end
+    confirmation.security_hardware = nil if confirmation.security_hardwares&.include?("unknown")
     confirmation
   end
 
@@ -141,8 +136,8 @@ module NodesHelper
   end
 
   def node_confirmation_decorated(node)
-    case node.confirmation&.status
-    when nil, :unconfirmed
+    case node.solid_confirmation.status
+    when :unconfirmed
       tag.i(class: "fas fa-times-circle text-danger-emphasis") +
         tag.span(t("messages.unconfirmed"), class: "text-danger-emphasis")
     when :expired
