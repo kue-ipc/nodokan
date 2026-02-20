@@ -124,8 +124,8 @@ module ImportExport
     private def row_to_params(row, params: nil, keys: @processor.keys)
       params ||= {}.with_indifferent_access
       row.to_hash.compact_blank.each do |key, value|
-        # skip system column
-        next if key =~ /\A_\w+_\z/
+        # skip system column and old system column
+        next if key =~ /\A_\w+_\z|\A\[\w+\]\z/
 
         if key == "id"
           params["id"] = value
