@@ -99,18 +99,15 @@ class Nic < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   attribute :global, :boolean
-  def global
-    ipv4_global? || ipv6_global?
-  end
+  def global = ipv4_global? || ipv6_global?
   alias global? global
 
-  def has_ipv4? # rubocop: disable Naming/PredicateName
-    ipv4_data.present?
-  end
+  delegate :enabled?, :disabled?, to: :node
 
-  def has_ipv6? # rubocop: disable Naming/PredicateName
-    ipv6_data.present?
-  end
+  # rubocop: disable Naming/PredicateName
+  def has_ipv4? = ipv4_data.present?
+  def has_ipv6? = ipv6_data.present?
+  # rubocop: enable Naming/PredicateName
 
   def radius_mac
     return unless network&.vlan

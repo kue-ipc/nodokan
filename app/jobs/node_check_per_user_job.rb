@@ -15,16 +15,16 @@ class NodeCheckPerUserJob < ApplicationJob
 
   def check_nodes_per_user(user, time: Time.current)
     update_dict = {
-      reset_notice: Update.new({notice: :none, noticed_at: nil},
-        codition: ->(node) { !node.notice_none? || !node.notice_at.nil? }),
+      reset_notice: Update.new({notice: :nil, noticed_at: nil},
+        codition: ->(node) { node.notice || node.notice_at }),
       reset_execution: Update.new({execution_at: nil},
-        codition: ->(node) { !node.execution_at.nil? }),
+        codition: ->(node) { node.execution_at }),
       disable: Update.new({disabled: true, execution_at: nil},
-        codition: ->(node) { !node.disabled? }),
+        codition: ->(node) { !node.disabled }),
       schedule_destroy: Update.new({execution_at: time + Node.destroy_grace_period},
-        codition: ->(node) { node.execution_at.nil? || !node.notice_destroy_soon? }),
+        codition: ->(node) { !node.execution_at || !node.notice_destroy_soon? }),
       schedule_disable: Update.new({execution_at: time + Node.disable_grace_period},
-        codition: ->(node) { node.execution_at.nil? || !node.notice_disable_soon? }),
+        codition: ->(node) { !node.execution_at || !node.notice_disable_soon? }),
     }
     notice_dict = Node.notices.valuse.to_h do |name, _|
       name = name.intern

@@ -31,18 +31,17 @@ class Node < ApplicationRecord
   }, validate: true
 
   enum :notice, {
-    none: 0,           # 0b0000
-    destroyed: 2,      # 0b0010 maybe not set
-    destroy_soon: 3,   # 0b0011
-    disabled: 4,       # 0b0100
-    disable_soon: 5,   # 0b0101
-    unconfirmed: 8,    # 0b1000
-    approved: 9,       # 0b1001
-    unapproved: 11,    # 0b1011
-    expired: 12,       # 0b1100
-    expire_soon: 13,   # 0b1101
-    unowned: 16,       # 0b1_0000
-    deleted_owner: 17, # 0b1_0001
+    unowned: 0,       # 0b0000
+    deleted_owner: 1, # 0b0001
+    destroyed: 2,     # 0b0010 maybe not set
+    destroy_soon: 3,  # 0b0011
+    disabled: 4,      # 0b0100
+    disable_soon: 5,  # 0b0101
+    unconfirmed: 8,   # 0b1000
+    approved: 9,      # 0b1001
+    unapproved: 11,   # 0b1011
+    expired: 12,      # 0b1100
+    expire_soon: 13,  # 0b1101
   }, prefix: true, validate: true
 
   belongs_to :user, optional: true, counter_cache: true
@@ -141,14 +140,13 @@ class Node < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   attribute :global, :boolean
-  def global
-    nics.any?(&:global)
-  end
+  def global = nics.any?(&:global)
   alias global? global
+
+  def enabled? = !disabled?
 
   def fqdn
     return if hostname.blank?
-
     return hostname if domain.blank?
 
     "#{hostname}.#{domain}"
@@ -182,7 +180,7 @@ class Node < ApplicationRecord
   end
 
   def solid_confirmation
-    @solid_confirmation = confirmation || build_confirmation
+    @solid_confirmation ||= confirmation || build_confirmation
   end
 
   def should_destroy?(time: Time.current)

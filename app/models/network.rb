@@ -163,27 +163,17 @@ class Network < ApplicationRecord
   end
 
   attribute :global, :boolean
-  def global
-    ipv4_network_global? || ipv6_network_global?
-  end
+  def global = ipv4_network_global? || ipv6_network_global?
   alias global? global
+
+  def enabled? = !disabled?
 
   # IPv4
 
-  # rubocop: disable Naming/PredicateName
-  def has_ipv4?
-    ipv4_network_data.present?
-  end
-  # rubocop: enable Naming/PredicateName
-
-  def dhcpv4?
-    dhcp
-  end
-
+  def has_ipv4? = ipv4_network_data.present? # rubocop: disable Naming/PredicateName
+  def dhcpv4? = dhcp
   # network with prefix
-  def ipv4_network_prefix
-    ipv4_network&.mask(ipv4_prefix_length)
-  end
+  def ipv4_network_prefix = ipv4_network&.mask(ipv4_prefix_length)
 
   def ipv4_network_prefix=(value)
     self.ipv4_network_data = value&.hton
@@ -192,9 +182,7 @@ class Network < ApplicationRecord
 
   # cdir = address/prefix
   def ipv4_network_cidr
-    @ipv4_network_cidr ||= ipv4_network_prefix&.then do |ip|
-      "#{ip}/#{ip.prefix}"
-    end
+    @ipv4_network_cidr ||= ipv4_network_prefix&.then { |ip| "#{ip}/#{ip.prefix}" }
   end
 
   def ipv4_network_cidr=(value)
@@ -205,45 +193,27 @@ class Network < ApplicationRecord
   end
 
   def ipv4_netmask
-    @ipv4_netmask ||=
-      ipv4_prefix_length&.then(&IPAddr.new("0.0.0.0").method(:mask))&.netmask
+    @ipv4_netmask ||= ipv4_prefix_length&.then(&IPAddr.new("0.0.0.0").method(:mask))&.netmask
   end
 
   def ipv4_netmask=(value)
     @ipv4_netmask = value
-    self.ipv4_prefix_length =
-      value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
+    self.ipv4_prefix_length = value.presence && IPAddr.new("0.0.0.0/#{value}").prefix
   end
 
   # address/netmask
-  def ipv4_network_address_netmask
-    ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
-  end
-
-  def ipv4_broadcast
-    ipv4_network_prefix&.to_range&.end
-  end
+  def ipv4_network_address_netmask = ipv4_network_data && "#{ipv4_network_address}/#{ipv4_netmask}"
+  def ipv4_broadcast = ipv4_network_prefix&.to_range&.end
 
   # Ipv6
 
-  # rubocop: disable Naming/PredicateName
-  def has_ipv6?
-    ipv6_network_data.present?
-  end
-  # rubocop: enable Naming/PredicateName
+  def has_ipv6? = ipv6_network_data.present?  # rubocop: disable Naming/PredicateName
 
-  def dhcpv6?
-    ["managed", "assist", "stateless"].include?(ra)
-  end
-
-  def slaac?
-    ["unmanaged", "assist", "stateless"].include?(ra)
-  end
+  def dhcpv6? = %w[managed assist stateless].include?(ra)
+  def slaac? = %w[unmanaged assist stateless].include?(ra)
 
   # network with prefix
-  def ipv6_network_prefix
-    ipv6_network&.mask(ipv6_prefix_length)
-  end
+  def ipv6_network_prefix = ipv6_network&.mask(ipv6_prefix_length)
 
   def ipv6_network_prefix=(value)
     self.ipv6_network_data = value&.hton
@@ -252,9 +222,7 @@ class Network < ApplicationRecord
 
   # cidr = address/prefix
   def ipv6_network_cidr
-    @ipv6_network_cidr ||= ipv6_network_prefix&.then do |ip|
-      "#{ip}/#{ip.prefix}"
-    end
+    @ipv6_network_cidr ||= ipv6_network_prefix&.then { |ip| "#{ip}/#{ip.prefix}" }
   end
 
   def ipv6_network_cidr=(value)
@@ -277,8 +245,7 @@ class Network < ApplicationRecord
   def next_ipv4(ipv4_config)
     return unless has_ipv4?
 
-    selected_ipv4_pools = ipv4_pools.where(ipv4_config:)
-      .order(:ipv4_first_data)
+    selected_ipv4_pools = ipv4_pools.where(ipv4_config:).order(:ipv4_first_data)
     return if selected_ipv4_pools.empty?
 
     nics_ipv4_set = nics.map(&:ipv4).compact.to_set
@@ -296,8 +263,7 @@ class Network < ApplicationRecord
   def next_ipv6(ipv6_config)
     return unless has_ipv6?
 
-    selected_ipv6_pools = ipv6_pools.where(ipv6_config:)
-      .order(:ipv6_first_data)
+    selected_ipv6_pools = ipv6_pools.where(ipv6_config:).order(:ipv6_first_data)
     return if selected_ipv6_pools.empty?
 
     nics_ipv6_set = nics.map(&:ipv6).compact.to_set
@@ -323,9 +289,7 @@ class Network < ApplicationRecord
 
   def ipv4_configs
     if has_ipv4?
-      ipv4_pools.map(&:ipv4_config)
-        .then { |list| [*list, "manual", "disabled"] }
-        .uniq
+      [*ipv4_pools.map(&:ipv4_config), "manual", "disabled"].uniq
     else
       ["disabled"]
     end
@@ -333,31 +297,18 @@ class Network < ApplicationRecord
 
   def ipv6_configs
     if has_ipv6?
-      ipv6_pools.map(&:ipv6_config)
-        .then { |list| [*list, ("dynamic" if slaac?), "manual", "disabled"] }
-        .compact
-        .uniq
+      [*ipv6_pools.map(&:ipv6_config), ("dynamic" if slaac?), "manual", "disabled"].compact.uniq
     else
       ["disabled"]
     end
   end
 
-  def ipv4_include?(ip)
-    ipv4_network_prefix&.include?(ip)
-  end
-
-  def ipv6_include?(ip)
-    ipv6_network_prefix&.include?(ip)
-  end
+  def ipv4_include?(ip) = ipv4_network_prefix&.include?(ip)
+  def ipv6_include?(ip) = ipv6_network_prefix&.include?(ip)
 
   # OPTIMIZE: assigment周りを4回も検索してしまうので無駄が多い。
-  def assignment_for(user)
-    assignments.find_by(user:)
-  end
-
-  def use_assignment_for(user)
-    use_assignments.find_by(user:)
-  end
+  def assignment_for(user) = assignments.find_by(user:)
+  def use_assignment_for(user) = use_assignments.find_by(user:)
 
   def auth?(user)
     if user.auth_network_changed?
@@ -369,17 +320,9 @@ class Network < ApplicationRecord
     end
   end
 
-  def default?(user)
-    use_assignment_for(user)&.default? || false
-  end
-
-  def usable?(user)
-    user.admin? || use_users.exists?(user.id)
-  end
-
-  def manageable?(user)
-    user.admin? || use_assignment_for(user)&.manage? || false
-  end
+  def default?(user) = use_assignment_for(user)&.default? || false
+  def usable?(user) = user.admin? || use_users.exists?(user.id)
+  def manageable?(user) = user.admin? || use_assignment_for(user)&.manage? || false
 
   def kea_subnet4
     if ipv4_network_unspecified?

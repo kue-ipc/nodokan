@@ -88,7 +88,7 @@ module NodesHelper
   end
 
   def init_confirmation(node)
-    confirmation = node.confirmation || node.build_confirmation
+    confirmation = node.solid_confirmation
     # check os
     if node.operating_system.nil?
       confirmation.security_software = nil
