@@ -12,7 +12,7 @@ class BulkRunJob < ApplicationJob
 
   discard_on DuplicateRunError, BulkRunError
 
-  def perform(bulk, retry_count = 10)
+  def perform(bulk, retry_count = 0)
     batch = nil
 
     PaperTrail.request.disable_model(Bulk)
@@ -21,13 +21,13 @@ class BulkRunJob < ApplicationJob
         raise BulkRunError, "Do not know content type of input file after analized"
       end
 
-      retry_count -= 1
-      if retry_count.negative?
+      retry_count += 1
+      if retry_count >= Settings.config.max_retry_count
         raise BulkRunError, "Do not analyze input file or unknown content type"
       end
 
       Rails.logger.warn { "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}" }
-      BulkRunJob.set(wait: 10.seconds).perform_later(bulk, retry_count)
+      BulkRunJob.set(wait: (2**retry_count).seconds).perform_later(bulk, retry_count)
       return
     end
 

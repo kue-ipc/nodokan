@@ -10,13 +10,9 @@ class Network < ApplicationRecord
 
   unique_identifier "v", :vlan
   unique_identifier "i", :ipv4_network_address,
-    find: ->(value) {
-      find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network)
-    }
+    find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
   unique_identifier "k", :ipv6_network_address,
-    find: ->(value) {
-      find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network)
-    }
+    find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
 
   flag :flag, {disabled: "x", unverifiable: "u", auth: "a", locked: "l", dhcp: "d"}
 

@@ -8,9 +8,7 @@ class Node < ApplicationRecord
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
             hostname, domain = value.split(".", 2)
-            raise ArgumentError, "No domain in fqdn: #{str}" if domain.nil?
-
-            find_by!(hostname:, domain:)
+            find_by(hostname:, domain:) if hostname.present? && domain.present?
           }
   unique_identifier "i",
     read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
@@ -42,7 +40,7 @@ class Node < ApplicationRecord
     unapproved: 11,   # 0b1011
     expired: 12,      # 0b1100
     expire_soon: 13,  # 0b1101
-  }, prefix: true, validate: true
+  }, prefix: true, validate: {allow_nil: true}
 
   belongs_to :user, optional: true, counter_cache: true
 

@@ -76,8 +76,7 @@ module ImportExport
     end
 
     private def headers
-      @headers ||=
-        ["id", *headers_from_keys(@processor.keys), "[result]", "[message]"]
+      @headers ||= ["id", *headers_from_keys(@processor.keys), "_result_", "_message_"]
     end
 
     private def headers_from_keys(keys, parent: nil)
@@ -117,8 +116,7 @@ module ImportExport
     end
 
     private def parse_data_each_params(data)
-      CSV.table(data, converters: [], header_converters: :downcase,
-        encoding: "BOM|UTF-8").each do |row|
+      CSV.table(data, converters: [], header_converters: :downcase, encoding: "BOM|UTF-8").each do |row|
         yield row_to_params(row)
       end
     end
@@ -126,7 +124,8 @@ module ImportExport
     private def row_to_params(row, params: nil, keys: @processor.keys)
       params ||= {}.with_indifferent_access
       row.to_hash.compact_blank.each do |key, value|
-        next if key =~ /\A\[\w+\]\z/
+        # skip system column
+        next if key =~ /\A_\w+_\z/
 
         if key == "id"
           params["id"] = value

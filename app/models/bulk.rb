@@ -66,7 +66,7 @@ class Bulk < ApplicationRecord
 
   def register_job
     if input.attached?
-      BulkRunJob.set(wait: 10.seconds).perform_later(self)
+      BulkRunJob.set(wait: 1.second).perform_later(self)
     else
       BulkRunJob.perform_later(self)
     end

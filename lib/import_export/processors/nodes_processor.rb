@@ -125,6 +125,9 @@ module ImportExport
 
         nic_params[:id] = nic&.id
         normalize_nic_params(nic_params)
+
+        Rails.logger.debug { "Update record with #{nic_params}" }
+
         nic.update!(nic_params)
       end
 

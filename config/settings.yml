@@ -61,6 +61,7 @@ config:
   notice_interval: P1M
   enable_node_by_user: false
   enable_node_upon_confirmation: false
+  max_retry_count: 10
 feature:
   confirmation: true
   specific_node: true

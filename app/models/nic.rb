@@ -8,10 +8,8 @@ class Nic < ApplicationRecord
   include UniqueIdentifier
   include Flag
 
-  unique_identifier "i", :ipv4_address,
-    find: ->(value) { find_ip_address(value) }
-  unique_identifier "k", :ipv6_address,
-    find: ->(value) { find_ip_address(value) }
+  unique_identifier "i", :ipv4_address, find: ->(value) { find_ip_address(value) }
+  unique_identifier "k", :ipv6_address, find: ->(value) { find_ip_address(value) }
 
   flag :flag, {auth: "a", locked: "l"}
 
@@ -44,11 +42,9 @@ class Nic < ApplicationRecord
   validates :network, presence: true, if: :network_id?
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
-  validates :ipv4_data, presence: true,
-    if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
+  validates :ipv4_data, presence: true, if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
   validates :ipv6_data, allow_nil: true, uniqueness: true
-  validates :ipv6_data, presence: true,
-    if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
+  validates :ipv6_data, presence: true, if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
 
   validates :mac_address_data, allow_nil: true, length: {is: 6}
   validates :mac_address_data, presence: true, if: -> { auth }

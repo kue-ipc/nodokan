@@ -39,15 +39,6 @@ module ImportExport
       @result = Hash.new(0)
     end
 
-    def add_result(params)
-      status = params["[result]"]
-      Rails.logger.debug { "#{@count}: #{status}" }
-      add_to_out(params)
-      @result[status] += 1
-      @count += 1
-      yield status if block_given?
-    end
-
     # data is a string or io formatted csv
     def import(data, noop: false, &)
       count = 0
@@ -82,7 +73,7 @@ module ImportExport
         begin
           record = @processor.read(id)
           @processor.record_to_params(record, params:)
-          params["[result]"] = :read
+          params["_result_"] = :read
         rescue Pundit::NotAuthorizedError
           failed_params(params, I18n.t("errors.messages.not_authorized"))
         rescue StandardError => e
@@ -97,38 +88,65 @@ module ImportExport
       count
     end
 
+    private def add_result(params)
+      status = params["_result_"]
+      Rails.logger.debug { "#{@count}: #{status}" }
+      add_to_out(params)
+      @result[status] += 1
+      @count += 1
+      yield status if block_given?
+    end
+
+
     private def import_params(params)
       id = params[:id]
       id = id.strip if id.is_a?(String)
       case id
       when nil, ""
-        record = @processor.create(params)
-        if record.errors.empty?
-          params["[result]"] = :created
-          params["[message]"] = record.id
-        else
-          failed_params(params, record_error_message(record, "not_saved"))
-        end
+        create_record(params)
       when Integer, /\A\d+\z/
-        id = id.to_i
-        record = @processor.update(id, params)
-        if record.errors.empty?
-          params["[result]"] = :updated
-        else
-          failed_params(params, record_error_message(record, "not_saved"))
-        end
+        update_record(id.to_i, params)
       when /\A!\d+\z/
-        id = id.delete_prefix("!").to_i
-        record = @processor.delete(id)
-        if record.errors.empty?
-          params["[result]"] = :deleted
-        else
-          failed_params(params, record_error_message(record, "not_deleted"))
-        end
+        delete_record(id.delete_prefix("!").to_i, params)
       else
         failed_params(params, I18n.t("errors.messages.invalid_id_param"))
       end
       params
+    end
+
+    private def create_record(params)
+      record = @processor.create(params)
+      if record.errors.empty?
+        @processor.record_to_params(record, params:)
+        params["_result_"] = :created
+      else
+        failed_params(params, record_error_message(record, "not_saved"))
+      end
+      record
+    end
+
+    private def update_record(id, params)
+      record = @processor.update(id, params)
+      if record.errors.empty?
+        @processor.record_to_params(record, params:)
+        params["_result_"] = :updated
+      else
+        failed_params(params, record_error_message(record, "not_saved"))
+      end
+      record
+    end
+
+    private def delete_record(id, params)
+      # NOTE: Get paramms before deletion for export, because some params may be lost after deletion (e.g. associations)
+      params_before_deletion = @processor.record_to_params(@processor.read(id))
+      record = @processor.delete(id)
+      if record.errors.empty?
+        params.merge!(params_before_deletion)
+        params.delete("id") # delete id because it may be reused when creating new record
+        params["_result_"] = :deleted
+      else
+        failed_params(params, record_error_message(record, "not_deleted"))
+      end
     end
 
     private def record_error_message(record, key = nil)
@@ -142,13 +160,28 @@ module ImportExport
     end
 
     private def failed_params(params, message)
-      params["[result]"] = :failed
-      params["[message]"] = message
+      params["_result_"] = :failed
+      params["_message_"] = message
     end
 
     private def error_params(params, message)
-      params["[result]"] = :error
-      params["[message]"] = message
+      params["_result_"] = :error
+      params["_message_"] = message
+    end
+
+    private def compact_params(obj)
+      case obj
+      when true, false, nil, Numeric
+        obj
+      when String, Symbol
+        obj.to_s
+      when Hash
+        obj.to_h { |key, value| [key.to_s, compact_params(value)] }.compact_blank
+      when Array
+        obj.map { |value| compact_params(value) }.compact_blank
+      else
+        obj.to_s
+      end
     end
   end
 end

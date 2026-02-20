@@ -1,4 +1,4 @@
-﻿id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,[result],[message]
+﻿id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,_result_,_message_
 1,全体設定,,exmaple.jp,test.example.jp,d,stateless,0.0.0.0/0,,"192.168.1.1
 192.168.2.2",,::/0,,"fd00:1::1
 fd00:2::2",,全体設定,,

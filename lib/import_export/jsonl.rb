@@ -22,7 +22,7 @@ module ImportExport
     end
 
     private def add_to_out(params)
-      @out << JSON.generate(params, @json_opts) << @delemiter
+      @out << JSON.generate(compact_params(params), @json_opts) << @delemiter
     end
 
     private def parse_data_each_params(data)

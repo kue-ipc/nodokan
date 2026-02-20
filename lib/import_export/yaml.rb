@@ -17,35 +17,20 @@ module ImportExport
       super(*, **opts.except(*YAML_OPTIONS))
       @yaml_opts = {stringify_names: true}.merge(opts.slice(*YAML_OPTIONS))
 
-      @data = []
+      @list = []
     end
 
     # override
     def out
-      if @data
-        YAML.safe_dump(@data, @out, **@yaml_opts)
-        @data = nil
+      if @list
+        YAML.safe_dump(@list, @out, **@yaml_opts)
+        @list = nil
       end
       @out
     end
 
     private def add_to_out(params)
-      @data << safe_object(params)
-    end
-
-    private def safe_object(obj)
-      case obj
-      when true, false, nil, Numeric
-        obj
-      when String, Symbol
-        obj.to_s
-      when Hash
-        obj.to_hash.transform_values { |value| safe_object(value) }
-      when Array
-        obj.map { |value| safe_object(value) }
-      else
-        obj.to_s
-      end
+      @list << compact_params(params)
     end
 
     private def parse_data_each_params(data)

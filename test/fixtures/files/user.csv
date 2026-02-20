@@ -1,4 +1,4 @@
-﻿id,username,email,fullname,flag,role,limit,auth_network,networks,[result],[message]
+﻿id,username,email,fullname,flag,role,limit,auth_network,networks,_result_,_message_
 ,admin2,admin@example.jp,管理　一郎,,admin,,,,,
 ,user01,user01@example.jp,湯座　太郎,,user,,v102,"v102
 v101",,
