@@ -240,7 +240,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_064345) do
     t.integer "nics_count", default: 0, null: false
     t.integer "node_type", default: 0, null: false
     t.text "note"
-    t.integer "notice", limit: 1, default: 0, null: false
+    t.integer "notice", limit: 1
     t.timestamp "noticed_at"
     t.bigint "operating_system_id"
     t.boolean "permanent", default: false, null: false
