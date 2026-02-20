@@ -54,8 +54,7 @@ module ImportExport
       }
 
       converter :operating_system, set: ->(record, value) {
-        record.operating_system =
-          find_or_new_operating_system(value, record.operating_system)
+        record.operating_system = find_or_new_operating_system(value, record.operating_system)
       }
 
       converter :nics, set: ->(record, value) {
@@ -90,8 +89,7 @@ module ImportExport
       end
 
       private def normalize_nic_params(nic_params)
-        network =
-          nic_params[:network].presence&.then { Network.find_identifier(_1) }
+        network = nic_params[:network].presence&.then { Network.find_identifier(_1) }
         nic_params[:network_id] = network&.id
 
         delete_unchangable_nic_params(nic_params)
@@ -100,8 +98,7 @@ module ImportExport
           raise UnusableNetworkError
         end
 
-        nic_params.slice!(:number, :name,
-          :interface_type, :network_id, :flag, :mac_address,
+        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag, :mac_address,
           :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
         nic_params
       end
@@ -125,9 +122,6 @@ module ImportExport
 
         nic_params[:id] = nic&.id
         normalize_nic_params(nic_params)
-
-        Rails.logger.debug { "Update record with #{nic_params}" }
-
         nic.update!(nic_params)
       end
 

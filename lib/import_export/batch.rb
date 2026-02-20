@@ -118,6 +118,7 @@ module ImportExport
       record = @processor.create(params)
       if record.errors.empty?
         @processor.record_to_params(record, params:)
+        params[:id] = record.id
         params["_result_"] = :created
       else
         failed_params(params, record_error_message(record, "not_saved"))
@@ -129,6 +130,7 @@ module ImportExport
       record = @processor.update(id, params)
       if record.errors.empty?
         @processor.record_to_params(record, params:)
+        params[:id] = record.id
         params["_result_"] = :updated
       else
         failed_params(params, record_error_message(record, "not_saved"))
@@ -142,7 +144,7 @@ module ImportExport
       record = @processor.delete(id)
       if record.errors.empty?
         params.merge!(params_before_deletion)
-        params.delete("id") # delete id because it may be reused when creating new record
+        params[:id] = nil # delete id because it may be reused when creating new record
         params["_result_"] = :deleted
       else
         failed_params(params, record_error_message(record, "not_deleted"))
