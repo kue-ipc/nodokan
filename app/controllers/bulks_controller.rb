@@ -16,7 +16,7 @@ class BulksController < ApplicationController
   def show
     respond_to do |format|
       format.html do
-        redirect_to bulks_url
+        redirect_to bulks_url(anchor: "bulk_#{@bulk.id}")
       end
       format.json
     end
@@ -35,7 +35,7 @@ class BulksController < ApplicationController
           flash.now.notice = t_success(@bulk, :register)
         end
         format.html do
-          redirect_to bulks_url, notice: t_success(@bulk, :register)
+          redirect_to bulks_url(anchor: "bulk_#{@bulk.id}"), notice: t_success(@bulk, :register)
         end
         format.json { render :show, status: :created, location: @bulk }
       else
@@ -58,7 +58,7 @@ class BulksController < ApplicationController
           flash.now.notice = t_success(@bulk, :cancel)
         end
         format.html do
-          redirect_to bulks_url, notice: t_success(@bulk, :cancel)
+          redirect_to bulks_url(anchor: "bulk_#{@bulk.id}"), notice: t_success(@bulk, :cancel)
         end
         format.json { render :show, status: :ok, location: @bulk }
       else
@@ -67,7 +67,7 @@ class BulksController < ApplicationController
           flash.now.alert = t_failure(@bulk, :cancel)
         end
         format.html do
-          redirect_to bulks_url, alert: t_failure(@bulk, :cancel)
+          redirect_to bulks_url(anchor: "bulk_#{@bulk.id}"), alert: t_failure(@bulk, :cancel)
         end
         format.json { render json: @bulk.errors, status: :unprocessable_content }
       end
@@ -92,7 +92,7 @@ class BulksController < ApplicationController
           flash.now.alert = t_failure(@bulk, :delete)
         end
         format.html do
-          redirect_to bulks_url, alert: t_failure(@bulk, :delete)
+          redirect_to bulks_url(anchor: "bulk_#{@bulk.id}"), alert: t_failure(@bulk, :delete)
         end
         format.json { render json: @bulk.errors, status: :unprocessable_content }
       end

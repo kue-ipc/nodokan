@@ -29,7 +29,7 @@ class BulksControllerTest < ActionDispatch::IntegrationTest
       end
     end
     bulk = Bulk.last
-    assert_redirected_to bulk_url(bulk)
+    assert_redirected_to bulks_url(anchor: "bulk_#{bulk.id}")
     assert_equal "waiting", bulk.status
   end
 

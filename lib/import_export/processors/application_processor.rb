@@ -34,7 +34,7 @@ module ImportExport
             if key.is_a?(Hash)
               key.transform_values { |v| normalize_keys(v) }
             else
-              key
+              key.intern
             end
           end
         end
@@ -49,17 +49,24 @@ module ImportExport
         end
       end
 
+      attr_reader :user
+
       def initialize(user = nil)
         @user = user
       end
 
-      def current_user
-        @user
-      end
+      alias current_user user
 
       delegate :model, to: :class
-
       delegate :keys, to: :class
+
+      def admin?
+        current_user&.admin?
+      end
+
+      def system?
+        current_user.nil?
+      end
 
       def key_converter(key, method)
         case method
