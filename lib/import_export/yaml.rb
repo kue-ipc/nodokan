@@ -35,7 +35,7 @@ module ImportExport
 
     private def parse_data_each_params(data)
       YAML.safe_load(data, symbolize_names: true).each do |params|
-        yield params
+        yield params.except(:_result_)
       end
     end
   end

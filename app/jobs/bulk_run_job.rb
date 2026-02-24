@@ -112,9 +112,9 @@ class BulkRunJob < ApplicationJob
       bulk.input.open do |file|
         batch.import(file) do |result|
           case result
-          when :created, :read, :updated, :deleted
+          when "created", "read", "updated", "deleted"
             bulk.increment!(:success)
-          when :failed, :error
+          when "failed", "error"
             bulk.increment!(:failure)
           else
             raise BulkRunError, "Unknown export result: #{result}"
@@ -124,9 +124,9 @@ class BulkRunJob < ApplicationJob
     else
       batch.export do |result|
         case result
-        when :read
+        when "read"
           bulk.increment!(:success)
-        when :failed, :error
+        when "failed", "error"
           bulk.increment!(:failure)
         else
           raise BulkRunError, "Unknown export result: #{result}"

@@ -49,24 +49,21 @@ module ImportExport
         next if value.blank?
 
         case value
-        in Array
+        when Array
           value = value.compact_blank
           if value.first.is_a?(Hash)
             new_rows = value.flat_map do |hash|
-              put_in_rows(rows.map(&:clone), hash,
-                parent: key_to_header(key.singularize, parent:))
+              put_in_rows(rows.map(&:clone), hash, parent: key_to_header(key.to_s.singularize, parent:))
             end
             rows.replace(new_rows)
           else
             rows.each do |row|
-              row[key_to_header(key, parent:)] =
-                value.map(&:to_s).join(@delimiter)
+              row[key_to_header(key, parent:)] = value.map(&:to_s).join(@delimiter)
             end
           end
-        in Hash
+        when Hash
           put_in_rows(rows, value, parent: key)
-        in String | Symbol | Numeric | true | false |
-          Date | Time | DateTime
+        else
           rows.each do |row|
             row[key_to_header(key, parent:)] = value.to_s
           end
@@ -76,23 +73,21 @@ module ImportExport
     end
 
     private def headers
-      @headers ||= ["id", *headers_from_keys(@processor.keys), "_result_", "_message_"]
+      @headers ||= ["id", *headers_from_keys(@processor.keys), "_action_", "_result_", "_message_"]
     end
 
     private def headers_from_keys(keys, parent: nil)
       keys.flat_map do |key|
-        case key
-        in Symbol
-          key_to_header(key, parent:)
-        in Hash
+        if key.is_a?(Hash)
           key.flat_map do |k, v|
             if v == []
               key_to_header(k, parent:)
             else
-              headers_from_keys(v,
-                parent: key_to_header(k.to_s.singularize, parent:))
+              headers_from_keys(v, parent: key_to_header(k.to_s.singularize, parent:))
             end
           end
+        else
+          key_to_header(key, parent:)
         end
       end
     end
@@ -122,13 +117,28 @@ module ImportExport
     end
 
     private def row_to_params(row, params: nil, keys: @processor.keys)
-      params ||= {}.with_indifferent_access
+      params ||= {}
       row.to_hash.compact_blank.each do |key, value|
-        # skip system column and old system column
-        next if key =~ /\A_\w+_\z|\A\[\w+\]\z/
-
-        if key == "id"
-          params["id"] = value
+        case key
+        when "id"
+          case value&.strip
+          when nil, ""
+            params[:id] = nil
+          when /\A\d+\z/
+            params[:id] = value.to_i
+          when /\A!\d+\z/
+            params[:id] = value.delete_prefix("!").to_i
+            pramas[:_action_] = "delete"
+          else
+            params[:_result_] = :failed
+            params[:_message_] = I18n.t("errors.messages.invalid_param", name: :id)
+          end
+          next
+        when "_action_"
+          params[:_action_] = value
+          next
+        when /\A_\w+_\z|\A\[\w+\]\z/
+          # skip system column and old system column
           next
         end
 
@@ -140,14 +150,14 @@ module ImportExport
           descendants = m[3]
           if (single_keys = find_key_in_keys(parent, cur_keys))
             # single
-            cur_params[parent] ||= {}.with_indifferent_access
+            cur_params[parent] ||= {}
             # next
             cur_keys = single_keys
             cur_params = cur_params[parent]
             key = :"#{child}#{descendants}"
           elsif (multiple_keys = find_key_in_keys(parent.pluralize, cur_keys))
             # multiple
-            cur_params[parent.pluralize] ||= [{}.with_indifferent_access]
+            cur_params[parent.pluralize] ||= [{}]
             # next
             cur_keys = multiple_keys
             cur_params = cur_params[parent.pluralize].first

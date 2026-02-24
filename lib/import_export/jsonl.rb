@@ -27,7 +27,7 @@ module ImportExport
 
     private def parse_data_each_params(data)
       data.each_line do |line|
-        yield JSON.parse(line, symbolize_names: true)
+        yield JSON.parse(line, symbolize_names: true).except(:_result_)
       end
     end
   end
