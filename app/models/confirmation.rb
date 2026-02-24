@@ -7,8 +7,7 @@ class Confirmation < ApplicationRecord
   belongs_to :node
   belongs_to :security_software, optional: true
 
-  NUM_ATTRS = %w[existence content os_update app_update software
-    security_update security_scan].freeze
+  NUM_ATTRS = %w[existence content os_update app_update software security_update security_scan].freeze
 
   ALL_ATTRS = (NUM_ATTRS + %w[security_hardware security_software]).freeze
 
@@ -110,6 +109,31 @@ class Confirmation < ApplicationRecord
     @expire_soon_period ||= period(Settings.config.confirmation_period.expire_soon)
   end
 
+  def self.continuation_period
+    @continuation_period = nil unless Rails.env.production?
+    @continuation_period ||= period(Settings.config.confirmation_period.continuation)
+  end
+
+  def self.destroy_node_unconfromed_period
+    @destroy_node_unconfromed_period = nil unless Rails.env.production?
+    @destroy_node_unconfromed_period ||= period(Settings.config.destroy_node_period.unconformed)
+  end
+
+  def self.destroy_node_expired_period
+    @destroy_node_expired_period = nil unless Rails.env.production?
+    @destroy_node_expired_period ||= period(Settings.config.destroy_node_period.expired)
+  end
+
+  def self.disable_node_unconfromed_period
+    @disable_node_unconfromed_period = nil unless Rails.env.production?
+    @disable_node_unconfromed_period ||= period(Settings.config.disable_node_period.unconformed)
+  end
+
+  def self.disable_node_expired_period
+    @disable_node_expired_period = nil unless Rails.env.production?
+    @disable_node_expired_period ||= period(Settings.config.disable_node_period.expired)
+  end
+
   def check(num)
     if num.nil? || num.negative?
       :unknown
@@ -197,36 +221,38 @@ class Confirmation < ApplicationRecord
     period(Settings.config.confirmation_period.expire_soon)
   end
 
-  def expiration
+  def expired_time
     confirmed_at + validity_period
   end
+  alias expiration expired_time
 
-  def status(time = Time.current)
-    if confirmed_at.blank?
-      :unconfirmed
-    elsif expiration <= time
-      :expired
-    elsif !approved
-      :unapproved
-    elsif expiration - Confirmation.expire_soon_period <= time
-      :expire_soon
-    else
-      :approved
-    end
+  def expire_soon_time
+    confirmed_at + [
+      Confirmation.continuation_period,
+      validity_period - Confirmation.expire_soon_period,
+    ].max
   end
 
-  def status_period(time = Time.current)
-    start_time = case status(time)
-    in :approved | :unapproved
-      confirmed_at
-    in :expire_soon
-      expiration - expire_soon_period
-    in :expired
-      expiration
-    in :unconfirmed
-      node.created_at
+  def expired?(time: Time.current)
+    expired_time <= time
+  end
+
+  def expire_soon?(time: Time.current)
+    expire_soon_time <= time
+  end
+
+  def status(time: Time.current)
+    if confirmed_at.blank?
+      :unconfirmed
+    elsif expired?(time:)
+      :expired
+    elsif expire_soon?(time:)
+      :expire_soon
+    elsif approved
+      :approved
+    else
+      :unapproved
     end
-    (time - start_time).to_i
   end
 
   def destroyable?
@@ -240,7 +266,7 @@ class Confirmation < ApplicationRecord
     existence_not_my_own?
   end
 
-  def check_and_approve!(time = Time.current)
+  def check_and_approve!(time: Time.current)
     if !exist?
       self.content = :unknown
       self.os_update = :unknown
@@ -265,5 +291,27 @@ class Confirmation < ApplicationRecord
     self.approved = approvable?
 
     self.confirmed_at = time
+  end
+
+  def should_destory_node?(time: Time.current)
+    case status(time:)
+    when :unconfirmed
+      time >= node.created_at + Confirmation.destroy_node_unconfromed_period
+    when :expired
+      time >= expired_time + Confirmation.destroy_node_expired_period
+    else
+      false
+    end
+  end
+
+  def should_disable_node?(time: Time.current)
+    case status(time:)
+    when :unconfirmed
+      time >= node.created_at + Confirmation.disable_node_unconfromed_period
+    when :expired
+      time >= expired_time + Confirmation.disable_node_expired_period
+    else
+      false
+    end
   end
 end

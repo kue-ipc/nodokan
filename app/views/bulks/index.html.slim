@@ -6,9 +6,7 @@
 = render "form", bulk: Bulk.new
 
 = turbo_frame_tag "bulks-list" do
-  p
-    | 一括処理の保存期間は30日です。
-    | 削除される前に出力をダウンロードしてください。
+  p = t("views.bulks.index.note", period: distance_of_time_in_words(Bulk.retention_period))
   .mb-2
     .row.py-1.border-bottom.fw-bold
       - bulk_list_cols.each do |col|

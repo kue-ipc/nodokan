@@ -15,12 +15,16 @@
         - @condition&.each do |name, value|
           = f.hidden_field("condition[#{name}]", value: value)
         = f.search_field :query, value: @query, hide_label: true,
-          append: f.primary('<i class="fas fa-search"></i>'.html_safe,
-            name: :search, render_as_button: true)
+          append: f.primary('<i class="fas fa-search"></i>'.html_safe, name: :search, render_as_button: true)
     - if current_user.node_creatable?
       .col-12.mb-3
         = link_to t("actions.new"), new_node_path, class: "btn btn-secondary"
-
+    .col-12
+      = bootstrap_form_with model: Bulk.new(target: "Node"), data: {turbo: false} do |f|
+        = f.hidden_field :target
+        = f.select :content_type, bulk_content_type_list,
+          hide_label: true, prepend: t("forms.bulk.export"),
+          append: f.primary('<i class="fa-solid fa-file-export"></i>'.html_safe, name: :commit, render_as_button: true)
 - if Settings.feature.confirmation
   p 1年に1度、端末の確認を行ってください。
 

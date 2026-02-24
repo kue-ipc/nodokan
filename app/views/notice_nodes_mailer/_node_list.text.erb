@@ -1,0 +1,12 @@
+<%= t(".target") %>: <%= nodes.count %> <%= t("units.node")%>
+
+<% nodes.each do |node| %>
+<%= Node.model_name.human %> ID: <%= node.id %>
+<%= Node.human_attribute_name(:name) %>: <%= node.name %>
+<%= Node.human_attribute_name(:hostname) %>: <%= node.hostname %>
+<%= Nic.human_attribute_name(:ipv4_address) %>: <%= node.nics.map(&:ipv4_address).compact.join(' ') %>
+<%= Nic.human_attribute_name(:ipv6_address) %>: <%= node.nics.map(&:ipv6_address).compact.join(' ') %>
+<%= yield node -%>
+<%= t(".link") %>: <%= node_url(node) %>
+
+<% end %>

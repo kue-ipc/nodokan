@@ -886,6 +886,11 @@ ja:
       previous: "&lsaquo; 前"
       next: "次 &rsaquo;"
       truncate: "&hellip;"
+    bulks:
+      index:
+        note: |
+            一括処理の保存期間は%{period}です。
+            削除される前に出力をダウンロードしてください。
 
   values:
     none: (無し)
@@ -967,7 +972,8 @@ ja:
       not_auth_nework: 認証ネットワークではありません。
       no_allocate: 割り当てがありません。
       invalid_csv_header: CSVのヘッダが間違っています。
-      invalid_id_param: 「id」の値が不正です。
+      invalid_param: 「{name}」の値が不正です。
+      invalid_params: パラメーター値が不正です。
       not_found_user: 該当するユーザーがいません。
       cannot_transfer_to_guest: ゲスト権限のユーザーに譲渡できません。
       unusable_network: 使用できないネットワークです。
@@ -1025,21 +1031,104 @@ ja:
       ipv6_pools:
         title: IPv6プール
     bulk:
+      export: 一括出力
+      import: 一括入力
       help: |
         CSVファイルを選択して「登録する」と、CSVファイルの内容に基づき処理が実行されます。
         対象の一覧を取得したい場合は、一覧の画面でエクスポートしてください。
-
   themes:
     light: ライト
     dark: ダーク
     auto: システム
 
+  units:
+    node: 台
+    nic: ポート
+    network: セグメント
+    user: 人
+
+  layouts:
+    mailer:
+      footer_message: |
+        このメールの送信者は送信専用です。そのまま返信しないでください。
+        メール内容のお問い合わせは下記管理者宛までお願いします。
+          %{name} %{email}
   # mailer
   admin_mailer:
     job_failure:
       subject: ジョブ失敗
       message: |
         端末管理システムで、下記のジョブが失敗しました。
+      job: ジョブ
+      job_id: ジョブ
+      time: 実行日時
+      exception: 例外メッセージ
+
+  notice_nodes_mailer:
+    node_list:
+      target: 対象
+      link: リンク
+    destroyed:
+      subject: 端末削除
+      message: |
+        下記の端末は、未接続のまま長期間放置されていたため、削除されました。
+        端末をネットワークに接続することはできません。
+        再度端末を使用したい場合は、再登録を行ってください。
+        ※ 添付ファイルを「一括処理」に登録することでも端末の再登録が可能です。
+    destroy_soon:
+      subject: 端末削除予告
+      message: |
+        下記の端末は、未接続のまま長期間放置されていたため、削除予定日時以降に削除されます。
+        端末を引き続き使用する場合は、削除予定日時前にネットワークに接続してください。
+      time: 削除予定日時
+    disabled:
+      subject: 端末無効化
+      message: |
+        下記の端末は、無効化されているため、ネットワークに接続することはできません。
+        有効化したい場合は、リンク先にアクセスし、端末の確認を実施してください。
+    disable_soon:
+      subject: 端末無効化予告
+      message: |
+        下記の端末は、未確認または有効期限のまま長期間放置されたため、無効化予定日時以降に無効化されます。
+        無効化された端末は、ネットワークに接続することができなります。
+        端末を引き続き使用する場合は、リンク先にアクセスし、無効化予定日時前に端末の確認を実施してください。
+      time: 無効化予定日時
+    unconfirmed:
+      subject: 端末未確認
+      message: |
+        下記の端末は、登録後に一度も確認が実施されていません。
+        未確認のまま長期間放置した場合、無効化、または、削除が行われます。
+        端末を引き続き使用する場合は、リンク先にアクセスし、端末の確認を実施してください。
+    approved:
+    unapproved:
+    expired:
+      subject: 端末期限切れ
+      message: |
+        下記の端末は、確認の有効期限が切れました。
+        有効期限が切れたまま長期間放置した場合、無効化、または、削除が行われます。
+        端末を引き続き使用する場合は、リンク先にアクセスし、端末の確認を実施してください。
+    expire_soon:
+      subject: 端末期限間近
+      message: |
+        下記の端末は、確認の有効期限がまもなく切れます。
+        有効期限が切れたまま長期間放置した場合、無効化、または、削除が行われます。
+        端末を引き続き使用する場合は、リンク先にアクセスし、有効期限前に端末の確認を実施してください。
+      time: 有効期限
+    unowned:
+      subject: 所有者なし端末
+      message: |
+        下記の端末は、確認の有効期限が切れました。
+        有効期限が切れたまま長期間放置した場合、無効化、または、削除が行われます。
+        端末を引き続き使用する場合は、リンク先にアクセスし、端末の確認を実施してください。
+    deleted_owner:
+      subject: 削除済み
+      message: |
+        下記の端末は、確認の有効期限が切れました。
+        有効期限が切れたまま長期間放置した場合、無効化、または、削除が行われます。
+        端末を引き続き使用する場合は、リンク先にアクセスし、端末の確認を実施してください。
+
+
+
     notice_nodes:
       subject: 要確認端末(管理者)
       message: |
@@ -1049,9 +1138,7 @@ ja:
       notices:
         unowned: 所有者がいません。
         deleted_owner: 所有者が既に削除されました。
-
-  user_mailer:
-    notice_nodes:
+    notice_nodes2:
       subject: 要確認端末
       message: |
         確認が必要な端末があります。
@@ -1077,8 +1164,6 @@ ja:
         destroy_soon: まもなく削除されます。
         disbale_soon: まもなく無効化されます。
         expire_soon: まもなく有効期限が切れます。
-
-
 
   specific_node_mailer:
     apply:

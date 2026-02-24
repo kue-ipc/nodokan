@@ -74,7 +74,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["[result]"]
+      assert_equal "failed", result["_result_"]
     end
   end
 
@@ -103,7 +103,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["[result]"]
+      assert_equal "failed", result["_result_"]
     end
   end
 
@@ -131,7 +131,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["[result]"]
+      assert_equal "failed", result["_result_"]
     end
   end
 
@@ -243,7 +243,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     bulk.update(user: users(:admin))
     network = networks(:client)
     csv_io = StringIO.new <<~CSV
-      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,[result],[message]
+      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,_result_,_message_
       #{network.id},,,,,,,,,,,,,,,,,
     CSV
     bulk.input.attach(io: csv_io, filename: "test.csv",
@@ -284,7 +284,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     bulk.update(user: users(:admin))
     network = networks(:client)
     csv_io = StringIO.new <<~CSV
-      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,[result],[message]
+      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,_result_,_message_
       #{network.id},test,!,!,!,!,disabled,!,!,!,!,!,!,!,!,!,,
     CSV
     bulk.input.attach(io: csv_io, filename: "test.csv",

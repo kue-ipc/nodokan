@@ -8,10 +8,8 @@ class Nic < ApplicationRecord
   include UniqueIdentifier
   include Flag
 
-  unique_identifier "i", :ipv4_address,
-    find: ->(value) { find_ip_address(value) }
-  unique_identifier "k", :ipv6_address,
-    find: ->(value) { find_ip_address(value) }
+  unique_identifier "i", :ipv4_address, find: ->(value) { find_ip_address(value) }
+  unique_identifier "k", :ipv6_address, find: ->(value) { find_ip_address(value) }
 
   flag :flag, {auth: "a", locked: "l"}
 
@@ -44,11 +42,9 @@ class Nic < ApplicationRecord
   validates :network, presence: true, if: :network_id?
 
   validates :ipv4_data, allow_nil: true, uniqueness: true
-  validates :ipv4_data, presence: true,
-    if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
+  validates :ipv4_data, presence: true, if: -> { ipv4_reserved? || ipv4_static? || ipv4_manual? }
   validates :ipv6_data, allow_nil: true, uniqueness: true
-  validates :ipv6_data, presence: true,
-    if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
+  validates :ipv6_data, presence: true, if: -> { ipv6_reserved? || ipv6_static? || ipv6_manual? }
 
   validates :mac_address_data, allow_nil: true, length: {is: 6}
   validates :mac_address_data, presence: true, if: -> { auth }
@@ -99,18 +95,15 @@ class Nic < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   attribute :global, :boolean
-  def global
-    ipv4_global? || ipv6_global?
-  end
+  def global = ipv4_global? || ipv6_global?
   alias global? global
 
-  def has_ipv4? # rubocop: disable Naming/PredicateName
-    ipv4_data.present?
-  end
+  delegate :enabled?, :disabled?, to: :node
 
-  def has_ipv6? # rubocop: disable Naming/PredicateName
-    ipv6_data.present?
-  end
+  # rubocop: disable Naming/PredicateName
+  def has_ipv4? = ipv4_data.present?
+  def has_ipv6? = ipv6_data.present?
+  # rubocop: enable Naming/PredicateName
 
   def radius_mac
     return unless network&.vlan

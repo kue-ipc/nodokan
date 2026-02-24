@@ -1,7 +1,5 @@
 <%== yield %>
 ---
-このメールの送信者は送信専用です。そのまま返信しないでください。
-メール内容のお問い合わせは下記管理者宛までお願いします。
-  <%== Settings.admin.fullname %> <%== Settings.admin.email %>
+<%= t(".footer_message", name: Settings.admin.fullname, email: Settings.admin.email) -%>
 
 - <%== Settings.site.title || t(:nodokan) %> -

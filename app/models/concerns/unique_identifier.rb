@@ -14,7 +14,7 @@ module UniqueIdentifier
       find ||= attr
       if find.is_a?(Symbol)
         name = find
-        find = ->(value) { find_by!({name => value}) }
+        find = ->(value) { find_by({name => value}) }
       end
       @id_find_map[key] = find.to_proc if find
     end
@@ -31,15 +31,16 @@ module UniqueIdentifier
       m = /\A(?<key>.)(?<value>.+)\z/.match(str.to_s.strip.downcase)
       raise ArgumentError, "Invalid identifier format: #{str}" unless m
 
-      if (proc = @id_find_map[m[:key]])
-        unless class_exec(m[:value], &proc)
-          raise(ActiveRecord::RecordNotFound, "Couldn't find #{model_name} with 'identifier'=#{str}")
+      value =
+        if (proc = @id_find_map[m[:key]])
+          class_exec(m[:value], &proc)
+        elsif m[:key] == "#"
+          find(m[:value])
+        else
+          raise ArgumentError, "Unknown identifier type: #{str}"
         end
-      elsif m[:key] == "#"
-        find(m[:value])
-      else
-        raise ArgumentError, "Unknown identifier type: #{str}"
-      end
+      raise(ActiveRecord::RecordNotFound, "Couldn't find #{model_name} with 'identifier'=#{str}") unless value
+      value
     end
 
     def find_ip_address(value, ipv4: :ipv4, ipv6: :ipv6)
@@ -52,7 +53,7 @@ module UniqueIdentifier
         else
           raise ArgumentError, "Unknown IP version: #{str}"
         end
-      where(":name = :value", name:, value: ip.hton).first!
+      where({name => ip.hton}).first
     rescue IPAddr::InvalidAddressError
       raise ArgumentError, "Invalid IP address: #{str}"
     end

@@ -1,7 +1,6 @@
 class SpecificNodeMailer < ApplicationMailer
   def apply
-    @specific_node_application =
-      SpecificNodeApplication.new(params[:specific_node_application])
+    @specific_node_application = SpecificNodeApplication.new(params[:specific_node_application])
     @user = User.find(@specific_node_application.user_id)
     @node = Node.find(@specific_node_application.node_id)
 

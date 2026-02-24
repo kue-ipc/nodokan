@@ -1,4 +1,4 @@
-﻿id,user,name,fqdn,type,flag,components,host,place[area],place[building],place[floor],place[room],hardware[device_type],hardware[maker],hardware[product_name],hardware[model_number],operating_system[os_category],operating_system[name],duid,nic[number],nic[name],nic[interface_type],nic[network],nic[flag],nic[mac_address],nic[ipv4_config],nic[ipv4_address],nic[ipv6_config],nic[ipv6_address],note,[result],[message]
+﻿id,user,name,fqdn,type,flag,components,host,place[area],place[building],place[floor],place[room],hardware[device_type],hardware[maker],hardware[product_name],hardware[model_number],operating_system[os_category],operating_system[name],duid,nic[number],nic[name],nic[interface_type],nic[network],nic[flag],nic[mac_address],nic[ipv4_config],nic[ipv4_address],nic[ipv6_config],nic[ipv6_address],note,_result_,_message_
 ,user,パソコン,,normal,,,,Aキャンパス,センター,1,サーバー室,パソコン,A社,デスクトップパソコン,DPC-01,Windows,Windows,,1,LAN,wired,v99,,,disabled,,disabled,,ネットワークに権限無し,,
 1,,,,,,,,,,,,,,,,,,,1,LAN,wired,v99,,,disabled,,disabled,,ネットワークに権限無し,,
 1,,,,,,,,,,,,,,,,,,,,Wi-Fi,wireless,v99,,,disabled,,disabled,,ネットワークに権限無し,,

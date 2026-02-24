@@ -37,11 +37,17 @@ class ConfirmationsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   private def confirmation_params
-    permitted_params = params.expect(
-      confirmation: [:existence, :content, :os_update, :app_update, :software,
-      :security_update, :security_scan,
+    permitted_params = params.expect(confirmation: [
+      :existence,
+      :content,
+      :os_update,
+      :app_update,
+      :software,
+      :security_update,
+      :security_scan,
       security_hardwares: [],
-      security_software: [:os_category_id, :installation_method, :name],])
+      security_software: [:os_category_id, :installation_method, :name],
+    ])
 
     security_hardware = list_to_bitwise(permitted_params[:security_hardwares],
       Confirmation.security_hardwares)

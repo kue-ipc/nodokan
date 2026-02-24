@@ -13,8 +13,8 @@ module ImportExport
 
         def inherited(subclass)
           super
-          subclass.instance_variable_set(:@get_map, {}.with_indifferent_access)
-          subclass.instance_variable_set(:@set_map, {}.with_indifferent_access)
+          subclass.instance_variable_set(:@get_map, {})
+          subclass.instance_variable_set(:@set_map, {})
         end
 
         def class_name(name)
@@ -31,11 +31,10 @@ module ImportExport
 
           keys = [keys] unless keys.is_a?(Array)
           keys.compact.map do |key|
-            case key
-            in Symbol
-              key
-            in Hash
+            if key.is_a?(Hash)
               key.transform_values { |v| normalize_keys(v) }
+            else
+              key
             end
           end
         end
@@ -92,15 +91,14 @@ module ImportExport
             params << record_to_params(r, keys:)
           end
         else
-          params ||= {}.with_indifferent_access
+          params ||= {}
           keys.each do |key|
             case key
             in Symbol
               params[key] = convert_value(get_param(record, key))
             in Hash
               key.each do |k, v|
-                params[k] = record_to_params(get_param(record, k),
-                  params: params[k], keys: v)
+                params[k] = record_to_params(get_param(record, k), params: params[k], keys: v)
               end
             end
           end
@@ -110,10 +108,11 @@ module ImportExport
 
       def params_to_record(params, record: nil, keys: self.keys)
         record ||= model.new(initial_model_attributes)
-        permitted_params =
-          ActionController::Parameters.new(params).permit(*keys)
+        permitted_params = ActionController::Parameters.new(params).permit(*keys)
         permitted_params.each do |key, value|
-          set_param(record, key, value)
+          Rails.logger.debug("Processing param: #{key} = #{value}")
+          Rails.logger.debug("Processing param: #{value.class}")
+          set_param(record, key.intern, value)
         end
         record
       end

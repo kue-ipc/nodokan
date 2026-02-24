@@ -4,12 +4,17 @@
     = t("actions.index")
 
 .mb-2
-  = bootstrap_form_tag url: users_path, method: "get",
-    data: {turbo_frame: "users-list"} do |f|
-    .row.row-cols-md-auto.g-3.align-items-center
-      .col-12
+  .row.row-cols-md-auto.g-3.align-items-center
+    .col-12
+      = bootstrap_form_tag url: users_path, method: "get", data: {turbo_frame: "users-list"} do |f|
         = f.search_field :query, value: @query, hide_label: true,
           append: f.primary('<i class="fas fa-search"></i>'.html_safe,
             name: :search, render_as_button: true)
+    .col-12
+      = bootstrap_form_with model: Bulk.new(target: "User"), data: {turbo: false} do |f|
+        = f.hidden_field :target
+        = f.select :content_type, bulk_content_type_list,
+          hide_label: true, prepend: t("forms.bulk.export"),
+          append: f.primary('<i class="fa-solid fa-file-export"></i>'.html_safe, name: :commit, render_as_button: true)
 
 = render "list"

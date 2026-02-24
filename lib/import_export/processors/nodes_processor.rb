@@ -12,29 +12,33 @@ module ImportExport
       params_permit(
         :user, :name, :fqdn, :type, :flag,
         ({components: []} if Settings.feature.virtual_node),
-        (:host if Settings.feature.logical_node), {
+        (:host if Settings.feature.logical_node),
+        {
           place: [:area, :building, :floor, :room],
           hardware: [:device_type, :maker, :product_name, :model_number],
           operating_system: [:os_category, :name],
-        }, :duid, {nics: [
+        },
+        :duid,
+        {nics: [[
           :number, :name, :interface_type, :network, :flag, :mac_address,
           :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address,
-        ]}, :note)
+        ]]},
+        :note)
 
       converter :type, :node_type
 
       converter :user,
         get: ->(record) { record.user&.username },
         set: ->(record, value) {
-          return unless current_user.nil? || current_user.admin?
-
-          record.user = value.presence && User.find_by!(username: value)
+          if current_user.nil? || current_user.admin?
+            record.user = value.presence && User.find_by!(username: value)
+          end
         }
 
       converter :flag, set: ->(record, value) {
-        return unless current_user.nil? || current_user.admin?
-
-        record.flag = value
+        if current_user.nil? || current_user.admin?
+          record.flag = value
+        end
       }
 
       converter :host, set: ->(record, value) {
@@ -54,8 +58,7 @@ module ImportExport
       }
 
       converter :operating_system, set: ->(record, value) {
-        record.operating_system =
-          find_or_new_operating_system(value, record.operating_system)
+        record.operating_system = find_or_new_operating_system(value, record.operating_system)
       }
 
       converter :nics, set: ->(record, value) {
@@ -74,8 +77,7 @@ module ImportExport
             number = number.delete_prefix("!").to_i
             delete_nic(record, number)
           else
-            record.errors.add(:nics,
-              I18n.t("errors.messages.invalid_nic_number_field"))
+            record.errors.add(:nics, I18n.t("errors.messages.invalid_nic_number_field"))
             raise ActiveRecord::Rollback
           end
         rescue UnusableNetworkError
@@ -90,8 +92,7 @@ module ImportExport
       end
 
       private def normalize_nic_params(nic_params)
-        network =
-          nic_params[:network].presence&.then { Network.find_identifier(_1) }
+        network = nic_params[:network].presence&.then { Network.find_identifier(_1) }
         nic_params[:network_id] = network&.id
 
         delete_unchangable_nic_params(nic_params)
@@ -100,8 +101,7 @@ module ImportExport
           raise UnusableNetworkError
         end
 
-        nic_params.slice!(:number, :name,
-          :interface_type, :network_id, :flag, :mac_address,
+        nic_params.slice!(:number, :name, :interface_type, :network_id, :flag, :mac_address,
           :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address)
         nic_params
       end

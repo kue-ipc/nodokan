@@ -14,6 +14,12 @@ class BulksController < ApplicationController
 
   # GET /bulks/1 or /bulks/1.json
   def show
+    respond_to do |format|
+      format.html do
+        redirect_to bulks_url
+      end
+      format.json
+    end
   end
 
   # POST /bulks or /bulks.json or /bulks.turbo_stream
@@ -29,7 +35,7 @@ class BulksController < ApplicationController
           flash.now.notice = t_success(@bulk, :register)
         end
         format.html do
-          redirect_to bulk_url(@bulk), notice: t_success(@bulk, :register)
+          redirect_to bulks_url, notice: t_success(@bulk, :register)
         end
         format.json { render :show, status: :created, location: @bulk }
       else
@@ -37,8 +43,7 @@ class BulksController < ApplicationController
           flash.now.alert = t_failure(@bulk, :register)
         end
         format.html do
-          flash.alert = t_failure(@bulk, :register)
-          render :new, status: :unprocessable_content
+          redirect_to bulks_url, alert: t_failure(@bulk, :register)
         end
         format.json { render json: @bulk.errors, status: :unprocessable_content }
       end
@@ -53,7 +58,7 @@ class BulksController < ApplicationController
           flash.now.notice = t_success(@bulk, :cancel)
         end
         format.html do
-          redirect_to bulk_url(@bulk), notice: t_success(@bulk, :cancel)
+          redirect_to bulks_url, notice: t_success(@bulk, :cancel)
         end
         format.json { render :show, status: :ok, location: @bulk }
       else
@@ -62,8 +67,7 @@ class BulksController < ApplicationController
           flash.now.alert = t_failure(@bulk, :cancel)
         end
         format.html do
-          flash.alert = t_failure(@bulk, :cancel)
-          render :show, status: :unprocessable_content
+          redirect_to bulks_url, alert: t_failure(@bulk, :cancel)
         end
         format.json { render json: @bulk.errors, status: :unprocessable_content }
       end

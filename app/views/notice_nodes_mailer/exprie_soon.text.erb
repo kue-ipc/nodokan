@@ -1,0 +1,5 @@
+<%= t(".message") -%>
+
+<%= render "node_list", nodes: @nodes do |node| -%>
+<%= t("notice_nodes_mailer.destroy_soon.time") %>: <% node.execution_at %>
+<% end %>

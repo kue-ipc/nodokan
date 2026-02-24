@@ -8,9 +8,7 @@ class Node < ApplicationRecord
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
             hostname, domain = value.split(".", 2)
-            raise ArgumentError, "No domain in fqdn: #{str}" if domain.nil?
-
-            find_by!(hostname:, domain:)
+            find_by(hostname:, domain:) if hostname.present? && domain.present?
           }
   unique_identifier "i",
     read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
@@ -31,17 +29,18 @@ class Node < ApplicationRecord
   }, validate: true
 
   enum :notice, {
-    none: 0,
-    destroyed: 1, # maybe not used
-    disabled: 2,
-    expired: 3,
-    # none_soon: 4, # not used
-    destroy_soon: 5,
-    disbale_soon: 6,
-    expire_soon: 7,
-    unowned: 8,
-    deleted_owner: 9,
-  }, prefix: true, validate: true
+    unowned: 0,       # 0b0000
+    deleted_owner: 1, # 0b0001
+    destroyed: 2,     # 0b0010 maybe not set
+    destroy_soon: 3,  # 0b0011
+    disabled: 4,      # 0b0100
+    disable_soon: 5,  # 0b0101
+    unconfirmed: 8,   # 0b1000
+    approved: 9,      # 0b1001
+    unapproved: 11,   # 0b1011
+    expired: 12,      # 0b1100
+    expire_soon: 13,  # 0b1101
+  }, prefix: true, validate: {allow_nil: true}
 
   belongs_to :user, optional: true, counter_cache: true
 
@@ -91,6 +90,26 @@ class Node < ApplicationRecord
 
   # class methods
 
+  def self.destroy_grace_period
+    @destroy_grace_period = nil unless Rails.env.production?
+    @destroy_grace_period ||= period(Settings.config.destroy_node_period.grace)
+  end
+
+  def self.disable_grace_period
+    @disable_grace_period = nil unless Rails.env.production?
+    @disable_grace_period ||= period(Settings.config.disable_node_period.grace)
+  end
+
+  def self.destroy_not_connected_period
+    @destroy_not_connected_period = nil unless Rails.env.production?
+    @destroy_not_connected_period ||= period(Settings.config.destroy_node_period.not_connected)
+  end
+
+  def self.destroy_last_connection_period
+    @destroy_last_connection_period = nil unless Rails.env.production?
+    @destroy_last_connection_period ||= period(Settings.config.destroy_node_period.last_connection)
+  end
+
   def self.notice_interval
     @notice_interval = nil unless Rails.env.production?
     @notice_interval ||= period(Settings.config.notice_interval)
@@ -119,14 +138,13 @@ class Node < ApplicationRecord
   # rubocop: enable Lint/UnusedMethodArgument
 
   attribute :global, :boolean
-  def global
-    nics.any?(&:global)
-  end
+  def global = nics.any?(&:global)
   alias global? global
+
+  def enabled? = !disabled?
 
   def fqdn
     return if hostname.blank?
-
     return hostname if domain.blank?
 
     "#{hostname}.#{domain}"
@@ -157,6 +175,38 @@ class Node < ApplicationRecord
     end.compact.max
     @connected_at_checked = true
     @connected_at
+  end
+
+  def solid_confirmation
+    @solid_confirmation ||= confirmation || build_confirmation
+  end
+
+  def should_destroy?(time: Time.current)
+    # sholud not destroy node with nics connected to unverifeable newtworks
+    return false if nics.any? { |nic| nic.network&.unverifiable }
+    # should not destroy node if it has recent creation history
+    return false if connected_at.nil? && created_at > time - Node.destroy_not_connected_period
+    # should not destroy node if it has recent connection history
+    return false if connected_at&.>(time - Node.destroy_last_connection_period)
+
+    # always destroy node if confirmation is disbaled
+    return true unless Settings.feature.confirmation
+
+    solid_confirmation.should_destory_node?(time:)
+  end
+
+  def should_disable?(time: Time.current)
+    # always dose not disable node if confirmation is disbaled
+    return false unless Settings.feature.confirmation
+
+    solid_confirmation.should_disable_node?(time:)
+  end
+
+  def need_notice?(name, time: Time.current)
+    return true if notice != name.to_s
+    return true if noticed_at&.>(time - Node.notice_interval)
+
+    false
   end
 
   private def reset_attributes_for_node_type
