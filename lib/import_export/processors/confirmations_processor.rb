@@ -9,7 +9,8 @@ module ImportExport
       class_name "Confirmation"
 
       params_permit(
-        :node,
+        {node: [:identifier, :name]},
+        :status,
         :existence,
         :content,
         :os_update,

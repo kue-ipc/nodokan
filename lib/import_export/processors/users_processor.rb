@@ -8,7 +8,7 @@ module ImportExport
       params_permit(
         :username, :email, :fullname, :flag, :role, :limit,
         (:auth_network if Settings.feature.user_auth_network),
-        {networks: []})
+        networks: [])
 
       converter :auth_network, set: ->(record, value) {
         record.auth_network = Network.find_identifier(value)

@@ -22,21 +22,7 @@ module ImportExport
         end
 
         def params_permit(*args, **kwargs)
-          @keys = normalize_keys([*args, kwargs])
-        end
-
-        def normalize_keys(keys)
-          return keys if keys == []
-          return keys if keys == {}
-
-          keys = [keys] unless keys.is_a?(Array)
-          keys.compact.map do |key|
-            if key.is_a?(Hash)
-              key.transform_values { |v| normalize_keys(v) }
-            else
-              key.intern
-            end
-          end
+          @keys = [*args, kwargs].compact_blank
         end
 
         def converter(key, original_key = nil, get: nil, set: nil)
