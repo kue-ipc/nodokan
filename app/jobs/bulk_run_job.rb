@@ -16,24 +16,31 @@ class BulkRunJob < ApplicationJob
     batch = nil
 
     PaperTrail.request.disable_model(Bulk)
-    if bulk.input.attached? && bulk.input.content_type.nil?
-      if bulk.input.analized?
-        raise BulkRunError, "Do not know content type of input file after analized"
-      end
 
-      retry_count += 1
-      if retry_count >= Settings.config.max_retry_count
-        raise BulkRunError, "Do not analyze input file or unknown content type"
+    if bulk.input.attached?
+      if bulk.input.content_type.nil?
+        retry_count += 1
+        if retry_count >= Settings.config.max_retry_count
+          raise BulkRunError, "Do not analyze input file or unknown content type"
+        end
+        Rails.logger.warn { "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}" }
+        BulkRunJob.set(wait: (2**retry_count).seconds).perform_later(bulk, retry_count)
+        return
+      elsif bulk.content_type.nil?
+        bulk.update!(content_type: bulk.input.content_type)
+      elsif bulk.content_type != bulk.input.content_type
+        raise BulkRunError, "Content type mismatch: #{bulk.content_type} != #{bulk.input.content_type}"
       end
-
-      Rails.logger.warn { "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}" }
-      BulkRunJob.set(wait: (2**retry_count).seconds).perform_later(bulk, retry_count)
-      return
     end
 
+    processor = "#{bulk.target.camelize.pluralize}Processor".constantize.new(bulk.user)
+    batch = "#{Mime::Type.lookup(bulk.content_type).symbol.to_s.camelize}Batch".constantize.new(processor)
+
+
     batch = start(bulk)
-    run(bulk, batch)
-    stop(bulk, batch)
+    out = StringIO.new
+    run(bulk, batch, out)
+    stop(bulk, batch, out)
   rescue DuplicateRunError
     # do nothing
     raise
@@ -69,14 +76,13 @@ class BulkRunJob < ApplicationJob
     processor = "#{bulk.target.camelize.pluralize}Processor".constantize.new(bulk.user)
     batch = "#{Mime::Type.lookup(bulk.content_type).symbol.to_s.camelize}Batch".constantize.new(processor)
 
-    bulk_number =
-      if bulk.input.attached?
-        bulk.input.open do |file|
-          batch.import(file, noop: true)
-        end
-      else
-        batch.export(noop: true)
+    if bulk.input.attached?
+      bulk.input.open do |file|
+        batch.input(file)
       end
+    end
+
+    bulk_number = batch.count
     bulk.update!(number: bulk_number)
     batch
   end
@@ -86,31 +92,19 @@ class BulkRunJob < ApplicationJob
   def run(bulk, batch)
     bulk.update!(status: :running)
 
-    if bulk.input.attached?
-      bulk.input.open do |file|
-        batch.import(file) do |result|
-          case result
-          when "created", "read", "updated", "deleted"
-            bulk.increment!(:success)
-          when "failed", "error"
-            bulk.increment!(:failure)
-          else
-            raise BulkRunError, "Unknown export result: #{result}"
-          end
-        end
-      end
-    else
-      batch.export do |result|
-        case result
-        when "read"
-          bulk.increment!(:success)
-        when "failed", "error"
-          bulk.increment!(:failure)
-        else
-          raise BulkRunError, "Unknown export result: #{result}"
-        end
+    out = StringIO.new
+    results = batch.run(out) do |result|
+      case result
+      when "created", "shown", "updated", "destroyed"
+        bulk.increment!(:success)
+      when "failed", "error"
+        bulk.increment!(:failure)
+      else
+        raise BulkRunError, "Unknown run result: #{result}"
       end
     end
+
+    out
   rescue StandardError
     # maybe not count failure, so increment failure
     bulk.increment!(:failure)
