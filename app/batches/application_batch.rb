@@ -1,5 +1,3 @@
-require "stringio"
-
 class ApplicationBatch
   # call class methods
   #   conetnt_type ...

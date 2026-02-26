@@ -49,14 +49,9 @@ class Bulk < ApplicationRecord
 
   def check_status_transition
     case status_change
-    in nil
+    in nil | [_, "error"] | ["waiting" | "starting" | "running" | "stopping", _]
       # ok
-    in _, "error"
-      # ok
-    in "waiting" | "starting" | "running" | "stopping", _
-      # ok
-    in "stopped" | "succeeded" | "failed" | "cancel" | "error" | "timeout" |
-      "nothing", _
+    in ["stopped" | "succeeded" | "failed" | "cancel" | "error" | "timeout" | "nothing", _]
       throw :abort
     else
       Rails.logger.warn("Unmatched pattern: #{status_change}")
