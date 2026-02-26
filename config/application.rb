@@ -28,7 +28,7 @@ module Nodokan
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Add app/serializers to autoload paths
-    config.autoload_once_paths << "#{root}/app/serializers"
+    config.autoload_once_paths << Rails.root.join("app/serializers").to_s
 
     # pundit NotAuthorizedError => forbidden
     config.action_dispatch.rescue_responses["Pundit::NotAuthorizedError"] = :forbidden
