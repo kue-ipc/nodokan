@@ -8,28 +8,117 @@ class CsvBatch < ApplicationBatch
   end
 
   content_type "text/csv"
-  extname ".csv"
 
-  attr_reader :result, :count
+  CSV_OPTIONS = %i[col_sep row_sep quote_char field_size_limit skip_blanks force_quotes skip_lines].freeze
 
-  def initialize(*, with_bom: false, delimiter: "\n", **)
-    super(*, **)
+  def initialize(*, with_bom: true, delimiter: " ", **opts)
+    super(*, **opts.except(*CSV_OPTIONS))
 
-    if with_bom
-      @out << "\u{feff}"
-    end
-    @csv = CSV.new(@out, headers:, write_headers: true, **)
+    @with_bom = with_bom
     @delimiter = delimiter
+    @csv_opts = opts.slice(*CSV_OPTIONS)
   end
 
-  # override
-  def out
-    @csv.to_io
+  # read
+  def open_input(input)
+    yield CSV.new(input, headers: true, header_converters: :downcase, encoding: "BOM|UTF-8", **@csv_opts)
   end
 
-  private def add_to_out(params)
+  def gets_params(csv)
+    csv.gets&.then { |row| row_to_params(row) }
+  end
+
+  private def row_to_params(row)
+    params = {}
+    keys = @processor.keys
+
+    row.to_hash.compact_blank.each do |key, value|
+      if key.start_with?(/\W/)
+        Rails.logger.warn "Ignore header that dose not start with word char: #{key}"
+        next
+      end
+
+      next if key.start_with?("_")
+
+      if key == "id"
+        case value.strip
+        when /\A\d+\z/
+          params[:id] = value.to_i
+        when /\A!\d+\z/
+          params[:id] = value.delete_prefix("!").to_i
+          params[:_destroy] = true
+        else
+          params[:_result] = "failed"
+          params[:_message] = I18n.t("errors.messages.invalid_param", name: :id)
+        end
+
+        next
+      end
+
+      cur_params = params
+      cur_keys = keys
+      while (m = /\A(\w+)\[(\w+)\]((?:\[\w+\])*)\z/.match(key))
+        parent = m[1]
+        child = m[2]
+        descendants = m[3]
+        if (single_keys = find_key_in_keys(parent, cur_keys))
+          # single
+          cur_params[parent] ||= {}
+          # next
+          cur_keys = single_keys
+          cur_params = cur_params[parent]
+          key = "#{child}#{descendants}"
+        elsif (multiple_keys = find_key_in_keys(parent.pluralize, cur_keys))
+          # multiple
+          cur_params[parent.pluralize] ||= [{}]
+          # next
+          cur_keys = multiple_keys
+          cur_params = cur_params[parent.pluralize].first
+          key = "#{child}#{descendants}"
+        else
+          raise InvalidHeaderError, "Header is not match keys: #{key}"
+        end
+      end
+
+      if key !~ /\A\w+\z/
+        raise InvalidHeaderError, "Header is invalid format: #{key}"
+      end
+
+      value = nil if value == "!"
+
+      cur_params[key.intern] =
+        if cur_keys.include?(key.intern)
+          value
+        elsif (nested_key = find_key_in_keys(key, cur_keys))
+          case nested_key
+          when []
+            value.split
+          when {}
+            JSON.parse(value, symbolize_names: true)
+          else
+            raise InvalidHeaderError, "Header is not nested: #{key}"
+          end
+        else
+          raise InvalidHeaderError, "Header is not included in keys: #{key}"
+        end
+    end
+    params
+  end
+
+  private def find_key_in_keys(key, keys)
+    key = key.intern
+    keys.grep(Hash).find { |k| k.key?(key) }&.fetch(key)
+  end
+
+  # write
+  def open_output(output)
+    output << "\u{feff}" if @with_bom && output.pos.zero?
+    yield CSV.new(output, headers:, write_headers: true, **@csv_opts)
+  end
+
+  def puts_params(csv, params)
     params_each_row(params) do |row|
-      @csv << row
+      csv << row
     end
   end
 
@@ -67,8 +156,9 @@ class CsvBatch < ApplicationBatch
     rows
   end
 
+  # csv
   private def headers
-    @headers ||= ["id", *headers_from_keys(@processor.keys), "_action_", "_result_", "_message_"]
+    @headers ||= ["id", *headers_from_keys(@processor.keys), "_action_", "_result", "_message"]
   end
 
   private def headers_from_keys(keys, parent: nil)
@@ -105,89 +195,4 @@ class CsvBatch < ApplicationBatch
     CSV::Row.new(headers_or_row, [])
   end
 
-  private def parse_data_each_params(data)
-    CSV.table(data, converters: [], header_converters: :downcase, encoding: "BOM|UTF-8").each do |row|
-      yield row_to_params(row)
-    end
-  end
-
-  private def row_to_params(row, params: nil, keys: @processor.keys)
-    params ||= {}
-    row.to_hash.compact_blank.each do |key, value|
-      case key
-      when "id"
-        case value&.strip
-        when nil, ""
-          params[:id] = nil
-        when /\A\d+\z/
-          params[:id] = value.to_i
-        when /\A!\d+\z/
-          params[:id] = value.delete_prefix("!").to_i
-          pramas[:_action_] = "delete"
-        else
-          params[:_result_] = :failed
-          params[:_message_] = I18n.t("errors.messages.invalid_param", name: :id)
-        end
-        next
-      when "_action_"
-        params[:_action_] = value
-        next
-      when /\A_\w+_\z|\A\[\w+\]\z/
-        # skip system column and old system column
-        next
-      end
-
-      cur_params = params
-      cur_keys = keys
-      while (m = /\A(\w+)\[(\w+)\]((?:\[\w+\])*)\z/.match(key))
-        parent = m[1]
-        child = m[2]
-        descendants = m[3]
-        if (single_keys = find_key_in_keys(parent, cur_keys))
-          # single
-          cur_params[parent] ||= {}
-          # next
-          cur_keys = single_keys
-          cur_params = cur_params[parent]
-          key = :"#{child}#{descendants}"
-        elsif (multiple_keys = find_key_in_keys(parent.pluralize, cur_keys))
-          # multiple
-          cur_params[parent.pluralize] ||= [{}]
-          # next
-          cur_keys = multiple_keys
-          cur_params = cur_params[parent.pluralize].first
-          key = :"#{child}#{descendants}"
-        else
-          raise InvalidHeaderError, "Header is not match keys: #{key}"
-        end
-      end
-      if key !~ /\A\w+\z/
-        raise InvalidHeaderError, "Header is invalid format: #{key}"
-      end
-
-      value = nil if value == "!"
-
-      cur_params[key] =
-        if cur_keys.include?(key.intern)
-          value
-        elsif (nested_key = find_key_in_keys(key, cur_keys))
-          case nested_key
-          when []
-            value.to_s.split
-          when {}
-            JSON.parse(value.to_s)
-          else
-            raise InvalidHeaderError, "Header is not nested: #{key}"
-          end
-        else
-          raise InvalidHeaderError, "Header is not included in keys: #{key}"
-        end
-    end
-    params
-  end
-
-  private def find_key_in_keys(key, keys)
-    key = key.intern
-    keys.grep(Hash).find { |k| k.key?(key) }&.fetch(key)
-  end
 end
