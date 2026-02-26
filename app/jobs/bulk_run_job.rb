@@ -66,30 +66,8 @@ class BulkRunJob < ApplicationJob
       end
     end
 
-    processor =
-      case bulk.target
-      when "Node"
-        ImportExport::Processors::NodesProcessor.new(bulk.user)
-      when "Confirmation"
-        ImportExport::Processors::ConfirmationsProcessor.new(bulk.user)
-      when "Network"
-        ImportExport::Processors::NetworksProcessor.new(bulk.user)
-      when "User"
-        ImportExport::Processors::UsersProcessor.new(bulk.user)
-      else
-        raise BulkRunError, "Unknow target: #{bulk.target}"
-      end
-    batch =
-      case Mime::Type.lookup(bulk.content_type).symbol
-      when :csv
-        ImportExport::Csv.new(processor, with_bom: true)
-      when :yaml
-        ImportExport::Yaml.new(processor)
-      when :jsonl
-        ImportExport::Jsonl.new(processor)
-      else
-        raise BulkRunError, "Unknown content type: #{bulk.content_type}"
-      end
+    processor = "#{bulk.target.camelize.pluralize}Processor".constantize.new(bulk.user)
+    batch = "#{Mime::Type.lookup(bulk.content_type).symbol.to_s.camelize}Batch".constantize.new(processor)
 
     bulk_number =
       if bulk.input.attached?
