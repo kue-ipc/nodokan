@@ -2,9 +2,6 @@ require "yaml"
 
 class YamlBatch < ApplicationBatch
   content_type "application/yaml"
-  extname ".yaml"
-
-  attr_reader :result, :count
 
   YAML_OPTIONS = %i[indentation line_width canonical header stringify_names].freeze
 
