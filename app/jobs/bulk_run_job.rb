@@ -2,7 +2,13 @@ require "stringio"
 require "csv"
 
 class BulkRunJob < ApplicationJob
-  class DuplicateRunError < StandardError
+  class NotReadyAttachementError < StandardError
+  end
+
+  class DuplicatedError < StandardError
+  end
+
+  class CancelledError < StandardError
   end
 
   class BulkRunError < StandardError
@@ -10,71 +16,81 @@ class BulkRunJob < ApplicationJob
 
   queue_as :default
 
-  discard_on DuplicateRunError, BulkRunError
+  retry_on NotReadyAttachementError do |job, error|
+    bulk = job.arguments.first
+    bulk.update_attribute(:status, :error) # rubocop:disable Rails/SkipsModelValidations
+    io = StringIO.new(error.message)
+    bulk.output.attach(io:, filename: "error.txt", content_type: "text/plain", identify: false)
+  end
 
-  def perform(bulk, retry_count = 0)
+  discard_on DuplicatedError, CancelledError, BulkRunError
+
+  def perform(bulk)
     batch = nil
+    out = nil
 
     PaperTrail.request.disable_model(Bulk)
 
+    check_content_type(bulk)
+    batch = build_batch(bulk)
+    out = StringIO.new
+    start(bulk, batch, out)
+    run(bulk, batch, out)
+    stop(bulk, batch, out)
+  rescue NotReadyAttachementError
+    # retry
+    Rails.logger.warn(e.message)
+    raise
+  rescue DuplicatedError
+    # log only, do not retry
+    Rails.logger.error(e.message)
+    raise
+  rescue CancelledError
+    # log only, do not retry
+    Rails.logger.info(e.message)
+    raise
+  rescue StandardError => e
+    Rails.logger.error(e.full_message)
+    bulk.update_attribute(:status, :error) # rubocop:disable Rails/SkipsModelValidations
+    out ||= StringIO.new
+    out << e.message
+    begin
+      attach_output(bulk, out, force: true)
+    rescue => attach_e
+      Rails.logger.error(attach_e.full_message)
+      io = StringIO.new(e.message + "\n" + attach_e.message)
+      bulk.output.attach(io:, filename: "error.txt", content_type: "text/plain", identify: false)
+    end
+    raise BulkRunError, e.message
+  ensure
+    out&.close
+  end
+
+  def check_content_type(bulk)
     if bulk.input.attached?
       if bulk.input.content_type.nil?
-        retry_count += 1
-        if retry_count >= Settings.config.max_retry_count
-          raise BulkRunError, "Do not analyze input file or unknown content type"
-        end
-        Rails.logger.warn { "Retry bulk run Bulk##{bulk.id}, remain count: #{retry_count}" }
-        BulkRunJob.set(wait: (2**retry_count).seconds).perform_later(bulk, retry_count)
-        return
+        raise NotReadyAttachementError, "Content type is not determined yet"
       elsif bulk.content_type.nil?
         bulk.update!(content_type: bulk.input.content_type)
       elsif bulk.content_type != bulk.input.content_type
         raise BulkRunError, "Content type mismatch: #{bulk.content_type} != #{bulk.input.content_type}"
       end
+    elsif bulk.content_type.nil?
+      raise BulkRunError, "Content type is required when input file is not attached"
     end
-
-    processor = "#{bulk.target.camelize.pluralize}Processor".constantize.new(bulk.user)
-    batch = "#{Mime::Type.lookup(bulk.content_type).symbol.to_s.camelize}Batch".constantize.new(processor)
-
-
-    batch = start(bulk)
-    out = StringIO.new
-    run(bulk, batch, out)
-    stop(bulk, batch, out)
-  rescue DuplicateRunError
-    # do nothing
-    raise
-  rescue StandardError => e
-    # rubocop:disable Rails/SkipsModelValidations
-    bulk.update_attribute(:status, :error)
-    # rubocop:enable Rails/SkipsModelValidations
-    Rails.logger.error(e.full_message)
-    begin
-      attach_output(bulk, batch)
-    rescue
-      io = StringIO.new(e.message)
-      bulk.output.attach(io:, filename: "error.txt", content_type: "text/plain", identify: false)
-    end
-    raise BulkRunError, e.message
   end
 
-  def start(bulk)
+  def build_batch(bulk)
+    processor = "#{bulk.target.camelize.pluralize}Processor".constantize.new(bulk.user)
+    "#{bulk.mime_type.symbol.to_s.camelize}Batch".constantize.new(processor)
+  end
+
+  def start(bulk, batch, _out)
     unless bulk.waiting?
-      raise DuplicateRunError, "Bulk status is not waiting: Bulk##{bulk.id}"
+      raise DuplicatedError, "Bulk status is not waiting: Bulk##{bulk.id}"
     end
 
     bulk.update!(status: :starting)
-
-    if bulk.input.attached?
-      if bulk.content_type.nil?
-        bulk.update!(content_type: bulk.input.content_type)
-      elsif bulk.content_type != bulk.input.content_type
-        raise BulkRunError, "Content type mismatch: #{bulk.content_type} != #{bulk.input.content_type}"
-      end
-    end
-
-    processor = "#{bulk.target.camelize.pluralize}Processor".constantize.new(bulk.user)
-    batch = "#{Mime::Type.lookup(bulk.content_type).symbol.to_s.camelize}Batch".constantize.new(processor)
 
     if bulk.input.attached?
       bulk.input.open do |file|
@@ -82,39 +98,36 @@ class BulkRunJob < ApplicationJob
       end
     end
 
-    bulk_number = batch.count
-    bulk.update!(number: bulk_number)
-    batch
+    bulk.update!(number: batch.count)
   end
 
-  # rubocop: disable Rails/SkipsModelValidations
-  # TODO: cancelで停止できるようにする。
-  def run(bulk, batch)
+  def run(bulk, batch, out)
+    raise CancelledError, "Bulk is cancelled: Bulk##{bulk.id}" if Bulk.exists?(id: bulk.id, status: :cancel)
     bulk.update!(status: :running)
-
-    out = StringIO.new
-    results = batch.run(out) do |result|
-      case result
-      when "created", "shown", "updated", "destroyed"
-        bulk.increment!(:success)
-      when "failed", "error"
-        bulk.increment!(:failure)
+    batch.run(out) do |params|
+      case params
+      in {_result: "created" | "shown" | "updated" |  "destroyed"}
+        bulk.increment!(:success) # rubocop: disable Rails/SkipsModelValidations
+      in {_result: "failed" | "error"}
+        bulk.increment!(:failure) # rubocop: disable Rails/SkipsModelValidations
       else
         raise BulkRunError, "Unknown run result: #{result}"
       end
+      raise CancelledError, "Bulk is cancelled: Bulk##{bulk.id}" if Bulk.exists?(id: bulk.id, status: :cancel)
     end
-
-    out
+  rescue CancelledError
+    # not count failure
+    raise
   rescue StandardError
     # maybe not count failure, so increment failure
-    bulk.increment!(:failure)
+    bulk.increment!(:failure) # rubocop: disable Rails/SkipsModelValidations
     raise
   end
-  # rubocop: enable Rails/SkipsModelValidations
 
-  def stop(bulk, batch)
+  def stop(bulk, batch, out)
     bulk.update!(status: :stopping)
-    attach_output(bulk, batch)
+    attach_output(bulk, out)
+
     bulk.reload
     if bulk.failure.positive?
       bulk.update!(status: :failed)
@@ -125,14 +138,13 @@ class BulkRunJob < ApplicationJob
     end
   end
 
-  private def attach_output(bulk, batch)
-    return if bulk.output.attached?
+  private def attach_output(bulk, out, force: false)
+    return if !force && bulk.output.attached?
 
-    io = batch.out
-    io.close_write
-    io.rewind
-    filename_prefix = bulk.input.filename&.base || bulk.target.underscore
-    filename = filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") + batch.extname
-    bulk.output.attach(io:, filename:, content_type: batch.content_type, identify: false)
+    out.close_write
+    out.rewind
+    filename_prefix = bulk.input.filename&.base || bulk.target
+    filename = filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") + (bulk.extname || ".txt")
+    bulk.output.attach(io:, filename:, content_type: bulk.content_type, identify: false)
   end
 end
