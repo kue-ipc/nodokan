@@ -158,7 +158,7 @@ class CsvBatch < ApplicationBatch
 
   # csv
   private def headers
-    @headers ||= ["id", *headers_from_keys(@processor.keys), "_action_", "_result", "_message"]
+    @headers ||= ["id", *headers_from_keys(@processor.keys), "_result", "_message"]
   end
 
   private def headers_from_keys(keys, parent: nil)

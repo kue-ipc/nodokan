@@ -53,7 +53,7 @@ class ApplicationBatch
         do_action(params)
         puts_params(desc, params)
         results[params[:_result]] += 1
-        yield params[:_result] if block_given?
+        yield params if block_given?
       end
     end
     results
@@ -92,7 +92,7 @@ class ApplicationBatch
       @processor.record_to_params(record, params:)
       params[:id] = record.id
       params[:_result] = "created"
-      params.delete(:_action_)
+      params.delete(:_destroy)
     else
       failed_params(params, record_error_message(record, "not_saved"))
     end
@@ -104,7 +104,7 @@ class ApplicationBatch
     @processor.record_to_params(record, params:)
     params[:id] = record.id
     params[:_result] = "read"
-    params.delete(:_action_)
+    params.delete(:_destroy)
     record
   end
 
@@ -114,7 +114,7 @@ class ApplicationBatch
       @processor.record_to_params(record, params:)
       params[:id] = record.id
       params[:_result] = "updated"
-      params.delete(:_action_)
+      params.delete(:_destroy)
     else
       failed_params(params, record_error_message(record, "not_saved"))
     end
@@ -129,7 +129,7 @@ class ApplicationBatch
       params.merge!(params_before_deletion)
       params.delete(:id) # delete id because it may be reused when creating new record
       params[:_result] = "deleted"
-      params.delete(:_action_)
+      params.delete(:_destroy)
     else
       failed_params(params, record_error_message(record, "not_deleted"))
     end
@@ -152,6 +152,10 @@ class ApplicationBatch
   private def error_params(params, message)
     params[:_result] = "error"
     params[:_message] = message
+  end
+
+  private def delete_meta_params(params)
+    params.reject! { |key, _| key.start_with?("_") }
   end
 
   private def compact_params(obj)

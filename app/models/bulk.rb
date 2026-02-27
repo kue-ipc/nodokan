@@ -21,7 +21,7 @@ class Bulk < ApplicationRecord
   has_one_attached :input
   has_one_attached :output
 
-  validates :target, inclusion: {in: ["Node", "Confirmation", "Network", "User"]}
+  validates :target, inclusion: {in: ["node", "confirmation", "network", "user"]}
   validates :content_type, inclusion: {in: ["text/csv", "application/yaml", "application/jsonl"]}, allow_nil: true
   validates :input, presence: true, if: ->(bulk) { bulk.content_type.nil? }
 
@@ -65,5 +65,13 @@ class Bulk < ApplicationRecord
     else
       BulkRunJob.perform_later(self)
     end
+  end
+
+  def mime_type
+    @mime_type ||= (Mime::Type.lookup(content_type) if content_type.present?)
+  end
+
+  def extname
+    @extname ||= (".#{mime_type.symbol}" if content_type.present?)
   end
 end
