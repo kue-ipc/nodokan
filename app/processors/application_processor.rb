@@ -99,8 +99,7 @@ class ApplicationProcessor
     record ||= model.new(initial_model_attributes)
     permitted_params = ActionController::Parameters.new(params).permit(*keys)
     permitted_params.each do |key, value|
-      Rails.logger.debug("Processing param: #{key} = #{value}")
-      Rails.logger.debug("Processing param: #{value.class}")
+      Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
       set_param(record, key.intern, value)
     end
     record
