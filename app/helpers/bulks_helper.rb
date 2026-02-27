@@ -15,25 +15,17 @@ module BulksHelper
     BULK_LIST_COLS
   end
 
-  def bulk_targets
+  def bulk_target_models
     if current_user.admin?
-      [
-        "Node",
-        # "Confirmation",
-        "Network",
-        "User",
-      ]
+      [Node, Confirmation, Network, User]
     else
-      [
-        "Node",
-        # "Confirmation",
-      ]
+      [Node, Confirmation]
     end
   end
 
   def bulk_target_list
-    bulk_targets.map do |target|
-      [t(target.underscore, scope: "activerecord.models"), target]
+    bulk_target_models.map do |model|
+      [model.model_name.human, model.model_name.element]
     end
   end
 
