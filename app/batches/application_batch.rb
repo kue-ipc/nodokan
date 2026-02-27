@@ -18,37 +18,36 @@ class ApplicationBatch
     ".#{@mime_type.symbol}"
   end
 
+  def initialize(processor)
+    @processor = processor
+  end
+
   def content_type
     self.class.content_type(nil)
   end
 
   delegate :extname, to: :class
 
-  def initialize(processor, input, output)
-    @processor = processor
-    @input = input
-    @output = output
-  end
+  private attr_reader :input_params_list
 
   delegate :count, to: :input_params_list
 
-  private def input_params_list
-    @input_params ||= if @input
-      list = []
+  def load(input = nil)
+    if input
+      @input_params_list = []
       open_input(@input) do |desc|
         while (params = gets_params(desc))
           list << params
         end
       end
-      list
     else
-      @processor.record_ids.map { |id| {id:} }
+      @input_params_list = @processor.record_ids.map { |id| {id:} }
     end
   end
 
-  def run
+  def run(output)
     results = Hash.new(0)
-    open_output do |desc|
+    open_output(output) do |desc|
       input_params_list.each do |params|
         do_action(params)
         puts_params(desc, params)

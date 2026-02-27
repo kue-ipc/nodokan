@@ -94,8 +94,10 @@ class BulkRunJob < ApplicationJob
 
     if bulk.input.attached?
       bulk.input.open do |file|
-        batch.input(file)
+        batch.load(file)
       end
+    else
+      batch.load
     end
 
     bulk.update!(number: batch.count)
@@ -145,6 +147,6 @@ class BulkRunJob < ApplicationJob
     out.rewind
     filename_prefix = bulk.input.filename&.base || bulk.target
     filename = filename_prefix + Time.current.strftime("_%Y%m%d%H%M%S") + (bulk.extname || ".txt")
-    bulk.output.attach(io:, filename:, content_type: bulk.content_type, identify: false)
+    bulk.output.attach(io: out, filename:, content_type: bulk.content_type, identify: false)
   end
 end
