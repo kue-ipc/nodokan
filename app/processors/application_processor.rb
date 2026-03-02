@@ -4,32 +4,65 @@ class ApplicationProcessor
   #   params_permit
   #   convert_map
 
-  class << self
-    attr_reader :model, :keys, :get_map, :set_map
+  class Converter
+    def initialize(key, get: nil, set: nil)
+      @key = key.intern
+      @get = (get || @key).to_proc
+      @set = (set || :"#{@key}=").to_proc
+    end
+  end
 
+  class << self
     def inherited(subclass)
       super
-      subclass.instance_variable_set(:@get_map, {})
-      subclass.instance_variable_set(:@set_map, {})
+      converters = Hash.new { |h, k| h[k] = Converter.new(k) }
+      subclass.instance_variable_set(:@converters, converters)
     end
 
-    def class_name(name)
-      @model = name.constantize
+    def model_name(name = nil)
+      if name
+        @model_name = name
+      else
+        @model_name || raise("Model name is not set for #{self}")
+      end
     end
 
-    def params_permit(*args, **kwargs)
-      @keys = [*args, kwargs].compact_blank
+    def model
+      @model ||= model_name.constantize
+    end
+
+    def keys(list = nil)
+      if list
+        @keys = list
+      else
+        @keys || raise("Keys are not set for #{self}")
+      end
+    end
+
+    def each_key
+      return enum_for(__method__) unless block_given?
+
+      keys.each do |key|
+        case key
+        in Symbol
+          yield key, nil
+        in Hash
+          key.each do |k, v|
+            yield k, v
+          end
+        end
+      end
     end
 
     def converter(key, original_key = nil, get: nil, set: nil)
-      get ||= original_key || key
-      @get_map[key] = get.to_proc
-
-      set ||= original_key || key
-      set = :"#{set}=" if set.is_a?(Symbol) && !set.end_with?("=")
-      @set_map[key] = set.to_proc
+      @map[key] = Converter.new(original_key || key, get:, set:)
     end
   end
+
+  delegate :model, to: :class
+  delegate :keys, to: :class
+  delegate :each_key, to: :class
+  delegate :converters, to: :class
 
   attr_reader :user
 
@@ -37,34 +70,47 @@ class ApplicationProcessor
     @user = user
   end
 
-  alias current_user user
-
-  delegate :model, to: :class
-  delegate :keys, to: :class
-
-  def admin?
-    current_user&.admin?
-  end
-
-  def system?
-    current_user.nil?
-  end
-
-  def key_converter(key, method)
-    case method
-    in :get
-      self.class.get_map[key] || key.to_proc
-    in :set
-      self.class.set_map[key] || :"#{key}=".to_proc
-    end
+  def has_privilege?
+    user.nil? || user.admin?
   end
 
   def record_ids
-    if current_user
-      Pundit.policy_scope(current_user, model).order(:id).pluck(:id)
+    if user
+      Pundit.policy_scope(user, model).order(:id).pluck(:id)
     else
       model.order(:id).pluck(:id)
     end
+  end
+
+  def get_param(record, key)
+    instance_exec(record, &self.class.converters[key][:get])
+  end
+
+  def set_param(record, key, param)
+    instance_exec(record, param, &self.class.converters[key][:set])
+  end
+
+  def serialize(record)
+    params = {}
+    each_key do |key, value|
+      case vavule
+      in nil
+      in []
+      in {}
+      in [[*]]
+      in [*]
+      in {**}
+      end
+      if value.nil?
+        params[key] = convert_value(get_param(record, key))
+      else
+        # TODO: ここで、ネストされた情報をうまく出す方法がまだかけていない。
+        key.transform_values do |v|
+          record_to_params(get_param(record, key), keys: v)
+        end
+      end
+    end
+    params
   end
 
   def record_to_params(record, params: nil, keys: self.keys)
@@ -95,22 +141,13 @@ class ApplicationProcessor
     params
   end
 
-  def params_to_record(params, record: nil, keys: self.keys)
-    record ||= model.new(initial_model_attributes)
-    permitted_params = ActionController::Parameters.new(params).permit(*keys)
+  private def assign_params(record, params)
+    permitted_params = ActionController::Parameters.new({params:}).expect(params: keys)
     permitted_params.each do |key, value|
       Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
       set_param(record, key.intern, value)
     end
     record
-  end
-
-  private def get_param(record, key)
-    instance_exec(record, &key_converter(key, :get))
-  end
-
-  private def set_param(record, key, param)
-    instance_exec(record, param, &key_converter(key, :set))
   end
 
   private def convert_value(value)
@@ -130,61 +167,58 @@ class ApplicationProcessor
     end
   end
 
+  def show(id)
+    user_process(id, __method__)
+  end
+
   def create(params)
-    user_process(nil, :create) do |record|
+    user_process(nil, __method__) do |record|
       record.transaction do
-        params_to_record(params, record:)
+        assign_params(params, record:)
         record.save || raise(ActiveRecord::Rollback)
       end
     end
-  end
-
-  def read(id)
-    user_process(id, :read)
   end
 
   def update(id, params)
-    user_process(id, :update) do |record|
+    user_process(id, __method__) do |record|
       record.transaction do
-        params_to_record(params, record:)
+        assign_params(params, record:)
         record.save || raise(ActiveRecord::Rollback)
       end
     end
   end
 
-  def delete(id)
-    user_process(id, :delete, &:destroy)
+  def destroy(id)
+    user_process(id, __method__, &:destroy)
   end
 
-  # authorize and whodunnit
-  def user_process(id, method, in_trail: false, &block)
-    if !in_trail && current_user
-      PaperTrail.request(whodunnit: current_user.email) do
-        return user_process(id, method, in_trail: true, &block)
+  # find on new rocerd, authorize record, and yield record with whodunit
+  private def user_process(id, method)
+    record =
+      if id
+        model.find(id)
+      else
+        model.new(initial_model_attributes)
+      end
+
+    if user
+      policy = Pundit.policy(user, record)
+      unless policy.__send__(:"#{method}?")
+        raise Pundit::NotAuthorizedError, "not allowed to #{method} this record"
       end
     end
 
-    record = if id
-      model.find(id)
-    else
-      model.new(initial_model_attributes)
-    end
-
-    if current_user
-      policy = Pundit.policy(current_user, record)
-      auth = case method
-      in :create then policy.create?
-      in :read then policy.show?
-      in :update then policy.update?
-      in :delete then policy.destroy?
-      end
-      unless auth
-        raise Pundit::NotAuthorizedError,
-          "not allowed to #{method} this record"
+    if block_given?
+      if user
+        PaperTrail.request(whodunnit: user.email) do
+          yield record
+        end
+      else
+        yield record
       end
     end
 
-    block&.call(record)
     record
   end
 

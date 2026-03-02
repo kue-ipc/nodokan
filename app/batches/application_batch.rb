@@ -63,9 +63,9 @@ class ApplicationBatch
     in {_result: _}
       # skip if result is already set
     in {id: Integer, **nil}
-      read_record(params)
+      show_record(params)
     in {id: Integer, _destroy: true}
-      delete_record(params)
+      destroy_record(params)
     in {id: Integer}
       update_record(params)
     in {id: nil}
@@ -85,52 +85,49 @@ class ApplicationBatch
     error_params(params, e.message)
   end
 
-  private def create_record(params)
-    record = @processor.create(params)
-    if record.errors.empty?
-      @processor.record_to_params(record, params:)
-      params[:id] = record.id
-      params[:_result] = "created"
-      params.delete(:_destroy)
-    else
-      failed_params(params, record_error_message(record, "not_saved"))
-    end
+  private def show_record(params)
+    record = @processor.show(params[:id])
+    params.replace(@processor.serialize(record))
+    params[:id] = record.id
+    params[:_result] = "shwon"
     record
   end
 
-  private def read_record(params)
-    record = @processor.read(params[:id])
-    @processor.record_to_params(record, params:)
-    params[:id] = record.id
-    params[:_result] = "read"
-    params.delete(:_destroy)
+  private def create_record(params)
+    record = @processor.create(params)
+    if record.errors.empty?
+      params.replace(@processor.serialize(record))
+      params[:id] = record.id
+      params[:_result] = "created"
+    else
+      failed_params(params, record_error_message(record, "not_saved"))
+    end
     record
   end
 
   private def update_record(params)
     record = @processor.update(params[:id], params)
     if record.errors.empty?
-      @processor.record_to_params(record, params:)
+      params.replace(@processor.serialize(record))
       params[:id] = record.id
       params[:_result] = "updated"
-      params.delete(:_destroy)
     else
       failed_params(params, record_error_message(record, "not_saved"))
     end
     record
   end
 
-  private def delete_record(params)
-    # NOTE: Get paramms before deletion for export, because some params may be lost after deletion (e.g. associations)
-    params_before_deletion = @processor.record_to_params(@processor.read(params[:id]))
-    record = @processor.delete(params[:id])
+  private def destroy_record(params)
+    # NOTE: Get paramms before destruction, because association params may be lost after destruction
+    params_before_destruction = @processor.serialize(@processor.show(params))
+    record = @processor.destroy(params[:id])
     if record.errors.empty?
-      params.merge!(params_before_deletion)
+      params.merge!(params_before_destruction)
       params.delete(:id) # delete id because it may be reused when creating new record
-      params[:_result] = "deleted"
+      params[:_result] = "destroyed"
       params.delete(:_destroy)
     else
-      failed_params(params, record_error_message(record, "not_deleted"))
+      failed_params(params, record_error_message(record, "not_destroyed"))
     end
   end
 
