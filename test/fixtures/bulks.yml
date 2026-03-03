@@ -2,40 +2,40 @@
 
 import_node:
   user: user
-  target: Node
+  target: node
   status: waiting
 
 import_node_ng:
   user: user
-  target: Node
+  target: node
   status: waiting
 
 import_node_admin:
   user: user
-  target: Node
+  target: node
   status: waiting
 
 export_node:
   user: user
-  target: Node
+  target: node
   status: waiting
 
 import_network:
   user: user
-  target: Network
+  target: network
   status: waiting
 
 export_network:
   user: user
-  target: Network
+  target: network
   status: waiting
 
 import_user:
   user: user
-  target: User
+  target: user
   status: waiting
 
 export_user:
   user: user
-  target: User
+  target: user
   status: waiting
