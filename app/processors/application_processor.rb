@@ -39,30 +39,10 @@ class ApplicationProcessor
       end
     end
 
-    def each_key
-      return enum_for(__method__) unless block_given?
-
-      keys.each do |key|
-        case key
-        in Symbol
-          yield key, nil
-        in Hash
-          key.each do |k, v|
-            yield k, v
-          end
-        end
-      end
-    end
-
     def converter(key, original_key = nil, get: nil, set: nil)
       @map[key] = Converter.new(original_key || key, get:, set:)
     end
   end
-
-  delegate :model, to: :class
-  delegate :keys, to: :class
-  delegate :each_key, to: :class
-  delegate :converters, to: :class
 
   attr_reader :user
 
@@ -76,95 +56,32 @@ class ApplicationProcessor
 
   def record_ids
     if user
-      Pundit.policy_scope(user, model).order(:id).pluck(:id)
+      Pundit.policy_scope(user, self.class.model).order(:id).pluck(:id)
     else
-      model.order(:id).pluck(:id)
+      self.class.model.order(:id).pluck(:id)
     end
   end
 
-  def get_param(record, key)
-    instance_exec(record, &self.class.converters[key][:get])
-  end
-
-  def set_param(record, key, param)
-    instance_exec(record, param, &self.class.converters[key][:set])
-  end
-
-  def serialize(record)
+  def serialize(record, keys: self.class.keys)
     params = {}
-    each_key do |key, value|
-      case vavule
-      in nil
-      in []
-      in {}
-      in [[*]]
+    each_keys(keys) do |key, permitted|
+      value = get_param(record, key)
+
+      case permitted
+      in nil | [] | {}
+        params[key] = convert_value(value)
+      in [[*next_keys]]
+        params[key] = []
+        value.each do |v|
+          params[key] << serialize(v, keys: next_keys)
+        end
       in [*]
+        params[key] = serialize(value, keys: permitted)
       in {**}
-      end
-      if value.nil?
-        params[key] = convert_value(get_param(record, key))
-      else
-        # TODO: ここで、ネストされた情報をうまく出す方法がまだかけていない。
-        key.transform_values do |v|
-          record_to_params(get_param(record, key), keys: v)
-        end
+        params[key] = serialize(value, keys: permitted)
       end
     end
     params
-  end
-
-  def record_to_params(record, params: nil, keys: self.keys)
-    if record.nil?
-      # do nothing
-    elsif keys == []
-      # scalar array
-      params ||= []
-      params.concat(convert_value(record))
-    elsif record.is_a?(Enumerable)
-      params ||= []
-      record.each do |r|
-        params << record_to_params(r, keys:)
-      end
-    else
-      params ||= {}
-      keys.each do |key|
-        case key
-        in Symbol
-          params[key] = convert_value(get_param(record, key))
-        in Hash
-          key.each do |k, v|
-            params[k] = record_to_params(get_param(record, k), params: params[k], keys: v)
-          end
-        end
-      end
-    end
-    params
-  end
-
-  private def assign_params(record, params)
-    permitted_params = ActionController::Parameters.new({params:}).expect(params: keys)
-    permitted_params.each do |key, value|
-      Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
-      set_param(record, key.intern, value)
-    end
-    record
-  end
-
-  private def convert_value(value)
-    case value
-    in Hash
-      value.transform_values(&method(:convert_value))
-    in Enumerable
-      value.map(&method(:convert_value))
-    in ApplicationRecord
-      if value.respond_to?(:identifier)
-        value.identifier
-      else
-        value.to_s
-      end
-    else
-      value
-    end
   end
 
   def show(id)
@@ -193,13 +110,55 @@ class ApplicationProcessor
     user_process(id, __method__, &:destroy)
   end
 
+  private def get_param(record, key)
+    instance_exec(record, &self.class.converters[key][:get])
+  end
+
+  private def set_param(record, key, param)
+    instance_exec(record, param, &self.class.converters[key][:set])
+  end
+
+  private def each_keys(keys = self.class.keys, &block)
+    return enum_for(__method__, keys) unless block_given?
+
+    keys.each do |key, value|
+      case key
+      in Symbol
+        block.call(key, value)
+      in Hash
+        each_keys(key, &block)
+      end
+    end
+  end
+
+  private def convert_value(value)
+    case value
+    in nil | true | false | Integer | Float | String | Time | Date
+      value
+    in Array
+      value.map(&method(:convert_value))
+    in Hash
+      value.transform_values(&method(:convert_value))
+    in ActiveSupport::TimeWithZone | DateTime
+      value.to_time
+    in ApplicationRecord
+      if value.respond_to?(:identifier)
+        value.identifier
+      else
+        {id: value.id}
+      end
+    else
+      value
+    end
+  end
+
   # find on new rocerd, authorize record, and yield record with whodunit
   private def user_process(id, method)
     record =
       if id
-        model.find(id)
+        self.class.model.find(id)
       else
-        model.new(initial_model_attributes)
+        self.class.model.new(initial_model_attributes)
       end
 
     if user
@@ -224,5 +183,14 @@ class ApplicationProcessor
 
   private def initial_model_attributes
     nil
+  end
+
+  private def assign_params(record, params)
+    permitted_params = ActionController::Parameters.new({params:}).expect(params: self.class.keys)
+    permitted_params.each do |key, value|
+      Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
+      set_param(record, key.intern, value)
+    end
+    record
   end
 end
