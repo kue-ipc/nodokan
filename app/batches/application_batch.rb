@@ -89,7 +89,7 @@ class ApplicationBatch
     record = @processor.show(params[:id])
     params.replace(@processor.serialize(record))
     params[:id] = record.id
-    params[:_result] = "shwon"
+    params[:_result] = "shown"
     record
   end
 

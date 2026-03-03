@@ -1,7 +1,8 @@
 class NodesProcessor < ApplicationProcessor
-  class UnusableNetworkError < RuntimeError
+  class UnusableNetworkError < StandardError
   end
-  # include NodeParameter
+
+  include NodeParameter
 
   model_name "Node"
 
