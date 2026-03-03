@@ -49,8 +49,8 @@ class ApplicationBatch
     results = Hash.new(0)
     open_output(output) do |desc|
       input_params_list.each do |params|
-        do_action(params)
-        puts_params(desc, params)
+        params = do_action(@processor.input_filter(params))
+        puts_params(desc, @processor.output_filter(params))
         results[params[:_result]] += 1
         yield params if block_given?
       end
@@ -75,30 +75,30 @@ class ApplicationBatch
     else
       create_record(params)
     end
+    params
   rescue ActiveRecord::RecordNotFound
     failed_params(params, I18n.t("errors.messages.not_found"))
+    params
   rescue Pundit::NotAuthorizedError
     failed_params(params, I18n.t("errors.messages.not_authorized"))
+    params
   rescue StandardError => e
     Rails.logger.error("ImporExport do action error occured: #{params.to_json}")
     Rails.logger.error(e.full_message)
     error_params(params, e.message)
+    params
   end
 
   private def show_record(params)
     record = @processor.show(params[:id])
-    params.replace(@processor.serialize(record))
-    params[:id] = record.id
-    params[:_result] = "shown"
+    params.replace({id: record.id, **@processor.serialize(record), _result: "shown"})
     record
   end
 
   private def create_record(params)
     record = @processor.create(params)
     if record.errors.empty?
-      params.replace(@processor.serialize(record))
-      params[:id] = record.id
-      params[:_result] = "created"
+      params.replace({id: record.id, **@processor.serialize(record),  _result: "created"})
     else
       failed_params(params, record_error_message(record, "not_saved"))
     end
@@ -108,9 +108,7 @@ class ApplicationBatch
   private def update_record(params)
     record = @processor.update(params[:id], params)
     if record.errors.empty?
-      params.replace(@processor.serialize(record))
-      params[:id] = record.id
-      params[:_result] = "updated"
+      params.replace({id: record.id, **@processor.serialize(record),  _result: "updated"})
     else
       failed_params(params, record_error_message(record, "not_saved"))
     end
@@ -118,17 +116,16 @@ class ApplicationBatch
   end
 
   private def destroy_record(params)
-    # NOTE: Get paramms before destruction, because association params may be lost after destruction
-    params_before_destruction = @processor.serialize(@processor.show(params))
+    # get paramms before destruction, because association params may be lost after destruction
+    params_before_destruction = @processor.serialize(@processor.show(params[:id]))
     record = @processor.destroy(params[:id])
     if record.errors.empty?
-      params.merge!(params_before_destruction)
-      params.delete(:id) # delete id because it may be reused when creating new record
-      params[:_result] = "destroyed"
-      params.delete(:_destroy)
+      # no id because it may be reused when creating new record
+      params.relpace({**params_before_destruction, _result: "destroyed"})
     else
       failed_params(params, record_error_message(record, "not_destroyed"))
     end
+    record
   end
 
   private def record_error_message(record, key = nil)
