@@ -82,7 +82,6 @@ class ApplicationProcessor
     params = {}
     each_keys(keys) do |key, permitted|
       value = get_param(record, key, converters)
-
       case permitted
       in nil | [] | {}
         params[key] = convert_value(value)
@@ -151,12 +150,12 @@ class ApplicationProcessor
     case value
     in nil | true | false | Integer | Float | String | Time | Date
       value
-    in Array
-      value.map(&method(:convert_value))
-    in Hash
-      value.transform_values(&method(:convert_value))
     in ActiveSupport::TimeWithZone | DateTime
       value.to_time
+    in Hash
+      value.transform_values(&method(:convert_value))
+    in Enumerable
+      value.map(&method(:convert_value))
     in ApplicationRecord
       if value.respond_to?(:identifier)
         value.identifier
