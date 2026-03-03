@@ -5,18 +5,19 @@ class ApplicationProcessor
   #   convert_map
 
   class Converter
+    attr_reader :key, :get, :set, :nested_converters
+
     def initialize(key, get: nil, set: nil)
       @key = key.intern
       @get = (get || @key).to_proc
       @set = (set || :"#{@key}=").to_proc
+      @nested_converters = Hash.new { |h, k| h[k] = Converter.new(k) }
     end
   end
 
   class << self
-    def inherited(subclass)
-      super
-      converters = Hash.new { |h, k| h[k] = Converter.new(k) }
-      subclass.instance_variable_set(:@converters, converters)
+    def converters
+      @converters ||= Hash.new { |h, k| h[k] = Converter.new(k) }
     end
 
     def model_name(name = nil)
@@ -39,8 +40,21 @@ class ApplicationProcessor
       end
     end
 
-    def converter(key, original_key = nil, get: nil, set: nil)
-      @map[key] = Converter.new(original_key || key, get:, set:)
+    def converter(key, original_key = nil, get: nil, set: nil, nested: nil)
+      converters[key] = Converter.new(original_key || key, get:, set:)
+      nested&.each do |nested_key, nested_option|
+        converters[key].nested_converters[nested_key] =
+          case nested_option
+          in Hash => opts
+            Converter.new(nested_key, **opts)
+          in [Symbol => original_key, Hash => opts]
+            Converter.new(original_key, **opts)
+          in [Symbol => original_key]
+            Converter.new(original_key)
+          in Symbol => original_key
+            Converter.new(original_key)
+          end
+      end
     end
   end
 
@@ -62,10 +76,12 @@ class ApplicationProcessor
     end
   end
 
-  def serialize(record, keys: self.class.keys)
+  def serialize(record, keys: self.class.keys, converters: self.class.converters)
+    return if record.nil?
+
     params = {}
     each_keys(keys) do |key, permitted|
-      value = get_param(record, key)
+      value = get_param(record, key, converters)
 
       case permitted
       in nil | [] | {}
@@ -73,12 +89,12 @@ class ApplicationProcessor
       in [[*next_keys]]
         params[key] = []
         value.each do |v|
-          params[key] << serialize(v, keys: next_keys)
+          params[key] << serialize(v, keys: next_keys, converters: converters[key].nested_converters)
         end
       in [*]
-        params[key] = serialize(value, keys: permitted)
+        params[key] = serialize(value, keys: permitted, converters: converters[key].nested_converters)
       in {**}
-        params[key] = serialize(value, keys: permitted)
+        params[key] = serialize(value, keys: permitted, converters: converters[key].nested_converters)
       end
     end
     params
@@ -110,12 +126,12 @@ class ApplicationProcessor
     user_process(id, __method__, &:destroy)
   end
 
-  private def get_param(record, key)
-    instance_exec(record, &self.class.converters[key][:get])
+  private def get_param(record, key, converters)
+    instance_exec(record, &converters[key].get)
   end
 
-  private def set_param(record, key, param)
-    instance_exec(record, param, &self.class.converters[key][:set])
+  private def set_param(record, key, param, converters)
+    instance_exec(record, param, &converters[key].set)
   end
 
   private def each_keys(keys = self.class.keys, &block)

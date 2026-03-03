@@ -1,12 +1,13 @@
 class NetworksProcessor < ApplicationProcessor
-  class_name "Network"
+  model_name "Network"
 
-  params_permit(
+  keys [
     :name, :vlan, :domain, {domain_search: []},
     :flag, :ra,
     :ipv4_network,  :ipv4_gateway, {ipv4_dns_servers: [], ipv4_pools: []},
     :ipv6_network,  :ipv6_gateway, {ipv6_dns_servers: [], ipv6_pools: []},
-    :note)
+    :note,
+  ]
 
   converter :domain_search, :domain_search_data
 
