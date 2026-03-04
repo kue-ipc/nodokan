@@ -977,6 +977,9 @@ ja:
       not_found_user: 該当するユーザーがいません。
       cannot_transfer_to_guest: ゲスト権限のユーザーに譲渡できません。
       unusable_network: 使用できないネットワークです。
+      no_os_for_security_software: |
+        端末のOS情報が登録されていないため、セキュリティソフトウェアを設定することはできません。
+      unusable_security_software: 端末のOSには使用できないセキュリティソフトウェアです。
 
   forms:
     common:

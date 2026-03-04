@@ -34,7 +34,7 @@ class ConfirmationsProcessor < ApplicationProcessor
 
   converter :status,
     get: ->(record) { record.solid_confirmation.status },
-    set: ->(record, value) { record.solid_confirmation.status = value }
+    set: ->(record, value) { }
 
   converter :existence,
     get: ->(record) { record.solid_confirmation.existence },
@@ -43,7 +43,6 @@ class ConfirmationsProcessor < ApplicationProcessor
   converter :content,
     get: ->(record) { record.solid_confirmation.content },
     set: ->(record, value) { record.solid_confirmation.content = value }
-
 
   converter :os_update,
     get: ->(record) { record.solid_confirmation.os_update },
@@ -86,11 +85,12 @@ class ConfirmationsProcessor < ApplicationProcessor
   end
 
   def update(id, params)
-    # TODO: ここはまだ書いてない
     user_process(id, __method__) do |record|
       record.transaction do
         assign_params(params, record:)
-        record.solid_confirmation.save! || raise(ActiveRecord::Rollback)
+        solid_confirmation.security_software = nil unless record.operating_system
+        record.solid_confirmation.approve!
+        record.save!
       end
     end
   end
