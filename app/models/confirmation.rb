@@ -94,6 +94,10 @@ class Confirmation < ApplicationRecord
   validates :security_update, presence: true
   validates :security_scan, presence: true
 
+  validates_with ConfirmationSecuritySoftwareValidator
+
+  before_validate :set_unknown_if_unnecessary
+
   def self.approved_period
     @approved_period = nil unless Rails.env.production?
     @approved_period ||= period(Settings.config.confirmation_period.approved)
@@ -222,15 +226,15 @@ class Confirmation < ApplicationRecord
   end
 
   def expired_time
-    confirmed_at + validity_period
+    confirmed_at&.+(validity_period) || node.created_at
   end
   alias expiration expired_time
 
   def expire_soon_time
-    confirmed_at + [
+    confirmed_at&.+([
       Confirmation.continuation_period,
       validity_period - Confirmation.expire_soon_period,
-    ].max
+    ].max) || node.created_at
   end
 
   def expired?(time: Time.current)
@@ -266,30 +270,8 @@ class Confirmation < ApplicationRecord
     existence_not_my_own?
   end
 
-  def check_and_approve!(time: Time.current)
-    if !exist?
-      self.content = :unknown
-      self.os_update = :unknown
-      self.app_update = :unknown
-      self.software = :unknown
-      self.security_hardware = Confirmation.security_hardwares[:unknown]
-      self.security_software = nil
-      self.security_update = :unknown
-      self.security_scan = :unknown
-    elsif node.logical?
-      self.os_update = :unknown
-      self.app_update = :unknown
-      self.security_hardware = Confirmation.security_hardwares[:unknown]
-      self.security_software = nil
-      self.security_update = :unknown
-      self.security_scan = :unknown
-    elsif security_software.nil?
-      self.security_update = :unknown
-      self.security_scan = :unknown
-    end
-
+  def approve!(time: Time.current)
     self.approved = approvable?
-
     self.confirmed_at = time
   end
 
@@ -312,6 +294,29 @@ class Confirmation < ApplicationRecord
       time >= expired_time + Confirmation.disable_node_expired_period
     else
       false
+    end
+  end
+
+  private def set_unknown_if_unnecessary
+    if !exist?
+      self.content = :unknown
+      self.os_update = :unknown
+      self.app_update = :unknown
+      self.software = :unknown
+      self.security_hardware = Confirmation.security_hardwares[:unknown]
+      self.security_software = nil
+      self.security_update = :unknown
+      self.security_scan = :unknown
+    elsif node.logical?
+      self.os_update = :unknown
+      self.app_update = :unknown
+      self.security_hardware = Confirmation.security_hardwares[:unknown]
+      self.security_software = nil
+      self.security_update = :unknown
+      self.security_scan = :unknown
+    elsif security_software.nil?
+      self.security_update = :unknown
+      self.security_scan = :unknown
     end
   end
 end

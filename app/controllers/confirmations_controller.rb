@@ -20,7 +20,7 @@ class ConfirmationsController < ApplicationController
   def create
     @confirmation = @node.build_confirmation(confirmation_params)
 
-    check_and_save
+    approve_and_save
   end
 
   # PATCH/PUT /nodes/1/confirmation
@@ -29,7 +29,7 @@ class ConfirmationsController < ApplicationController
     @confirmation = @node.confirmation
     @confirmation.assign_attributes(confirmation_params)
 
-    check_and_save
+    approve_and_save
   end
 
   private def set_node
@@ -51,11 +51,17 @@ class ConfirmationsController < ApplicationController
       security_software: [:os_category_id, :installation_method, :name],
     ])
 
+    if @node.operating_system.nil?
+      permitted_params[:security_software] = nil
+    elsif permitted_params[:security_software]
+      permitted_params[:security_software][:os_category_id] = @node.operating_system.os_category_id
+    end
+
     normalize_confirmation_params(permitted_params)
   end
 
-  private def check_and_save
-    @confirmation.check_and_approve!
+  private def approve_and_save
+    @confirmation.approve!
     if @confirmation.save
       if @confirmation.approved
         flash.now.notice = t("messages.confirmation_approved",

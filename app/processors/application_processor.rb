@@ -107,7 +107,7 @@ class ApplicationProcessor
     user_process(nil, __method__) do |record|
       record.transaction do
         assign_params(params, record:)
-        record.save || raise(ActiveRecord::Rollback)
+        record.save!
       end
     end
   end
@@ -116,13 +116,13 @@ class ApplicationProcessor
     user_process(id, __method__) do |record|
       record.transaction do
         assign_params(params, record:)
-        record.save || raise(ActiveRecord::Rollback)
+        record.save!
       end
     end
   end
 
   def destroy(id)
-    user_process(id, __method__, &:destroy)
+    user_process(id, __method__, &:destroy!)
   end
 
   private def get_param(record, key, converters)
