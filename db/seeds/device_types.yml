@@ -51,8 +51,7 @@
 - name: ワークステーション
   icon: <i class="fas fa-desktop"></i>
   description: |
-    机上で固定して使用するパソコンです。
-    本体とディスプレイが分離されています。
+    パソコンよりも高性能な業務用コンピューターです。
 
 - name: ラックマウント型サーバー
   icon: <i class="fas fa-server"></i>
@@ -67,9 +66,13 @@
 
 - name: ブレード型サーバー
   icon: <i class="fas fa-server"></i>
+  description: |
+    シャーシにブレードとして搭載するサーバーです。
 
 - name: マルチノード型サーバー
   icon: <i class="fas fa-server"></i>
+  description: |
+    複数のノードを搭載冴える筐体に複数のノードとして搭載するサーバーです。
 
 - name: ネットワークアタッチトストレージ
   icon: <i class="fas fa-hdd"></i>
