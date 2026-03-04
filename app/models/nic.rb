@@ -103,6 +103,7 @@ class Nic < ApplicationRecord
   # rubocop: disable Naming/PredicateName
   def has_ipv4? = ipv4_data.present?
   def has_ipv6? = ipv6_data.present?
+  def has_mac_address? = mac_address_data.present?
   # rubocop: enable Naming/PredicateName
 
   def radius_mac
