@@ -71,25 +71,14 @@ class ConfirmationsProcessor < ApplicationProcessor
       record.solid_confirmation.security_hardware = Confirmation.security_hardware_list_to_bitwise(value)
     }
 
-  # TODO: ここはまだ書いてない
   converter security_software: [:installation_method, :name],
-    get: ->(record) {
-      software = record.solid_confirmation.security_software
-      if software.present?
-        {
-          installation_method: software.installation_method,
-          name: software.name,
-        }
-      end
-    },
+    get: ->(record) { record.solid_confirmation.security_software },
     set: ->(record, value) {
-      if value.present?
-        software = record.solid_confirmation.build_security_software
-        software.installation_method = value[:installation_method]
-        software.name = value[:name]
-      else
-        record.solid_confirmation.security_software&.mark_for_destruction
-      end
+      return unless record.operating_system
+
+      security_software_params = {os_category_id: record.operating_system.os_category_id, **value}
+      record.solid_confirmation.security_software =
+        find_or_new_security_software(security_software_params, record.solid_confirmation.security_software)
     }
 
   def create(params)
@@ -98,6 +87,12 @@ class ConfirmationsProcessor < ApplicationProcessor
 
   def update(id, params)
     # TODO: ここはまだ書いてない
+    user_process(id, __method__) do |record|
+      record.transaction do
+        assign_params(params, record:)
+        record.solid_confirmation.save! || raise(ActiveRecord::Rollback)
+      end
+    end
   end
 
   def destroy(id)
