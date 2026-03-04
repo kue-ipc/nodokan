@@ -4,42 +4,48 @@ module Bitwise
 
   class_methods do
     # rubocop: disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
-    def bitwise(name, values, prefix: nil, suffix: nil, scopes: true,
-      instance_methods: true, validate: false)
+    def bitwise(name, values, prefix: nil, suffix: nil, scopes: true, instance_methods: true, validate: false)
       name = name.intern
-      unless values.is_a?(Hash)
-        values = values.each_with_index
-          .to_h { |value, idx| [value, 1 << idx] }
-      end
-      values = values.with_indifferent_access.freeze
+      values =
+        if values.is_a?(Hash)
+          values.with_indifferent_access.freeze
+        else
+          values.each_with_index.to_h { |value, idx| [value, 1 << idx] }.with_indifferent_access.freeze
+        end
 
       singleton_class.send(:define_method, name.to_s.pluralize) do
         values
       end
 
+      singleton_class.send(:define_method, "#{name}_bitwise_to_list") do |bits|
+        self.bitwise_to_list(bits, values)
+      end
+
+      singleton_class.send(:define_method, "#{name}_list_to_bitwise") do |list|
+        self.list_to_bitwise(list, values)
+      end
+
       define_method(name.to_s.pluralize) do
-        if self[name].nil?
-          nil
-        elsif self[name].positive?
-          values.select do |_, value|
-            value.positive? && (self[name] & value).positive?
-          end.keys
-        else
-          [values.key(self[name])].compact
-        end
+        self.class.bitwise_to_list(self[name], values)
       end
 
       attr_prefix =
-        if prefix == true
+        case prefix
+        in nil | false
+          ""
+        in true
           "#{name}_"
-        elsif prefix
+        in String | Symbol
           "#{prefix}_"
         end
 
       attr_suffix =
-        if suffix == true
+        case suffix
+        in nil | false
+          ""
+        in true
           "_#{name}"
-        elsif suffix
+        in String | Symbol
           "_#{suffix}"
         end
 
@@ -73,6 +79,32 @@ module Bitwise
       # TODO: valideteの実装
       # if validate
       # end
+    end
+
+    # NOTE: どれにもマッチしない場合は、nilを返すべきか？
+    def list_to_bitwise(list, map)
+      return if list.nil?
+
+      bits = 0
+      map.slice(*list).each_value do |value|
+        if value.positive?
+          bits |= value
+        else
+          bits = value
+          break
+        end
+      end
+      bits
+    end
+
+    def bitwise_to_list(bits, map)
+      if bits.nil?
+        nil
+      elsif bits.positive?
+        map.select { |_, v| v.positive? && (bits & v).positive? }.keys
+      else
+        [map.key(bits)].compact
+      end
     end
   end
 end

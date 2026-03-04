@@ -68,10 +68,6 @@ class ApplicationProcessor
     user.nil? || user.admin?
   end
 
-  # default filters are do nothing, but can be overridden in subclass
-  def input_filter(input) = input
-  def output_filter(output) = output
-
   def record_ids
     if user
       Pundit.policy_scope(user, self.class.model).order(:id).pluck(:id)
