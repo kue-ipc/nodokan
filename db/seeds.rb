@@ -13,13 +13,7 @@ def create_entities(model_class)
   seeds_path = Rails.root / "db" / "seeds"
   file_name = "#{model_class.name.underscore.pluralize}.yml"
   yaml_file = seeds_path / file_name
-  yaml_erb_file = seeds_path / "#{file_name}.erb"
-  yaml_data =
-    if yaml_file.exist?
-      yaml_file.read
-    else
-      ERB.new(yaml_erb_file.read).result
-    end
+  yaml_data = ERB.new(yaml_file.read).result
   YAML.safe_load(yaml_data, permitted_classes: [Symbol, Time, Date],
     aliases: true, symbolize_names: false).each do |data|
     model = model_class.new(data)
