@@ -35,7 +35,7 @@ class ApplicationBatch
   def load(input = nil)
     if input
       @input_params_list = []
-      open_input(@input) do |desc|
+      open_input(input) do |desc|
         while (params = gets_params(desc))
           list << params
         end

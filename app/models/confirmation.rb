@@ -96,7 +96,7 @@ class Confirmation < ApplicationRecord
 
   validates_with ConfirmationSecuritySoftwareValidator
 
-  before_validate :set_unknown_if_unnecessary
+  before_validation :set_unknown_if_unnecessary
 
   def self.approved_period
     @approved_period = nil unless Rails.env.production?
