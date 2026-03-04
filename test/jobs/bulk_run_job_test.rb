@@ -160,8 +160,6 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
   end
 
-
-
   test "run export Node" do
     bulk = bulks(:export_node)
     perform_enqueued_jobs do

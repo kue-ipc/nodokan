@@ -19,6 +19,7 @@ export_node:
   user: user
   target: node
   status: waiting
+  content_type: text/csv
 
 import_network:
   user: user
@@ -29,6 +30,7 @@ export_network:
   user: user
   target: network
   status: waiting
+  content_type: text/csv
 
 import_user:
   user: user
@@ -39,3 +41,4 @@ export_user:
   user: user
   target: user
   status: waiting
+  content_type: text/csv
