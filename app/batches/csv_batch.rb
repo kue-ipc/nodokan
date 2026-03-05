@@ -30,15 +30,12 @@ class CsvBatch < ApplicationBatch
 
   private def row_to_params(row)
     params = {}
-    keys = @processor.class.keys
 
     row.to_hash.compact_blank.each do |key, value|
       if key.start_with?(/\W/)
         Rails.logger.warn "Ignore header that dose not start with word char: #{key}"
         next
       end
-
-      next if key.start_with?("_")
 
       if key == "id"
         case value.strip
@@ -48,66 +45,66 @@ class CsvBatch < ApplicationBatch
           params[:id] = value.delete_prefix("!").to_i
           params[:_destroy] = true
         else
-          params[:_result] = "failed"
-          params[:_message] = I18n.t("errors.messages.invalid_param", name: :id)
+          params[:id] = value
         end
 
         next
       end
 
-      cur_params = params
-      cur_keys = keys
-      while (m = /\A(\w+)\[(\w+)\]((?:\[\w+\])*)\z/.match(key))
-        parent = m[1]
-        child = m[2]
-        descendants = m[3]
-        if (single_keys = find_key_in_keys(parent, cur_keys))
-          # single
-          cur_params[parent] ||= {}
-          # next
-          cur_keys = single_keys
-          cur_params = cur_params[parent]
-          key = "#{child}#{descendants}"
-        elsif (multiple_keys = find_key_in_keys(parent.pluralize, cur_keys))
-          # multiple
-          cur_params[parent.pluralize] ||= [{}]
-          # next
-          cur_keys = multiple_keys
-          cur_params = cur_params[parent.pluralize].first
-          key = "#{child}#{descendants}"
-        else
-          raise InvalidHeaderError, "Header is not match keys: #{key}"
-        end
-      end
-
-      if key !~ /\A\w+\z/
-        raise InvalidHeaderError, "Header is invalid format: #{key}"
-      end
-
       value = nil if value == "!"
 
-      cur_params[key.intern] =
-        if cur_keys.include?(key.intern)
-          value
-        elsif (nested_key = find_key_in_keys(key, cur_keys))
-          case nested_key
-          when []
-            value&.split || []
-          when {}
-            JSON.parse(value, symbolize_names: true)
-          else
-            raise InvalidHeaderError, "Header is not nested: #{key}"
-          end
+      cur_params = params
+      keys = split_key(key).map do |k|
+        if k.empty?
+          nil
+        elsif k =~ /\A\d+\z/
+          k.to_i
         else
-          raise InvalidHeaderError, "Header is not included in keys: #{key}"
+          k.intern
         end
+      end
+
+      while keys.present?
+        cur_key = keys.shift
+        case keys
+        in []
+          # a
+          cur_params[cur_key] = value
+        in [nil]
+          # a[]
+          keys.shift
+          cur_params[cur_key] = value&.split
+        in [Integer]
+          # a[0]
+          number = keys.shift
+          cur_params[cur_key] = []
+          cur_params[cur_key][number] = value
+        in [nil | Integer, Symbol, *]
+          # a[][c] or  a[0][c]
+          number = keys.shift.to_i
+          cur_params[cur_key] ||= []
+          cur_params[cur_key][number] ||= {}
+          cur_params = cur_params[cur_key][number]
+        in [Symbol, *]
+          # a[b]
+          cur_params[cur_key] ||= {}
+          cur_params = cur_params[cur_key]
+        else
+          raise InvalidHeaderError, "Header is invalid pattern: #{key}"
+        end
+      end
     end
     params
   end
 
-  private def find_key_in_keys(key, keys)
-    key = key.intern
-    keys.grep(Hash).find { |k| k.key?(key) }&.fetch(key)
+  private def split_key(key)
+    if (m = /\A(\w*)\[(\w*)\]((?:\[\w*\])*)\z/.match(key))
+      [m[1], *split_key("#{m[2]}#{m[3]}")]
+    elsif key =~ /\A\w*\z/
+      [key]
+    else
+      raise InvalidHeaderError, "Header is invalid format: #{key}"
+    end
   end
 
   # write
@@ -194,5 +191,4 @@ class CsvBatch < ApplicationBatch
     headers_or_row = headers_or_row.headers if headers_or_row.is_a?(CSV::Row)
     CSV::Row.new(headers_or_row, [])
   end
-
 end
