@@ -29,6 +29,6 @@ class YamlBatch < ApplicationBatch
   end
 
   def puts_params(list, params)
-    list << compact_params(params)
+    list << params
   end
 end

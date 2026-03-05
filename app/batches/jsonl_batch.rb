@@ -27,6 +27,6 @@ class JsonlBatch < ApplicationBatch
   end
 
   def puts_params(output, params)
-    output << JSON.generate(compact_params(params), **@json_opts) << @delemiter
+    output << JSON.generate(params, **@json_opts) << @delemiter
   end
 end

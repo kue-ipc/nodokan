@@ -60,7 +60,7 @@ class ApplicationBatch
     open_output(output) do |desc|
       input_params_list.each do |input_params|
         output_params = do_action(input_params)
-        puts_params(desc, output_params)
+        puts_params(desc, compact_params(output_params))
         results[output_params[:_result]] += 1
         yield output_params if block_given?
       end
