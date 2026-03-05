@@ -106,7 +106,7 @@ class ApplicationProcessor
   def create(params)
     user_process(nil, __method__) do |record|
       record.transaction do
-        assign_params(params, record:)
+        assign_params(record, params)
         record.save!
       end
     end
@@ -115,7 +115,7 @@ class ApplicationProcessor
   def update(id, params)
     user_process(id, __method__) do |record|
       record.transaction do
-        assign_params(params, record:)
+        assign_params(record, params)
         record.save!
       end
     end
@@ -200,11 +200,11 @@ class ApplicationProcessor
     nil
   end
 
-  private def assign_params(record, params)
-    permitted_params = ActionController::Parameters.new({params:}).expect(params: self.class.keys)
+  private def assign_params(record, params, keys: self.class.keys, converters: self.class.converters)
+    permitted_params = ActionController::Parameters.new({params:}).expect(params: keys)
     permitted_params.each do |key, value|
       Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
-      set_param(record, key.intern, value)
+      set_param(record, key.intern, value, converters)
     end
     record
   end

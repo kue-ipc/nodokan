@@ -20,8 +20,8 @@ class CsvBatch < ApplicationBatch
   end
 
   # read
-  def open_input(input)
-    yield CSV.new(input, headers: true, header_converters: :downcase, encoding: "BOM|UTF-8", **@csv_opts)
+  def open_input(input, &)
+    CSV.open(input, headers: true, header_converters: :downcase, encoding: "BOM|UTF-8", **@csv_opts, &)
   end
 
   def gets_params(csv)
@@ -30,7 +30,7 @@ class CsvBatch < ApplicationBatch
 
   private def row_to_params(row)
     params = {}
-    keys = @processor.keys
+    keys = @processor.class.keys
 
     row.to_hash.compact_blank.each do |key, value|
       if key.start_with?(/\W/)
@@ -92,7 +92,7 @@ class CsvBatch < ApplicationBatch
         elsif (nested_key = find_key_in_keys(key, cur_keys))
           case nested_key
           when []
-            value.split
+            value&.split || []
           when {}
             JSON.parse(value, symbolize_names: true)
           else

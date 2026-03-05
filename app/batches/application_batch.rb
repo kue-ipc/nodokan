@@ -1,10 +1,11 @@
 class ApplicationBatch
   # call class methods
   #   conetnt_type ...
-  # define instance methods
-  #   def each_params(input, &)
-  #   def open_output(output, &block)
-  #   def puts_params(params, output)
+  # define instance methods on subclass
+  #   def open_input(input) do |desc|
+  #   def gets_params(desc) => params or nil
+  #   def open_output(output) do |desc|
+  #   def puts_params(desc, params)
 
   def self.content_type(str = nil)
     if str.nil?
@@ -32,12 +33,20 @@ class ApplicationBatch
 
   delegate :count, to: :input_params_list
 
+  def each_params(desc)
+    returtn enum_for(:each_params, desc) unless block_given?
+
+    while (params = gets_params(desc))
+      yield params
+    end
+  end
+
   def load(input = nil)
     if input
       @input_params_list = []
       open_input(input) do |desc|
-        while (params = gets_params(desc))
-          list << params
+        each_params(desc) do |params|
+          @input_params_list << params
         end
       end
     else
