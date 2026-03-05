@@ -121,20 +121,18 @@ class CsvBatch < ApplicationBatch
 
   private def params_each_row(params, &)
     rows = [empty_row]
-    put_in_rows(rows, params)
+    add_to_rows(rows, params)
     rows.each(&)
   end
 
-  private def put_in_rows(rows, params, parent: nil)
+  private def add_to_rows(rows, params, parent: nil)
     params.each do |key, value|
-      next if value.blank?
-
       case value
       when Array
         value = value.compact_blank
         if value.first.is_a?(Hash)
           new_rows = value.flat_map do |hash|
-            put_in_rows(rows.map(&:clone), hash, parent: key_to_header(key.to_s.singularize, parent:))
+            add_to_rows(rows.map(&:clone), hash, parent: key_to_header(key.to_s.singularize, parent:))
           end
           rows.replace(new_rows)
         else
@@ -143,7 +141,7 @@ class CsvBatch < ApplicationBatch
           end
         end
       when Hash
-        put_in_rows(rows, value, parent: key)
+        add_to_rows(rows, value, parent: key)
       else
         rows.each do |row|
           row[key_to_header(key, parent:)] = value.to_s
@@ -160,16 +158,23 @@ class CsvBatch < ApplicationBatch
 
   private def headers_from_keys(keys, parent: nil)
     keys.flat_map do |key|
-      if key.is_a?(Hash)
+      case key
+      in Symbol
+        key_to_header(key, parent:)
+      in Hash
         key.flat_map do |k, v|
-          if v == []
-            key_to_header(k, parent:)
-          else
-            headers_from_keys(v, parent: key_to_header(k.to_s.singularize, parent:))
+          parent_key = key_to_header(k, parent:)
+          case v
+          in []
+            key_to_header("", parent: parent_key)
+          in [[*]]
+            headers_from_keys(v.first, parent: key_to_header("", parent: parent_key))
+          in [*]
+            headers_from_keys(v, parent: parent_key)
+          in {**}
+            headers_from_keys([v], parent: parent_key)
           end
         end
-      else
-        key_to_header(key, parent:)
       end
     end
   end
