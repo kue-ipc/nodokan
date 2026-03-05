@@ -125,10 +125,20 @@ class CsvBatch < ApplicationBatch
     rows.each(&)
   end
 
+  # TODO ここを修正中
   private def add_to_rows(rows, params, parent: nil)
     params.each do |key, value|
       case value
-      when Array
+      in true | false | nil | Integer | Float | String
+        rows.each do |row|
+          row[key_to_header(key, parent:)] = value.to_s
+        end
+        obj
+      in String
+        obj.to_s
+      in Hash
+        add_to_rows(rows, value, parent: key)
+      in Array
         value = value.compact_blank
         if value.first.is_a?(Hash)
           new_rows = value.flat_map do |hash|
@@ -140,12 +150,13 @@ class CsvBatch < ApplicationBatch
             row[key_to_header(key, parent:)] = value.map(&:to_s).join(@delimiter)
           end
         end
-      when Hash
-        add_to_rows(rows, value, parent: key)
       else
-        rows.each do |row|
-          row[key_to_header(key, parent:)] = value.to_s
-        end
+        Rails.logger.warn("Unknown type in params vaule: #{value.class}, value: #{value.inspect}")
+      end
+
+      when Array
+      when Hash
+      else
       end
     end
     rows

@@ -153,15 +153,16 @@ class ApplicationBatch
 
   private def compact_params(obj)
     case obj
-    when true, false, nil, Numeric
+    in true | false | nil | Integer | Float
       obj
-    when String, Symbol
+    in String | Symbol
       obj.to_s
-    when Hash
-      obj.to_h { |key, value| [key.to_s, compact_params(value)] }.compact_blank
-    when Array
+    in Array
       obj.map { |value| compact_params(value) }.compact_blank
+    in Hash
+      obj.to_h { |key, value| [key.to_s, compact_params(value)] }.compact_blank
     else
+      Rails.logger.warn("Unknown type in compact_params: #{obj.class}, value: #{obj.inspect}")
       obj.to_s
     end
   end
