@@ -46,12 +46,13 @@ class ApplicationBatch
       @input_params_list = []
       open_input(input) do |desc|
         each_params(desc) do |params|
-          @input_params_list << params
+          @input_params_list << params.except(:_result, :_message)
         end
       end
     else
       @input_params_list = @processor.record_ids.map { |id| {id:} }
     end
+    @input_params_list.freeze
   end
 
   def run(output)
@@ -100,7 +101,7 @@ class ApplicationBatch
   end
 
   private def create_record(params)
-    record = @processor.create(params)
+    record = @processor.create(params.except(:id, :_destroy, :_result, :_message))
     if record.errors.empty?
       {id: record.id, **@processor.serialize(record),  _result: "created"}
     else
@@ -109,7 +110,7 @@ class ApplicationBatch
   end
 
   private def update_record(params)
-    record = @processor.update(params[:id], params)
+    record = @processor.update(params[:id], params.except(:id, :_destroy, :_result, :_message))
     if record.errors.empty?
       {id: record.id, **@processor.serialize(record),  _result: "updated"}
     else

@@ -15,6 +15,13 @@ class ApplicationProcessor
     end
   end
 
+  class StrictParameters < ActionController::Parameters
+    # override to raise error when unpermitted parameter is included
+    def permit(*filters)
+      permit_filters(filters, on_unpermitted: :raise, explicit_arrays: true)
+    end
+  end
+
   class << self
     def converters
       @converters ||= Hash.new { |h, k| h[k] = Converter.new(k) }
@@ -201,11 +208,15 @@ class ApplicationProcessor
   end
 
   private def assign_params(record, params, keys: self.class.keys, converters: self.class.converters)
-    permitted_params = ActionController::Parameters.new({params:}).expect(params: keys)
+    permitted_params = permit_params(params, keys:)
     permitted_params.each do |key, value|
       Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
       set_param(record, key.intern, value, converters)
     end
     record
+  end
+
+  def permit_params(params, keys: self.class.keys)
+    StrictParameters.new(params).permit(keys)
   end
 end
