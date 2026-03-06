@@ -1,6 +1,8 @@
 require "test_helper"
 
 class BulkRunJobTest < ActiveJob::TestCase
+  # Node
+
   test "run import Node" do
     bulk = bulks(:import_node)
     perform_enqueued_jobs do
@@ -9,20 +11,21 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
-    end
-    output = bulk.output.open do |file|
-      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
-      file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, encoding: "BOM|UTF-8").size
     end
 
     assert_equal "succeeded", bulk.status
     assert_equal input_size, bulk.number
     assert_equal input_size, bulk.success
     assert_equal 0, bulk.failure
-    assert_equal input_size, output.size
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+    # NOTE: add a second nic to node(#1), so increase row for the node
+    assert_equal input_size + 1, output.size
   end
 
   test "admin run import Node" do
@@ -34,20 +37,21 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
-    end
-    output = bulk.output.open do |file|
-      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
-      file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, encoding: "BOM|UTF-8").size
     end
 
     assert_equal "succeeded", bulk.status
     assert_equal input_size, bulk.number
     assert_equal input_size, bulk.success
     assert_equal 0, bulk.failure
-    assert_equal input_size, output.size
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+    # NOTE: add a second nic to node(#1), so increase row for the node
+    assert_equal input_size + 1, output.size
   end
 
   test "run import Node NG" do
@@ -58,23 +62,23 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
-    end
-    output = bulk.output.open do |file|
-      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
-      file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, encoding: "BOM|UTF-8").size
     end
 
     assert_equal "failed", bulk.status
     assert_equal input_size, bulk.number
     assert_equal 0, bulk.success
     assert_equal input_size, bulk.failure
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["_result"]
+      assert_equal "failed", result[:_result]
     end
   end
 
@@ -87,23 +91,23 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
-    end
-    output = bulk.output.open do |file|
-      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
-      file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, encoding: "BOM|UTF-8").size
     end
 
     assert_equal "failed", bulk.status
     assert_equal input_size, bulk.number
     assert_equal 0, bulk.success
     assert_equal input_size, bulk.failure
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["_result"]
+      assert_equal "failed", result[:_result]
     end
   end
 
@@ -115,23 +119,24 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
+      CSV.table(file, encoding: "BOM|UTF-8").size
     end
-    output = bulk.output.open do |file|
-      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
-      file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
-    end
+
 
     assert_equal "failed", bulk.status
     assert_equal input_size, bulk.number
     assert_equal 0, bulk.success
     assert_equal input_size, bulk.failure
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["_result"]
+      assert_equal "failed", result[:_result]
     end
   end
 
@@ -144,23 +149,22 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     input_size = bulk.input.open do |file|
-      CSV.table(file, header_converters: :downcase, encoding: "BOM|UTF-8").size
-    end
-    output = bulk.output.open do |file|
-      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
-      file.rewind
-      CSV.table(file, header_converters: :downcase,
-        encoding: "BOM|UTF-8").map(&:to_hash)
+      CSV.table(file, encoding: "BOM|UTF-8").size
     end
 
     assert_equal "succeeded", bulk.status
     assert_equal input_size, bulk.number
     assert_equal input_size, bulk.success
     assert_equal 0, bulk.failure
-    assert_equal input_size, output.size
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+    # NOTE: add a second nic to node(#1), so increase row for the node
+    assert_equal input_size + 1, output.size
   end
-
-
 
   test "run export Node" do
     bulk = bulks(:export_node)
@@ -170,16 +174,14 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     assert_equal "succeeded", bulk.status
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     node_and_nic_count = bulk.user.nodes.sum { |node| [node.nics.count, 1].max }
     assert_equal node_and_nic_count, output.size
-    assert_equal Node.find(output[0]["id"]).name, output[0]["name"]
+    assert_equal Node.find(output[0][:id]).name, output[0][:name]
   end
 
   test "admin run export all Node" do
@@ -191,17 +193,63 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     assert_equal "succeeded", bulk.status
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     node_and_nic_count = Node.all.sum { |node| [node.nics.count, 1].max }
     assert_equal node_and_nic_count, output.size
-    assert_equal Node.find(output[0]["id"]).name, output[0]["name"]
+    assert_equal Node.find(output[0][:id]).name, output[0][:name]
   end
+
+  # Confirmation
+
+  test "run import Confirmation" do
+    bulk = bulks(:import_confirmation)
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    input_size = bulk.input.open do |file|
+      CSV.table(file, encoding: "BOM|UTF-8").size
+    end
+
+    assert_equal "succeeded", bulk.status
+    assert_equal input_size, bulk.number
+    assert_equal input_size, bulk.success
+    assert_equal 0, bulk.failure
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+    assert_equal input_size, output.size
+  end
+
+  test "run export Confirmation" do
+    bulk = bulks(:export_confirmation)
+    perform_enqueued_jobs do
+      BulkRunJob.perform_later(bulk)
+    end
+
+    bulk = Bulk.find(bulk.id)
+    assert_equal "succeeded", bulk.status
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
+
+    assert_equal bulk.user.nodes.count, output.size
+    node = Node.find(output[0][:id])
+    assert_equal node.name, output[0][:name]
+    assert_equal node.solid_confirmation.status.to_s, output[0][:status]
+  end
+
+  # Network
 
   test "run import Network" do
     bulk = bulks(:import_network)
@@ -284,7 +332,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     bulk.update(user: users(:admin))
     network = networks(:client)
     csv_io = StringIO.new <<~CSV
-      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,_result,_message
+      id,name,vlan,domain,domain_search[],flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers[],ipv4_pools[],ipv6_network,ipv6_gateway,ipv6_dns_servers[],ipv6_pools[],note,_result,_message
       #{network.id},test,!,!,!,!,disabled,!,!,!,!,!,!,!,!,!,,
     CSV
     bulk.input.attach(io: csv_io, filename: "test.csv",
@@ -324,15 +372,14 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     assert_equal "succeeded", bulk.status
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     assert_equal bulk.user.networks.count, output.size
-    assert_equal Network.find(output[0]["id"]).name, output[0]["name"]
+    assert_equal Network.find(output[0][:id]).name, output[0][:name]
   end
 
   test "admin run export all Network" do
@@ -344,16 +391,17 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     bulk = Bulk.find(bulk.id)
     assert_equal "succeeded", bulk.status
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
+
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     assert_equal Network.count, output.size
-    assert_equal Network.find(output[0]["id"]).name, output[0]["name"]
+    assert_equal Network.find(output[0][:id]).name, output[0][:name]
   end
+
+  # User
 
   test "run import User" do
     bulk = bulks(:import_user)
@@ -419,14 +467,12 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
-    output = bulk.output.open do |data|
-      data.set_encoding("UTF-8", "UTF-8")
-      first_char = data.getc
-      assert_equal "\u{feff}", first_char
-      csv = CSV.new(data, headers: :first_row)
-      csv.read.map(&:to_hash)
-    end
     assert_equal "succeeded", bulk.status
+    output = bulk.output.open do |file|
+      assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
+      file.rewind
+      CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
+    end
     assert_equal User.count, output.size
   end
 end

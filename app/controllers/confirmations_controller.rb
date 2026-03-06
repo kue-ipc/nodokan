@@ -1,4 +1,6 @@
 class ConfirmationsController < ApplicationController
+  include ConfirmationParameter
+
   before_action :set_node
 
   # GET /nodes/1/confirmation
@@ -18,7 +20,7 @@ class ConfirmationsController < ApplicationController
   def create
     @confirmation = @node.build_confirmation(confirmation_params)
 
-    check_and_save
+    approve_and_save
   end
 
   # PATCH/PUT /nodes/1/confirmation
@@ -27,7 +29,7 @@ class ConfirmationsController < ApplicationController
     @confirmation = @node.confirmation
     @confirmation.assign_attributes(confirmation_params)
 
-    check_and_save
+    approve_and_save
   end
 
   private def set_node
@@ -49,35 +51,17 @@ class ConfirmationsController < ApplicationController
       security_software: [:os_category_id, :installation_method, :name],
     ])
 
-    security_hardware = list_to_bitwise(permitted_params[:security_hardwares],
-      Confirmation.security_hardwares)
-
-    security_software = permitted_params
-      .dig(:security_software, :installation_method).presence &&
-      SecuritySoftware.find_or_initialize_by(
-        permitted_params[:security_software])
-
-    permitted_params.except(:security_hardwares, :security_software)
-      .merge(security_hardware:, security_software:)
-  end
-
-  private def list_to_bitwise(list, bitwises)
-    return if list.nil?
-
-    result = 0
-    bitwises.slice(*list).each_value do |value|
-      if value.positive?
-        result |= value
-      else
-        result = value
-        break
-      end
+    if @node.operating_system.nil?
+      permitted_params[:security_software] = nil
+    elsif permitted_params[:security_software]
+      permitted_params[:security_software][:os_category_id] = @node.operating_system.os_category_id
     end
-    result
+
+    normalize_confirmation_params(permitted_params)
   end
 
-  private def check_and_save
-    @confirmation.check_and_approve!
+  private def approve_and_save
+    @confirmation.approve!
     if @confirmation.save
       if @confirmation.approved
         flash.now.notice = t("messages.confirmation_approved",

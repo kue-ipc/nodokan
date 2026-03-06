@@ -17,7 +17,7 @@ class YamlBatch < ApplicationBatch
   end
 
   def gets_params(data)
-    data.shift&.except(:_result, :_message)
+    data.shift
   end
 
   # write
@@ -29,6 +29,6 @@ class YamlBatch < ApplicationBatch
   end
 
   def puts_params(list, params)
-    list << compact_params(params)
+    list << params
   end
 end

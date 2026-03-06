@@ -113,7 +113,7 @@ class BulkRunJob < ApplicationJob
       in {_result: "failed" | "error"}
         bulk.increment!(:failure) # rubocop: disable Rails/SkipsModelValidations
       else
-        raise BulkRunError, "Unknown run result: #{result}"
+        raise BulkRunError, "Unknown run result: #{params[:_result]}"
       end
       raise CancelledError, "Bulk is cancelled: Bulk##{bulk.id}" if Bulk.exists?(id: bulk.id, status: :cancel)
     end

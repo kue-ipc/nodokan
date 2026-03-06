@@ -4,14 +4,17 @@ class CsvBatch < ApplicationBatch
   class InvalidHeaderError < StandardError
   end
 
-  class InvalidFieldError < StandardError
-  end
-
   content_type "text/csv"
 
   CSV_OPTIONS = %i[col_sep row_sep quote_char field_size_limit skip_blanks force_quotes skip_lines].freeze
+  DEFAULT_DELIMITER = " "
 
-  def initialize(*, with_bom: true, delimiter: " ", **opts)
+  TRUE_STRING = "t"
+  FALSE_STRING = "f"
+  TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
+  DATE_FORMAT = "%Y-%m-%d"
+
+  def initialize(*, with_bom: true, delimiter: DEFAULT_DELIMITER, **opts)
     super(*, **opts.except(*CSV_OPTIONS))
 
     @with_bom = with_bom
@@ -20,8 +23,8 @@ class CsvBatch < ApplicationBatch
   end
 
   # read
-  def open_input(input)
-    yield CSV.new(input, headers: true, header_converters: :downcase, encoding: "BOM|UTF-8", **@csv_opts)
+  def open_input(input, &)
+    CSV.open(input, headers: true, header_converters: :downcase, encoding: "BOM|UTF-8", **@csv_opts, &)
   end
 
   def gets_params(csv)
@@ -30,16 +33,8 @@ class CsvBatch < ApplicationBatch
 
   private def row_to_params(row)
     params = {}
-    keys = @processor.keys
 
     row.to_hash.compact_blank.each do |key, value|
-      if key.start_with?(/\W/)
-        Rails.logger.warn "Ignore header that dose not start with word char: #{key}"
-        next
-      end
-
-      next if key.start_with?("_")
-
       if key == "id"
         case value.strip
         when /\A\d+\z/
@@ -48,66 +43,66 @@ class CsvBatch < ApplicationBatch
           params[:id] = value.delete_prefix("!").to_i
           params[:_destroy] = true
         else
-          params[:_result] = "failed"
-          params[:_message] = I18n.t("errors.messages.invalid_param", name: :id)
+          params[:id] = value
         end
 
         next
       end
 
-      cur_params = params
-      cur_keys = keys
-      while (m = /\A(\w+)\[(\w+)\]((?:\[\w+\])*)\z/.match(key))
-        parent = m[1]
-        child = m[2]
-        descendants = m[3]
-        if (single_keys = find_key_in_keys(parent, cur_keys))
-          # single
-          cur_params[parent] ||= {}
-          # next
-          cur_keys = single_keys
-          cur_params = cur_params[parent]
-          key = "#{child}#{descendants}"
-        elsif (multiple_keys = find_key_in_keys(parent.pluralize, cur_keys))
-          # multiple
-          cur_params[parent.pluralize] ||= [{}]
-          # next
-          cur_keys = multiple_keys
-          cur_params = cur_params[parent.pluralize].first
-          key = "#{child}#{descendants}"
-        else
-          raise InvalidHeaderError, "Header is not match keys: #{key}"
-        end
-      end
-
-      if key !~ /\A\w+\z/
-        raise InvalidHeaderError, "Header is invalid format: #{key}"
-      end
-
       value = nil if value == "!"
 
-      cur_params[key.intern] =
-        if cur_keys.include?(key.intern)
-          value
-        elsif (nested_key = find_key_in_keys(key, cur_keys))
-          case nested_key
-          when []
-            value.split
-          when {}
-            JSON.parse(value, symbolize_names: true)
-          else
-            raise InvalidHeaderError, "Header is not nested: #{key}"
-          end
+      cur_params = params
+      keys = split_key(key).map do |k|
+        if k.empty?
+          nil
+        elsif k =~ /\A\d+\z/
+          k.to_i
         else
-          raise InvalidHeaderError, "Header is not included in keys: #{key}"
+          k.intern
         end
+      end
+
+      while keys.present?
+        cur_key = keys.shift
+        case keys
+        in []
+          # a
+          cur_params[cur_key] = value
+        in [nil]
+          # a[]
+          keys.shift
+          cur_params[cur_key] = value&.split || []
+        in [Integer]
+          # a[0]
+          number = keys.shift
+          cur_params[cur_key] = []
+          cur_params[cur_key][number] = value
+        in [nil | Integer, Symbol, *]
+          # a[][c] or  a[0][c]
+          number = keys.shift.to_i
+          cur_params[cur_key] ||= []
+          cur_params[cur_key][number] ||= {}
+          cur_params = cur_params[cur_key][number]
+        in [Symbol, *]
+          # a[b]
+          cur_params[cur_key] ||= {}
+          cur_params = cur_params[cur_key]
+        else
+          raise InvalidHeaderError, "Header is invalid pattern: #{key}"
+        end
+      end
     end
     params
   end
 
-  private def find_key_in_keys(key, keys)
-    key = key.intern
-    keys.grep(Hash).find { |k| k.key?(key) }&.fetch(key)
+  private def split_key(key)
+    if (m = /\A(\w*)\[(\w*)\]((?:\[\w*\])*)\z/.match(key))
+      [m[1], *split_key("#{m[2]}#{m[3]}")]
+    elsif key =~ /\A\w*\z/
+      [key]
+    else
+      raise InvalidHeaderError, "Header is invalid format: #{key}"
+    end
   end
 
   # write
@@ -124,55 +119,69 @@ class CsvBatch < ApplicationBatch
 
   private def params_each_row(params, &)
     rows = [empty_row]
-    put_in_rows(rows, params)
+    add_params_to_rows(rows, params)
     rows.each(&)
   end
 
-  private def put_in_rows(rows, params, parent: nil)
+  private def add_params_to_rows(rows, params, parent: nil)
     params.each do |key, value|
-      next if value.blank?
-
+      header = key_to_header(key, parent:)
       case value
-      when Array
-        value = value.compact_blank
-        if value.first.is_a?(Hash)
-          new_rows = value.flat_map do |hash|
-            put_in_rows(rows.map(&:clone), hash, parent: key_to_header(key.to_s.singularize, parent:))
-          end
-          rows.replace(new_rows)
-        else
-          rows.each do |row|
-            row[key_to_header(key, parent:)] = value.map(&:to_s).join(@delimiter)
-          end
+      in nil | "" | [] | {} # skip
+      in true then add_value_to_rows(rows, header, TRUE_STRING)
+      in false then add_value_to_rows(rows, header, FALSE_STRING)
+      in Integer | Float | String | Symbol then add_value_to_rows(rows, header, value.to_s)
+      in Time then add_value_to_rows(rows, header, value.strftime(TIME_FORMAT))
+      in Date then add_value_to_rows(rows, header, value.strftime(DATE_FORMAT))
+      in {**}
+        add_params_to_rows(rows, value, parent: header)
+      in [{**}, *]
+        list_header = key_to_header("", parent: header)
+        new_rows = value.flat_map do |hash|
+          add_params_to_rows(rows.map(&:clone), hash, parent: list_header)
         end
-      when Hash
-        put_in_rows(rows, value, parent: key)
+        rows.replace(new_rows)
+      in [*]
+        list_header = key_to_header("", parent: header)
+        list_value = value.map(&:to_s).join(@delimiter)
+        add_value_to_rows(rows, list_header, list_value)
       else
-        rows.each do |row|
-          row[key_to_header(key, parent:)] = value.to_s
-        end
+        Rails.logger.warn("Unknown type in params vaule: #{value.class}, value: #{value.inspect}")
       end
     end
     rows
   end
 
+  private def add_value_to_rows(rows, header, value)
+    rows.each do |row|
+      row[header] = value
+    end
+  end
+
   # csv
   private def headers
-    @headers ||= ["id", *headers_from_keys(@processor.keys), "_result", "_message"]
+    @headers ||= ["id", *headers_from_keys(@processor.class.keys), "_result", "_message"]
   end
 
   private def headers_from_keys(keys, parent: nil)
     keys.flat_map do |key|
-      if key.is_a?(Hash)
+      case key
+      in Symbol
+        key_to_header(key, parent:)
+      in Hash
         key.flat_map do |k, v|
-          if v == []
-            key_to_header(k, parent:)
-          else
-            headers_from_keys(v, parent: key_to_header(k.to_s.singularize, parent:))
+          header = key_to_header(k, parent:)
+          case v
+          in []
+            key_to_header("", parent: header)
+          in [[*]]
+            headers_from_keys(v.first, parent: key_to_header("", parent: header))
+          in [*]
+            headers_from_keys(v, parent: header)
+          in {**}
+            headers_from_keys([v], parent: header)
           end
         end
-      else
-        key_to_header(key, parent:)
       end
     end
   end
@@ -194,5 +203,4 @@ class CsvBatch < ApplicationBatch
     headers_or_row = headers_or_row.headers if headers_or_row.is_a?(CSV::Row)
     CSV::Row.new(headers_or_row, [])
   end
-
 end

@@ -4,22 +4,24 @@ class Node < ApplicationRecord
   include Flag
   include Period
 
+  has_paper_trail
+
   unique_identifier "@",
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
             hostname, domain = value.split(".", 2)
             find_by(hostname:, domain:) if hostname.present? && domain.present?
           }
+
   unique_identifier "i",
     read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
     find: ->(value) { Nic.find_ip_address(value).node }
+
   unique_identifier "k",
     read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
   flag :flag, {disabled: "x", permanent: "8", public: "p", dns: "d", specific: "s"}
-
-  has_paper_trail
 
   enum :node_type, {
     normal: 0,
@@ -64,7 +66,7 @@ class Node < ApplicationRecord
   has_many :nics, -> { order(:number) }, dependent: :destroy, inverse_of: :node
   accepts_nested_attributes_for :nics, allow_destroy: true
 
-  has_one :confirmation, dependent: :destroy
+  has_one :confirmation, dependent: :destroy, autosave: true
 
   validates :name, presence: true
   validates :hostname, allow_nil: true, hostname: true
@@ -178,7 +180,7 @@ class Node < ApplicationRecord
   end
 
   def solid_confirmation
-    @solid_confirmation ||= confirmation || build_confirmation
+    confirmation || build_confirmation
   end
 
   def should_destroy?(time: Time.current)

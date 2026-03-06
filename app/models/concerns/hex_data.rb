@@ -29,7 +29,7 @@ module HexData
       [str.delete(ignore_chars)].pack("H*")
     end
 
-    def hex_list_to_str(list, char_case: :upper, sep: "-")
+    def hex_list_to_str(list, char_case: :upper, sep: DEFAULT_SEP)
       return if list.nil?
 
       hex =

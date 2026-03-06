@@ -1,0 +1,4 @@
+﻿id,name,address,status,existence,content,os_update,app_update,software,security_hardwares[],security_software[installation_method],security_software[name],security_update,security_scan,_result,_message
+1,デスクトップパソコン,desktop.clients.example.jp,approved,existing,correct,auto,auto,trusted,encrypted,built_in,Windows Defender,auto,manual,shown,
+2,ノートパソコン,192.168.2.100,approved,existing,correct,manual,manual,os_only,zero_client remote_wipe no_storage wired locked_locker safety_area,unnecessary,,not_implemented,not_implemented,shown,
+3,タブレット,02-45-67-89-AB-CD,unconfirmed,unknown,unknown,unknown,unknown,unknown,unknown,,,unknown,unknown,shown,

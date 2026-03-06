@@ -14,7 +14,7 @@
       .col-12.mb-3
         = link_to t("actions.new"), new_network_path, class: "btn btn-secondary"
       .col-12
-        = bootstrap_form_with model: Bulk.new(target: "Network"), data: {turbo: false} do |f|
+        = bootstrap_form_with model: Bulk.new(target: Network.model_name.element), data: {turbo: false} do |f|
           = f.hidden_field :target
           = f.select :content_type, bulk_content_type_list,
             hide_label: true, prepend: t("forms.bulk.export"),

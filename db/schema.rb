@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_17_064345) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_04_052245) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_064345) do
   create_table "confirmations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "app_update", limit: 1, default: -1, null: false
     t.boolean "approved", default: false, null: false
-    t.timestamp "confirmed_at", default: -> { "current_timestamp() ON UPDATE current_timestamp()" }, null: false
+    t.datetime "confirmed_at"
     t.integer "content", limit: 1, default: -1, null: false
     t.datetime "created_at", null: false
     t.integer "existence", limit: 1, default: -1, null: false
@@ -232,7 +232,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_064345) do
     t.boolean "dns", default: false, null: false
     t.string "domain"
     t.binary "duid_data", limit: 130
-    t.timestamp "execution_at"
+    t.datetime "execution_at"
     t.bigint "hardware_id"
     t.bigint "host_id"
     t.string "hostname"
@@ -241,7 +241,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_064345) do
     t.integer "node_type", default: 0, null: false
     t.text "note"
     t.integer "notice", limit: 1
-    t.timestamp "noticed_at"
+    t.datetime "noticed_at"
     t.bigint "operating_system_id"
     t.boolean "permanent", default: false, null: false
     t.bigint "place_id"

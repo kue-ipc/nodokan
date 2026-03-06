@@ -1,11 +1,12 @@
 class NodesProcessor < ApplicationProcessor
-  class UnusableNetworkError < RuntimeError
+  class UnusableNetworkError < StandardError
   end
+
   include NodeParameter
 
-  class_name "Node"
+  model_name "Node"
 
-  params_permit(
+  keys [
     :user, :name, :fqdn, :type, :flag,
     ({components: []} if Settings.feature.virtual_node),
     (:host if Settings.feature.logical_node),
@@ -19,20 +20,21 @@ class NodesProcessor < ApplicationProcessor
       :number, :name, :interface_type, :network, :flag, :mac_address,
       :ipv4_config, :ipv4_address, :ipv6_config, :ipv6_address,
     ]]},
-    :note)
+    :note,
+  ].compact
 
   converter :type, :node_type
 
   converter :user,
     get: ->(record) { record.user&.username },
     set: ->(record, value) {
-      if current_user.nil? || current_user.admin?
+      if has_privilege?
         record.user = value.presence && User.find_by!(username: value)
       end
     }
 
   converter :flag, set: ->(record, value) {
-    if current_user.nil? || current_user.admin?
+    if has_privilege?
       record.flag = value
     end
   }
@@ -84,7 +86,7 @@ class NodesProcessor < ApplicationProcessor
 
   # override
   private def initial_model_attributes
-    {user_id: current_user&.id}
+    {user_id: user&.id}
   end
 
   private def normalize_nic_params(nic_params)

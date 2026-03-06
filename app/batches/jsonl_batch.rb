@@ -18,7 +18,7 @@ class JsonlBatch < ApplicationBatch
   end
 
   def gets_params(input)
-    input.gets&.then { |line| JSON.parse(line, symbolize_names: true).except(:_result, :_message) }
+    input.gets&.then { |line| JSON.parse(line, symbolize_names: true) }
   end
 
   # write
@@ -27,6 +27,6 @@ class JsonlBatch < ApplicationBatch
   end
 
   def puts_params(output, params)
-    output << JSON.generate(compact_params(params), **@json_opts) << @delemiter
+    output << JSON.generate(params, **@json_opts) << @delemiter
   end
 end

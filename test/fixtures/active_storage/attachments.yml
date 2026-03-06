@@ -13,6 +13,11 @@ node_admin_csv:
   record: import_node_admin (Bulk)
   blob: node_admin_csv_blob
 
+confirmation_csv:
+  name: input
+  record: import_confirmation (Bulk)
+  blob: confirmation_csv_blob
+
 network_csv:
   name: input
   record: import_network (Bulk)
