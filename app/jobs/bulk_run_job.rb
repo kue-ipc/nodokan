@@ -26,10 +26,10 @@ class BulkRunJob < ApplicationJob
   discard_on DuplicatedError, CancelledError, BulkRunError
 
   def perform(bulk)
+    PaperTrail.request.disable_model(Bulk)
+
     batch = nil
     out = nil
-
-    PaperTrail.request.disable_model(Bulk)
 
     check_content_type(bulk)
     batch = build_batch(bulk)
