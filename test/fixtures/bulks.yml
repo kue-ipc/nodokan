@@ -21,6 +21,17 @@ export_node:
   status: waiting
   content_type: text/csv
 
+import_confirmation:
+  user: user
+  target: confirmation
+  status: waiting
+
+export_confirmation:
+  user: user
+  target: confirmation
+  status: waiting
+  content_type: text/csv
+
 import_network:
   user: user
   target: network

@@ -13,10 +13,10 @@ class ConfirmationsProcessor < ApplicationProcessor
     :os_update,
     :app_update,
     :software,
+    {security_hardwares: []},
+    {security_software: [:installation_method, :name]},
     :security_update,
     :security_scan,
-    security_hardwares: [],
-    security_software: [:installation_method, :name],
   ]
 
   converter :name, set: ->(record, value) { }
@@ -70,7 +70,7 @@ class ConfirmationsProcessor < ApplicationProcessor
       record.solid_confirmation.security_hardware = Confirmation.security_hardware_list_to_bitwise(value)
     }
 
-  converter security_software: [:installation_method, :name],
+  converter :security_software,
     get: ->(record) { record.solid_confirmation.security_software },
     set: ->(record, value) {
       return unless record.operating_system
@@ -87,8 +87,8 @@ class ConfirmationsProcessor < ApplicationProcessor
   def update(id, params)
     user_process(id, __method__) do |record|
       record.transaction do
-        assign_params(params, record:)
-        solid_confirmation.security_software = nil unless record.operating_system
+        assign_params(record, params)
+        record.solid_confirmation.security_software = nil unless record.operating_system
         record.solid_confirmation.approve!
         record.save!
       end
