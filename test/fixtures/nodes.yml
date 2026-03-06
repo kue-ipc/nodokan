@@ -86,11 +86,13 @@ child1:
   id: 1
   name: チャイルド1
   user: user
+  operating_system: win
 
 child2:
   id: 2
   name: チャイルド2
   user: user
+  operating_system: macos
 
 child3:
   id: 3
