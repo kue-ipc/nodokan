@@ -8,16 +8,18 @@ class CsvBatchTest < ActiveSupport::TestCase
 
   test "gets_params_from_input" do
     input = StringIO.new <<~CSV
-      id,string,boolean,none,number,list[],dict[key1],dict[key2],dict_list[][k1],dict_list[][k2],_other
-      1,test1,true,!,42,a b,value1,value2,a1,a2,value
-      2,,,,,,,,,,
+      id,string,boolean,number,list[],dict[key1],dict[key2],dict_list[][k1],dict_list[][k2],_other
+      1,test1,t,42,a b,value1,value2,a1,a2,value
+      2,!,f,!,!,!,!,!,!,!
+      3,,,,,,,,,
+      !4,,,,,,,,,
+      ,,,,,,,,,
     CSV
     @batch.open_input(input) do |desc|
       assert_equal({
         id: 1,
         string: "test1",
-        boolean: "true",
-        none: nil,
+        boolean: "t",
         number: "42",
         list: ["a", "b"],
         dict: {key1: "value1", key2: "value2"},
@@ -26,21 +28,34 @@ class CsvBatchTest < ActiveSupport::TestCase
         ],
         _other: "value",
       }, @batch.gets_params(desc))
-      assert_equal({id: 2}, @batch.gets_params(desc))
+      assert_equal({
+        id: 2,
+        string: nil,
+        boolean: "f",
+        number: nil,
+        list: [],
+        dict: {key1: nil, key2: nil},
+        dict_list: [
+          {k1: nil, k2: nil},
+        ],
+        _other: nil,
+      }, @batch.gets_params(desc))
+      assert_equal({id: 3}, @batch.gets_params(desc))
+      assert_equal({id: 4, _destroy: true}, @batch.gets_params(desc))
+      assert_equal({}, @batch.gets_params(desc))
       assert_nil @batch.gets_params(desc)
     end
   end
 
   test "puts_params_to_output" do
     ApplicationProcessor.stub(:keys,
-      [:string, :boolean, :none, :number, {list: [], dict: [:key1, :key2], dict_list: [[:k1, :k2]]}]) do
+      [:string, :boolean, :number, {list: [], dict: [:key1, :key2], dict_list: [[:k1, :k2]]}]) do
       output = StringIO.new
       @batch.open_output(output) do |desc|
         @batch.puts_params(desc, {
           id: 1,
           string: "test1",
           boolean: true,
-          none: nil,
           number: 42,
           list: ["a", "b"],
           dict: {key1: "value1", key2: "value2"},
@@ -50,12 +65,23 @@ class CsvBatchTest < ActiveSupport::TestCase
           ],
           _result: "value",
         })
+        @batch.puts_params(desc, {
+          id: 2,
+          string: "",
+          boolean: false,
+          number: nil,
+          list: [],
+          dict: {},
+          dict_list: [{}],
+          _result: nil,
+        })
       end
       assert_equal <<~CSV, output.string
-        \u{feff}id,string,boolean,none,number,list[],dict[key1],dict[key2],dict_list[][k1],dict_list[][k2],_result,_message
-        1,test1,true,,42,a b,value1,value2,a1,a2,value,
-        1,test1,true,,42,a b,value1,value2,b1,b2,value,
-      CSV
+        \u{feff}id,string,boolean,number,list[],dict[key1],dict[key2],dict_list[][k1],dict_list[][k2],_result,_message
+        1,test1,t,42,a b,value1,value2,a1,a2,value,
+        1,test1,t,42,a b,value1,value2,b1,b2,value,
+        2,,f,,,,,,,,
+        CSV
     end
   end
 end
