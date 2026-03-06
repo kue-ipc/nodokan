@@ -128,7 +128,6 @@ class CsvBatch < ApplicationBatch
     rows.each(&)
   end
 
-  # TODO ここを修正中
   private def add_params_to_rows(rows, params, parent: nil)
     params.each do |key, value|
       header = key_to_header(key, parent:)
