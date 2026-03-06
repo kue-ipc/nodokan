@@ -11,10 +11,10 @@ class AdminMailerTest < ActionMailer::TestCase
     assert_equal <<~MESSAGE, mail.body.encoded.gsub(/\R/, "\n")
       端末管理システムで、下記のジョブが失敗しました。
 
-      Job: job
-      Job ID: job_id
-      Time: time
-      Exception: exception
+      ジョブ: job
+      ジョブ ID: job_id
+      実行日時: time
+      例外メッセージ: exception
 
       ---
       このメールの送信者は送信専用です。そのまま返信しないでください。

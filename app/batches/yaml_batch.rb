@@ -17,7 +17,7 @@ class YamlBatch < ApplicationBatch
   end
 
   def gets_params(data)
-    data.shift&.except(:_result, :_message)
+    data.shift
   end
 
   # write
