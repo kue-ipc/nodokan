@@ -18,7 +18,7 @@ class JsonlBatch < ApplicationBatch
   end
 
   def gets_params(input)
-    input.gets&.then { |line| JSON.parse(line, symbolize_names: true).except(:_result, :_message) }
+    input.gets&.then { |line| JSON.parse(line, symbolize_names: true) }
   end
 
   # write

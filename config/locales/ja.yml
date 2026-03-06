@@ -1063,7 +1063,7 @@ ja:
       message: |
         端末管理システムで、下記のジョブが失敗しました。
       job: ジョブ
-      job_id: ジョブ
+      job_id: ジョブ ID
       time: 実行日時
       exception: 例外メッセージ
 

@@ -35,11 +35,6 @@ class CsvBatch < ApplicationBatch
     params = {}
 
     row.to_hash.compact_blank.each do |key, value|
-      if key.start_with?(/\W/)
-        Rails.logger.warn "Ignore header that dose not start with word char: #{key}"
-        next
-      end
-
       if key == "id"
         case value.strip
         when /\A\d+\z/
