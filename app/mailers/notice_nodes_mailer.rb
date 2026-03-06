@@ -5,7 +5,13 @@ class NoticeNodesMailer < ApplicationMailer
   def unowned = admin_notice("unowned")
   def deleted_owner = admin_notice("deleted_owner")
   # special
-  def destroyed = special_notice("destroyed")
+  def destroyed
+    @notice = "destroyed"
+    @user = params[:user]
+    @nodes = params[:nodes] # not records, serializable hashes
+    @bulk = params[:bulk]
+    mail subject: subject_with_site_title, to: @user.email, cc: Settings.admin_email
+  end
   # user
   def destroy_soon = user_notice("destroy_soon")
   def disabled = user_notice("disabled")
@@ -18,32 +24,21 @@ class NoticeNodesMailer < ApplicationMailer
 
   private def admin_notice(name)
     @notice = name
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
+    @nodes = params[:nodes]
     mail subject: subject_with_site_title, to: Settings.admin_email
   end
 
   private def user_notice(name)
     @notice = name
     @user = params[:user]
-    @ids = params[:ids]
-    @nodes = Node.where(id: params[:ids]).to_a
-    mail subject: subject_with_site_title, to: @user.email
-  end
-
-  private def special_notice(name)
-    @notice = name
-    @user = params[:user]
-    @nodes = params[:nodes].map { |params| Node.new(params) }
+    @nodes = params[:nodes]
     mail subject: subject_with_site_title, to: @user.email
   end
 
   private def update_notice
-    # do nothing if @ids is not set
-    return unless @ids
+    return unless @nodes.first.is_a?(Node)
 
-    # rubocop:disable Rails/SkipsModelValidations
-    Node.where(id: @ids).update_all(notice: @notice, noticed_at: Time.current)
-    # rubocop:enable Rails/SkipsModelValidations
+    updates = {notice: @notice, noticed_at: Time.current}
+    Node.where(id: @nodes.map(&:id)).update_all(updates) # rubocop:disable Rails/SkipsModelValidations
   end
 end

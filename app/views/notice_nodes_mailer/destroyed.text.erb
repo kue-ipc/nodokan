@@ -1,5 +1,17 @@
 <%= t(".message") -%>
 
-<%= render "node_list", nodes: @nodes do |node| -%>
-<%= t("notice_nodes_mailer.destroy_soon.time") %>: <% node.execution_at %>
+<%= t(".bulk_link") %>: <%= bulk_url(@bulk) %>
+<%= t(".retention_period") %>: <%= l(@bulk.updated_at + Bulk.retention_period) %>
+
+<%= t(".target") %>: <%= @nodes.count %> <%= t("units.node")%>
+
+<% @nodes.each do |node| %>
+<%= Node.human_attribute_name(:name) %>: <%= node["name"] %>
+<%
+fqdn = [node["hostname"], node["domain"]].compact_blank.join(".")
+if fqdn.present?
+%>
+<%= Node.human_attribute_name(:fqdn) %>: <%= fqdn %>
+<% end %>
+
 <% end %>

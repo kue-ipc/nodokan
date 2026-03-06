@@ -14,7 +14,7 @@ class NodeCheckPerUserJob < ApplicationJob
     alias << add
 
     def run
-      Node.where(id: @node.map(&:id)).update_all(@updates) # rubocop:disable Rails/SkipsModelValidations
+      Node.where(id: @nodes.map(&:id)).update_all(@updates) # rubocop:disable Rails/SkipsModelValidations
     end
   end
 
