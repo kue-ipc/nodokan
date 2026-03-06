@@ -4,14 +4,17 @@ class CsvBatch < ApplicationBatch
   class InvalidHeaderError < StandardError
   end
 
-  class InvalidFieldError < StandardError
-  end
-
   content_type "text/csv"
 
   CSV_OPTIONS = %i[col_sep row_sep quote_char field_size_limit skip_blanks force_quotes skip_lines].freeze
+  DEFAULT_DELIMITER = " "
 
-  def initialize(*, with_bom: true, delimiter: " ", **opts)
+  TRUE_STRING = "t"
+  FALSE_STRING = "f"
+  TIME_FORMAT = "%Y-%m-%d %H:%M:%S %z"
+  DATE_FORMAT = "%Y-%m-%d"
+
+  def initialize(*, with_bom: true, delimiter: DEFAULT_DELIMITER, **opts)
     super(*, **opts.except(*CSV_OPTIONS))
 
     @with_bom = with_bom
@@ -73,7 +76,7 @@ class CsvBatch < ApplicationBatch
         in [nil]
           # a[]
           keys.shift
-          cur_params[cur_key] = value&.split
+          cur_params[cur_key] = value&.split || []
         in [Integer]
           # a[0]
           number = keys.shift
@@ -121,45 +124,44 @@ class CsvBatch < ApplicationBatch
 
   private def params_each_row(params, &)
     rows = [empty_row]
-    add_to_rows(rows, params)
+    add_params_to_rows(rows, params)
     rows.each(&)
   end
 
   # TODO ここを修正中
-  private def add_to_rows(rows, params, parent: nil)
+  private def add_params_to_rows(rows, params, parent: nil)
     params.each do |key, value|
+      header = key_to_header(key, parent:)
       case value
-      in true | false | nil | Integer | Float | String
-        rows.each do |row|
-          row[key_to_header(key, parent:)] = value.to_s
+      in nil | "" | [] | {} # skip
+      in true then add_value_to_rows(rows, header, TRUE_STRING)
+      in false then add_value_to_rows(rows, header, FALSE_STRING)
+      in Integer | Float | String | Symbol then add_value_to_rows(rows, header, value.to_s)
+      in Time then add_value_to_rows(rows, header, value.strftime(TIME_FORMAT))
+      in Date then add_value_to_rows(rows, header, value.strftime(DATE_FORMAT))
+      in {**}
+        add_params_to_rows(rows, value, parent: header)
+      in [{**}, *]
+        list_header = key_to_header("", parent: header)
+        new_rows = value.flat_map do |hash|
+          add_params_to_rows(rows.map(&:clone), hash, parent: list_header)
         end
-        obj
-      in String
-        obj.to_s
-      in Hash
-        add_to_rows(rows, value, parent: key)
-      in Array
-        value = value.compact_blank
-        if value.first.is_a?(Hash)
-          new_rows = value.flat_map do |hash|
-            add_to_rows(rows.map(&:clone), hash, parent: key_to_header(key.to_s.singularize, parent:))
-          end
-          rows.replace(new_rows)
-        else
-          rows.each do |row|
-            row[key_to_header(key, parent:)] = value.map(&:to_s).join(@delimiter)
-          end
-        end
+        rows.replace(new_rows)
+      in [*]
+        list_header = key_to_header("", parent: header)
+        list_value = value.map(&:to_s).join(@delimiter)
+        add_value_to_rows(rows, list_header, list_value)
       else
         Rails.logger.warn("Unknown type in params vaule: #{value.class}, value: #{value.inspect}")
       end
-
-      when Array
-      when Hash
-      else
-      end
     end
     rows
+  end
+
+  private def add_value_to_rows(rows, header, value)
+    rows.each do |row|
+      row[header] = value
+    end
   end
 
   # csv
@@ -174,16 +176,16 @@ class CsvBatch < ApplicationBatch
         key_to_header(key, parent:)
       in Hash
         key.flat_map do |k, v|
-          parent_key = key_to_header(k, parent:)
+          header = key_to_header(k, parent:)
           case v
           in []
-            key_to_header("", parent: parent_key)
+            key_to_header("", parent: header)
           in [[*]]
-            headers_from_keys(v.first, parent: key_to_header("", parent: parent_key))
+            headers_from_keys(v.first, parent: key_to_header("", parent: header))
           in [*]
-            headers_from_keys(v, parent: parent_key)
+            headers_from_keys(v, parent: header)
           in {**}
-            headers_from_keys([v], parent: parent_key)
+            headers_from_keys([v], parent: header)
           end
         end
       end
