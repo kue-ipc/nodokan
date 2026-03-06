@@ -66,6 +66,7 @@ class ApplicationProcessor
   end
 
   attr_reader :user
+  alias current_user user
 
   def initialize(user = nil)
     @user = user

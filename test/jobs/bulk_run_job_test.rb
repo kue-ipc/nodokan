@@ -22,7 +22,8 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
-    assert_equal input_size, output.size
+    # NOTE: add a second nic to node(#1), so increase row for the node
+    assert_equal input_size + 1, output.size
   end
 
   test "admin run import Node" do
@@ -47,7 +48,8 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
-    assert_equal input_size, output.size
+    # NOTE: add a second nic to node(#1), so increase row for the node
+    assert_equal input_size + 1, output.size
   end
 
   test "run import Node NG" do
@@ -74,7 +76,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["_result"]
+      assert_equal "failed", result[:_result]
     end
   end
 
@@ -103,7 +105,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["_result"]
+      assert_equal "failed", result[:_result]
     end
   end
 
@@ -132,7 +134,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal input_size, output.size
 
     output.each do |result|
-      assert_equal "failed", result["_result"]
+      assert_equal "failed", result[:_result]
     end
   end
 
@@ -158,7 +160,8 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
-    assert_equal input_size, output.size
+    # NOTE: add a second nic to node(#1), so increase row for the node
+    assert_equal input_size + 1, output.size
   end
 
   test "run export Node" do
@@ -283,7 +286,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     bulk.update(user: users(:admin))
     network = networks(:client)
     csv_io = StringIO.new <<~CSV
-      id,name,vlan,domain,domain_search,flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers,ipv4_pools,ipv6_network,ipv6_gateway,ipv6_dns_servers,ipv6_pools,note,_result,_message
+      id,name,vlan,domain,domain_search[],flag,ra,ipv4_network,ipv4_gateway,ipv4_dns_servers[],ipv4_pools[],ipv6_network,ipv6_gateway,ipv6_dns_servers[],ipv6_pools[],note,_result,_message
       #{network.id},test,!,!,!,!,disabled,!,!,!,!,!,!,!,!,!,,
     CSV
     bulk.input.attach(io: csv_io, filename: "test.csv",

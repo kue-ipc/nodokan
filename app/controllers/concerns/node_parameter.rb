@@ -59,7 +59,6 @@ module NodeParameter
   private def delete_unchangable_nic_params(nic_params)
     return nic_params if current_user.nil? || current_user.admin?
 
-
     nic = nic_params[:id].presence&.then { Nic.find(_1) }
     network = nic_params[:network_id].presence&.then { Network.find(_1) }
 
