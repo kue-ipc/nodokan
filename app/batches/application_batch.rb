@@ -87,6 +87,8 @@ class ApplicationBatch
     end
   rescue ActiveRecord::RecordNotFound
     failed_params(params, I18n.t("errors.messages.not_found"))
+  rescue ActiveRecord::RecordInvalid => e
+    failed_params(params, e.message)
   rescue Pundit::NotAuthorizedError
     failed_params(params, I18n.t("errors.messages.not_authorized"))
   rescue StandardError => e
