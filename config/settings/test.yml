@@ -1,3 +1,5 @@
+site:
+  title: 端末管理システム(test)
 theme:
   navbar: '#343a40'
 ldap:

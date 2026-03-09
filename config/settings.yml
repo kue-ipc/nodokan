@@ -1,6 +1,6 @@
 # defalut settings
 site:
-  title: null
+  title: 端末管理システム
 database:
   # overwritten with credentials
   # username: nodokan

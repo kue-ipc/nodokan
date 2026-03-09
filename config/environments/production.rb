@@ -62,6 +62,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = Settings.mailer&.url_options&.to_h
+  config.action_mailer.default_options = Settings.mailer&.options&.to_h
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -72,8 +73,6 @@ Rails.application.configure do
   #   authentication: :plain
   # }
   config.action_mailer.smtp_settings = Settings.mailer&.smtp_settings&.to_h
-
-  config.action_mailer.default_options = Settings.mailer&.options&.to_h
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

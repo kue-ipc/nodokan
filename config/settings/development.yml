@@ -1,3 +1,6 @@
+
+site:
+  title: 端末管理システム(dev)
 theme:
   navbar: '#343a40'
 ldap:
@@ -46,7 +49,8 @@ mailer:
   options:
     from: no-reply@example.jp
   url_options:
-    host: nodokan.example.jp
+    host: localhost
+    port: 3000
 admin:
   username: admin
   fullname: 管理者
