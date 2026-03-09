@@ -10,7 +10,7 @@ class NoticeNodesMailer < ApplicationMailer
     @user = params[:user]
     @nodes = params[:nodes] # not records, serializable hashes
     @bulk = params[:bulk]
-    mail subject: subject_with_site_title, to: @user.email, cc: Settings.admin_email
+    mail subject: subject_with_site_title, to: @user.email, cc: Settings.admin.email
   end
   # user
   def destroy_soon = user_notice("destroy_soon")
@@ -25,7 +25,7 @@ class NoticeNodesMailer < ApplicationMailer
   private def admin_notice(name)
     @notice = name
     @nodes = params[:nodes]
-    mail subject: subject_with_site_title, to: Settings.admin_email
+    mail subject: subject_with_site_title, to: Settings.admin.email
   end
 
   private def user_notice(name)
