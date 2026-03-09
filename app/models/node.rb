@@ -145,6 +145,14 @@ class Node < ApplicationRecord
 
   def enabled? = !disabled?
 
+  def enable!
+    update(disabled: false)
+  end
+
+  def disable!
+    update(disabled: true)
+  end
+
   def fqdn
     return if hostname.blank?
     return hostname if domain.blank?
@@ -191,14 +199,14 @@ class Node < ApplicationRecord
     # should not destroy node if it has recent connection history
     return false if connected_at&.>(time - Node.destroy_last_connection_period)
 
-    # always destroy node if confirmation is disbaled
+    # always destroy node if confirmation is disabled
     return true unless Settings.feature.confirmation
 
     solid_confirmation.should_destory_node?(time:)
   end
 
   def should_disable?(time: Time.current)
-    # always dose not disable node if confirmation is disbaled
+    # always dose not disable node if confirmation is disabled
     return false unless Settings.feature.confirmation
 
     solid_confirmation.should_disable_node?(time:)

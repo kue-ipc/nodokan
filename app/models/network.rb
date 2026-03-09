@@ -164,6 +164,14 @@ class Network < ApplicationRecord
 
   def enabled? = !disabled?
 
+  def enable!
+    update(disabled: false)
+  end
+
+  def disable!
+    update(disabled: true)
+  end
+
   # IPv4
 
   def has_ipv4? = ipv4_network_data.present? # rubocop: disable Naming/PredicateName

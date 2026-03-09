@@ -1,6 +1,8 @@
 require "test_helper"
 
 class NodeTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   setup do
     @node = nodes(:note)
   end

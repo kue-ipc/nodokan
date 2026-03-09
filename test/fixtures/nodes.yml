@@ -29,8 +29,9 @@ tablet:
   duid_data: <%= duid("00-04-06dec5d2-c8ea-4fc7-ab8d-16d9fbbe43ba") %>
   user: user
 
-disbaled:
+disabled:
   name: 無効化されたパソコン
+  disabled: true
   hostname: disabled
   domain: clients.example.jp
   place: office_room

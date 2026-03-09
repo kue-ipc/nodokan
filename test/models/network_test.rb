@@ -1,6 +1,8 @@
 require "test_helper"
 
 class NetworkTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   setup do
     @network = networks(:client)
   end
@@ -26,7 +28,6 @@ class NetworkTest < ActiveSupport::TestCase
 
   test "disbale network" do
     # enabled -> disabled
-    @network = networks(:note)
     assert @network.enabled?
     assert_enqueued_with(job: KeaSubnet4DelJob) do
       assert_enqueued_with(job: KeaSubnet6DelJob) do
