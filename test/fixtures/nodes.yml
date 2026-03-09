@@ -108,7 +108,7 @@ target:
   note: ターゲットデスクトップ
   user: user
 
-target:
+target2:
   id: 142
   name: ターゲットデスクトップ管理者パソコン
   place: server_room
