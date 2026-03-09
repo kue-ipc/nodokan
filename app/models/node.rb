@@ -66,7 +66,7 @@ class Node < ApplicationRecord
   has_many :nics, -> { order(:number) }, dependent: :destroy, inverse_of: :node
   accepts_nested_attributes_for :nics, allow_destroy: true
 
-  has_one :confirmation, dependent: :destroy, autosave: true
+  has_one :confirmation, dependent: :destroy
 
   validates :name, presence: true
   validates :hostname, allow_nil: true, hostname: true

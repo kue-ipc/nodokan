@@ -90,7 +90,7 @@ class ConfirmationsProcessor < ApplicationProcessor
         assign_params(record, params)
         record.solid_confirmation.security_software = nil unless record.operating_system
         record.solid_confirmation.approve!
-        record.save!
+        record.solid_confirmation.save!
       end
     end
   end
