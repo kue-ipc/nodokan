@@ -28,18 +28,13 @@ class SpecificNodeApplication
 
   validates :node_id, presence: true
   validates :user_id, presence: true
-  validates :action, presence: true
+  validates :action, presence: true, inclusion: {in: ["register", "change", "release"]}
 
   validates :reason, presence: true, if: -> { action != "release" }
   validates :rule_set, presence: true, if: -> { action != "release" }
   validates :rule_list, presence: true,
-    if: -> {
-          action != "release" && rule_set == -1 &&
-            ["none", "direct"].exclude?(external)
-        }
-  validates :external, presence: true, if: -> { action != "release" }
-  validates :register_dns, inclusion: {in: [true, false]},
-    if: -> { action != "release" }
-  validates :fqdn, presence: true,
-    if: -> { action != "release" && register_dns }
+    if: -> { action != "release" && rule_set == -1 && ["none", "direct"].exclude?(external) }
+  validates :external, presence: true, inclusion: {in: EXTERNAL_LIST}, if: -> { action != "release" }
+  validates :register_dns, presence: true, if: -> { action != "release" }
+  validates :fqdn, presence: true, if: -> { action != "release" && register_dns }
 end

@@ -2,11 +2,18 @@
 class SpecificNodeMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/specific_node_mailer/apply
   def apply
-    SpecificNodeMailer.apply
-  end
-
-  # Preview this email at http://localhost:3000/rails/mailers/specific_node_mailer/notify_change
-  def notify_change
-    SpecificNodeMailer.notify_change
+    SpecificNodeMailer
+    .with(specific_node_application: {
+      user_id: User.last.id,
+      node_id: Node.first.id,
+      action: "register",
+      reason: "理由の例",
+      rule_set: 1,
+      rule_list: "ルールの例",
+      external: "none",
+      register_dns: true,
+      fqdn: "test.example.jp",
+      note: "備考の例",
+    }).apply
   end
 end

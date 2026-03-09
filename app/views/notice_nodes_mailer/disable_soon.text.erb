@@ -1,5 +1,7 @@
-<%= t(".message") -%>
+<%= t("name.formal", name: @user.fullname) %>
 
+<%= t(".message") %>
+<%= t(".action_to_taken") %>
 <%= render "node_list", nodes: @nodes do |node| -%>
-<%= t("notice_nodes_mailer.destroy_soon.time") %>: <% node.execution_at %>
+<%= Node.human_attribute_name(:execution_at) %>: <%= l(node.execution_at, format: :long) %>
 <% end %>

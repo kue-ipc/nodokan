@@ -33,7 +33,7 @@ module BulksHelper
     [
       ["CSV", "text/csv"],
       ["YAML", "application/yaml"],
-      ["JSONL", "application/jsonl"],
+      ["JSONL Lines", "application/jsonl"],
     ]
   end
 end

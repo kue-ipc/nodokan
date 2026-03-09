@@ -4,9 +4,9 @@ class AdminMailerTest < ActionMailer::TestCase
   test "job_failure" do
     mail = AdminMailer.with(job: "job", job_id: "job_id", time: "time",
       exception: "exception").job_failure
-    assert_equal "ジョブ失敗 - のどかん", mail.subject
+    assert_equal "ジョブ失敗 - 端末管理システム(test)", mail.subject
+    assert_equal ["no-reply@example.jp"], mail.from
     assert_equal ["admin@example.jp"], mail.to
-    assert_nil mail.from
 
     assert_equal <<~MESSAGE, mail.body.encoded.gsub(/\R/, "\n")
       端末管理システムで、下記のジョブが失敗しました。
@@ -21,7 +21,7 @@ class AdminMailerTest < ActionMailer::TestCase
       メール内容のお問い合わせは下記管理者宛までお願いします。
         管理者 admin@example.jp
 
-      - のどかん -
+      - 端末管理システム(test) -
     MESSAGE
   end
 end

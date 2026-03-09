@@ -1,5 +1,7 @@
-<%= t(".message") -%>
+<%= t("name.formal", name: @user.fullname) %>
 
+<%= t(".message") %>
+<%= t(".action_to_taken") %>
 <%= t(".bulk_link") %>: <%= bulk_url(@bulk) %>
 <%= t(".retention_period") %>: <%= l(@bulk.updated_at + Bulk.retention_period) %>
 

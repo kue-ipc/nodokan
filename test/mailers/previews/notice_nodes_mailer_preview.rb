@@ -19,6 +19,10 @@ class NoticeNodesMailerPreview < ActionMailer::Preview
     NoticeNodesMailer.with(nodes: Node.limit(3), user: User.first).disabled
   end
 
+  def disable_soon
+    NoticeNodesMailer.with(nodes: Node.limit(3), user: User.first).disable_soon
+  end
+
   def unconfirmed
     NoticeNodesMailer.with(nodes: Node.limit(3), user: User.first).unconfirmed
   end

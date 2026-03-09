@@ -1,5 +1,5 @@
-<%= t(".message") -%>
+<%= t("name.formal", name: @user.fullname) %>
 
-<%= render "node_list", nodes: @nodes do |node| -%>
-<%= t("notice_nodes_mailer.destroy_soon.time") %>: <% node.execution_at %>
-<% end %>
+<%= t(".message") %>
+<%= t(".action_to_taken") %>
+<%= render "node_list", nodes: @nodes -%>

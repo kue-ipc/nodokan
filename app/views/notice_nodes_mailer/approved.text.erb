@@ -1,5 +1,6 @@
-<%= t(".message") -%>
+<%= t("name.formal", name: @user.fullname) %>
 
+<%= t(".message") %>
 <%= render "node_list", nodes: @nodes do |node| -%>
 <%= Confirmation.human_attribute_name(:expiration) %>: <%= l(node.solid_confirmation.expiration, format: :long) %>
 <% end %>

@@ -1,6 +1,6 @@
 module ApplicationHelper
   def site_title
-    Settings.site.title || t(:nodokan)
+    Settings.site.title
   end
 
   def model_class(model = nil)

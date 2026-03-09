@@ -1,5 +1,14 @@
-<%= t(".message") -%>
+<%= t("name.formal", name: @user.fullname) %>
 
-<%= render "node_list", nodes: @nodes do |node| -%>
-<%= t("notice_nodes_mailer.destroy_soon.time") %>: <% node.execution_at %>
+<%= t(".message") %>
+<% case [Settings.config.enable_node_by_user, Settings.config.enable_node_upon_confirmation ] %>
+<% in [true, true] %>
+<%= t(".action_to_taken.enable_node_by_user_or_upon_confiramtion") %>
+<% in [true, false] %>
+<%= t(".action_to_taken.enable_node_by_user") %>
+<% in [false, true] %>
+<%= t(".action_to_taken.enable_node_upon_confiramtion") %>
+<% in [false, false] %>
+<%= t(".action_to_taken.enable_node_only_by_admin") %>
 <% end %>
+<%= render "node_list", nodes: @nodes -%>
