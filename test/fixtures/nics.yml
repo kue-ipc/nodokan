@@ -12,7 +12,7 @@ desktop:
   ipv4_config: :static
   ipv4_data: <%= ipv4_address("192.168.2.31") %>
   ipv6_config: :static
-  ipv6_data: <%= ipv6_address("fd00:2::3001") %>
+  ipv6_data: <%= ipv6_address("fd00:2::3:0:1") %>
 
 note:
   node: note
@@ -26,7 +26,7 @@ note:
   ipv4_config: :reserved
   ipv4_data: <%= ipv4_address("192.168.2.22") %>
   ipv6_config: :reserved
-  ipv6_data: <%= ipv6_address("fd00:2::2002") %>
+  ipv6_data: <%= ipv6_address("fd00:2::2:0:2") %>
 
 tablet:
   node: tablet
@@ -42,6 +42,20 @@ tablet:
   ipv6_config: dynamic
   ipv6_data:
 
+disabled:
+  node: disabled
+  number: 1
+  network: client
+  name: イーサネット
+  interface_type: :wired
+  auth: true
+  locked: false
+  mac_address_data: <%= mac_address("aa-11-22-33-44-66") %>
+  ipv4_config: :reserved
+  ipv4_data: <%= ipv4_address("192.168.2.24") %>
+  ipv6_config: :reserved
+  ipv6_data: <%= ipv6_address("fd00:2::2:0:4") %>
+
 server:
   node: server
   number: 1
@@ -54,7 +68,7 @@ server:
   ipv4_config: :static
   ipv4_data: <%= ipv4_address("192.168.1.11") %>
   ipv6_config: :static
-  ipv6_data: <%= ipv6_address("fd00:1::1001") %>
+  ipv6_data: <%= ipv6_address("fd00:1::1:0:1") %>
 
 server_extra:
   node: server
@@ -68,7 +82,7 @@ server_extra:
   ipv4_config: :manual
   ipv4_data: <%= ipv4_address("192.0.2.1") %>
   ipv6_config: :manual
-  ipv6_data: <%= ipv6_address('2001:db8:1::1001') %>
+  ipv6_data: <%= ipv6_address('2001:db8:1::1:0:1') %>
 
 other_desktop:
   node: other_desktop
@@ -82,7 +96,7 @@ other_desktop:
   ipv4_config: :static
   ipv4_data: <%= ipv4_address("192.168.2.18") %>
   ipv6_config: :static
-  ipv6_data: <%= ipv6_address("fd00:2::1008") %>
+  ipv6_data: <%= ipv6_address("fd00:2::1:0:8") %>
 
 router1:
   node: router

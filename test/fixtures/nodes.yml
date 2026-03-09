@@ -29,6 +29,16 @@ tablet:
   duid_data: <%= duid("00-04-06dec5d2-c8ea-4fc7-ab8d-16d9fbbe43ba") %>
   user: user
 
+disbaled:
+  name: 無効化されたパソコン
+  hostname: disabled
+  domain: clients.example.jp
+  place: office_room
+  hardware: desktop
+  operating_system: win
+  duid_data: <%= duid("00-04-24812397-33c2-4c2b-b6dd-7d538d5f0c50") %>
+  user: user
+
 server:
   name: サーバー
   hostname: sever

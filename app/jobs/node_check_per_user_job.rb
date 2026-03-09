@@ -119,7 +119,7 @@ class NodeCheckPerUserJob < ApplicationJob
     return if nodes.blank?
 
     nodes.each do |node|
-      if node.update({disabled: true})
+      if node.disable!
         @update_dict[:reset_execution] << node
         @notice_dict[:disabled] << node
         @counts[:disable] += 1

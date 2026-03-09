@@ -91,6 +91,27 @@ free:
   ipv6_gateway_data: <%= ipv6_address('fd00:3::1') %>
   note: 空いているネットワーク
 
+disabled:
+  name: 無効なネットワーク
+  vlan: 104
+  domain: disabled.example.jp
+  domain_search_data: <%= ["service.example.jp", "server.example.jp", "example.jp"].to_json.inspect %>
+  disabled: true
+  unverifiable: false
+  auth: true
+  locked: false
+  dhcp: true
+  ra: managed
+  ipv4_network_data: <%= ipv4_address('192.168.4.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.4.254') %>
+  ipv4_dns_servers_data: <%= ["192.168.2.53", "192.168.1.53"].to_json.inspect %>
+  ipv6_network_data: <%= ipv6_address('fd00:4::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00:4::1') %>
+  ipv6_dns_servers_data: <%= ["fd00:2::53", "fd00:1::53"].to_json.inspect %>
+  note: クライアント用のネットワーク
+
 ipv4only:
   name: IPv4のみのネットワーク
   vlan: 110

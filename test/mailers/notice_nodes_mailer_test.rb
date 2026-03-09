@@ -40,7 +40,7 @@ class NoticeNodesMailerTest < ActionMailer::TestCase
       端末名: デスクトップパソコン
       FQDN: desktop.clients.example.jp
       IPv4アドレス: 192.168.2.31
-      IPv6アドレス: fd00:2::3001
+      IPv6アドレス: fd00:2::3:0:1
       MACアドレス: 00-11-22-33-44-55
       リンク: http://nodokan.example.jp/nodes/157353380
 

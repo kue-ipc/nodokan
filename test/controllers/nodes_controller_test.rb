@@ -727,7 +727,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv4_config: "disabled",
         ipv4_address: "192.168.2.241",
         ipv6_config: "disabled",
-        ipv6_address: "fd00:2::4001",
+        ipv6_address: "fd00:2::4:0:1",
       }],}}
     end
     assert_equal get_message(:create_success), flash[:notice]
@@ -1104,7 +1104,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         interface_type: @node.nics.first.interface_type,
         network_id: @node.nics.first.network_id,
         ipv6_config: "manual",
-        ipv6_address: "fd00:2::4001",
+        ipv6_address: "fd00:2::4:0:1",
       }],}}
     end
     assert_equal get_message(:create_failure), flash[:alert]
@@ -1353,13 +1353,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
         ipv4_config: "manual",
         ipv4_address: "192.168.2.241",
         ipv6_config: "manual",
-        ipv6_address: "fd00:2::4001",
+        ipv6_address: "fd00:2::4:0:1",
       }],}}
     end
     assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal "192.168.2.241", Node.last.nics.first.ipv4_address
-    assert_equal "fd00:2::4001", Node.last.nics.first.ipv6_address
+    assert_equal "fd00:2::4:0:1", Node.last.nics.first.ipv6_address
   end
 
   test "other should NOT create node with manual ipv4 without address" do
@@ -2119,7 +2119,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
     assert_equal "192.168.1.10", new_nic.ipv4_address
-    assert_equal "fd00:1::1000", new_nic.ipv6_address
+    assert_equal "fd00:1::1:0:0", new_nic.ipv6_address
   end
 
   ### unmanageable
@@ -2160,7 +2160,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
     assert_equal "192.168.2.20", new_nic.ipv4_address
-    assert_equal "fd00:2::2000", new_nic.ipv6_address
+    assert_equal "fd00:2::2:0:0", new_nic.ipv6_address
   end
 
   test "should update node with nic from dynamic to reserved" do
@@ -2180,7 +2180,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
     assert_equal "192.168.2.20", new_nic.ipv4_address
-    assert_equal "fd00:2::2000", new_nic.ipv6_address
+    assert_equal "fd00:2::2:0:0", new_nic.ipv6_address
   end
 
   #### static
@@ -2202,7 +2202,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
     assert_equal "192.168.2.30", new_nic.ipv4_address
-    assert_equal "fd00:2::3000", new_nic.ipv6_address
+    assert_equal "fd00:2::3:0:0", new_nic.ipv6_address
   end
 
   test "should update node with nic from dynamic to static" do
@@ -2222,7 +2222,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
     assert_not_equal old_nic.ipv6_data, new_nic.ipv6_data
     assert_equal "192.168.2.30", new_nic.ipv4_address
-    assert_equal "fd00:2::3000", new_nic.ipv6_address
+    assert_equal "fd00:2::3:0:0", new_nic.ipv6_address
   end
 
   #### manual
@@ -2278,7 +2278,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "reserved", new_nic.ipv6_config
     # same ip
     assert_equal "192.168.2.18", new_nic.ipv4_address
-    assert_equal "fd00:2::1008", new_nic.ipv6_address
+    assert_equal "fd00:2::1:0:8", new_nic.ipv6_address
   end
 
   #### static
@@ -2289,7 +2289,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       ipv4_address: "192.168.2.10",
-      ipv6_address: "fd00:2::1010",
+      ipv6_address: "fd00:2::1:0:a",
     }]}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
@@ -2297,7 +2297,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
     assert_equal "192.168.2.10", new_nic.ipv4_address
-    assert_equal "fd00:2::1010", new_nic.ipv6_address
+    assert_equal "fd00:2::1:0:a", new_nic.ipv6_address
   end
 
   #### manual
@@ -2317,7 +2317,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "manual", new_nic.ipv6_config
     # same ip
     assert_equal "192.168.2.18", new_nic.ipv4_address
-    assert_equal "fd00:2::1008", new_nic.ipv6_address
+    assert_equal "fd00:2::1:0:8", new_nic.ipv6_address
   end
 
   #### disabled

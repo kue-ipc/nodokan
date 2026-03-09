@@ -42,6 +42,24 @@ free3:
   ipv4_first_data: <%= ipv4_address('192.168.3.30') %>
   ipv4_last_data: <%= ipv4_address('192.168.3.39') %>
 
+disabled1:
+  network: disabled
+  ipv4_config: :dynamic
+  ipv4_first_data: <%= ipv4_address('192.168.4.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.4.19') %>
+
+disabled2:
+  network: disabled
+  ipv4_config: :reserved
+  ipv4_first_data: <%= ipv4_address('192.168.4.20') %>
+  ipv4_last_data: <%= ipv4_address('192.168.4.29') %>
+
+disabled3:
+  network: disabled
+  ipv4_config: :static
+  ipv4_first_data: <%= ipv4_address('192.168.4.30') %>
+  ipv4_last_data: <%= ipv4_address('192.168.4.39') %>
+
 ipv4only1:
   network: ipv4only
   ipv4_config: :static

@@ -2,7 +2,7 @@ require "test_helper"
 
 class NodeTest < ActiveSupport::TestCase
   setup do
-    @node = nodes(:desktop)
+    @node = nodes(:note)
   end
 
   test "flag" do
@@ -62,5 +62,47 @@ class NodeTest < ActiveSupport::TestCase
     assert @node.specific
     assert @node.public
     assert @node.dns
+  end
+
+  test "enable node" do
+    # enablde -> enabled
+    assert @node.enabled?
+    assert_no_enqueued_jobs do
+      assert @node.enable!
+    end
+    assert @node.enabled?
+
+    # disabled -> enabled
+    @node = nodes(:disabled)
+    assert_not @node.enabled?
+    assert_enqueued_with(job: RadiusMacAddJob) do
+      assert_enqueued_with(job: KeaReservation4AddJob) do
+        assert_enqueued_with(job: KeaReservation6AddJob) do
+          assert @node.enable!
+        end
+      end
+    end
+    assert @node.enabled?
+  end
+
+  test "disbale node" do
+    # enabled -> disabled
+    assert @node.enabled?
+    assert_enqueued_with(job: RadiusMacDelJob) do
+      assert_enqueued_with(job: KeaReservation4DelJob) do
+        assert_enqueued_with(job: KeaReservation6DelJob) do
+          assert @node.disable!
+        end
+      end
+    end
+    assert @node.disabled?
+
+    # disabled -> disabled
+    @node = nodes(:disabled)
+    assert_not @node.enabled?
+    assert_no_enqueued_jobs do
+      assert @node.enable!
+    end
+    assert @node.enabled?
   end
 end
