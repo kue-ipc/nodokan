@@ -12,7 +12,11 @@ class NetworkTest < ActiveSupport::TestCase
     assert @network.enabled?
     assert_enqueued_with(job: KeaSubnet4AddJob) do
       assert_enqueued_with(job: KeaSubnet6AddJob) do
-        assert @network.enable!
+        assert_enqueued_with(job: KeaReservation4AddJob) do
+          assert_enqueued_with(job: KeaReservation6AddJob) do
+            assert @network.enable!
+          end
+        end
       end
     end
     @network.reload
@@ -23,7 +27,11 @@ class NetworkTest < ActiveSupport::TestCase
     assert @network.disabled?
     assert_enqueued_with(job: KeaSubnet4AddJob) do
       assert_enqueued_with(job: KeaSubnet6AddJob) do
-        assert @network.enable!
+        assert_enqueued_with(job: KeaReservation4AddJob) do
+          assert_enqueued_with(job: KeaReservation6AddJob) do
+            assert @network.enable!
+          end
+        end
       end
     end
     @network.reload

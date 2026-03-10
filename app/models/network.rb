@@ -347,6 +347,7 @@ class Network < ApplicationRecord
       options = dhcpv4_options
       KeaSubnet4AddJob.perform_later(id, ipv4_network_prefix, options,
         ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
+      nics.each(&:kea_reservation4)
     else
       KeaSubnet4DelJob.perform_later(id)
     end
@@ -368,6 +369,7 @@ class Network < ApplicationRecord
       options = dhcpv6_options
       KeaSubnet6AddJob.perform_later(id, ipv6_network_prefix, options,
         ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
+      nics.each(&:kea_reservation6)
     else
       KeaSubnet6DelJob.perform_later(id)
     end

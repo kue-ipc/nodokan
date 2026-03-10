@@ -84,7 +84,7 @@ server_extra:
   ipv6_config: :manual
   ipv6_data: <%= ipv6_address('2001:db8:1::1:0:1') %>
 
-other_desktop:
+other_desktop1:
   node: other_desktop
   number: 1
   network: client
@@ -97,6 +97,20 @@ other_desktop:
   ipv4_data: <%= ipv4_address("192.168.2.18") %>
   ipv6_config: :static
   ipv6_data: <%= ipv6_address("fd00:2::1:0:8") %>
+
+other_desktop2:
+  node: other_desktop
+  number: 2
+  network: disabled
+  name: イーサネット
+  interface_type: :wired
+  auth: true
+  locked: false
+  mac_address_data: <%= mac_address("aa-11-22-33-44-88") %>
+  ipv4_config: :reserved
+  ipv4_data: <%= ipv4_address("192.168.4.18") %>
+  ipv6_config: :reserved
+  ipv6_data: <%= ipv6_address("fd00:4::1:0:8") %>
 
 router1:
   node: router
