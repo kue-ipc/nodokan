@@ -4,6 +4,8 @@ class Node < ApplicationRecord
   include Flag
   include Period
 
+  has_paper_trail
+
   unique_identifier "@",
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
@@ -20,8 +22,6 @@ class Node < ApplicationRecord
     find: ->(value) { Nic.find_ip_address(value).node }
 
   flag :flag, {disabled: "x", permanent: "8", public: "p", dns: "d", specific: "s"}
-
-  has_paper_trail
 
   enum :node_type, {
     normal: 0,
