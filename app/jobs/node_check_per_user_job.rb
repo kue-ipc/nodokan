@@ -80,7 +80,6 @@ class NodeCheckPerUserJob < ApplicationJob
   end
 
   def check_nodes_per_user
-
     @user.nodes.includes(:confirmation, nics: :network).find_each do |node|
       if Settings.config.auto_destroy_node && node.should_destroy?(time: @time)
         if Node.destroy_grace_period <= 0 || (node.execution_at&.<=(@time) && node.notice_destroy_soon?)

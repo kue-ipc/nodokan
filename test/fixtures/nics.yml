@@ -13,6 +13,7 @@ desktop:
   ipv4_data: <%= ipv4_address("192.168.2.31") %>
   ipv6_config: :static
   ipv6_data: <%= ipv6_address("fd00:2::3:0:1") %>
+  auth_at: <%= (Time.current - 1.day).to_json %>
 
 note:
   node: note
@@ -27,6 +28,7 @@ note:
   ipv4_data: <%= ipv4_address("192.168.2.22") %>
   ipv6_config: :reserved
   ipv6_data: <%= ipv6_address("fd00:2::2:0:2") %>
+  auth_at: <%= (Time.current - 1.day).to_json %>
 
 tablet:
   node: tablet

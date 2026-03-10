@@ -111,4 +111,76 @@ class NodeTest < ActiveSupport::TestCase
     @node.reload
     assert @node.disabled?
   end
+
+  # rubocop: disable Rails/SkipsModelValidations
+
+  test "should destroy node" do
+    @node.update_attribute(created_at: 3.years.ago)
+
+    # last connection and expired -> destroy
+    @node.nics.each { |nic| first.update_attribute(auth_at: 2.years.ago) }
+    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
+    @node.reload
+    assert_operator 1.year.ago, :>, @node.connected_at
+    assert "expired", @node.solid_confirmation.status
+    assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
+    assert @node.should_destroy?
+
+    # not connected and expired -> destroy
+    @node.nics.each { |nic| first.update_attribute(auth_at: nil) }
+    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
+    @node.reload
+    assert_nil @node.connected_at
+    assert_operator 1.mouth.ago, :>, @node.created_at
+    assert "expired", @node.solid_confirmation.status
+    assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
+    assert @node.should_destroy?
+
+    # not connected and uncofirmed -> destroy
+    @node.confirmation.delete
+    @node.reload
+    assert_nil @node.connected_at
+    assert_operator 1.mouth.ago, :>, @node.created_at
+    assert "unconfirmed", @node.solid_confirmation.status
+    assert_operator 1.mouth.ago, :>, @node.solid_confirmation.expiration
+    assert @node.should_destroy?
+
+    # last connection and uncofirmed -> destroy
+    @node.nics.each { |nic| first.update_attribute(auth_at: 2.years.ago) }
+    @node.reload
+    assert_operator 1.year.ago, :>, @node.connected_at
+    assert "unconfirmed", @node.solid_confirmation.status
+    assert_operator 1.mouth.ago, :>, @node.solid_confirmation.expiration
+    assert @node.should_destroy?
+  end
+
+  test "should not destroy node" do
+    assert_operator 1.year.ago, :<, @node.connected_at
+    assert "unapproved", @node.solid_confirmation.status
+    assert_not @node.should_destroy?
+  end
+
+  test "should disable node" do
+    @node.update_attribute(created_at: 3.years.ago)
+
+    # expired -> disable
+    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
+    @node.reload
+    assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
+    assert @node.should_disable?
+
+    # uncofirmed -> disable
+    @node.confirmation.delete
+    @node.reload
+    assert @node.solid_confirmation.unconfirmed?
+    assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
+    assert @node.should_disable?
+  end
+
+  test "should not disable node" do
+    assert "unapproved", @node.solid_confirmation.status
+    assert_not @node.should_disable?
+  end
+
+  # rubocop: enable Rails/SkipsModelValidations
 end

@@ -26,4 +26,4 @@ note:
   security_update: :not_do
   security_scan: :not_do
   confirmed_at: <%= (Time.current - 2.month).to_json %>
-  approved: true
+  approved: false
