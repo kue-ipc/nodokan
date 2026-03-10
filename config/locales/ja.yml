@@ -982,6 +982,7 @@ ja:
       no_os_for_security_software: |
         端末のOS情報が登録されていないため、セキュリティソフトウェアを設定することはできません。
       unusable_security_software: 端末のOSには使用できないセキュリティソフトウェアです。
+      cannot_disable_all_network: 全体ネットワークに設定できません。
 
   forms:
     common:

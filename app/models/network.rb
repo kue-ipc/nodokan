@@ -8,6 +8,8 @@ class Network < ApplicationRecord
 
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
+  has_paper_trail
+
   unique_identifier "v", :vlan
   unique_identifier "i", :ipv4_network_address,
     find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
@@ -15,8 +17,6 @@ class Network < ApplicationRecord
     find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
 
   flag :flag, {disabled: "x", unverifiable: "u", auth: "a", locked: "l", dhcp: "d"}
-
-  has_paper_trail
 
   enum :ra, {
     disabled: -1,
@@ -93,6 +93,9 @@ class Network < ApplicationRecord
 
   validates :ipv4_pools, absence: true, unless: :has_ipv4?
   validates :ipv6_pools, absence: true, unless: :has_ipv6?
+
+  validates :disabled, inclusion: {in: [false], message: I18n.t("errors.messages.cannot_disable_all_network")},
+    if: -> { ipv4_network_unspecified? || ipv6_network_unspecified? }
 
   validates_each :ipv4_network do |record, attr, value|
     if value && value != record.ipv4_network_prefix.to_range.begin
@@ -329,25 +332,19 @@ class Network < ApplicationRecord
   def manageable?(user) = user.admin? || use_assignment_for(user)&.manage? || false
 
   def kea_subnet4
+    return if new_record?
+
     if ipv4_network_unspecified?
+      # dhcp options of 0.0.0.0 as global default
       options =
-        if !destroyed? && dhcpv4?
-          {
-            domain_name_servers: ipv4_dns_servers_data,
-            domain_name: domain,
-            domain_search: domain_search_data,
-          }.compact_blank
+        if persisted? && dhcpv4?
+          dhcpv4_options.except(:routers)
         else
           {}
         end
       KeaDhcp4OptionJob.perform_later(options)
-    elsif !destroyed? && has_ipv4? && dhcpv4?
-      options = {
-        routers: ipv4_gateway,
-        domain_name_servers: ipv4_dns_servers_data,
-        domain_name: domain,
-        domain_search: domain_search_data,
-      }.compact_blank
+    elsif persisted? && enabled? && has_ipv4? && dhcpv4?
+      options = dhcpv4_options
       KeaSubnet4AddJob.perform_later(id, ipv4_network_prefix, options,
         ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
     else
@@ -356,27 +353,40 @@ class Network < ApplicationRecord
   end
 
   def kea_subnet6
-    if ipv4_network_unspecified?
+    return if new_record?
+
+    if ipv6_network_unspecified?
+      # dhcp options of :: as global default
       options =
-        if !destroyed? && dhcpv6?
-          {
-            dns_servers: ipv6_dns_servers_data,
-            domain_search: [domain, *domain_search_data].compact_blank,
-          }.compact_blank
+        if persisted? && dhcpv6?
+          dhcpv6_options
         else
           {}
         end
       KeaDhcp6OptionJob.perform_later(options)
-    elsif !destroyed? && has_ipv6? && dhcpv6?
-      options = {
-        dns_servers: ipv6_dns_servers_data,
-        domain_search: [domain, *domain_search_data].compact_blank,
-      }.compact_blank
+    elsif persisted? && enabled? && has_ipv6? && dhcpv6?
+      options = dhcpv6_options
       KeaSubnet6AddJob.perform_later(id, ipv6_network_prefix, options,
         ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
     else
       KeaSubnet6DelJob.perform_later(id)
     end
+  end
+
+  def dhcpv4_options
+    {
+      routers: ipv4_gateway,
+      domain_name_servers: ipv4_dns_servers_data,
+      domain_name: domain,
+      domain_search: domain_search_data,
+    }.compact_blank
+  end
+
+  def dhcpv6_options
+    {
+      dns_servers: ipv6_dns_servers_data,
+      domain_search: [domain, *domain_search_data].compact_blank,
+    }.compact_blank
   end
 
   private def replace_network_errors
