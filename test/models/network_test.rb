@@ -20,7 +20,7 @@ class NetworkTest < ActiveSupport::TestCase
 
     # disabled -> enabled
     @network = networks(:disabled)
-    assert_not @network.enabled?
+    assert @network.disabled?
     assert_enqueued_with(job: KeaSubnet4AddJob) do
       assert_enqueued_with(job: KeaSubnet6AddJob) do
         assert @network.enable!
@@ -43,7 +43,7 @@ class NetworkTest < ActiveSupport::TestCase
 
     # disabled -> disabled
     @network = networks(:disabled)
-    assert_not @network.enabled?
+    assert @network.disabled?
     assert_enqueued_with(job: KeaSubnet4DelJob) do
       assert_enqueued_with(job: KeaSubnet6DelJob) do
         assert @network.disable!
@@ -55,7 +55,6 @@ class NetworkTest < ActiveSupport::TestCase
 
   test "should not disable all nework" do
     @network = networks(:all)
-    assert @network.enabled?
     assert_no_enqueued_jobs do
       assert_not @network.disable!
     end

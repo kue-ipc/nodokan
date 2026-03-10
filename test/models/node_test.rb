@@ -77,7 +77,7 @@ class NodeTest < ActiveSupport::TestCase
 
     # disabled -> enabled
     @node = nodes(:disabled)
-    assert_not @node.enabled?
+    assert @node.disabled?
     assert_enqueued_with(job: RadiusMacAddJob) do
       assert_enqueued_with(job: KeaReservation4AddJob) do
         assert_enqueued_with(job: KeaReservation6AddJob) do
@@ -104,11 +104,11 @@ class NodeTest < ActiveSupport::TestCase
 
     # disabled -> disabled
     @node = nodes(:disabled)
-    assert_not @node.enabled?
+    assert @node.disabled?
     assert_no_enqueued_jobs do
-      assert @node.enable!
+      assert @node.disable!
     end
     @node.reload
-    assert @node.enabled?
+    assert @node.disabled?
   end
 end
