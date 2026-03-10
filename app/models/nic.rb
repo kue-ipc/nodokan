@@ -8,12 +8,12 @@ class Nic < ApplicationRecord
   include UniqueIdentifier
   include Flag
 
+  has_paper_trail
+
   unique_identifier "i", :ipv4_address, find: ->(value) { find_ip_address(value) }
   unique_identifier "k", :ipv6_address, find: ->(value) { find_ip_address(value) }
 
   flag :flag, {auth: "a", locked: "l"}
-
-  has_paper_trail
 
   belongs_to :node, counter_cache: true
   belongs_to :network, counter_cache: true, optional: true
@@ -67,14 +67,7 @@ class Nic < ApplicationRecord
 
   before_save :clear_auth_without_network
 
-  after_commit :radius_mac, :kea_reservation4, :kea_reservation6,
-    unless: :skip_after_job?
-
-  attr_accessor :skip_after_job
-
-  def skip_after_job?
-    skip_after_job.present?
-  end
+  after_commit :radius_mac, :kea_reservation4, :kea_reservation6
 
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
@@ -107,10 +100,11 @@ class Nic < ApplicationRecord
   # rubocop: enable Naming/PredicateName
 
   def radius_mac
+    return if new_record?
     return unless network&.vlan
 
     if mac_address_data.present?
-      if !destroyed? && auth
+      if persisted? && enabled? && auth
         RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
       else
         RadiusMacDelJob.perform_later(mac_address_raw, network.vlan)
@@ -119,10 +113,11 @@ class Nic < ApplicationRecord
   end
 
   def kea_reservation4
+    return if new_record?
     return if network.nil?
     return if mac_address_data.blank?
 
-    if !destroyed? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
+    if persisted? && enabled? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
       KeaReservation4AddJob.perform_later(network.id, mac_address, ipv4)
     else
       KeaReservation4DelJob.perform_later(network.id, mac_address)
@@ -130,10 +125,11 @@ class Nic < ApplicationRecord
   end
 
   def kea_reservation6
+    return if new_record?
     return if network.nil?
     return if node.duid_data.blank?
 
-    if !destroyed? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
+    if persisted? && enabled? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
       KeaReservation6AddJob.perform_later(network.id, node.duid, ipv6)
     else
       KeaReservation6DelJob.perform_later(network.id, node.duid)

@@ -72,6 +72,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_no_enqueued_jobs do
       assert @node.enable!
     end
+    @node.reload
     assert @node.enabled?
 
     # disabled -> enabled
@@ -84,6 +85,7 @@ class NodeTest < ActiveSupport::TestCase
         end
       end
     end
+    @node.reload
     assert @node.enabled?
   end
 
@@ -97,6 +99,7 @@ class NodeTest < ActiveSupport::TestCase
         end
       end
     end
+    @node.reload
     assert @node.disabled?
 
     # disabled -> disabled
@@ -105,6 +108,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_no_enqueued_jobs do
       assert @node.enable!
     end
+    @node.reload
     assert @node.enabled?
   end
 end

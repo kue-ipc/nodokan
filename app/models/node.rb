@@ -4,8 +4,6 @@ class Node < ApplicationRecord
   include Flag
   include Period
 
-  has_paper_trail
-
   unique_identifier "@",
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
@@ -22,6 +20,8 @@ class Node < ApplicationRecord
     find: ->(value) { Nic.find_ip_address(value).node }
 
   flag :flag, {disabled: "x", permanent: "8", public: "p", dns: "d", specific: "s"}
+
+  has_paper_trail
 
   enum :node_type, {
     normal: 0,
@@ -89,6 +89,8 @@ class Node < ApplicationRecord
   normalizes :domain, with: ->(str) { str.presence&.strip&.downcase }
 
   before_save :reset_attributes_for_node_type
+
+  after_commit :reflect_nic
 
   # class methods
 
@@ -217,6 +219,16 @@ class Node < ApplicationRecord
     return true if noticed_at&.>(time - Node.notice_interval)
 
     false
+  end
+
+  def reflect_nic
+    return unless saved_change_to_attribute?(:disabled)
+
+    nics.each do |nic|
+      nic.radius_mac
+      nic.kea_reservation4
+      nic.kea_reservation6
+    end
   end
 
   private def reset_attributes_for_node_type
