@@ -85,9 +85,9 @@ module NodeParameter
 
     if network.nil?
       # no network
-    elsif network.manageable?(current_user)
+    elsif network.manageable_for?(current_user)
       # manageable
-    elsif network.usable?(current_user)
+    elsif network.usable_for?(current_user)
       # usable
       if network.id == nic&.network_id
         if !nic_params.key?(:ipv4_config) ||

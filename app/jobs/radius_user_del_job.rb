@@ -2,11 +2,10 @@ class RadiusUserDelJob < RadiusJob
   queue_as :default
 
   def perform(username)
-    # Auth-Typeを削除
-    Radius::Radcheck.destroy_by(username:)
-    # VLANを削除
-    Radius::Radreply.destroy_by(username:)
-    # グループを設定
-    Radius::Radusergroup.destroy_by(username:)
+    if username =~ /\A[0-9a-f]{12}\z/
+      raise "Cannot del the username like MAC address to RADIUS: #{username}"
+    end
+
+    del_radius_user(username)
   end
 end

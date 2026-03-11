@@ -101,14 +101,12 @@ class Nic < ApplicationRecord
 
   def radius_mac
     return if new_record?
-    return unless network&.vlan
+    return unless has_mac_address?
 
-    if mac_address_data.present?
-      if persisted? && enabled? && auth
-        RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
-      else
-        RadiusMacDelJob.perform_later(mac_address_raw, network.vlan)
-      end
+    if persisted? && enabled? && auth && network&.auth_enabled?
+      RadiusMacAddJob.perform_later(mac_address_raw, network.vlan)
+    else
+      RadiusMacDelJob.perform_later(mac_address_raw)
     end
   end
 
@@ -117,7 +115,7 @@ class Nic < ApplicationRecord
     return if network.nil?
     return unless has_mac_address?
 
-    if persisted? && enabled? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
+    if persisted? && enabled? && has_ipv4? && ipv4_reserved? && network.dhcpv4_enabled?
       KeaReservation4AddJob.perform_later(network.id, mac_address, ipv4)
     else
       KeaReservation4DelJob.perform_later(network.id, mac_address)
@@ -129,7 +127,7 @@ class Nic < ApplicationRecord
     return if network.nil?
     return unless node.has_duid?
 
-    if persisted? && enabled? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
+    if persisted? && enabled? && has_ipv6? && ipv6_reserved? && network.dhcpv6_enabled?
       KeaReservation6AddJob.perform_later(network.id, node.duid, ipv6)
     else
       KeaReservation6DelJob.perform_later(network.id, node.duid)

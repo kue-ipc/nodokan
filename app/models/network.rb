@@ -131,7 +131,7 @@ class Network < ApplicationRecord
 
   after_validation :replace_network_errors
 
-  after_commit :kea_subnet4, :kea_subnet6
+  after_commit :radius_net, :kea_subnet4, :kea_subnet6
 
   # class methods
 
@@ -174,6 +174,10 @@ class Network < ApplicationRecord
   def disable!
     update(disabled: true)
   end
+
+  def auth_enabled? = enabled? && vlan && auth
+  def dhcpv4_enabled? = enabled? && has_ipv4? && dhcpv4?
+  def dhcpv6_enabled? = enabled? && has_ipv6? && dhcpv6?
 
   # IPv4
 
@@ -317,7 +321,7 @@ class Network < ApplicationRecord
   def assignment_for(user) = assignments.find_by(user:)
   def use_assignment_for(user) = use_assignments.find_by(user:)
 
-  def auth?(user)
+  def auth_for?(user)
     if user.auth_network_changed?
       # NOTE: userのauth_networkはsave前は変更されている場合があるため、
       #   assignmentから取得せずにuser側で確認する。
@@ -327,9 +331,17 @@ class Network < ApplicationRecord
     end
   end
 
-  def default?(user) = use_assignment_for(user)&.default? || false
-  def usable?(user) = user.admin? || use_users.exists?(user.id)
-  def manageable?(user) = user.admin? || use_assignment_for(user)&.manage? || false
+  def default_for?(user) = use_assignment_for(user)&.default? || false
+  def usable_for?(user) = user.admin? || use_users.exists?(user.id)
+  def manageable_for?(user) = user.admin? || use_assignment_for(user)&.manage? || false
+
+  # callback
+
+  def radius_net
+    if %i[disabled vlan auth].any? { |attr| saved_change_to_attribute(attr) }
+      nics.where.not(mac_address_data: nil).find_each(&:radius_mac)
+    end
+  end
 
   def kea_subnet4
     return if new_record?

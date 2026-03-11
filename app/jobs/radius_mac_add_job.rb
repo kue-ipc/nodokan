@@ -6,24 +6,12 @@ class RadiusMacAddJob < RadiusJob
       raise "Cannot add the invalid mac address to RADIUS: #{mac_address}"
     end
 
-    # 設定されていなければ、MACアドレスと同じにする。
+    # NOTE: 設定されていなければ、MACアドレスと同じにする。
     password =
       Rails.application.credentials.dig(:config, :radius_mac_password) ||
       Settings.config.radius_mac_password ||
       mac_address
 
-    # パスワードを設定
-    update_radius_user(Radius::Radcheck, mac_address,
-      attr: "Cleartext-Password", op: ":=", value: password)
-
-    # VLANを設定
-    update_radius_user(Radius::Radreply, mac_address,
-      attr: "Tunnel-Private-Group-Id", op: ":=", value: vlan.to_s)
-
-    # グループを設定
-    update_radius_user(Radius::Radusergroup, mac_address,
-      groupname: "mac", priority: 1)
-
-    logger.info("Added a mac address to RADIUS: #{mac_address} - #{vlan}")
+    add_radius_user(mac_address, {password:}, vlan, "mac")
   end
 end
