@@ -12,12 +12,14 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
 
   test "add subnet" do
     assert_difference("Kea::Dhcp6Subnet.count") do
-      perform_enqueued_jobs do
-        KeaSubnet6AddJob.perform_later(
-          @network.id,
-          @network.ipv6_network_prefix,
-          {},
-          @network.ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
+      assert_enqueued_with(job: KeaSubnet6AddJob) do
+        perform_enqueued_jobs do
+          KeaSubnet6AddJob.perform_later(
+            @network.id,
+            @network.ipv6_network_prefix,
+            {},
+            @network.ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
+        end
       end
     end
     subnet = Kea::Dhcp6Subnet.last
@@ -39,12 +41,14 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
     end
 
     assert_no_difference("Kea::Dhcp6Subnet.count") do
-      perform_enqueued_jobs do
-        KeaSubnet6AddJob.perform_later(
-          @network.id,
-          IPAddr.new("fd11:22:33:44::/64"),
-          {dns_servers: ["fd00:1::1", "fd00:1::2"]},
-          [])
+      assert_no_enqueued_jobs(only: KeaSubnet6AddJob) do
+        perform_enqueued_jobs do
+          KeaSubnet6AddJob.perform_later(
+            @network.id,
+            IPAddr.new("fd11:22:33:44::/64"),
+            {dns_servers: ["fd00:1::1", "fd00:1::2"]},
+            [])
+        end
       end
     end
     subnet = Kea::Dhcp6Subnet.last

@@ -12,20 +12,27 @@ class KeaSubnet6DelJobTest < ActiveJob::TestCase
 
   test "del subnet" do
     perform_enqueued_jobs do
-      KeaSubnet6AddJob.perform_later(@network.id, @network.ipv6_network_prefix,
-        {}, [])
+      KeaSubnet6AddJob.perform_later(@network.id, @network.ipv6_network_prefix, {}, [])
     end
-    assert_difference("Kea::Dhcp6Subnet.count", -1) do
-      perform_enqueued_jobs do
-        KeaSubnet6DelJob.perform_later(@network.id)
+    assert_difference("Kea::Host.count", -1) do
+      assert_difference("Kea::Ipv6Reservation.count", -1) do
+        assert_difference("Kea::Dhcp6Subnet.count", -1) do
+          perform_enqueued_jobs do
+            KeaSubnet6DelJob.perform_later(@network.id)
+          end
+        end
       end
     end
   end
 
   test "del subnet not exist" do
-    assert_no_difference("Kea::Dhcp6Subnet.count") do
-      perform_enqueued_jobs do
-        KeaSubnet6DelJob.perform_later(@network.id)
+    assert_no_difference("Kea::Host.count") do
+      assert_no_difference("Kea::Ipv6Reservation.count") do
+        assert_no_difference("Kea::Dhcp6Subnet.count") do
+          perform_enqueued_jobs do
+            KeaSubnet6DelJob.perform_later(@network.id)
+          end
+        end
       end
     end
   end

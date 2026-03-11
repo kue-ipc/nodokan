@@ -12,12 +12,14 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
 
   test "add subnet" do
     assert_difference("Kea::Dhcp4Subnet.count") do
-      perform_enqueued_jobs do
-        KeaSubnet4AddJob.perform_later(
-          @network.id,
-          @network.ipv4_network_prefix,
-          {routers: @network.ipv4_gateway},
-          @network.ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
+      assert_enqueued_with(job: KeaSubnet4AddJob) do
+        perform_enqueued_jobs do
+          KeaSubnet4AddJob.perform_later(
+            @network.id,
+            @network.ipv4_network_prefix,
+            {routers: @network.ipv4_gateway},
+            @network.ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
+        end
       end
     end
     subnet = Kea::Dhcp4Subnet.last
@@ -39,12 +41,14 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
     end
 
     assert_no_difference("Kea::Dhcp4Subnet.count") do
-      perform_enqueued_jobs do
-        KeaSubnet4AddJob.perform_later(
-          @network.id,
-          IPAddr.new("172.16.1.0/24"),
-          {routers: nil},
-          [])
+      assert_no_enqueued_jobs(only: KeaSubnet4AddJob) do
+        perform_enqueued_jobs do
+          KeaSubnet4AddJob.perform_later(
+            @network.id,
+            IPAddr.new("172.16.1.0/24"),
+            {routers: nil},
+            [])
+        end
       end
     end
     subnet = Kea::Dhcp4Subnet.last

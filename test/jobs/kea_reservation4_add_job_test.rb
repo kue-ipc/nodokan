@@ -8,8 +8,7 @@ class KeaReservation4AddJobTest < ActiveJob::TestCase
   test "add reservation" do
     assert_difference("Kea::Host.count") do
       perform_enqueued_jobs do
-        KeaReservation4AddJob.perform_later(@nic.network_id, @nic.mac_address,
-          @nic.ipv4)
+        KeaReservation4AddJob.perform_later(@nic.network_id, @nic.mac_address, @nic.ipv4)
       end
     end
     host = Kea::Host.last
@@ -21,13 +20,11 @@ class KeaReservation4AddJobTest < ActiveJob::TestCase
 
   test "add reservation update" do
     perform_enqueued_jobs do
-      KeaReservation4AddJob.perform_later(@nic.network_id, @nic.mac_address,
-        @nic.ipv4)
+      KeaReservation4AddJob.perform_later(@nic.network_id, @nic.mac_address, @nic.ipv4)
     end
     assert_no_difference("Kea::Host.count") do
       perform_enqueued_jobs do
-        KeaReservation4AddJob.perform_later(@nic.network_id, @nic.mac_address,
-          @nic.ipv4.succ)
+        KeaReservation4AddJob.perform_later(@nic.network_id, @nic.mac_address, @nic.ipv4.succ)
       end
     end
     host = Kea::Host.last

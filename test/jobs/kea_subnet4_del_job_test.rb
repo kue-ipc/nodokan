@@ -8,24 +8,28 @@ class KeaSubnet4DelJobTest < ActiveJob::TestCase
     end
 
     @network = networks(:client)
+    @nice = nics(:note)
   end
 
   test "del subnet" do
     perform_enqueued_jobs do
-      KeaSubnet4AddJob.perform_later(@network.id, @network.ipv4_network_prefix,
-        {}, [])
+      KeaSubnet4AddJob.perform_later(@network.id, @network.ipv4_network_prefix, {}, [])
     end
-    assert_difference("Kea::Dhcp4Subnet.count", -1) do
-      perform_enqueued_jobs do
-        KeaSubnet4DelJob.perform_later(@network.id)
+    assert_difference("Kea::Host.count", -1) do
+      assert_difference("Kea::Dhcp4Subnet.count", -1) do
+        perform_enqueued_jobs do
+          KeaSubnet4DelJob.perform_later(@network.id)
+        end
       end
     end
   end
 
   test "del subnet not exist" do
-    assert_no_difference("Kea::Dhcp4Subnet.count") do
-      perform_enqueued_jobs do
-        KeaSubnet4DelJob.perform_later(@network.id)
+    assert_no_difference("Kea::Host.count") do
+      assert_no_difference("Kea::Dhcp4Subnet.count") do
+        perform_enqueued_jobs do
+          KeaSubnet4DelJob.perform_later(@network.id)
+        end
       end
     end
   end

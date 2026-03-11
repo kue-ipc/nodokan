@@ -9,8 +9,7 @@ class KeaReservation6AddJobTest < ActiveJob::TestCase
     assert_difference("Kea::Host.count") do
       assert_difference("Kea::Ipv6Reservation.count") do
         perform_enqueued_jobs do
-          KeaReservation6AddJob.perform_later(@nic.network_id, @nic.node.duid,
-            @nic.ipv6)
+          KeaReservation6AddJob.perform_later(@nic.network_id, @nic.node.duid, @nic.ipv6)
         end
       end
     end
@@ -29,8 +28,7 @@ class KeaReservation6AddJobTest < ActiveJob::TestCase
     assert_no_difference("Kea::Host.count") do
       assert_no_difference("Kea::Ipv6Reservation.count") do
         perform_enqueued_jobs do
-          KeaReservation6AddJob.perform_later(@nic.network_id, @nic.node.duid,
-            @nic.ipv6.succ)
+          KeaReservation6AddJob.perform_later(@nic.network_id, @nic.node.duid, @nic.ipv6.succ)
         end
       end
     end
