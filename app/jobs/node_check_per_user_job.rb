@@ -22,7 +22,7 @@ class NodeCheckPerUserJob < ApplicationJob
     def initialize(name, time: Time.current)
       @name = name
       @time = time
-      @node = []
+      @nodes = []
     end
 
     def add(node, force: false, time: @time)
@@ -45,35 +45,32 @@ class NodeCheckPerUserJob < ApplicationJob
       return
     end
 
-    @user = @user
+    @user = user
     @time = time
     @counts = Hash.new(0)
 
     @update_dict = {
       reset_notice: Update.new({notice: :nil, noticed_at: nil},
-        codition: ->(node) { node.notice || node.notice_at }),
+        codition: ->(node) { node.notice || node.noticed_at }),
       reset_execution: Update.new({execution_at: nil},
         codition: ->(node) { node.execution_at }),
-      schedule_destroy: Update.new({execution_at: @time + Node.destroy_grace_period}, all: true,
+      schedule_destroy: Update.new({execution_at: @time + Node.destroy_grace_period},
         codition: ->(node) { !node.execution_at || !node.notice_destroy_soon? }),
-      schedule_disable: Update.new({execution_at: @time + Node.disable_grace_period}, all: true,
+      schedule_disable: Update.new({execution_at: @time + Node.disable_grace_period},
         codition: ->(node) { !node.execution_at || !node.notice_disable_soon? }),
-    }
-    @notice_dict = Node.notices.keys.index_with { |name| Notice.new(name, time: @time) }
-    @execute_dict = {
-      disbale: [],
-      destroy: [],
-    }
+    }.with_indifferent_access
+    @notice_dict = Node.notices.keys.index_with { |name| Notice.new(name, time: @time) }.with_indifferent_access
+    @execute_dict = {disbale: [], destroy: []}.with_indifferent_access
 
     check_nodes_per_user
 
     disable_all
     destroy_all
 
-    updates.each { |update| update.run }
-    notices.each { |notice| notice.deliver_mail(@user) }
+    @update_dict.each_value { |update| update.run }
+    @notice_dict.each_value { |notice| notice.deliver_mail(@user) }
 
-    logger.info("Result check node for #{@user.username}: #{counts.to_json}")
+    logger.info("Result check node for #{@user.username}: #{@counts.to_json}")
     if @counts[:error]&.positive?
       raise "Failed to check nodes for #{@user.username}: #{@counts[:error]} errors occurred."
     end

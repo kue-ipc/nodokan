@@ -3,7 +3,7 @@ class NodeCheckAllJob < ApplicationJob
 
   def perform(time: Time.current)
     unless Settings.feature.node_check
-      Ralis.logger.info "Node check is disabled. Skipping NodeCheckAllJob."
+      Rails.logger.info "Node check is disabled. Skipping NodeCheckAllJob."
       return
     end
 
@@ -13,7 +13,7 @@ class NodeCheckAllJob < ApplicationJob
   end
 
   def check_nodes_per_user(time: Time.current)
-    per_user_jobs = Uesr.where(deleted: false).map { |user| NodeCheckPerUserJob.new(user, time:) }
+    per_user_jobs = User.where(deleted: false).map { |user| NodeCheckPerUserJob.new(user, time:) }
     ActiveJob.perform_all_later(per_user_jobs)
   end
 
@@ -21,15 +21,15 @@ class NodeCheckAllJob < ApplicationJob
     nodes = Node.where.not(notice: "deleted_owner")
       .or(Node.where(noticed_at: nil))
       .or(Node.where(noticed_at: ...(time - Node.notice_interval)))
-      .joins(:user).where(user: {deleted: true})
-    NoticeNodesMaler.with(nodes:).deleted_owner.deliver_later if ids.present?
+      .joins(:user).where(user: {deleted: true}).to_a
+    NoticeNodesMailer.with(nodes:).deleted_owner.deliver_later if nodes.present?
   end
 
   def check_unowned_nodes(time: Time.current)
     nodes = Node.where.not(notice: "unowned")
       .or(Node.where(noticed_at: nil))
       .or(Node.where(noticed_at: ...(time - Node.notice_interval)))
-      .where(user: nil)
-    NoticeNodesMaler.with(nodes:).unowned.deliver_later if count.positive?
+      .where(user: nil).to_a
+    NoticeNodesMailer.with(nodes:).unowned.deliver_later if nodes.present?
   end
 end

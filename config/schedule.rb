@@ -19,6 +19,10 @@
 
 # Learn more: http://github.com/javan/whenever
 
+every 1.day, at: "9:00 am" do
+  rake "node:check"
+end
+
 every 1.day, at: "23:00 pm" do
   rake "kea:check"
   rake "radius:check"
