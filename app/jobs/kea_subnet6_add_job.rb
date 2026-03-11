@@ -2,8 +2,10 @@ class KeaSubnet6AddJob < ApplicationJob
   queue_as :default
 
   def perform(id, ip, options, pools)
+    create_subnet = nil
     Kea::Dhcp6Subnet.transaction do
       subnet6 = Kea::Dhcp6Subnet.find_or_initialize_by(subnet_id: id)
+      create_subnet = subnet6.new_record?
       Kea::Dhcp6Subnet.dhcp6_audit(cascade_transaction: subnet6.new_record?)
 
       default_server = Kea::Dhcp6Server.default
@@ -45,6 +47,17 @@ class KeaSubnet6AddJob < ApplicationJob
       subnet6.dhcp6_pools.destroy(*current_pools.values)
 
       subnet6.save!
+    end
+
+    if create_subnet
+      # check network_id, enabled?, ipv6_reserved?, has_ipv6?, node.has_duid?
+      Nic.includes(:node)
+        .where(network_id: id, node: {disabled: false}, ipv6_config: "reserved")
+        .where.not(ipv6_data: nil)
+        .where.not(node: {duid_data: nil})
+        .find_each do |nic|
+        KeaReservation6AddJob.perform_later(id, nic.node.duid, nic.ipv6)
+      end
     end
   end
 end

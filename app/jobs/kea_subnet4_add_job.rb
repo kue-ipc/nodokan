@@ -2,8 +2,10 @@ class KeaSubnet4AddJob < ApplicationJob
   queue_as :default
 
   def perform(id, ip, options, pools)
+    create_subnet = nil
     Kea::Dhcp4Subnet.transaction do
       subnet4 = Kea::Dhcp4Subnet.find_or_initialize_by(subnet_id: id)
+      create_subnet = subnet4.new_record?
       Kea::Dhcp4Subnet.dhcp4_audit(cascade_transaction: subnet4.new_record?)
 
       default_server = Kea::Dhcp4Server.default
@@ -45,6 +47,17 @@ class KeaSubnet4AddJob < ApplicationJob
       subnet4.dhcp4_pools.destroy(*current_pools.values)
 
       subnet4.save!
+    end
+
+    if create_subnet
+      # check network_id, enabled?, ipv4_reserved?, check has_ipv4?, check has_mac_address?
+      Nic.joins(:node)
+        .where(network_id: id, node: {disabled: false}, ipv4_config: "reserved")
+        .where.not(ipv4_data: nil)
+        .where.not(mac_address_data: nil)
+        .find_each do |nic|
+        KeaReservation4AddJob.perform_later(id, nic.mac_address, nic.ipv4)
+      end
     end
   end
 end

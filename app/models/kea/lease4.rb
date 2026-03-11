@@ -3,11 +3,8 @@ module Kea
     self.table_name = "lease4"
     self.primary_key = "address"
 
-    belongs_to :dhcp4_subnet, foreign_key: "subnet_id", inverse_of: :lease4s,
-      optional: true
-
-    belongs_to :lease_state, foreign_key: "state", inverse_of: :lease4s,
-      optional: true
+    belongs_to :dhcp4_subnet, foreign_key: "subnet_id", inverse_of: :lease4s, optional: true
+    belongs_to :lease_state, foreign_key: "state", inverse_of: :lease4s, optional: true
 
     def ipv4
       IPAddr.new(address, Socket::AF_INET)

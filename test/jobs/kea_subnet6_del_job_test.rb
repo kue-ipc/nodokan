@@ -8,12 +8,17 @@ class KeaSubnet6DelJobTest < ActiveJob::TestCase
     end
 
     @network = networks(:client)
+    @nic = nics(:note)
   end
 
   test "del subnet" do
     perform_enqueued_jobs do
       KeaSubnet6AddJob.perform_later(@network.id, @network.ipv6_network_prefix, {}, [])
     end
+    perform_enqueued_jobs do
+      KeaReservation6AddJob.perform_later(@network.id, @nic.node.duid, @nic.ipv6)
+    end
+
     assert_difference("Kea::Host.count", -1) do
       assert_difference("Kea::Ipv6Reservation.count", -1) do
         assert_difference("Kea::Dhcp6Subnet.count", -1) do

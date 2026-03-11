@@ -115,7 +115,7 @@ class Nic < ApplicationRecord
   def kea_reservation4
     return if new_record?
     return if network.nil?
-    return if mac_address_data.blank?
+    return unless has_mac_address?
 
     if persisted? && enabled? && has_ipv4? && ipv4_reserved? && network.dhcpv4?
       KeaReservation4AddJob.perform_later(network.id, mac_address, ipv4)
@@ -127,7 +127,7 @@ class Nic < ApplicationRecord
   def kea_reservation6
     return if new_record?
     return if network.nil?
-    return if node.duid_data.blank?
+    return unless node.has_duid?
 
     if persisted? && enabled? && has_ipv6? && ipv6_reserved? && network.dhcpv6?
       KeaReservation6AddJob.perform_later(network.id, node.duid, ipv6)

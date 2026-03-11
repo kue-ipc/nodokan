@@ -8,8 +8,6 @@ module Kea
     has_many :lease6s, foreign_key: "state", inverse_of: :lease_state
     has_many :lease6_stats, foreign_key: "state", inverse_of: :lease_state
 
-    def readonly?
-      true
-    end
+    def readonly? = true
   end
 end
