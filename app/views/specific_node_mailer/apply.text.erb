@@ -39,12 +39,16 @@ when 'through' then %>無変換<%
 when 'direct' then %>直接接続<%
 end %>
 アクセスルールリスト:
-<%= @specific_node_application.rule_list %>
+<% @specific_node_application.rule_list.each_line do |line| -%>
+  <%= line.chomp %>
+<% end %>
 DNS登録: <%= @specific_node_application.register_dns ? '有' : '無' %>
 FQDN: <%= @specific_node_application.fqdn %>
 <% end %>
 備考:
-<%= @specific_node_application.note %>
+<% @specific_node_application.note.each_line do |line| -%>
+  <%= line.chomp %>
+<% end %>
 <%= "=" * 76 %>
 
 設定完了後、管理者からメールが送られます。

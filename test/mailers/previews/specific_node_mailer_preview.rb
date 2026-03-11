@@ -9,11 +9,11 @@ class SpecificNodeMailerPreview < ActionMailer::Preview
       action: "register",
       reason: "理由の例",
       rule_set: 1,
-      rule_list: "ルールの例",
+      rule_list: "ルールの例\n二行目\n",
       external: "none",
       register_dns: true,
       fqdn: "test.example.jp",
-      note: "備考の例",
+      note: "備考の例\n二行目\n",
     }).apply
   end
 end

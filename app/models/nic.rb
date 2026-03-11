@@ -33,9 +33,8 @@ class Nic < ApplicationRecord
   ipv4_data :ipv4, allow_nil: true
   ipv6_data :ipv6, allow_nil: true
 
-  validates :number, uniqueness: {scope: :node}, numericality: {
-    only_integer: true, greater_than: 0, less_than_or_equal_to: 64,
-  }
+  validates :number, uniqueness: {scope: :node},
+    numericality: {only_integer: true, greater_than: 0, less_than_or_equal_to: 64}
 
   validates :name, allow_blank: true, length: {maximum: 255}
   validates :interface_type, presence: true
@@ -50,14 +49,11 @@ class Nic < ApplicationRecord
   validates :mac_address_data, presence: true, if: -> { auth }
 
   validates :ipv4_config, ip_config: true
-  validates :ipv4_config, exclusion: ["reserved"],
-    if: -> { mac_address_data.blank? }
+  validates :ipv4_config, exclusion: ["reserved"], if: -> { mac_address_data.blank? }
   validates :ipv6_config, ip_config: true
-  validates :ipv6_config, exclusion: ["reserved"],
-    if: -> { node.duid_data.blank? }
+  validates :ipv6_config, exclusion: ["reserved"], if: -> { node.duid_data.blank? }
 
-  validates :network, presence: true,
-    if: -> { Settings.config.nic_require_network }
+  validates :network, presence: true, if: -> { Settings.config.nic_require_network }
 
   validates_with UniqueMacAddressValidator
 
