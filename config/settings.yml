@@ -53,11 +53,11 @@ config:
     not_connected: P1M
     last_connection: P1Y
     unconfirmed: P1M
-    expried: P1Y
+    expired: P1Y
   disable_node_period:
     grace: P1M
     unconfirmed: P1Y
-    expried: P1Y
+    expired: P1Y
   notice_interval: P1M
   enable_node_by_user: false
   enable_node_upon_confirmation: false

@@ -118,9 +118,9 @@ class Confirmation < ApplicationRecord
     @continuation_period ||= period(Settings.config.confirmation_period.continuation)
   end
 
-  def self.destroy_node_unconfromed_period
-    @destroy_node_unconfromed_period = nil unless Rails.env.production?
-    @destroy_node_unconfromed_period ||= period(Settings.config.destroy_node_period.unconformed)
+  def self.destroy_node_unconfirmed_period
+    @destroy_node_unconfirmed_period = nil unless Rails.env.production?
+    @destroy_node_unconfirmed_period ||= period(Settings.config.destroy_node_period.unconfirmed)
   end
 
   def self.destroy_node_expired_period
@@ -128,9 +128,9 @@ class Confirmation < ApplicationRecord
     @destroy_node_expired_period ||= period(Settings.config.destroy_node_period.expired)
   end
 
-  def self.disable_node_unconfromed_period
-    @disable_node_unconfromed_period = nil unless Rails.env.production?
-    @disable_node_unconfromed_period ||= period(Settings.config.disable_node_period.unconformed)
+  def self.disable_node_unconfirmed_period
+    @disable_node_unconfirmed_period = nil unless Rails.env.production?
+    @disable_node_unconfirmed_period ||= period(Settings.config.disable_node_period.unconfirmed)
   end
 
   def self.disable_node_expired_period
@@ -278,7 +278,7 @@ class Confirmation < ApplicationRecord
   def should_destory_node?(time: Time.current)
     case status(time:)
     when :unconfirmed
-      time >= node.created_at + Confirmation.destroy_node_unconfromed_period
+      time >= node.created_at + Confirmation.destroy_node_unconfirmed_period
     when :expired
       time >= expired_time + Confirmation.destroy_node_expired_period
     else
@@ -289,7 +289,7 @@ class Confirmation < ApplicationRecord
   def should_disable_node?(time: Time.current)
     case status(time:)
     when :unconfirmed
-      time >= node.created_at + Confirmation.disable_node_unconfromed_period
+      time >= node.created_at + Confirmation.disable_node_unconfirmed_period
     when :expired
       time >= expired_time + Confirmation.disable_node_expired_period
     else

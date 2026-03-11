@@ -194,6 +194,8 @@ class Node < ApplicationRecord
   end
 
   def should_destroy?(time: Time.current)
+    # should not destroy node if it is permanent
+    return false if permanent?
     # sholud not destroy node with nics connected to unverifeable newtworks
     return false if nics.any? { |nic| nic.network&.unverifiable }
     # should not destroy node if it has recent creation history
@@ -210,6 +212,8 @@ class Node < ApplicationRecord
   def should_disable?(time: Time.current)
     # always dose not disable node if confirmation is disabled
     return false unless Settings.feature.confirmation
+    # should not disable node if it is permanent
+    return false if permanent?
 
     solid_confirmation.should_disable_node?(time:)
   end

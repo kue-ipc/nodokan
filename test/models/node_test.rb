@@ -72,7 +72,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_no_enqueued_jobs do
       assert @node.enable!
     end
-    @node.reload
+    @node = Node.find(@node.id)
     assert @node.enabled?
 
     # disabled -> enabled
@@ -85,7 +85,7 @@ class NodeTest < ActiveSupport::TestCase
         end
       end
     end
-    @node.reload
+    @node = Node.find(@node.id)
     assert @node.enabled?
   end
 
@@ -99,7 +99,7 @@ class NodeTest < ActiveSupport::TestCase
         end
       end
     end
-    @node.reload
+    @node = Node.find(@node.id)
     assert @node.disabled?
 
     # disabled -> disabled
@@ -108,48 +108,48 @@ class NodeTest < ActiveSupport::TestCase
     assert_no_enqueued_jobs do
       assert @node.disable!
     end
-    @node.reload
+    @node = Node.find(@node.id)
     assert @node.disabled?
   end
 
   # rubocop: disable Rails/SkipsModelValidations
 
   test "should destroy node" do
-    @node.update_attribute(created_at: 3.years.ago)
+    @node.update_attribute(:created_at, 3.years.ago)
 
     # last connection and expired -> destroy
-    @node.nics.each { |nic| first.update_attribute(auth_at: 2.years.ago) }
-    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
-    @node.reload
+    @node.nics.each { |nic| nic.update_attribute(:auth_at, 2.years.ago) }
+    @node.confirmation.update_attribute(:confirmed_at, 2.years.ago)
+    @node = Node.find(@node.id)
     assert_operator 1.year.ago, :>, @node.connected_at
     assert "expired", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
     assert @node.should_destroy?
 
     # not connected and expired -> destroy
-    @node.nics.each { |nic| first.update_attribute(auth_at: nil) }
-    @node.reload
+    @node.nics.each { |nic| nic.update_attribute(:auth_at, nil) }
+    @node = Node.find(@node.id)
     assert_nil @node.connected_at
-    assert_operator 1.mouth.ago, :>, @node.created_at
+    assert_operator 1.month.ago, :>, @node.created_at
     assert "expired", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
     assert @node.should_destroy?
 
     # not connected and uncofirmed -> destroy
     @node.confirmation.delete
-    @node.reload
+    @node = Node.find(@node.id)
     assert_nil @node.connected_at
-    assert_operator 1.mouth.ago, :>, @node.created_at
+    assert_operator 1.month.ago, :>, @node.created_at
     assert "unconfirmed", @node.solid_confirmation.status
-    assert_operator 1.mouth.ago, :>, @node.solid_confirmation.expiration
+    assert_operator 1.month.ago, :>, @node.solid_confirmation.expiration
     assert @node.should_destroy?
 
     # last connection and uncofirmed -> destroy
-    @node.nics.each { |nic| first.update_attribute(auth_at: 2.years.ago) }
-    @node.reload
+    @node.nics.each { |nic| nic.update_attribute(:auth_at, 2.years.ago) }
+    @node = Node.find(@node.id)
     assert_operator 1.year.ago, :>, @node.connected_at
     assert "unconfirmed", @node.solid_confirmation.status
-    assert_operator 1.mouth.ago, :>, @node.solid_confirmation.expiration
+    assert_operator 1.month.ago, :>, @node.solid_confirmation.expiration
     assert @node.should_destroy?
   end
 
@@ -160,10 +160,11 @@ class NodeTest < ActiveSupport::TestCase
   end
 
   test "should not destroy permanent node" do
-    @node.update_attribute(created_at: 3.years.ago, permanent: true)
-    @node.nics.each { |nic| first.update_attribute(auth_at: 2.years.ago) }
-    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
-    @node.reload
+    @node.update_attribute(:created_at, 3.years.ago)
+    @node.update_attribute(:permanent, true)
+    @node.nics.each { |nic| nic.update_attribute(:auth_at, 2.years.ago) }
+    @node.confirmation.update_attribute(:confirmed_at, 2.years.ago)
+    @node = Node.find(@node.id)
     assert_operator 1.year.ago, :>, @node.connected_at
     assert "expired", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
@@ -172,13 +173,13 @@ class NodeTest < ActiveSupport::TestCase
   end
 
   test "should not destroy node it unverifiable network" do
-    @node.update_attribute(created_at: 3.years.ago)
-    @node.nics.each { |nic| first.update_attribute(auth_at: nil) }
-    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
-    @node.nic.first.network.update_attribute(unverifiable: true)
-    @node.reload
+    @node.update_attribute(:created_at, 3.years.ago)
+    @node.nics.each { |nic| nic.update_attribute(:auth_at, nil) }
+    @node.confirmation.update_attribute(:confirmed_at, 2.years.ago)
+    @node.nics.first.network.update_attribute(:unverifiable, true)
+    @node = Node.find(@node.id)
     assert_nil @node.connected_at
-    assert_operator 1.mouth.ago, :>, @node.created_at
+    assert_operator 1.month.ago, :>, @node.created_at
     assert "expired", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
     assert @node.nics.first.network.unverifiable?
@@ -186,18 +187,18 @@ class NodeTest < ActiveSupport::TestCase
   end
 
   test "should disable node" do
-    @node.update_attribute(created_at: 3.years.ago)
+    @node.update_attribute(:created_at, 3.years.ago)
 
     # expired -> disable
-    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
-    @node.reload
+    @node.confirmation.update_attribute(:confirmed_at, 2.years.ago)
+    @node = Node.find(@node.id)
     assert "expired", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
     assert @node.should_disable?
 
     # uncofirmed -> disable
     @node.confirmation.delete
-    @node.reload
+    @node = Node.find(@node.id)
     assert "unconfirmed", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
     assert @node.should_disable?
@@ -209,13 +210,14 @@ class NodeTest < ActiveSupport::TestCase
   end
 
   test "should not disable permanent node" do
-    @node.update_attribute(created_at: 3.years.ago, permanent: true)
-    @node.confirmation.update_attribute(confirmed_at: 2.years.ago)
-    @node.reload
+    @node.update_attribute(:created_at, 3.years.ago)
+    @node.update_attribute(:permanent, true)
+    @node.confirmation.update_attribute(:confirmed_at, 2.years.ago)
+    @node = Node.find(@node.id)
     assert "expired", @node.solid_confirmation.status
     assert_operator 1.year.ago, :>, @node.solid_confirmation.expiration
     assert @node.permanent?
-    assert_not @node.should_destroy?
+    assert_not @node.should_disable?
   end
 
   # rubocop: enable Rails/SkipsModelValidations
