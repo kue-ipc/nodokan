@@ -12,28 +12,28 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
 
   test "add subnet" do
     assert_difference("Kea::Dhcp6Subnet.count") do
-      assert_enqueued_with(job: KeaSubnet6AddJob) do
-        perform_enqueued_jobs do
-          KeaSubnet6AddJob.perform_later(
-            @network.id,
-            @network.ipv6_network_prefix,
-            {},
-            @network.ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
-        end
+      perform_enqueued_jobs do
+        KeaSubnet6AddJob.perform_later(
+          @network.id,
+          @network.ipv6_network_prefix,
+          {},
+          @network.ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range))
       end
     end
+    assert_performed_jobs 1, only: KeaReservation6AddJob
+
     subnet = Kea::Dhcp6Subnet.last
     assert_equal @network.id, subnet.subnet_id
     assert_equal @network.ipv6_network_cidr, subnet.subnet_prefix
     assert_equal [Kea::Dhcp6Server.default], subnet.dhcp6_servers
     assert_equal 0, subnet.dhcp6_options.count
-    assert_equal @network.ipv6_pools.where(ipv6_config: "dynamic").count,
-      subnet.dhcp6_pools.count
+    assert_equal @network.ipv6_pools.where(ipv6_config: "dynamic").count, subnet.dhcp6_pools.count
   end
 
   test "add subnet update" do
-    perform_enqueued_jobs do
-      KeaSubnet6AddJob.perform_later(
+    # use perform_now for check enqueued jobs
+    assert_enqueued_with(job: KeaReservation6AddJob) do
+      KeaSubnet6AddJob.perform_now(
         @network.id,
         @network.ipv6_network_prefix,
         {},
@@ -41,14 +41,12 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
     end
 
     assert_no_difference("Kea::Dhcp6Subnet.count") do
-      assert_no_enqueued_jobs(only: KeaSubnet6AddJob) do
-        perform_enqueued_jobs do
-          KeaSubnet6AddJob.perform_later(
-            @network.id,
-            IPAddr.new("fd11:22:33:44::/64"),
-            {dns_servers: ["fd00:1::1", "fd00:1::2"]},
-            [])
-        end
+      assert_no_enqueued_jobs(only: KeaReservation6AddJob) do
+        KeaSubnet6AddJob.perform_now(
+          @network.id,
+          IPAddr.new("fd11:22:33:44::/64"),
+          {dns_servers: ["fd00:1::1", "fd00:1::2"]},
+          [])
       end
     end
     subnet = Kea::Dhcp6Subnet.last

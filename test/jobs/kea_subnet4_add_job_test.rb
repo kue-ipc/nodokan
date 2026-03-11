@@ -12,28 +12,28 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
 
   test "add subnet" do
     assert_difference("Kea::Dhcp4Subnet.count") do
-      assert_enqueued_with(job: KeaSubnet4AddJob) do
-        perform_enqueued_jobs do
-          KeaSubnet4AddJob.perform_later(
-            @network.id,
-            @network.ipv4_network_prefix,
-            {routers: @network.ipv4_gateway},
-            @network.ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
-        end
+      perform_enqueued_jobs do
+        KeaSubnet4AddJob.perform_later(
+          @network.id,
+          @network.ipv4_network_prefix,
+          {routers: @network.ipv4_gateway},
+          @network.ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range))
       end
     end
+    assert_performed_jobs 1, only: KeaReservation4AddJob
+
     subnet = Kea::Dhcp4Subnet.last
     assert_equal @network.id, subnet.subnet_id
     assert_equal @network.ipv4_network_cidr, subnet.subnet_prefix
     assert_equal [Kea::Dhcp4Server.default], subnet.dhcp4_servers
     assert_equal 1, subnet.dhcp4_options.count
-    assert_equal @network.ipv4_pools.where(ipv4_config: "dynamic").count,
-      subnet.dhcp4_pools.count
+    assert_equal @network.ipv4_pools.where(ipv4_config: "dynamic").count, subnet.dhcp4_pools.count
   end
 
   test "add subnet update" do
-    perform_enqueued_jobs do
-      KeaSubnet4AddJob.perform_later(
+    # use perform_now for check enqueued jobs
+    assert_enqueued_with(job: KeaReservation4AddJob) do
+      KeaSubnet4AddJob.perform_now(
         @network.id,
         @network.ipv4_network_prefix,
         {routers: @network.ipv4_gateway},
@@ -41,14 +41,12 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
     end
 
     assert_no_difference("Kea::Dhcp4Subnet.count") do
-      assert_no_enqueued_jobs(only: KeaSubnet4AddJob) do
-        perform_enqueued_jobs do
-          KeaSubnet4AddJob.perform_later(
-            @network.id,
-            IPAddr.new("172.16.1.0/24"),
-            {routers: nil},
-            [])
-        end
+      assert_no_enqueued_jobs(only: KeaReservation4AddJob) do
+        KeaSubnet4AddJob.perform_now(
+          @network.id,
+          IPAddr.new("172.16.1.0/24"),
+          {routers: nil},
+          [])
       end
     end
     subnet = Kea::Dhcp4Subnet.last

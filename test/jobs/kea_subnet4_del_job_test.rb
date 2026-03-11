@@ -12,12 +12,8 @@ class KeaSubnet4DelJobTest < ActiveJob::TestCase
   end
 
   test "del subnet" do
-    perform_enqueued_jobs do
-      KeaSubnet4AddJob.perform_later(@network.id, @network.ipv4_network_prefix, {}, [])
-    end
-    perform_enqueued_jobs do
-      KeaReservation4AddJob.perform_later(@network.id, @nic.mac_address, @nic.ipv4)
-    end
+    KeaSubnet4AddJob.perform_now(@network.id, @network.ipv4_network_prefix, {}, [])
+    KeaReservation4AddJob.perform_now(@network.id, @nic.mac_address, @nic.ipv4)
     assert_difference("Kea::Host.count", -1) do
       assert_difference("Kea::Dhcp4Subnet.count", -1) do
         perform_enqueued_jobs do
