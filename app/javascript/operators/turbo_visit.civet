@@ -7,8 +7,12 @@ StreamActions.visit = ->
 
   turbo_action := @getAttribute("data-turbo-action")
 
-  if url <? "string" and turbo_action? is in ["advance", "replace"]
-    visit(url, {action: turbo_action as Action})
+  if url <? "string"
+    switch turbo_action
+      when "advance"
+        globalThis.history.pushState({}, "", url)
+      when "replace"
+        globalThis.history.replaceState({}, "", url)
 
   if target <? "string" and autoscroll is "true"
     el := document.getElementById(target)
