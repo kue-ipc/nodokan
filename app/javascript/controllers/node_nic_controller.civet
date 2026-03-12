@@ -121,14 +121,13 @@ export default class NodeNicController < Controller<HTMLElement>
         @authTarget.checked = false
         @disableInputs(["auth"])
 
-      // note
+      @enableInputs(["ipv4Config", "ipv6Config"])
+
+      // messages
       if @network.note
         @addMessage("note", @network.note)
       else
         @removeMessage("note")
-
-      @enableInputs(["ipv4Config", "ipv6Config"])
-
       @removeMessage("helps.unconfigurable")
       @removeMessage("helps.no_network")
     else if networkId
@@ -143,6 +142,7 @@ export default class NodeNicController < Controller<HTMLElement>
       @disableInputs(["auth", "ipv4Config", "ipv4Address", "ipv6Config",
         "ipv6Address"])
 
+      @removeMessage("note")
       @addMessage("helps.unconfigurable")
       @removeMessage("helps.no_network")
     else
@@ -150,8 +150,9 @@ export default class NodeNicController < Controller<HTMLElement>
       @disableInputs(["auth", "ipv4Config", "ipv4Address", "ipv6Config",
         "ipv6Address"])
 
-      @addMessage("helps.no_network")
+      @removeMessage("note")
       @removeMessage("helps.unconfigurable")
+      @addMessage("helps.no_network")
 
     @adjustConfig("ipv4")
     @adjustConfig("ipv6")
