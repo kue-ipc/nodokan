@@ -3,7 +3,10 @@
 
   p = t("forms.common.required_input")
 
-  = bootstrap_form_with model: node, data: {controller: "node"} do |f|
+  = bootstrap_form_with model: node, data: { \
+    controller: "node", action: "node#submit",
+    node_confirm_no_network_value: t("messages.confirm_no_network"),
+  } do |f|
     .rounded.border.p-2.mb-2
       h4 = t("forms.node.base.title")
       .mb-2: small.text-muted = t("forms.node.base.help")

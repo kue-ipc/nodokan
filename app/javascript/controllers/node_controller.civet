@@ -52,7 +52,12 @@ export default class NodeController < Controller<HTMLFormElement>
     ...@selectTargets
     ...@flagTargets
     ...@collapseTargets
+    "nicNetworkId"
   ]
+
+  @values := {
+    confirmNoNetwork: String
+  }
 
   declare readonly nodeTypeTarget: HTMLSelectElement
 
@@ -71,6 +76,8 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly collapseSubFormHardwareTarget: HTMLDivElement
   declare readonly collapseSubFormOperatingSystemTarget: HTMLDivElement
 
+  declare readonly nicNetworkIdTargets: HTMLSelectElement[]
+
   declare readonly hasCollapseHelpNormalTarget: boolean
   declare readonly hasCollapseHelpMobileTarget: boolean
   declare readonly hasCollapseHelpVirtualTarget: boolean
@@ -85,6 +92,8 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly hasCollapseSubFormComponentsTarget: boolean
   declare readonly hasCollapseSubFormHardwareTarget: boolean
   declare readonly hasCollapseSubFormOperatingSystemTarget: boolean
+
+  declare readonly confirmNoNetworkValue: string
 
   collapseHelpNormal?: Collapse
   collapseHelpMobile?: Collapse
@@ -181,3 +190,9 @@ export default class NodeController < Controller<HTMLFormElement>
       collapseHelp?.show()
     else
       collapseHelp?.hide()
+
+  submit(event?: Event): void
+    console.debug @confirmNoNetworkValue
+    if @nicNetworkIdTargets.every (target) -> not target.value
+      if not confirm(@confirmNoNetworkValue)
+        event.preventDefault()

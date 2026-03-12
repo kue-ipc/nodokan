@@ -138,6 +138,9 @@ ja:
     confirm_disable_auth: |
       MACアドレスの登録を無効にすると、認証ネットワークに接続できなくなります。
       無効にしてもよろしいですか？
+    confirm_no_network: |
+      ネットワークに接続するNICがありません。
+      ネットワークに接続しない端末として登録してもよろしですか？
 
     error_prohibited_action:
       zero: "%{model}を%{action}することができません。"
