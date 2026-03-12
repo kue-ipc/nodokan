@@ -2355,7 +2355,5 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_path
   end
 
-  # copy
-
   # transfer
 end

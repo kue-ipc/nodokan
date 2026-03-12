@@ -25,10 +25,6 @@ class NodePolicy < ApplicationPolicy
     user.admin? || record.user == user
   end
 
-  def copy?
-    show? && new?
-  end
-
   def transfer?
     !user.guest? && update?
   end

@@ -60,12 +60,6 @@ class NodePolicyTest < ActiveSupport::TestCase
     assert_not_permit(@guest, @node, :destroy)
   end
 
-  test "copy" do
-    assert_permit(@admin, @node, :copy)
-    assert_permit(@user, @node, :copy)
-    assert_not_permit(@other, @node, :copy)
-  end
-
   test "transfer" do
     assert_permit(@admin, @node, :transfer)
     assert_permit(@user, @node, :transfer)
