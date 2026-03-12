@@ -131,7 +131,17 @@ class NodesController < ApplicationController
     user = User.find_by(username: permitted_params[:username])
     note = permitted_params[:note]
 
-    if user.nil?
+    if Settings.feature.specific_node && @node.specific && !current_user.admin?
+      respond_to do |format|
+        format.html do
+          redirect_to @node, alert: t("errors.messages.cannot_transfer_specific_node")
+        end
+        format.json do
+          errors = {username: t("errors.messages.cannot_transfer_specific_node")}
+          render json: errors, status: :unprocessable_content
+        end
+      end
+    elsif user.nil?
       respond_to do |format|
         format.html do
           redirect_to @node, alert: t("errors.messages.not_found_user")
