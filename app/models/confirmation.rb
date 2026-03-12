@@ -98,6 +98,8 @@ class Confirmation < ApplicationRecord
 
   before_validation :set_unknown_if_unnecessary
 
+  after_save :enable_node_if_confirmed
+
   def self.approved_period
     @approved_period = nil unless Rails.env.production?
     @approved_period ||= period(Settings.config.confirmation_period.approved)
@@ -317,6 +319,12 @@ class Confirmation < ApplicationRecord
     elsif security_software.nil?
       self.security_update = :unknown
       self.security_scan = :unknown
+    end
+  end
+
+  private def enable_node_if_confirmed
+    if Settings.config.enable_node_upon_confirmation && saved_change_to_attribute?(:confirmed_at) && node.disabled?
+      node.enable!
     end
   end
 end

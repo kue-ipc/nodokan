@@ -43,7 +43,7 @@ module NodeParameter
   private def delete_unchangable_node_params(node_params)
     return node_params if current_user.nil? || current_user.admin?
 
-    node_params.delete(:disabled)
+    node_params.delete(:disabled) unless Settings.config.enable_node_by_user
     node_params.delete(:permanent)
     node_params.delete(:specific)
     node_params.delete(:public)

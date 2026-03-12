@@ -193,13 +193,35 @@
       | 一部のネットワークは検知に対応してません。
       | 端末の実在確認の参考にしてください。
 
+  - if node.disabled?
+    hr
+    h3 無効な端末
+    p
+      | この端末は無効になっています。
+      | ネットワークに接続できません。
+    - if Settings.config.enable_node_by_user
+      p
+        | 端末を有効にする場合は、下の「有効にする」をクリックしてください。
+      =<> button_to t("do_actions.enable"), node,
+        method: :patch,
+        params: {node: {disabled: false}},
+        class: "btn btn-success"
+    - elsif Settings.feature.confirmation && Settings.config.enable_node_upon_confirmation
+      p
+        | 端末を有効にする場合は、上の「確認」から確認を実施してください。
+    - else
+      p
+        | 利用者端末を有効にすることはできません。
+        | 利用者端末を有効にしたい場合は、管理者に連絡してください。
+
   - if !Settings.feature.confirmation || node.confirmation&.destroyable?
     hr
     h3 端末の削除
     - if node.specific
       p
-        strong 特定端末を直接は削除することできません。
-        | 廃棄済み等の理由で端末を削除したい場合は、下記の特定端末の申請から「削除」を申請してください。
+        strong 特定端末を削除することできません。
+        | 廃棄済み等の理由で端末を削除したい場合は、ページ下部にある特定端末の申請で「解除」を申請ししてください。
+        | 特定端末が解除された後、削除できるようになります。
     - else
       p
         |
@@ -224,8 +246,7 @@
           端末の所有者(管理者)ではない場合は、本来の所有者に端末の管理を譲渡してください。
           譲渡先ユーザーのユーザー名を入力してください。
 
-      = bootstrap_form_with url: transfer_node_path(node),
-        data: {turbo: false} do |f|
+      = bootstrap_form_with url: transfer_node_path(node), data: {turbo: false} do |f|
         = f.text_field :username, label: "ユーザー名", floating: true
         = f.text_area :note, floating: true,
           label: "備考 (端末の備考に追加します)",

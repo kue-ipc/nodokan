@@ -48,6 +48,8 @@ ja:
     export: エクスポート
     transfer: 譲渡
     assign: 割当
+    enable: 有効
+    disable: 無効
   do_actions:
     close: 閉じる
     index: 一覧を表示する
@@ -80,6 +82,8 @@ ja:
     reload: 再度読み込む
     transfer: 譲渡する
     assign: 割り当てる
+    enable: 有効にする
+    disable: 無効にする
   with_actions:
     close: "%{name}を閉じる"
     index: "%{name}の一覧を表示する"
@@ -100,7 +104,9 @@ ja:
     start: "%{name}を開始する"
     cancel: "%{name}をキャンセルする"
     transfer: "%{name}を譲渡する"
-    assign: "%{name}を割り当てる。"
+    assign: "%{name}を割り当てる"
+    enable: "%{name}を有効にする"
+    disable: "%{name}を無効にする"
 
   messages:
     action: 操作
