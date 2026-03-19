@@ -231,6 +231,7 @@ class Node < ApplicationRecord
     else
       time - noticed_at >= Node.notice_interval
     end
+    # time - noticed_at >= Node.notice_interval
   end
 
   def reflect_nic
