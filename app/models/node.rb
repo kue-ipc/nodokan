@@ -198,10 +198,13 @@ class Node < ApplicationRecord
     return false if permanent?
     # sholud not destroy node with nics connected to unverifeable newtworks
     return false if nics.any? { |nic| nic.network&.unverifiable }
-    # should not destroy node if it has recent creation history
-    return false if connected_at.nil? && created_at > time - Node.destroy_not_connected_period
-    # should not destroy node if it has recent connection history
-    return false if connected_at&.>(time - Node.destroy_last_connection_period)
+    if connected_at
+      # should not destroy node if it has recent connection history
+      return false if time - connected_at < Node.destroy_last_connection_period
+    else
+      # should not destroy node if it has recent creation history
+      return false if time - created_at < Node.destroy_not_connected_period
+    end
 
     # always destroy node if confirmation is disabled
     return true unless Settings.feature.confirmation
@@ -220,9 +223,9 @@ class Node < ApplicationRecord
 
   def need_notice?(name, time: Time.current)
     return true if notice != name.to_s
-    return true if noticed_at&.>(time - Node.notice_interval)
+    return true if noticed_at.nil?
 
-    false
+    time - noticed_at >= Node.notice_interval
   end
 
   def reflect_nic

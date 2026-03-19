@@ -280,9 +280,9 @@ class Confirmation < ApplicationRecord
   def should_destory_node?(time: Time.current)
     case status(time:)
     when :unconfirmed
-      time >= node.created_at + Confirmation.destroy_node_unconfirmed_period
+      time - node.created_at >= Confirmation.destroy_node_unconfirmed_period
     when :expired
-      time >= expired_time + Confirmation.destroy_node_expired_period
+      time - expired_time >= Confirmation.destroy_node_expired_period
     else
       false
     end
@@ -291,9 +291,9 @@ class Confirmation < ApplicationRecord
   def should_disable_node?(time: Time.current)
     case status(time:)
     when :unconfirmed
-      time >= node.created_at + Confirmation.disable_node_unconfirmed_period
+      time - node.created_at >= Confirmation.disable_node_unconfirmed_period
     when :expired
-      time >= expired_time + Confirmation.disable_node_expired_period
+      time - expired_time >= Confirmation.disable_node_expired_period
     else
       false
     end
