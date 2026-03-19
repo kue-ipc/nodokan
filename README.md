@@ -46,5 +46,7 @@ QUEUE=register,*,check,clean
 * 0.7 -> 0.8
     * ネットワークから特定(specific)フラグを削除しました。このフラグは将来の機能で使用を予定していましたが、使用の見込みなないこと、なにか特別な操作が行われるわけではないことから、不要と判断しました。
     * 確認の有効期限はsettingsで変更でき、常に確認日から計算されるようになりました。settingsを変更した場合、既に確認済みの端末の有効期限も変更されます。
+    * production環境のLDAPのSSL方式をldap_sslではなくldap_protocolで指定するようになりました。また、LDAPの場合でもstart_tlsを必須になりました。
+    * ~~DBアダプターがmysql2からtrilogyに変更ました。~~ SSL接続で問題発生したため、mysql2に戻しました。
 * 0.6 -> 0.7
     * `rails kea:setup`は不要になりました。
