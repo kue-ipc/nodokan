@@ -52,7 +52,7 @@ module UniqueIdentifier
           "#{ipv6}_data"
         else
           raise ArgumentError, "Unknown IP version: #{str}"
-        end
+        end.intern
       where({name => ip.hton}).first
     rescue IPAddr::InvalidAddressError
       raise ArgumentError, "Invalid IP address: #{str}"
