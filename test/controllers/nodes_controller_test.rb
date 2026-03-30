@@ -324,22 +324,22 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create node all attributes" do
     sign_in users(:user)
-    new_node = node_to_params(@node)
-    new_node[:hostname] = "new"
-    new_node[:duid] = "00-04-#{SecureRandom.uuid}"
-    new_node[:nics_attributes][0][:id] = nil
-    new_node[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
-    new_node[:nics_attributes][0][:ipv4_address] = nil
-    new_node[:nics_attributes][0][:ipv6_address] = nil
+    node_params = node_to_params(@node)
+    node_params[:hostname] = "new"
+    node_params[:duid] = "00-04-#{SecureRandom.uuid}"
+    node_params[:nics_attributes][0][:id] = nil
+    node_params[:nics_attributes][0][:mac_address] = "00-11-22-33-44-FF"
+    node_params[:nics_attributes][0][:ipv4_address] = nil
+    node_params[:nics_attributes][0][:ipv6_address] = nil
     assert_difference("Node.count") do
-      post nodes_url, params: {node: new_node}
+      post nodes_url, params: {node: node_params}
     end
     assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
     assert_equal @node.name, Node.last.name
-    assert_equal new_node[:hostname], Node.last.hostname
+    assert_equal node_params[:hostname], Node.last.hostname
     assert_equal @node.domain, Node.last.domain
-    assert_equal hex_to_binary(new_node[:duid]), Node.last.duid_data
+    assert_equal hex_to_binary(node_params[:duid]), Node.last.duid_data
     assert_equal "normal", Node.last.node_type
     assert_not Node.last.specific
     assert_not Node.last.public
@@ -357,7 +357,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_equal @node.nics.first.interface_type,
       Node.last.nics.first.interface_type
     assert_equal @node.nics.first.auth, Node.last.nics.first.auth
-    assert_equal hex_to_binary(new_node[:nics_attributes][0][:mac_address]),
+    assert_equal hex_to_binary(node_params[:nics_attributes][0][:mac_address]),
       Node.last.nics.first.mac_address_data
     assert_equal @node.nics.first.network_id, Node.last.nics.first.network_id
     assert_equal @node.nics.first.ipv4_config, Node.last.nics.first.ipv4_config
