@@ -89,7 +89,11 @@ class NodesProcessorTest < ActiveSupport::TestCase
 
   test "create node" do
     params = node_to_params(@node)
-    @node.destroy
+    params[:fqdn] = "new.example.jp"
+    params[:duid] = "00-04-11-22-33-44-55-66"
+    params[:nics][0][:mac_address] = "00-11-22-33-44-FF"
+    params[:nics][0][:ipv4_address] = nil
+    params[:nics][0][:ipv6_address] = nil
     assert_difference("Node.count") do
       @node_processor.create(params)
     end
@@ -98,9 +102,30 @@ class NodesProcessorTest < ActiveSupport::TestCase
     assert_equal @node.hardware_id, Node.last.hardware_id
     assert_equal @node.operating_system_id, Node.last.operating_system_id
     assert_equal params.except(:nics), @node_processor.serialize(Node.last).except(:nics)
-    assert_not_equal params[:nics].first[:ipv4_address],
-      @node_processor.serialize(Node.last)[:nics].first[:ipv4_address]
-    assert_not_equal params[:nics].first[:ipv6_address],
-      @node_processor.serialize(Node.last)[:nics].first[:ipv6_address]
+    assert_equal params[:nics][0][:mac_address], Node.last.nics.first.mac_address
+    assert_not_nil Node.last.nics.first.ipv4_address
+    assert_not_nil Node.last.nics.first.ipv6_address
+  end
+
+  test "update node" do
+    params = node_to_params(@node)
+    params[:name] = "Updated Name"
+    params[:place][:room] = "Updated Room"
+    params[:hardware][:product_name] = "Updated Product Name"
+    params[:operating_system][:name] = "Updated OS Name"
+    assert_no_difference("Node.count") do
+      @node_processor.update(@node.id, params)
+    end
+    @node.reload
+    assert_equal "Updated Name", @node.name
+    assert_equal "Updated Room", @node.place.room
+    assert_equal "Updated Product Name", @node.hardware.product_name
+    assert_equal "Updated OS Name", @node.operating_system.name
+  end
+
+  test "desroy node" do
+    assert_difference("Node.count", -1) do
+      @node_processor.destroy(@node.id)
+    end
   end
 end
