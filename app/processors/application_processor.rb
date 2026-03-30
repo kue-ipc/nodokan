@@ -76,12 +76,16 @@ class ApplicationProcessor
     user.nil? || user.admin?
   end
 
-  def record_ids
+  def all
     if user
-      Pundit.policy_scope(user, self.class.model).order(:id).pluck(:id)
+      Pundit.policy_scope(user, self.class.model).order(:id).all
     else
-      self.class.model.order(:id).pluck(:id)
+      self.class.model.order(:id).all
     end
+  end
+
+  def ids # rubocop: disable Rails/Delegate
+    all.ids
   end
 
   def serialize(record, keys: self.class.keys, converters: self.class.converters)

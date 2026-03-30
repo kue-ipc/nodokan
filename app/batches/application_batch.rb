@@ -50,7 +50,7 @@ class ApplicationBatch
         end
       end
     else
-      @input_params_list = @processor.record_ids.map { |id| {id:} }
+      @input_params_list = @processor.ids.map { |id| {id:} }
     end
     @input_params_list.freeze
   end

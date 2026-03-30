@@ -3,24 +3,19 @@ require "test_helper"
 class NodesProcessorTest < ActiveSupport::TestCase
   def node_to_params(node)
     {
+      user: node.user.username,
       name: node.name,
-      hostname: node.hostname,
-      domain: node.domain,
-      duid: node.duid,
-      node_type: node.node_type,
-      disabled: node.disabled,
-      permanent: node.permanent,
-      specific: node.specific,
-      public: node.public,
-      dns: node.dns,
-      note: node.note,
-      user_id: node.user_id,
-      host_id: node.host_id,
+      fqdn: node.fqdn,
+      type: node.node_type,
+      flag: node.flag,
+      components: node.components&.map(&:identifier),
+      host: node.host&.identifier,
       place: place_to_params(node.place),
       hardware: hardware_to_params(node.hardware),
       operating_system: operating_system_to_params(node.operating_system),
-      nics_attributes: node.nics&.map { |nic| nic_to_params(nic) }
-        &.each_with_index.to_a.to_h(&:reverse),
+      duid: node.duid,
+      nics: node.nics&.map { |nic| nic_to_params(nic) },
+      note: node.note,
     }
   end
 
@@ -35,7 +30,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
 
   def hardware_to_params(hardware)
     {
-      device_type_id: hardware&.device_type_id,
+      device_type: hardware&.device_type&.name,
       maker: hardware&.maker,
       product_name: hardware&.product_name,
       model_number: hardware&.model_number,
@@ -44,21 +39,19 @@ class NodesProcessorTest < ActiveSupport::TestCase
 
   def operating_system_to_params(operating_system)
     {
-      os_category_id: operating_system&.os_category_id,
+      os_category: operating_system&.os_category.name,
       name: operating_system&.name,
     }
   end
 
   def nic_to_params(nic)
     {
-      id: nic&.id,
-      _destroy: false,
+      number: nic&.number,
       name: nic&.name,
-      locked: nic&.locked,
       interface_type: nic&.interface_type,
-      auth: nic&.auth,
+      network: nic&.network&.identifier,
+      flag: nic&.flag,
       mac_address: nic&.mac_address,
-      network_id: nic&.network_id,
       ipv4_config: nic&.ipv4_config,
       ipv4_address: nic&.ipv4_address,
       ipv6_config: nic&.ipv6_config,
@@ -73,15 +66,30 @@ class NodesProcessorTest < ActiveSupport::TestCase
 
   test "user" do
     assert_not @node_processor.has_privilege?
+    ids = @node_processor.ids
+    assert_includes ids, @node.id
+    assert_not_includes ids, nodes(:other_desktop).id
   end
 
   test "admin" do
-    node_processor = NodesProcessor.new(users(:admin))
-    assert node_processor.has_privilege?
+    @node_processor = NodesProcessor.new(users(:admin))
+    assert @node_processor.has_privilege?
+    ids = @node_processor.ids
+    assert_includes ids, @node.id
+    assert_includes ids, nodes(:other_desktop).id
+  end
+
+  test "serialize node" do
+    assert_equal node_to_params(@node), @node_processor.serialize(@node)
+  end
+
+  test "show node" do
+    assert_equal @node.name, @node_processor.show(@node.id)[:name]
   end
 
   test "create node" do
     params = node_to_params(@node)
+    @node.destroy
     assert_difference("Node.count") do
       @node_processor.create(params)
     end
