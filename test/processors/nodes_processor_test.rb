@@ -94,5 +94,13 @@ class NodesProcessorTest < ActiveSupport::TestCase
       @node_processor.create(params)
     end
     assert_equal @node.name, Node.last.name
+    assert_equal @node.place_id, Node.last.place_id
+    assert_equal @node.hardware_id, Node.last.hardware_id
+    assert_equal @node.operating_system_id, Node.last.operating_system_id
+    assert_equal params.except(:nics), @node_processor.serialize(Node.last).except(:nics)
+    assert_not_equal params[:nics].first[:ipv4_address],
+      @node_processor.serialize(Node.last)[:nics].first[:ipv4_address]
+    assert_not_equal params[:nics].first[:ipv6_address],
+      @node_processor.serialize(Node.last)[:nics].first[:ipv6_address]
   end
 end
