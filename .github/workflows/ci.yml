@@ -102,6 +102,9 @@ jobs:
           echo "database:" > ./config/settings/test.local.yml
           echo "  username: root" >> ./config/settings/test.local.yml
           echo "  password: pass" >> ./config/settings/test.local.yml
+          echo "  option:" >> ./config/settings/test.local.yml
+          echo "    host: 127.0.0.1" >> ./config/settings/test.local.yml
+          echo "    port: 3306" >> ./config/settings/test.local.yml
 
       - name: Run tests
         env:
