@@ -60,7 +60,7 @@ class NodeCheckPerUserJob < ApplicationJob
         codition: ->(node) { !node.execution_at || !node.notice_disable_soon? }),
     }.with_indifferent_access
     @notice_dict = Node.notices.keys.index_with { |name| Notice.new(name, time: @time) }.with_indifferent_access
-    @execute_dict = {disbale: [], destroy: []}.with_indifferent_access
+    @execute_dict = {disable: [], destroy: []}.with_indifferent_access
 
     check_nodes_per_user
 

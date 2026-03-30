@@ -89,7 +89,7 @@ class NodeTest < ActiveSupport::TestCase
     assert @node.enabled?
   end
 
-  test "disbale node" do
+  test "disable node" do
     # enabled -> disabled
     assert @node.enabled?
     assert_enqueued_with(job: RadiusMacDelJob) do

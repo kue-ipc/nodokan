@@ -30,7 +30,7 @@ class NetworkTest < ActiveSupport::TestCase
     assert @network.enabled?
   end
 
-  test "disbale network" do
+  test "disable network" do
     # enabled -> disabled
     assert @network.enabled?
     assert_enqueued_with(job: KeaSubnet4DelJob) do
