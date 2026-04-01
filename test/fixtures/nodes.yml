@@ -127,3 +127,12 @@ target2:
   operating_system: win
   note: ターゲットデスクトップ管理者
   user: admin
+
+unowned_node:
+  name: 所有者が無しの端末
+  user:
+
+deleted_user_node:
+  name: 削除されたユーザーの端末
+  user: deleted
+

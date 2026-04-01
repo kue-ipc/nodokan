@@ -53,6 +53,9 @@ Layout/IndentationConsistency:
   Enabled: true
   EnforcedStyle: indented_internal_methods
 
+Layout/IndentationWidth:
+  Enabled: true
+
 Layout/LineLength:
   Enabled: true
   Max: 120
@@ -227,3 +230,4 @@ Rails/FilePath:
 
 Rails/HasAndBelongsToMany:
   Enabled: false
+
