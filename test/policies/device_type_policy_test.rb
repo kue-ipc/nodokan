@@ -6,7 +6,7 @@ class DeviceTypePolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @device_type = device_types(:pc)
   end

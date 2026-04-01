@@ -4,7 +4,7 @@ class Ipv6PoolsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   test "should NOT get new" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get new_ipv6_pool_url, as: :turbo_stream
     assert_response :forbidden
   end

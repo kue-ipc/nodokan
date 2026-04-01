@@ -6,7 +6,7 @@ class PlacePolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @place = places(:office_room)
   end

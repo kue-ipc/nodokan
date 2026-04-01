@@ -6,7 +6,7 @@ class OsCategoryPolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @os_category = os_categories(:win)
   end

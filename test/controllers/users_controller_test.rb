@@ -30,13 +30,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   setup do
-    @user = users(:user)
+    @user = users(:staff)
   end
 
   # index
 
   test "should NOT get index" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get users_url
     assert_response :forbidden
   end
@@ -55,7 +55,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # show
 
   test "should get show own" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get user_url(@user)
     assert_response :success
   end
@@ -81,7 +81,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # update
 
   test "should NOT get update" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch user_url(@user), params: {user: {role: "user"}}
     assert_response :forbidden
   end

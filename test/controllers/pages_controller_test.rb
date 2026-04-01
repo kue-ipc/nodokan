@@ -14,10 +14,10 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user should get root" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get root_url
     assert_response :success
-    assert_select "a", "user"
+    assert_select "a", "staff"
   end
 
   test "get root with login" do
@@ -35,7 +35,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user should get about" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get about_url
     assert_response :success
   end

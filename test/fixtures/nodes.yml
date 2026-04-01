@@ -19,7 +19,7 @@ desktop:
   hardware: desktop
   operating_system: win
   duid_data: <%= duid("00-04-3b6e47ff-4e2a-4e2e-9243-af3f80452d96") %>
-  user: user
+  user: staff
 
 note:
   name: ノートパソコン
@@ -28,7 +28,7 @@ note:
   hardware: note
   operating_system: macos
   duid_data: <%= duid("00-04-5ae25b1e-b7be-463c-a1a6-a45795dd289a") %>
-  user: user
+  user: staff
 
 tablet:
   name: タブレット
@@ -37,7 +37,7 @@ tablet:
   hardware: tablet
   operating_system: android
   duid_data: <%= duid("00-04-06dec5d2-c8ea-4fc7-ab8d-16d9fbbe43ba") %>
-  user: user
+  user: staff
 
 disabled:
   name: 無効化されたパソコン
@@ -48,7 +48,7 @@ disabled:
   hardware: desktop
   operating_system: win
   duid_data: <%= duid("00-04-24812397-33c2-4c2b-b6dd-7d538d5f0c50") %>
-  user: user
+  user: staff
 
 server:
   name: サーバー
@@ -60,7 +60,7 @@ server:
   place: server_room
   hardware: server
   operating_system: linux
-  user: user
+  user: staff
 
 other_desktop:
   name: 別の人のパソコン
@@ -86,7 +86,7 @@ virtual_desktop:
   hardware: virtual
   operating_system: win
   note: 仮想マシン
-  user: user
+  user: staff
 
 router:
   name: ルーター
@@ -101,24 +101,24 @@ cluster:
   id: 100
   name: クラスター
   node_type: logical
-  user: user
+  user: staff
 
 child1:
   id: 1
   name: チャイルド1
-  user: user
+  user: staff
   operating_system: win
 
 child2:
   id: 2
   name: チャイルド2
-  user: user
+  user: staff
   operating_system: macos
 
 child3:
   id: 3
   name: チャイルド3
-  user: user
+  user: staff
 
 target:
   id: 42
@@ -127,7 +127,7 @@ target:
   hardware: desktop
   operating_system: win
   note: ターゲットデスクトップ
-  user: user
+  user: staff
 
 target2:
   id: 142

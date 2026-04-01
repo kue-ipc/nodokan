@@ -2,7 +2,7 @@ require "test_helper"
 
 class NoticeNodesMailerTest < ActionMailer::TestCase
   def setup
-    @user = users(:user)
+    @user = users(:staff)
     @nodes = [nodes(:desktop)]
   end
   # TODO: まだ書いていない

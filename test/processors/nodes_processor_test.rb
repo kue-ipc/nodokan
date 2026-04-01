@@ -60,7 +60,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
   end
 
   setup do
-    @node_processor = NodesProcessor.new(users(:user))
+    @node_processor = NodesProcessor.new(users(:staff))
     @node = nodes(:desktop)
   end
 

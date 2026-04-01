@@ -6,7 +6,7 @@ class BulkPolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @other = users(:other)
     @guest = users(:guest)
     @bulk = bulks(:import_node)

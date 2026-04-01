@@ -19,7 +19,7 @@ class BulksControllerTest < ActionDispatch::IntegrationTest
   # end
 
   test "should create bulk" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Bulk.count") do
       assert_enqueued_with(job: BulkRunJob) do
         post bulks_url, params: {bulk: {

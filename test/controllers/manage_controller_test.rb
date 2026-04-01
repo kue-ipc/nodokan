@@ -44,37 +44,37 @@ class ManageControllerTest < ActionDispatch::IntegrationTest
   # user
 
   test "user should get places" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get manage_places_url
     assert_response :forbidden
   end
 
   test "user should get hardwares" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get manage_hardwares_url
     assert_response :forbidden
   end
 
   test "user should get operating_systems" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get manage_operating_systems_url
     assert_response :forbidden
   end
 
   test "user should get security_softwares" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get manage_security_softwares_url
     assert_response :forbidden
   end
 
   test "user should get device_types" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get manage_device_types_url
     assert_response :forbidden
   end
 
   test "user should get os_categories" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get manage_os_categories_url
     assert_response :forbidden
   end

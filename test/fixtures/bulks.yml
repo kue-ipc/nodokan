@@ -1,55 +1,55 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 import_node:
-  user: user
+  user: staff
   target: node
   status: waiting
 
 import_node_ng:
-  user: user
+  user: staff
   target: node
   status: waiting
 
 import_node_admin:
-  user: user
+  user: staff
   target: node
   status: waiting
 
 export_node:
-  user: user
+  user: staff
   target: node
   status: waiting
   content_type: text/csv
 
 import_confirmation:
-  user: user
+  user: staff
   target: confirmation
   status: waiting
 
 export_confirmation:
-  user: user
+  user: staff
   target: confirmation
   status: waiting
   content_type: text/csv
 
 import_network:
-  user: user
+  user: staff
   target: network
   status: waiting
 
 export_network:
-  user: user
+  user: staff
   target: network
   status: waiting
   content_type: text/csv
 
 import_user:
-  user: user
+  user: staff
   target: user
   status: waiting
 
 export_user:
-  user: user
+  user: staff
   target: user
   status: waiting
   content_type: text/csv

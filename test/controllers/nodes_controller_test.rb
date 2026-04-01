@@ -106,7 +106,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # index
 
   test "should get index" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get nodes_url
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
@@ -135,7 +135,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with query name" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get nodes_url(query: @node.name)
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
@@ -143,7 +143,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with query duid" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get nodes_url(query: @node.duid)
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
@@ -151,7 +151,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with query ipv4 address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get nodes_url(query: @node.nics.first.ipv4_address)
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
@@ -159,7 +159,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with query ipv6 address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get nodes_url(query: @node.nics.first.ipv6_address)
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
@@ -167,7 +167,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index with query mac address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get nodes_url(query: @node.nics.first.mac_address)
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
@@ -177,7 +177,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # show
 
   test "should show node" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get node_url(@node)
     assert_response :success
   end
@@ -202,7 +202,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # new
 
   test "should get new" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get new_node_url
     assert_response :success
     assert_select "div#node_nics_attributes_0"
@@ -243,7 +243,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # edit
 
   test "should get edit" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get edit_node_url(@node)
     assert_response :success
   end
@@ -268,13 +268,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # create
 
   test "should create node" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name"}}
     end
     assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
-    assert_equal users(:user).id, Node.last.user_id
+    assert_equal users(:staff).id, Node.last.user_id
   end
 
   test "admin should create node" do
@@ -323,7 +323,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node all attributes" do
-    sign_in users(:user)
+    sign_in users(:staff)
     node_params = node_to_params(@node)
     node_params[:hostname] = "new"
     node_params[:duid] = "00-04-#{SecureRandom.uuid}"
@@ -344,7 +344,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_not Node.last.specific
     assert_not Node.last.public
     assert_not Node.last.dns
-    assert_equal users(:user).id, Node.last.user_id
+    assert_equal users(:staff).id, Node.last.user_id
     assert_nil Node.last.host_id
     assert_equal [], Node.last.component_ids
     assert_equal @node.place_id, Node.last.place_id
@@ -367,7 +367,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node without name" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {hostname: "hostname"}}
     end
@@ -376,7 +376,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with same hostname and same domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -389,7 +389,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with different hostname and different domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -404,7 +404,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with different hostname and same domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -419,7 +419,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with same hostname and different domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -434,7 +434,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with same hostname and without domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_nil nodes(:note).domain
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
@@ -450,7 +450,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node without hostname and with domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -461,7 +461,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with same duid" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", duid: @node.duid}}
     end
@@ -470,7 +470,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with normal" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -494,7 +494,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with mobile" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -518,7 +518,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with virtual" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -542,7 +542,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with logical" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -566,7 +566,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with flags, but ignored" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name", specific: true, public: true, dns: true,
@@ -595,13 +595,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with user_id, but ignored" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", user_id: users(:other).id}}
     end
     assert_equal get_message(:create_success), flash[:notice]
     assert_redirected_to node_url(Node.last)
-    assert_equal users(:user).id, Node.last.user_id
+    assert_equal users(:staff).id, Node.last.user_id
   end
 
   test "admin should create node with user_id" do
@@ -615,7 +615,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with new place" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Place.count") do
       assert_difference("Node.count") do
         post nodes_url, params: {node: {
@@ -630,7 +630,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with new hardware" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Hardware.count") do
       assert_difference("Node.count") do
         post nodes_url, params: {node: {
@@ -648,7 +648,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with new operating_system" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("OperatingSystem.count") do
       assert_difference("Node.count") do
         post nodes_url, params: {node: {
@@ -666,7 +666,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with nic" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -679,7 +679,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with nic hash" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: {0 => {
         interface_type: @node.nics.first.interface_type,
@@ -692,7 +692,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with nic without interface_type" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         # interface_type: @node.nics.first.interface_type,
@@ -704,7 +704,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with nic without nework_id" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -717,7 +717,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with nic without nework_id with other ip" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -743,7 +743,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with two nics " do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [
         {
@@ -762,7 +762,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with deleted nic " do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         _destroy: true,
@@ -776,7 +776,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with nic other id" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         id: @node.nics.first.id,
@@ -788,7 +788,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with nic dummy id" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         id: 42,
@@ -800,7 +800,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with same mac_address without network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -813,7 +813,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with same mac_address and same network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -826,7 +826,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with same mac_address and different network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -839,7 +839,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with auth and mac_address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -856,7 +856,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node without mac_address and with auth" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -869,7 +869,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with nic locked, but ingore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -903,7 +903,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### dynamic
 
   test "should create node with dynamic ipv4/ipv6" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -920,7 +920,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create node with dynamic ipv4/ipv6, same addresses, " \
        "but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -940,7 +940,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### reserved
 
   test "should create node with reserved ipv4/ipv6, mac_address, duid" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -962,7 +962,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create node with reserved ipv4/ipv6, mac_address, duid, " \
        "same addresses, but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -987,7 +987,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with resrved ipv4, without mac_address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {
         name: "name",
@@ -1004,7 +1004,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with reserved ipv6 and without duid" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1020,7 +1020,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### static
 
   test "should create node with static ipv4/ipv6" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1036,7 +1036,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create node with static ipv4/ipv6, same addresses, but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1058,7 +1058,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### manual
 
   test "should NOT create node with manual ipv4" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1071,7 +1071,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with manual ipv4, address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1085,7 +1085,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with manual ipv6" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1098,7 +1098,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT create node with manual ipv6, address" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1114,7 +1114,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### disabled
 
   test "should create node with disabled ipv4/ipv6" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1131,7 +1131,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create node with disabled ipv4/ipv6, same addresses, " \
        "but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count") do
       post nodes_url, params: {node: {name: "name", nics_attributes: [{
         interface_type: @node.nics.first.interface_type,
@@ -1428,7 +1428,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # update
 
   test "should update node" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {name: "name"}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
@@ -1454,21 +1454,21 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node all attributes" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: node_to_params(@node)}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "should update node without name" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {hostname: "hostname"}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
   end
 
   test "should NOT update node with same hostname and same domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {
       hostname: nodes(:server).hostname,
       domain: nodes(:server).domain,
@@ -1480,7 +1480,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with different hostname and same domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {
       hostname: "hostname",
       domain: nodes(:server).domain,
@@ -1492,7 +1492,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with same hostname and differen domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {
       hostname: nodes(:server).hostname,
       domain: "test.example.jp",
@@ -1504,7 +1504,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with same hostname and without domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {
       hostname: nodes(:note).hostname,
       domain: nil,
@@ -1516,7 +1516,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with hostname without domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {hostname: nil, domain: @node.domain}}
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
@@ -1525,7 +1525,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node without hostname, domain" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {hostname: nil, domain: nil}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
@@ -1534,7 +1534,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with same duid" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {duid: nodes(:note).duid}}
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
@@ -1542,7 +1542,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update normal node to mobile" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {node_type: "mobile"}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
@@ -1552,7 +1552,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update normal node to virtual" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {
       node_type: "virtual",
       host_id: nodes(:server).id,
@@ -1566,7 +1566,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update normal node to logical" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {
       node_type: "logical",
       component_ids: [nodes(:note).id],
@@ -1582,7 +1582,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update mobile node to normal" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:tablet)
     patch node_url(@node), params: {node: {node_type: "normal"}}
     assert_redirected_to node_url(@node)
@@ -1591,7 +1591,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update mobile node to virtual" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:tablet)
     patch node_url(@node), params: {node: {
       node_type: "virtual",
@@ -1604,7 +1604,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update mobile node to logical" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:tablet)
     patch node_url(@node), params: {node: {
       node_type: "logical",
@@ -1620,7 +1620,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update virtual node to normal" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:virtual_desktop)
     patch node_url(@node), params: {node: {node_type: "normal"}}
     assert_redirected_to node_url(@node)
@@ -1631,7 +1631,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update virtual node to mobile" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:virtual_desktop)
     patch node_url(@node), params: {node: {node_type: "mobile"}}
     assert_redirected_to node_url(@node)
@@ -1642,7 +1642,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update virtual node to logical" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:virtual_desktop)
     patch node_url(@node), params: {node: {
       node_type: "logical",
@@ -1657,7 +1657,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update logical node to normal" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {node_type: "normal"}}
     assert_redirected_to node_url(@node)
@@ -1668,7 +1668,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update logical node to mobile" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {node_type: "mobile"}}
     assert_redirected_to node_url(@node)
@@ -1679,7 +1679,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update logical node to virutal" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {
       node_type: "virtual",
@@ -1694,7 +1694,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node set flags, but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node),
       params: {node: {specific: true, public: true, dns: true}}
     assert_redirected_to node_url(@node)
@@ -1706,7 +1706,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node unset flags, but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:server)
     patch node_url(@node),
       params: {node: {specific: false, public: false, dns: false}}
@@ -1744,7 +1744,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node set user_id, but ignore flags" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {user_id: users(:other).id}}
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
@@ -1762,7 +1762,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new place, hardware, operating_system" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Place.count") do
       assert_difference("Hardware.count") do
         assert_difference("OperatingSystem.count") do
@@ -1789,7 +1789,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new nic" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1805,7 +1805,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new nic hash" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: {
         0 => nic_to_params(@node.nics.first),
@@ -1821,7 +1821,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with new nic without interface_type" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1837,7 +1837,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new nic without network_id" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1853,7 +1853,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with deleted nic" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count", -1) do
       patch node_url(@node), params: {node: {nics_attributes: [{
         id: @node.nic_ids.first,
@@ -1866,7 +1866,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with nic other id" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       id: nodes(:note).nic_ids.first,
     }]}}
@@ -1874,7 +1874,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with nic dummy id" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       id: 42,
     }]}}
@@ -1882,7 +1882,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node delete network_id without configs" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       network_id: nil,
@@ -1893,7 +1893,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node delete network_id with configs" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       network_id: nil,
@@ -1911,7 +1911,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with same mac_address other node" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       network_id: nil,
@@ -1924,7 +1924,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new nic same mac_address in no network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1940,7 +1940,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new nic same mac_address in other network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1956,7 +1956,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with new nic same mac_address auth on" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1973,7 +1973,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should NOT update node with new nic same mac_address in same network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         nic_to_params(@node.nics.first),
@@ -1989,7 +1989,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with new nic same mac_address changing network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Nic.count") do
       patch node_url(@node), params: {node: {nics_attributes: [
         {
@@ -2010,7 +2010,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with nic set locked, but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       locked: true,
@@ -2022,7 +2022,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with nic unset locked, but ignore" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:server)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
@@ -2060,7 +2060,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with locked nic, ignore all" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:server)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: [{
@@ -2105,7 +2105,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   ### change network
 
   test "should update node with nic change network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
@@ -2127,7 +2127,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### dynamic
 
   test "should update node with nic from static to dynamic" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       ipv4_config: "dynamic",
@@ -2145,7 +2145,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### reserved
 
   test "should update node with nic from static to reserved" do
-    sign_in users(:user)
+    sign_in users(:staff)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
@@ -2164,7 +2164,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with nic from dynamic to reserved" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:tablet)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: [{
@@ -2186,7 +2186,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### static
 
   test "should update node with nic reserved to static" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:note)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: [{
@@ -2206,7 +2206,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update node with nic from dynamic to static" do
-    sign_in users(:user)
+    sign_in users(:staff)
     @node = nodes(:tablet)
     old_nic = @node.nics.first
     patch node_url(@node), params: {node: {nics_attributes: [{
@@ -2228,7 +2228,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### manual
 
   test "should NOT update node with nic static to manual" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       ipv4_config: "manual",
@@ -2241,7 +2241,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   #### disabled
 
   test "should update node with nic to disabled" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_url(@node), params: {node: {nics_attributes: [{
       **nic_to_params(@node.nics.first),
       ipv4_config: "disabled",
@@ -2325,7 +2325,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   # destroy
 
   test "should destroy node" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_difference("Node.count", -1) do
       delete node_url(@node)
     end

@@ -10,7 +10,7 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user should get index" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get places_url
     assert_response :success
   end

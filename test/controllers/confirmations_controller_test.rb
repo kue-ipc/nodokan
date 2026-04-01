@@ -39,7 +39,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user should create confirmation" do
-    sign_in users(:user)
+    sign_in users(:staff)
     other_node = nodes(:server)
     assert_difference("Confirmation.count") do
       post node_confirmation_url(other_node),
@@ -49,7 +49,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user should NOT create confirmation for other's node" do
-    sign_in users(:user)
+    sign_in users(:staff)
     other_node = nodes(:other_desktop)
     assert_no_difference("Confirmation.count") do
       post node_confirmation_url(other_node),
@@ -77,7 +77,7 @@ class ConfirmationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user should update confirmation" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch node_confirmation_url(@confirmation.node),
       params: {confirmation: confirmation_to_params(@confirmation)}
     assert_redirected_to node_url(@confirmation.node)

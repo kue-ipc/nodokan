@@ -6,7 +6,7 @@ class NodePolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @other = users(:other)
     @guest = users(:guest)
     @less = users(:less)

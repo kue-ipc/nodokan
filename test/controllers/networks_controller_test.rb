@@ -91,7 +91,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   # index
 
   test "should get index" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get networks_url
     assert_response :success
     assert_select "a[href=\"#{network_path(@network)}\"]"
@@ -122,7 +122,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   # show
 
   test "should show network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get network_url(@network)
     assert_response :success
   end
@@ -147,7 +147,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   # new
 
   test "should NOT get new" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get new_network_url
     assert_response :forbidden
   end
@@ -166,7 +166,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   # edit
 
   test "should NOT get edit" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get edit_network_url(@network)
     assert_response :forbidden
   end
@@ -185,7 +185,7 @@ class NetworksControllerTest < ActionDispatch::IntegrationTest
   # create
 
   test "should NOT create network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Network.count") do
       post networks_url, params: {network: {name: "name"}}
     end
@@ -764,7 +764,7 @@ end
   # udpate
 
   test "should NOT update network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     patch network_url(@network), params: {network: {name: "name"}}
     assert_response :forbidden
   end
@@ -785,7 +785,7 @@ end
   # destroy
 
   test "should NOT destroy network" do
-    sign_in users(:user)
+    sign_in users(:staff)
     assert_no_difference("Network.count") do
       delete network_url(networks(:noip))
     end

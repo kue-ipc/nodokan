@@ -6,7 +6,7 @@ class HardwarePolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @hardware = hardwares(:desktop)
   end

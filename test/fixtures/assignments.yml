@@ -2,48 +2,56 @@
 
 # adminには何も関連付けない
 
-user_server:
+assignment:
   user: user
+  network: network
+  auth: true
+  use: true
+  default: true
+  manage: true
+
+staff_server:
+  user: staff
   network: server
   auth: false
   use: true
   default: false
   manage: false
 
-user_client:
-  user: user
+staff_client:
+  user: staff
   network: client
   auth: true
   use: true
   default: false
   manage: false
 
-user_ipv4only:
-  user: user
+staff_ipv4only:
+  user: staff
   network: v4only
   auth: false
   use: true
   default: false
   manage: false
 
-user_ipv6only:
-  user: user
+staff_ipv6only:
+  user: staff
   network: v6only
   auth: false
   use: true
   default: false
   manage: false
 
-user_noip:
-  user: user
+staff_noip:
+  user: staff
   network: noip
   auth: false
   use: true
   default: false
   manage: false
 
-user_last:
-  user: user
+staff_last:
+  user: staff
   network: last
   auth: false
   use: true

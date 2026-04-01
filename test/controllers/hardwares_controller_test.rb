@@ -28,7 +28,7 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
   # user
 
   test "user should get index" do
-    sign_in users(:user)
+    sign_in users(:staff)
     get hardwares_url
     assert_response :success
   end

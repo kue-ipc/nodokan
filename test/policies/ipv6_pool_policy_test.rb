@@ -6,7 +6,7 @@ class Ipv6PoolPolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @ipv6_pool = ipv6_pools(:client1)
   end

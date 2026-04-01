@@ -6,7 +6,7 @@ class OperatingSystemPolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @operating_system = operating_systems(:win)
   end

@@ -4,7 +4,7 @@ class UseNetworksControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
-    @assignment = assignments(:user_client)
+    @assignment = assignments(:staff_client)
   end
 
   # test "should get create" do

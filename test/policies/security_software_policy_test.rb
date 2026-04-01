@@ -6,7 +6,7 @@ class SecuritySoftwarePolicyTest < ActiveSupport::TestCase
 
   def setup
     @admin = users(:admin)
-    @user = users(:user)
+    @user = users(:staff)
     @guest = users(:guest)
     @security_software = security_softwares(:defender)
   end
