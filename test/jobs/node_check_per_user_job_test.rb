@@ -14,21 +14,74 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
     end
   end
 
-  test "check approved node" do
+  test "do not notice node that approved" do
+    assert_equal :approved, @node.confirmation.status
+
     assert_no_enqueued_emails do
       NodeCheckPerUserJob.perform_now(@user)
     end
   end
 
-  test "check node that has recently expired" do
+  test "do not notice node that unapproved" do
+    @node.confirmation.update!(approved: false, confirmed_at: 1.week.ago)
+    @node.reload
+    assert_equal :unapproved, @node.confirmation.status
+
+    assert_no_enqueued_emails do
+      NodeCheckPerUserJob.perform_now(@user)
+    end
+  end
+
+
+  test "notic node that is about to expire" do
+    @node.confirmation.update!(confirmed_at: (1.year + 1.month - 1.week).ago)
+    @node.reload
+    assert_equal :expire_soon, @node.confirmation.status
+
+    assert_enqueued_email_with NoticeNodesMailer, :expire_soon, params: {user: @user, nodes: [@node]} do
+      NodeCheckPerUserJob.perform_now(@user)
+    end
+
+    # second notice should not be sent
+    @node.update!(notice: :expire_soon, noticed_at: Time.current)
+    assert_no_enqueued_emails do
+      NodeCheckPerUserJob.perform_now(@user)
+    end
+  end
+
+  test "notic node that has recently expired" do
     @node.confirmation.update!(confirmed_at: (1.year + 2.months).ago)
     @node.reload
     assert_equal :expired, @node.confirmation.status
+    assert_operator @node.confirmation.expiration, :>, 1.year.ago
 
     assert_enqueued_email_with NoticeNodesMailer, :expired, params: {user: @user, nodes: [@node]} do
       NodeCheckPerUserJob.perform_now(@user)
     end
+
+    # second notice should not be sent
+    @node.update!(notice: :expired, noticed_at: Time.current)
+    assert_no_enqueued_emails do
+      NodeCheckPerUserJob.perform_now(@user)
+    end
   end
+
+  test "notic node that has disabled" do
+    @node.update!(disabled: true)
+    @node.reload
+    assert @node.disabled?
+
+    assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
+      NodeCheckPerUserJob.perform_now(@user)
+    end
+
+    # second notice should not be sent
+    @node.update!(notice: :disabled, noticed_at: Time.current)
+    assert_no_enqueued_emails do
+      NodeCheckPerUserJob.perform_now(@user)
+    end
+ end
+
 
   test "should disable node that expired a long time ago" do
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
@@ -49,7 +102,14 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       end
       assert_not @node.reload.disabled?
 
-      @node.update!(notice: :disable_soon, noticed_at: Time.current, execution_at: Time.current)
+      # second notice should not be sent before exectuion time
+      @node.update!(notice: :disable_soon, noticed_at: Time.current, execution_at: 1.month.since)
+      assert_no_enqueued_emails do
+        NodeCheckPerUserJob.perform_now(@user)
+      end
+
+      # disable node afuter exectuion time
+      @node.update!(execution_at: 1.month.ago)
       assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
         NodeCheckPerUserJob.perform_now(@user)
       end
@@ -91,7 +151,13 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
         NodeCheckPerUserJob.perform_now(@user)
       end
 
-      @node.update!(notice: :destroy_soon, noticed_at: Time.current, execution_at: Time.current)
+      # second notice should not be sent before exectuion time
+      @node.update!(notice: :destroy_soon, noticed_at: Time.current, execution_at: 1.month.since)
+      assert_no_enqueued_emails do
+        NodeCheckPerUserJob.perform_now(@user)
+      end
+
+      @node.update!(execution_at: 1.month.ago)
       assert_difference("Bulk.count") do
         assert_enqueued_emails 1 do
           NodeCheckPerUserJob.perform_now(@user)
