@@ -83,6 +83,13 @@ class NodesProcessorTest < ActiveSupport::TestCase
     assert_equal node_to_params(@node), @node_processor.serialize(@node)
   end
 
+  test "index node" do
+    assert_not @node_processor.has_privilege?
+    nodes = @node_processor.index
+    assert_includes nodes, @node
+    assert_not_includes nodes, nodes(:other_desktop)
+  end
+
   test "show node" do
     assert_equal @node.name, @node_processor.show(@node.id)[:name]
   end

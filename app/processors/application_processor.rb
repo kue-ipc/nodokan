@@ -76,18 +76,6 @@ class ApplicationProcessor
     user.nil? || user.admin?
   end
 
-  def all
-    if user
-      Pundit.policy_scope(user, self.class.model).order(:id).all
-    else
-      self.class.model.order(:id).all
-    end
-  end
-
-  def ids # rubocop: disable Rails/Delegate
-    all.ids
-  end
-
   def serialize(record, keys: self.class.keys, converters: self.class.converters)
     return if record.nil?
 
@@ -110,6 +98,25 @@ class ApplicationProcessor
     end
     params
   end
+
+  def index
+    if user
+      policy = Pundit.policy(user, self.class.model)
+      unless policy.index?
+        raise Pundit::NotAuthorizedError, "not allowed to index this model"
+      end
+      Pundit.policy_scope(user, self.class.model).order(:id).all
+    else
+      self.class.model.order(:id).all
+    end
+  end
+
+  alias all index
+
+  def ids # rubocop: disable Rails/Delegate
+    all.ids
+  end
+
 
   def show(id)
     user_process(id, __method__)
