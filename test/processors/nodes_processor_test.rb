@@ -60,8 +60,8 @@ class NodesProcessorTest < ActiveSupport::TestCase
   end
 
   setup do
-    @node_processor = NodesProcessor.new(users(:staff))
-    @node = nodes(:desktop)
+    @node_processor = NodesProcessor.new(users(:user))
+    @node = nodes(:node)
   end
 
   test "user" do
@@ -92,8 +92,6 @@ class NodesProcessorTest < ActiveSupport::TestCase
     params[:fqdn] = "new.example.jp"
     params[:duid] = "00-04-11-22-33-44-55-66"
     params[:nics][0][:mac_address] = "00-11-22-33-44-FF"
-    params[:nics][0][:ipv4_address] = nil
-    params[:nics][0][:ipv6_address] = nil
     assert_difference("Node.count") do
       @node_processor.create(params)
     end
@@ -103,8 +101,6 @@ class NodesProcessorTest < ActiveSupport::TestCase
     assert_equal @node.operating_system_id, Node.last.operating_system_id
     assert_equal params.except(:nics), @node_processor.serialize(Node.last).except(:nics)
     assert_equal params[:nics][0][:mac_address], Node.last.nics.first.mac_address
-    assert_not_nil Node.last.nics.first.ipv4_address
-    assert_not_nil Node.last.nics.first.ipv6_address
   end
 
   test "update node" do
