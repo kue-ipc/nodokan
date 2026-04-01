@@ -8,7 +8,7 @@ class NoticeNodesMailerPreview < ActionMailer::Preview
   end
 
   def destroyed
-    NoticeNodesMailer.with(nodes: Node.limit(3).map(&:serializable_hash), user: User.first, bulk: Bulk.first).destroyed
+    NoticeNodesMailer.with(nodes: Node.limit(3).map(&:as_json), user: User.first, bulk: Bulk.first).destroyed
   end
 
   def destroy_soon

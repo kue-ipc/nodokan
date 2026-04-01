@@ -15,8 +15,8 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   end
 
   test "check approved node" do
-    perform_enqueued_jobs do
-      NodeCheckPerUserJob.perform_later(@user)
+    assert_no_enqueued_emails do
+      NodeCheckPerUserJob.perform_now(@user)
     end
   end
 
@@ -93,10 +93,17 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
 
       @node.update!(notice: :destroy_soon, noticed_at: Time.current, execution_at: Time.current)
       assert_difference("Bulk.count") do
-        assert_enqueued_email_with NoticeNodesMailer, :destroyed, params: {user: @user, nodes: [@node]} do
+        assert_enqueued_emails 1 do
           NodeCheckPerUserJob.perform_now(@user)
         end
       end
+
+      mail = enqueued_jobs.last
+      assert_equal "NoticeNodesMailer", mail[:args][0]
+      assert_equal "destroyed", mail[:args][1]
+      assert_equal "gid://nodokan/User/#{@user.id}", mail[:args][3]["params"]["user"]["_aj_globalid"]
+      assert_equal "gid://nodokan/Bulk/#{Bulk.last.id}", mail[:args][3]["params"]["bulk"]["_aj_globalid"]
+      assert_equal [{**@node.as_json, "_aj_symbol_keys"=>[]}], mail[:args][3]["params"]["nodes"]
     end
   end
 end

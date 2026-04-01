@@ -2,6 +2,8 @@ require "stringio"
 
 class NodeCheckPerUserJob < ApplicationJob
   class Update
+    attr_reader :updates, :condition, :nodes
+
     def initialize(updates, codition: nil)
       @updates = updates
       @condition = codition&.to_proc
@@ -19,9 +21,14 @@ class NodeCheckPerUserJob < ApplicationJob
   end
 
   class Notice
-    def initialize(name, time: Time.current)
+    attr_accessor :user, :name, :time, :params
+    attr_reader :nodes
+
+    def initialize(user, name, time: Time.current, params: {})
+      @user = user
       @name = name
       @time = time
+      @params = params
       @nodes = []
     end
 
@@ -30,9 +37,9 @@ class NodeCheckPerUserJob < ApplicationJob
     end
     alias << add
 
-    def deliver_mail(user)
+    def deliver_mail
       if @nodes.present?
-        NoticeNodesMailer.with(user:, nodes: @nodes).__send__(@name).deliver_later
+        NoticeNodesMailer.with(**@params, user: @user, nodes: @nodes).__send__(@name).deliver_later
       end
     end
   end
@@ -59,7 +66,7 @@ class NodeCheckPerUserJob < ApplicationJob
       schedule_disable: Update.new({execution_at: @time + Node.disable_grace_period},
         codition: ->(node) { !node.execution_at || !node.notice_disable_soon? }),
     }.with_indifferent_access
-    @notice_dict = Node.notices.keys.index_with { |name| Notice.new(name, time: @time) }.with_indifferent_access
+    @notice_dict = Node.notices.keys.index_with { |name| Notice.new(@user, name, time: @time) }.with_indifferent_access
     @execute_dict = {disable: [], destroy: []}.with_indifferent_access
 
     check_nodes_per_user
@@ -68,7 +75,7 @@ class NodeCheckPerUserJob < ApplicationJob
     destroy_all
 
     @update_dict.each_value { |update| update.run }
-    @notice_dict.each_value { |notice| notice.deliver_mail(@user) }
+    @notice_dict.each_value { |notice| notice.deliver_mail }
 
     logger.info("Result check node for #{@user.username}: #{@counts.to_json}")
     if @counts[:error]&.positive?
@@ -132,16 +139,17 @@ class NodeCheckPerUserJob < ApplicationJob
     nodes = @execute_dict[:destroy]
     return if nodes.blank?
 
-    bulk = Bulk.new(user: @user, target: "node")
+    bulk = Bulk.new(user: @user, target: "node", status: "waiting")
     destroy_nodes_jsonl = nodes.map { |node| {id: node.id, _destroy: true}.to_json }.join("\n")
     io = StringIO.new(destroy_nodes_jsonl)
     filename = "auto_destroy_nodes_#{@time.strftime('%Y%m%d%H%M%S')}.jsonl"
-    bulk.output.attach(io:, filename:, content_type: "application/jsonl", identify: false)
+    bulk.input.attach(io:, filename:, content_type: "application/jsonl", identify: false)
     if bulk.save
       nodes.each do |node|
-        @notice_dict[:destroyed].add(node.serializable_hash, force: true)
+        @notice_dict[:destroyed].add(node.as_json, force: true)
         @counts[:destroy] += 1
       end
+      @notice_dict[:destroyed].params = {bulk: bulk}
     else
       Rails.logger.error do
         "Failed to create bulk for destroying nodes for #{@user.username}: #{bulk.errors.full_messages.join(", ")}"
