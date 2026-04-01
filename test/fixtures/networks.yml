@@ -19,6 +19,23 @@ all:
   ipv6_dns_servers_data: <%= ["fd00:1::53", "fd00:2::53"].to_json.inspect %>
   note: 全体設定
 
+network:
+  name: ネットワーク
+  vlan: 1
+  disabled: false
+  unverifiable: false
+  auth: true
+  locked: false
+  dhcp: true
+  ra: stateless
+  ipv4_network_data: <%= ipv4_address('192.168.0.0') %>
+  ipv4_prefix_length: 24
+  ipv4_gateway_data: <%= ipv4_address('192.168.0.254') %>
+  ipv6_network_data: <%= ipv6_address('fd00::') %>
+  ipv6_prefix_length: 64
+  ipv6_gateway_data: <%= ipv6_address('fd00::1') %>
+  note: 備考
+
 extra:
   name: 外部ネットワーク
   vlan: 99

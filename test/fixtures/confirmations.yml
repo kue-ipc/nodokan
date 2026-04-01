@@ -1,22 +1,28 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-desktop:
-  node: desktop
+confirmation: &confirmation
+  node: node
   existence: :existing
   content: :correct
   os_update: :auto
   app_update: :auto
   software: :trusted
   security_hardware: 1
-  security_software: defender
+  security_software: security
   security_update: :auto
   security_scan: :auto
-  confirmed_at: <%= (Time.current - 2.month).to_json %>
+  confirmed_at: <%= 2.month.ago.to_json %>
+  approved: true
+
+desktop:
+  <<: *confirmation
+  node: desktop
+  security_software: defender
   approved: true
 
 note:
+  <<: *confirmation
   node: note
-  existence: :existing
   content: incorrect
   os_update: :not_do
   app_update: :not_do
@@ -25,5 +31,4 @@ note:
   security_software: none
   security_update: :not_do
   security_scan: :not_do
-  confirmed_at: <%= (Time.current - 2.month).to_json %>
   approved: false

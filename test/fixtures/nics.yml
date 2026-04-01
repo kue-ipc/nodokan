@@ -1,5 +1,22 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+nic:
+  node: node
+  number: 1
+  network: network
+  name: インターフェース名
+  interface_type: wired
+  auth: true
+  locked: false
+  mac_address_data: <%= mac_address("12-34-56-78-9a-bc") %>
+  ipv4_config: :dynamic
+  ipv6_config: :dynamic
+  auth_at: <%= 1.hour.ago %>
+  # ipv4_resolved_at:
+  # ipv6_discovered_at:
+  # ipv4_leased_at:
+  # ipv6_leased_at:
+
 desktop:
   node: desktop
   number: 1

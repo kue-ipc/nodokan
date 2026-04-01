@@ -1,5 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+security:
+  os_category: category
+  installation_method: :built_in
+  name: セキュリティソフトウェア名
+  approved: true
+  confirmed: true
+  description: 説明
+
 defender:
   os_category: win
   installation_method: :built_in

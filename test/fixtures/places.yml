@@ -1,5 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+place:
+  area: 拠点
+  building: 建屋
+  floor: 1
+  room: 部屋
+
 office_room:
   area: Aキャンパス
   building: センター

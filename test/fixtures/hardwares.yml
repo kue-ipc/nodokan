@@ -1,5 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+hardware:
+  device_type: device
+  maker: 製造業者
+  product_name: 製品名
+  model_number: 型番
+
 desktop:
   device_type: pc
   maker: A社

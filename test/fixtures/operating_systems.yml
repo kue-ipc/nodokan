@@ -1,5 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+os:
+  os_category: category
+  name: OS名
+  confirmed: false
+  description: 説明
+
 win:
   os_category: win
   name: Windows

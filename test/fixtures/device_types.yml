@@ -1,29 +1,35 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+device:
+  name: 機器形態名
+  icon: <i class="pc"></i>
+  order: 1
+  description: 説明
+
 pc:
   name: パソコン
   icon: <i class="pc"></i>
-  order: 1
+  order: 2
   locked: false
   description: パソコンの説明
 
 server:
   name: サーバー
   icon: <i class="sv"></i>
-  order: 2
+  order: 3
   locked: false
   description: サーバーの説明
 
 tablet:
   name: タブレット
   icon: <i class="tablet"></i>
-  order: 3
+  order: 4
   locked: false
   description: タブレットの説明
 
 virtual:
   name: 仮想
   icon: <i class="vm"></i>
-  order: 4
+  order: 5
   locked: true
   description: 仮想の説明

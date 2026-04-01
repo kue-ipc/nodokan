@@ -1,5 +1,35 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+pool_dynamic: &pool
+  network: network
+  ipv4_config: dynamic
+  ipv4_first_data: <%= ipv4_address('192.168.0.10') %>
+  ipv4_last_data: <%= ipv4_address('192.168.0.19') %>
+
+pool_reserved:
+  <<: *pool
+  ipv4_config: reserved
+  ipv4_first_data: <%= ipv4_address('192.168.0.20') %>
+  ipv4_last_data: <%= ipv4_address('192.168.0.29') %>
+
+pool_static:
+  <<: *pool
+  ipv4_config: static
+  ipv4_first_data: <%= ipv4_address('192.168.0.30') %>
+  ipv4_last_data: <%= ipv4_address('192.168.0.39') %>
+
+pool_manual:
+  <<: *pool
+  ipv4_config: manual
+  ipv4_first_data: <%= ipv4_address('192.168.0.40') %>
+  ipv4_last_data: <%= ipv4_address('192.168.0.49') %>
+
+pool_disabled:
+  <<: *pool
+  ipv4_config: disabled
+  ipv4_first_data: <%= ipv4_address('192.168.0.50') %>
+  ipv4_last_data: <%= ipv4_address('192.168.0.59') %>
+
 server1:
   network: server
   ipv4_config: :static

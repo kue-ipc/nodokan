@@ -1,6 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+node: &node
+  name: 端末名
+  hostname: node
+  note: 備考
+  place: place
+  hardware: hardware
+  operating_system: os
+  user: user
+
 desktop:
+  <<: *node
   name: デスクトップパソコン
   hostname: desktop
   domain: clients.example.jp
@@ -129,10 +139,11 @@ target2:
   user: admin
 
 unowned_node:
+  <<: *node
   name: 所有者が無しの端末
   user:
 
 deleted_user_node:
+  <<: *node
   name: 削除されたユーザーの端末
   user: deleted
-
