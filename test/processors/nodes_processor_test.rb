@@ -60,38 +60,38 @@ class NodesProcessorTest < ActiveSupport::TestCase
   end
 
   setup do
-    @node_processor = NodesProcessor.new(users(:user))
+    @processor = NodesProcessor.new(users(:user))
     @node = nodes(:node)
   end
 
   test "user" do
-    assert_not @node_processor.has_privilege?
-    ids = @node_processor.ids
+    assert_not @processor.has_privilege?
+    ids = @processor.ids
     assert_includes ids, @node.id
     assert_not_includes ids, nodes(:other_desktop).id
   end
 
   test "admin" do
-    @node_processor = NodesProcessor.new(users(:admin))
-    assert @node_processor.has_privilege?
-    ids = @node_processor.ids
+    @processor = NodesProcessor.new(users(:admin))
+    assert @processor.has_privilege?
+    ids = @processor.ids
     assert_includes ids, @node.id
     assert_includes ids, nodes(:other_desktop).id
   end
 
   test "serialize node" do
-    assert_equal node_to_params(@node), @node_processor.serialize(@node)
+    assert_equal node_to_params(@node), @processor.serialize(@node)
   end
 
   test "index node" do
-    assert_not @node_processor.has_privilege?
-    nodes = @node_processor.index
+    assert_not @processor.has_privilege?
+    nodes = @processor.index
     assert_includes nodes, @node
     assert_not_includes nodes, nodes(:other_desktop)
   end
 
   test "show node" do
-    assert_equal @node.name, @node_processor.show(@node.id)[:name]
+    assert_equal @node.name, @processor.show(@node.id)[:name]
   end
 
   test "create node" do
@@ -100,13 +100,13 @@ class NodesProcessorTest < ActiveSupport::TestCase
     params[:duid] = "00-04-11-22-33-44-55-66"
     params[:nics][0][:mac_address] = "00-11-22-33-44-FF"
     assert_difference("Node.count") do
-      @node_processor.create(params)
+      @processor.create(params)
     end
     assert_equal @node.name, Node.last.name
     assert_equal @node.place_id, Node.last.place_id
     assert_equal @node.hardware_id, Node.last.hardware_id
     assert_equal @node.operating_system_id, Node.last.operating_system_id
-    assert_equal params.except(:nics), @node_processor.serialize(Node.last).except(:nics)
+    assert_equal params.except(:nics), @processor.serialize(Node.last).except(:nics)
     assert_equal params[:nics][0][:mac_address], Node.last.nics.first.mac_address
   end
 
@@ -117,7 +117,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
     params[:hardware][:product_name] = "Updated Product Name"
     params[:operating_system][:name] = "Updated OS Name"
     assert_no_difference("Node.count") do
-      @node_processor.update(@node.id, params)
+      @processor.update(@node.id, params)
     end
     @node.reload
     assert_equal "Updated Name", @node.name
@@ -128,7 +128,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
 
   test "desroy node" do
     assert_difference("Node.count", -1) do
-      @node_processor.destroy(@node.id)
+      @processor.destroy(@node.id)
     end
   end
 end
