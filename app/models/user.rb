@@ -99,11 +99,8 @@ class User < ApplicationRecord
     when "auth"
       auth_network
     else
-      begin
-        Network.find_identifier(net)
-      rescue StandardError => e
-        Rails.logger.warn "Not found #{net} network: #{e}"
-        nil
+      Network.find_by_identifier(net).tap do |network|
+        Rails.logger.warn "Not found #{net} network: #{e}" if network.nil?
       end
     end
   end

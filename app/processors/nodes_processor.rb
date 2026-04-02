@@ -40,11 +40,11 @@ class NodesProcessor < ApplicationProcessor
   }
 
   converter :host, set: ->(record, value) {
-    record.host = value && Node.find_identifier(value)
+    record.host = value && Node.find_by_identifier!(value)
   }
 
   converter :components, set: ->(record, value) {
-    record.components = value.map(&Node.method(:find_identifier))
+    record.components = value.map { |v| Node.find_by_identifier!(v) }
   }
 
   converter :place, set: ->(record, value) {
@@ -90,7 +90,7 @@ class NodesProcessor < ApplicationProcessor
   end
 
   private def normalize_nic_params(nic_params)
-    network = nic_params[:network].presence&.then { Network.find_identifier(_1) }
+    network = nic_params[:network].presence&.then { |v| Network.find_by_identifier!(v) }
     nic_params[:network_id] = network&.id
 
     delete_unchangable_nic_params(nic_params)

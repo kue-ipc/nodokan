@@ -225,6 +225,13 @@ Rails/Delegate:
   Exclude:
     - test/**/*.rb
 
+Rails/DynamicFindBy:
+  AllowedMethods:
+    - find_by_sql
+    - find_by_token_for
+    - find_by_identifier
+    - find_by_identifier!
+
 Rails/FilePath:
   EnforcedStyle: slashes
 

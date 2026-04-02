@@ -8,7 +8,7 @@ class UsersProcessor < ApplicationProcessor
   ].compact
 
   converter :auth_network, set: ->(record, value) {
-    record.auth_network = Network.find_identifier(value)
+    record.auth_network = Network.find_by_identifier!(value)
   }
 
   converter :networks,
@@ -27,7 +27,7 @@ class UsersProcessor < ApplicationProcessor
           default = idx.zero?
           manage = str.start_with?("*")
           str = str.delete_prefix("*") if manage
-          network = Network.find_identifier(str)
+          network = Network.find_by_identifier!(str)
           Assignment.new(network:, auth: false, use: true, default:, manage:)
         end
       else
@@ -36,7 +36,7 @@ class UsersProcessor < ApplicationProcessor
           default = idx.zero?
           manage = str.start_with?("*")
           str = str.delete_prefix("*") if manage
-          network = Network.find_identifier(str)
+          network = Network.find_by_identifier!(str)
           record.add_use_network(network, {default:, manage:})
           use_ids.delete(network.id)
         end
