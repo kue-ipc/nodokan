@@ -13,10 +13,15 @@ module Unique
         record[attr]
       end
 
-      define_singleton_method(:find_identifier) do |str|
+      define_singleton_method(:find_by_identifier) do |str|
         str = normalize.call(str) if normalize
-        find_by!(attr => str)
+        find_by(attr => str)
       end
+    end
+
+    def find_by_identifier!(str)
+      find_by_identifier(str) ||
+        raise(ActiveRecord::RecordNotFound, "Couldn't find #{model_name} with 'identifier'=#{str}")
     end
   end
 

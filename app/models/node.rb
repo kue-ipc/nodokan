@@ -6,7 +6,7 @@ class Node < ApplicationRecord
 
   has_paper_trail
 
-  identifiers "@",
+  identifiers "=",
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
             hostname, domain = value.split(".", 2)

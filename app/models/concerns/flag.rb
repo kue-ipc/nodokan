@@ -22,7 +22,6 @@ module Flag
       end
     end
 
-
     private def normalize_values(values)
       values.to_h
         .transform_keys(&:intern)

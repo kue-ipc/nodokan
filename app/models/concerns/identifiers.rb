@@ -2,47 +2,60 @@ module Identifiers
   extend ActiveSupport::Concern
   include SafeChar
 
+  class Identifier
+    attr_reader :key
+
+    def initialize(key, read:, find:)
+      @key = key
+      @read_proc = read.to_proc
+      @find_proc = find.to_proc
+    end
+
+    def read(record)
+      @read_proc.call(record).presence&.then { |value| "#{key}#{value}" }
+    end
+
+    def find(value)
+      @find_proc.call(value.delete_prefix(key)) if value.start_with?(key)
+    end
+  end
+
   included do
-    @id_read_list = []
-    @id_find_map = {}
+    @identifiers= []
+    @id_identifier = Identifier.new("/", read: :id.to_proc, find: self.method(:find))
   end
 
   class_methods do
-    def identifiers(key, attr = nil, read: nil, find: nil)
+    def identifiers(key, name = nil, read: nil, find: nil)
       check_safe_char(key)
-      read ||= attr
-      @id_read_list << [key, read.to_proc]
-
-      find ||= attr
-      if find.is_a?(Symbol)
-        name = find
-        find = ->(value) { find_by({name => value}) }
+      if name
+        read ||= name.to_proc
+        find ||=  ->(value) { find_by({name => value}) }
       end
-      @id_find_map[key] = find.to_proc if find
+      raise ArgumentError, "Either name or read and find procs must be provided" unless read && find
+
+      @identifiers << Identifier.new(key, read:, find:)
     end
 
     def read_identifier(record)
-      @id_read_list.each do |key, proc|
-        value = class_exec(record, &proc)
-        return "#{key}#{value}" if value.present?
+      @identifiers.each do |identifier|
+        str = identifier.read(record)
+        return str if str
       end
-      "##{record.id}"
+      @id_identifier.read(record)
     end
 
-    def find_identifier(str)
-      m = /\A(?<key>.)(?<value>.+)\z/.match(str.to_s.strip.downcase)
-      raise ArgumentError, "Invalid identifier format: #{str}" unless m
+    def find_by_identifier(str)
+      @identifiers.each do |identifier|
+        record = identifier.find(str)
+        return record if record
+      end
+      @id_identifier.find(str)
+    end
 
-      value =
-        if (proc = @id_find_map[m[:key]])
-          class_exec(m[:value], &proc)
-        elsif m[:key] == "#"
-          find(m[:value])
-        else
-          raise ArgumentError, "Unknown identifier type: #{str}"
-        end
-      raise(ActiveRecord::RecordNotFound, "Couldn't find #{model_name} with 'identifier'=#{str}") unless value
-      value
+    def find_by_identifier!(str)
+      find_by_identifier(str) ||
+        raise(ActiveRecord::RecordNotFound, "Couldn't find #{model_name} with 'identifier'=#{str}")
     end
 
     def find_ip_address(value, ipv4: :ipv4, ipv6: :ipv6)

@@ -8,8 +8,6 @@ class User < ApplicationRecord
 
   flag :flag, {deleted: "d"}
 
-  has_paper_trail
-
   # Include default devise modules.
   # :database_authenticatable or :ldap_authenticatable
   # Others available are:
