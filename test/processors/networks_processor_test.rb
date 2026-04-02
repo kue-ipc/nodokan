@@ -91,6 +91,7 @@ class NetworksProcessorTest < ActiveSupport::TestCase
       ipv6_gateway: "fd00:42::1",
       ipv6_pools: ["dfd00:42::2-fd00:42::10"],
     })
+    # assert_equal "", params
     assert_difference("Network.count") do
       @processor.create(params)
     end

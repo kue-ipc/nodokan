@@ -8,6 +8,7 @@ class NetworksProcessor < ApplicationProcessor
     :ipv6_network,  :ipv6_gateway, {ipv6_dns_servers: [], ipv6_pools: []},
     :note,
   ]
+  allow_nil_keys [:domain_search, :ipv4_dns_servers, :ipv6_dns_servers]
 
   converter :domain_search, :domain_search_data
 

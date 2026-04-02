@@ -48,6 +48,14 @@ class ApplicationProcessor
       end
     end
 
+    def allow_nil_keys(list = nil)
+      if list
+        @allow_nil_keys = list
+      else
+        @allow_nil_keys
+      end
+    end
+
     def converter(key, original_key = nil, get: nil, set: nil, nested: nil)
       converters[key] = Converter.new(original_key || key, get:, set:)
       nested&.each do |nested_key, nested_option|
@@ -66,6 +74,13 @@ class ApplicationProcessor
     end
   end
 
+  delegate :converters, to: :class
+  delegate :model, to: :class
+  # rubocop: disable Rails/Delegate
+  def keys = self.class.keys
+  def allow_nil_keys = self.class.allow_nil_keys
+  # rubocop: enable Rails/Delegate
+
   attr_reader :user
   alias current_user user
 
@@ -73,7 +88,7 @@ class ApplicationProcessor
     @user = user
   end
 
-  def serialize(record, keys: self.class.keys, converters: self.class.converters)
+  def serialize(record, keys: self.keys, converters: self.converters)
     return if record.nil?
 
     params = {}
@@ -98,10 +113,10 @@ class ApplicationProcessor
 
   def all
     if current_user
-      authorize self.class.model, "index?"
-      policy_scope(self.class.model).all
+      authorize model, "index?"
+      policy_scope(model).all
     else
-      self.class.model.all
+      model.all
     end
   end
 
@@ -143,7 +158,7 @@ class ApplicationProcessor
     instance_exec(record, param, &converters[key].set)
   end
 
-  private def each_keys(keys = self.class.keys, &block)
+  private def each_keys(keys = self.keys, &block)
     return enum_for(__method__, keys) unless block_given?
 
     keys.each do |key, value|
@@ -181,9 +196,9 @@ class ApplicationProcessor
   private def user_process(id, method)
     record =
       if id
-        self.class.model.find(id)
+        model.find(id)
       else
-        self.class.model.new(initial_model_attributes)
+        model.new(initial_model_attributes)
       end
 
     authorize record, "#{method}?" if current_user
@@ -205,8 +220,8 @@ class ApplicationProcessor
     nil
   end
 
-  private def assign_params(record, params, keys: self.class.keys, converters: self.class.converters)
-    permitted_params = permit_params(params, keys:)
+  private def assign_params(record, params)
+    permitted_params = permit_params(params)
     permitted_params.each do |key, value|
       Rails.logger.debug { "Processing param: #{key} = #{value.inspect}" }
       set_param(record, key.intern, value, converters)
@@ -214,7 +229,7 @@ class ApplicationProcessor
     record
   end
 
-  private def permit_params(params, keys: self.class.keys)
+  private def permit_params(params)
     StrictParameters.new(params).permit(keys)
   end
 end
