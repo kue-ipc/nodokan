@@ -9,11 +9,12 @@ class UserPolicy < ApplicationPolicy
     end
   end
 
-  def index?
-    user.admin?
-  end
-
   def show?
     user.admin? || record == user
+  end
+
+  # cannot destroy user by manual operation, but can be destroyed by ldap synchronization or other background process.
+  def destroy?
+    false
   end
 end

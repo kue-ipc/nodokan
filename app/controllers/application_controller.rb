@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
-  after_action :verify_authorized
 
   rescue_from DeviseLdapAuthenticatable::LdapException do |exception|
     render text: exception, status: :internal_server_error
@@ -10,6 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :set_paper_trail_whodunnit
 
   after_action :verify_authorized, unless: :devise_controller?
+  after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
 
   def t_success(model, action)
     t("messages.success_action", model: model.model_name.human,
