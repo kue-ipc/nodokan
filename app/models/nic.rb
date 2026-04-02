@@ -5,13 +5,13 @@ class Nic < ApplicationRecord
   include Ipv6Config
   include IpData
   include MacAddressData
-  include UniqueIdentifier
+  include Identifiers
   include Flag
 
   has_paper_trail
 
-  unique_identifier "i", :ipv4_address, find: ->(value) { find_ip_address(value) }
-  unique_identifier "k", :ipv6_address, find: ->(value) { find_ip_address(value) }
+  identifiers "i", :ipv4_address, find: ->(value) { find_ip_address(value) }
+  identifiers "k", :ipv6_address, find: ->(value) { find_ip_address(value) }
 
   flag :flag, {auth: "a", locked: "l"}
 

@@ -1,12 +1,12 @@
 class User < ApplicationRecord
-  include UniqueIdentifier
+  include Unique
   include Flag
 
-  unique_identifier "@", :username
+  has_paper_trail
 
-  flag :flag, {
-    deleted: "d",
-  }
+  unique :username, case_sensitive: true
+
+  flag :flag, {deleted: "d"}
 
   has_paper_trail
 

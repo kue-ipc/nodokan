@@ -1,5 +1,11 @@
 class Assignment < ApplicationRecord
+  include Flag
+
   has_paper_trail
+
+  flag :flag, {auth: "a", default: "d", manage: "m", use: "u"}
+
+  flag :use_prefix, {default: "+", manage: "^"}, readonly: true
 
   belongs_to :user, counter_cache: true
   belongs_to :network, counter_cache: true

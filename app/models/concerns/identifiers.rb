@@ -1,5 +1,6 @@
-module UniqueIdentifier
+module Identifiers
   extend ActiveSupport::Concern
+  include SafeChar
 
   included do
     @id_read_list = []
@@ -7,7 +8,8 @@ module UniqueIdentifier
   end
 
   class_methods do
-    def unique_identifier(key, attr = nil, read: nil, find: nil)
+    def identifiers(key, attr = nil, read: nil, find: nil)
+      check_safe_char(key)
       read ||= attr
       @id_read_list << [key, read.to_proc]
 

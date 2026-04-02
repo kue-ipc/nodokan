@@ -1,8 +1,10 @@
 class OsCategory < ApplicationRecord
   include Sanitizer
-  include UniqueName
+  include Unique
 
   has_paper_trail
+
+  unique :name, normalize: :squish
 
   has_many :operating_systems, dependent: :restrict_with_error
   has_many :security_softwares, dependent: :restrict_with_error

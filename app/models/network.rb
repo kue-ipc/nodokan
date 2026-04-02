@@ -3,17 +3,17 @@ class Network < ApplicationRecord
   include ListJsonData
   include IpData
   include ReplaceError
-  include UniqueIdentifier
+  include Identifiers
   include Flag
 
   IP_MASKS = (0..32).map { |i| IPAddr.new("0.0.0.0").mask(i).netmask }
 
   has_paper_trail
 
-  unique_identifier "v", :vlan
-  unique_identifier "i", :ipv4_network_address,
+  identifiers "v", :vlan
+  identifiers "i", :ipv4_network_address,
     find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
-  unique_identifier "k", :ipv6_network_address,
+  identifiers "k", :ipv6_network_address,
     find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
 
   flag :flag, {disabled: "x", unverifiable: "u", auth: "a", locked: "l", dhcp: "d"}

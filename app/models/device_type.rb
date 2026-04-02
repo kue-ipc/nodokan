@@ -1,8 +1,10 @@
 class DeviceType < ApplicationRecord
   include Sanitizer
-  include UniqueName
+  include Unique
 
   has_paper_trail
+
+  unique :name, normalize: :squish
 
   has_many :hardwares, dependent: :restrict_with_error
 

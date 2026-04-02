@@ -1,23 +1,23 @@
 class Node < ApplicationRecord
   include DuidData
-  include UniqueIdentifier
+  include Identifiers
   include Flag
   include Period
 
   has_paper_trail
 
-  unique_identifier "@",
+  identifiers "@",
     read: ->(record) { record.fqdn if record.domain.present? },
     find: ->(value) {
             hostname, domain = value.split(".", 2)
             find_by(hostname:, domain:) if hostname.present? && domain.present?
           }
 
-  unique_identifier "i",
+  identifiers "i",
     read: ->(record) { record.nics.find(&:has_ipv4?)&.ipv4_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
-  unique_identifier "k",
+  identifiers "k",
     read: ->(record) { record.nics.find(&:has_ipv6?)&.ipv6_address },
     find: ->(value) { Nic.find_ip_address(value).node }
 
