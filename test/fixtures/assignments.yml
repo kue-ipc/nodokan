@@ -28,7 +28,7 @@ staff_client:
 
 staff_ipv4only:
   user: staff
-  network: v4only
+  network: ipv4only
   auth: false
   use: true
   default: false
@@ -36,7 +36,7 @@ staff_ipv4only:
 
 staff_ipv6only:
   user: staff
-  network: v6only
+  network: ipv6only
   auth: false
   use: true
   default: false

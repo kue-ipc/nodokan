@@ -35,10 +35,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # index
 
-  test "should NOT get index" do
+  test "should get index" do
     sign_in users(:staff)
     get users_url
-    assert_response :forbidden
+    assert_response :success
   end
 
   test "admin should get index" do

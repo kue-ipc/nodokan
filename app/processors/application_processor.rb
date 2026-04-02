@@ -99,9 +99,9 @@ class ApplicationProcessor
   def all
     if current_user
       authorize self.class.model, "index?"
-      policy_scope(self.class.model).order(:id).all
+      policy_scope(self.class.model).all
     else
-      self.class.model.order(:id).all
+      self.class.model.all
     end
   end
 

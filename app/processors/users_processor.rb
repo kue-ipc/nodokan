@@ -13,34 +13,34 @@ class UsersProcessor < ApplicationProcessor
 
   converter :networks,
     get: ->(record) {
-      record.use_assignments.includes(:network)
-        .order(default: :desc, id: :asc)
-        .select(&:network)
-        .map do |assignment|
-          prefix = assignment.manage? ? "*" : ""
-          prefix + assignment.network.identifier
-      end
+      record.use_assignments.includes(:network).map { |assignment| serialize_use_assignment(assignment) }
     },
     set: ->(record, value) {
       if record.new_record?
-        record.assignments = value.each_with_index.map do |str, idx|
-          default = idx.zero?
-          manage = str.start_with?("*")
-          str = str.delete_prefix("*") if manage
-          network = Network.find_by_identifier!(str)
-          Assignment.new(network:, auth: false, use: true, default:, manage:)
+        record.assignments = value.map do |str|
+          deserialize_use_assignment(str)
         end
       else
         use_ids = record.use_network_ids
-        value.each_with_index do |str, idx|
-          default = idx.zero?
-          manage = str.start_with?("*")
-          str = str.delete_prefix("*") if manage
-          network = Network.find_by_identifier!(str)
-          record.add_use_network(network, {default:, manage:})
-          use_ids.delete(network.id)
+        value.each do |str|
+          assignment = deserialize_use_assignment(str)
+          record.add_use_network(assignment.network, {default: assignment.default, manage: assignment.manage})
+          use_ids.delete(assignment.network.id)
         end
         use_ids.each { |network_id| record.remove_use_network_id(network_id) }
       end
     }
+
+  def serialize_use_assignment(assignment)
+    "#{assignment.use_flag}#{assignment.network.identifier}"
+  end
+
+  def deserialize_use_assignment(str)
+    m = /\A([+^]*)(.*)\z/.match(str.strip)
+    network = Network.find_by_identifier!(m[2])
+    assignment = Assignment.new(network:, use: true)
+    assignment.use_flag = m[1]
+    assignment
+  end
+
 end

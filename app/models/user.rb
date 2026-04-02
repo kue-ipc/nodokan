@@ -215,8 +215,7 @@ class User < ApplicationRecord
   def auth_network=(network)
     if network && !network.is_a?(Network)
       raise ActiveRecord::AssociationTypeMismatch,
-        "Network expected, " \
-        "got #{network.inspect} which is an instance of #{network.class}"
+        "Network expected, got #{network.inspect} which is an instance of #{network.class}"
     end
 
     # no change

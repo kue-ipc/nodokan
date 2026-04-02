@@ -20,8 +20,8 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "index" do
     assert_permit(@admin, User, :index)
-    assert_not_permit(@user, User, :index)
-    assert_not_permit(@guest, User, :index)
+    assert_permit(@user, User, :index)
+    assert_permit(@guest, User, :index)
   end
 
   test "show" do
@@ -32,7 +32,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "create" do
-    assert_permit(@admin, User.new, :create)
+    assert_not_permit(@admin, User.new, :create)
     assert_not_permit(@user, User.new, :create)
     assert_not_permit(@guest, User.new, :create)
   end
@@ -44,7 +44,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy" do
-    assert_permit(@admin, @user, :destroy)
+    assert_not_permit(@admin, @user, :destroy)
     assert_not_permit(@user, @user, :destroy)
     assert_not_permit(@guest, @user, :destroy)
   end

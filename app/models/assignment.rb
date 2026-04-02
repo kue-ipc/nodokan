@@ -5,7 +5,7 @@ class Assignment < ApplicationRecord
 
   flag :flag, {auth: "a", default: "d", manage: "m", use: "u"}
 
-  flag :use_prefix, {default: "+", manage: "^"}, readonly: true
+  flag :use_flag, {default: "+", manage: "^"}
 
   belongs_to :user, counter_cache: true
   belongs_to :network, counter_cache: true

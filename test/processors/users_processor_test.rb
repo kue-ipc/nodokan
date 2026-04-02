@@ -11,7 +11,7 @@ class UsersProcessorTest < ActiveSupport::TestCase
       limit: user.limit,
       auth_network: user.auth_network&.identifier,
       networks: user.use_assignments.includes(:network)
-        .map { |assignment| assignment.use_prefix + assignment.network.identifier },
+        .map { |assignment| assignment.use_flag + assignment.network.identifier },
     }
   end
 
@@ -75,18 +75,9 @@ class UsersProcessorTest < ActiveSupport::TestCase
   test "admin: create user" do
     @processor = UsersProcessor.new(users(:admin))
     params = user_to_params(@user)
-    # params[:fqdn] = "new.example.jp"
-    # params[:duid] = "00-04-11-22-33-44-55-66"
-    # params[:nics][0][:mac_address] = "00-11-22-33-44-FF"
-    assert_difference("User.count") do
+    assert_raise Pundit::NotAuthorizedError do
       @processor.create(params)
     end
-    # assert_equal @user.name, User.last.name
-    # assert_equal @user.place_id, User.last.place_id
-    # assert_equal @user.hardware_id, User.last.hardware_id
-    # assert_equal @user.operating_system_id, User.last.operating_system_id
-    # assert_equal params.except(:nics), @processor.serialize(User.last).except(:nics)
-    # assert_equal params[:nics][0][:mac_address], User.last.nics.first.mac_address
   end
 
   test "admin: update user" do

@@ -13,7 +13,12 @@ class UserPolicy < ApplicationPolicy
     user.admin? || record == user
   end
 
-  # cannot destroy user by manual operation, but can be destroyed by ldap synchronization or other background process.
+  # No one can create or destroy users. All users are created and destroyed by LDAP synchronization.
+
+  def create?
+    false
+  end
+
   def destroy?
     false
   end

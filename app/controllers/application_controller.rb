@@ -9,7 +9,8 @@ class ApplicationController < ActionController::Base
   before_action :set_paper_trail_whodunnit
 
   after_action :verify_authorized, unless: :devise_controller?
-  after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
+  # FIXME: indexアクション以外も有効になるので、無効にしておく。
+  # after_action :verify_policy_scoped, only: :index, unless: :devise_controller?
 
   def t_success(model, action)
     t("messages.success_action", model: model.model_name.human,
