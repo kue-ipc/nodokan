@@ -1,8 +1,9 @@
+# class method
+#   class_name
+#   params_permit
+#   convert_map
 class ApplicationProcessor
-  # class method
-  #   class_name
-  #   params_permit
-  #   convert_map
+  include Pundit::Authorization
 
   class Converter
     attr_reader :key, :get, :set, :nested_converters
@@ -72,10 +73,6 @@ class ApplicationProcessor
     @user = user
   end
 
-  def has_privilege?
-    user.nil? || user.admin?
-  end
-
   def serialize(record, keys: self.class.keys, converters: self.class.converters)
     return if record.nil?
 
@@ -99,24 +96,18 @@ class ApplicationProcessor
     params
   end
 
-  def index
-    if user
-      policy = Pundit.policy(user, self.class.model)
-      unless policy.index?
-        raise Pundit::NotAuthorizedError, "not allowed to index this model"
-      end
-      Pundit.policy_scope(user, self.class.model).order(:id).all
+  def all
+    if current_user
+      authorize self.class.model, "index?"
+      policy_scope(self.class.model).order(:id).all
     else
       self.class.model.order(:id).all
     end
   end
 
-  alias all index
+  def ids = all.ids # rubocop: disable Rails/Delegate
 
-  def ids # rubocop: disable Rails/Delegate
-    all.ids
-  end
-
+  def index = all.to_a
 
   def show(id)
     user_process(id, __method__)
@@ -195,12 +186,7 @@ class ApplicationProcessor
         self.class.model.new(initial_model_attributes)
       end
 
-    if user
-      policy = Pundit.policy(user, record)
-      unless policy.__send__(:"#{method}?")
-        raise Pundit::NotAuthorizedError, "not allowed to #{method} this record"
-      end
-    end
+    authorize record, "#{method}?" if current_user
 
     if block_given?
       if user
@@ -228,7 +214,7 @@ class ApplicationProcessor
     record
   end
 
-  def permit_params(params, keys: self.class.keys)
+  private def permit_params(params, keys: self.class.keys)
     StrictParameters.new(params).permit(keys)
   end
 end

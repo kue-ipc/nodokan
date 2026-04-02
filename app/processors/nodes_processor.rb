@@ -28,13 +28,13 @@ class NodesProcessor < ApplicationProcessor
   converter :user,
     get: ->(record) { record.user&.username },
     set: ->(record, value) {
-      if has_privilege?
+      if current_user.nil? || current_user.admin?
         record.user = value.presence && User.find_by!(username: value)
       end
     }
 
   converter :flag, set: ->(record, value) {
-    if has_privilege?
+    if current_user.nil? || current_user.admin?
       record.flag = value
     end
   }

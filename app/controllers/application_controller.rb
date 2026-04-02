@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
+  after_action :verify_authorized
 
   rescue_from DeviseLdapAuthenticatable::LdapException do |exception|
     render text: exception, status: :internal_server_error
