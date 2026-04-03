@@ -52,7 +52,7 @@ class ApplicationProcessor
       if list
         @allow_nil_keys = list
       else
-        @allow_nil_keys
+        @allow_nil_keys || []
       end
     end
 
