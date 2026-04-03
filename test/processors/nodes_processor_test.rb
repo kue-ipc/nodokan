@@ -89,7 +89,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
     params = node_to_params(@node)
     params[:fqdn] = "new.example.jp"
     params[:duid] = "00-04-11-22-33-44-55-66"
-    params[:nics][0][:mac_address] = "00-11-22-33-44-FF"
+    params[:nics][0][:mac_address] = "33-11-22-33-44-FF"
     assert_difference("Node.count") do
       @processor.create(params)
     end
@@ -121,7 +121,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
     params = node_to_params(@node)
     params[:nics] = [{
       **params[:nics][0],
-      number: 2,
+      number: nil,
       mac_address: "00-11-22-33-44-FF",
     }]
     assert_difference("Nic.count") do
@@ -129,6 +129,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
     end
     @node.reload
     assert_equal 2, @node.nics.count
+    assert_equal 2, Nic.last.number
   end
 
   test "update node delete nic" do

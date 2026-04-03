@@ -17,12 +17,18 @@ class UsersProcessor < ApplicationProcessor
     },
     set: ->(record, value) {
       if record.new_record?
-        record.assignments = value.map do |str|
-          deserialize_use_assignment(str)
+        value&.each do |str|
+          assignment = deserialize_use_assignment(str)
+          record.assignments.build({
+            network_id: assignment.network_id,
+            use: true,
+            default: assignment.default,
+            manage: assignment.manage,
+          })
         end
       else
         use_ids = record.use_network_ids
-        value.each do |str|
+        value&.each do |str|
           assignment = deserialize_use_assignment(str)
           record.add_use_network(assignment.network, {default: assignment.default, manage: assignment.manage})
           use_ids.delete(assignment.network.id)

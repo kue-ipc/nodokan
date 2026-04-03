@@ -44,7 +44,11 @@ class NodesProcessor < ApplicationProcessor
   }
 
   converter :components, set: ->(record, value) {
-    record.components = value.map { |v| Node.find_by_identifier!(v) }
+    # record.components = value.map { |v| Node.find_by_identifier!(v) }
+    record.components.clear
+    value&.each do |v|
+      record.components << Node.find_by_identifier!(v)
+    end
   }
 
   converter :place, set: ->(record, value) {
@@ -60,23 +64,19 @@ class NodesProcessor < ApplicationProcessor
   }
 
   converter :nics, set: ->(record, value) {
-    value.each do |nic_params|
-      nic_params = nic_params.dup
-
-      number = nic_params[:number]
-      number = number.strip if number.is_a?(String)
-      case number
-      when nil, ""
+    value&.each do |nic_params|
+      case nic_params.to_h
+      in {number: Integer, _destroy: true}
+        destroy_nic(record, nic_params)
+      in {number: Integer}
+        update_nic(record, nic_params)
+      in {number: nil}
         create_nic(record, nic_params)
-      when Integer, /\A\d+\z/
-        number = number.to_i
-        update_nic(record, number, nic_params)
-      when /\A!(\d+)\z/
-        number = number.delete_prefix("!").to_i
-        delete_nic(record, number)
-      else
+      in {number: _}
         record.errors.add(:nics, I18n.t("errors.messages.invalid_nic_number_field"))
         raise ActiveRecord::Rollback
+      else
+        create_nic(record, nic_params)
       end
     rescue UnusableNetworkError
       record.errors.add(:nics, I18n.t("errors.messages.unusable_network"))
@@ -106,7 +106,7 @@ class NodesProcessor < ApplicationProcessor
 
   private def create_nic(record, nic_params)
     if nic_params[:number].blank?
-      nic_params[:number] = (record.nics.map(&:number).max || 0) + 1
+      nic_params[:number] = (record.nics.maximum(:number) || 0) + 1
     end
 
     normalize_nic_params(nic_params)
@@ -117,8 +117,8 @@ class NodesProcessor < ApplicationProcessor
     end
   end
 
-  private def update_nic(record, nic_number, nic_params)
-    nic = Nic.find_by(node_id: record.id, number: nic_number)
+  private def update_nic(record, nic_params)
+    nic = Nic.find_by(node_id: record.id, number: nic_params[:number])
     return create_nic(record, nic_params) if nic.nil?
 
     nic_params[:id] = nic&.id
@@ -126,8 +126,8 @@ class NodesProcessor < ApplicationProcessor
     nic.update!(nic_params)
   end
 
-  private def delete_nic(record, nic_number)
-    nic = Nic.find_by(node_id: record.id, number: nic_number)
+  private def destroy_nic(record, nic_params)
+    nic = Nic.find_by(node_id: record.id, number: nic_params[:number])
     return if nic.nil?
 
     nic.destroy!

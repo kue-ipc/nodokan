@@ -48,12 +48,21 @@ class ApplicationProcessor
       end
     end
 
-    def allow_nil_keys(list = nil)
-      if list
-        @allow_nil_keys = list
-      else
-        @allow_nil_keys || []
-      end
+    def array_keys
+      @array_keys ||= keys.select do |key, permitted|
+        case permitted
+        in [[*]]
+          true
+        in {**}
+          true
+        else
+          false
+        end
+      end.map { |key, _| key }
+    end
+
+    def array_of_hashes_keys
+
     end
 
     def converter(key, original_key = nil, get: nil, set: nil, nested: nil)
@@ -95,16 +104,14 @@ class ApplicationProcessor
     each_keys(keys) do |key, permitted|
       value = get_param(record, key, converters)
       case permitted
-      in nil | [] | {}
+      in nil | [] | {} # scalar, array, hash
         params[key] = convert_value(value)
-      in [[*next_keys]]
+      in [[*next_keys]] # array of records
         params[key] = []
         value.each do |v|
           params[key] << serialize(v, keys: next_keys, converters: converters[key].nested_converters)
         end
-      in [*]
-        params[key] = serialize(value, keys: permitted, converters: converters[key].nested_converters)
-      in {**}
+      in [*] | {**} # record
         params[key] = serialize(value, keys: permitted, converters: converters[key].nested_converters)
       end
     end
@@ -230,12 +237,55 @@ class ApplicationProcessor
   end
 
   private def permit_params(params)
-    nil_keys = allow_nil_keys.select do |key|
-      params.key?(key) && params[key].nil?
-    end
-    params = params.except(*nil_keys) if nil_keys.present?
+    params = params.deep_dup
+    skip_params = delete_skip_params(params)
     permitted_params = StrictParameters.new(params).permit(keys)
-    permitted_params.merge!(nil_keys.index_with { |_| nil }) if nil_keys.present?
+    permitted_params.deep_merge!(skip_params) do |key, old_val, new_val|
+      if (old_val in [StrictParameters, *]) && (new_val in [Hash, *])
+        old_val.zip(new_val).map do |old_item, new_item|
+          if old_item.is_a?(StrictParameters) && new_item.is_a?(Hash)
+            old_item.deep_merge!(new_item)
+          else
+            new_item
+          end
+        end
+      else
+        new_val
+      end
+    end
     permitted_params
+  end
+
+  private def delete_skip_params(params, keys = self.keys)
+    return unless params.is_a?(Hash)
+
+    skip_params = {}
+    skip_params[:_destroy] = params.delete(:_destroy) if params.key?(:_destroy)
+    each_keys(keys) do |key, permitted|
+      if params.key?(key)
+        case permitted
+        in nil # scalor
+          # do nothing
+        in [] # array of scalors
+          skip_params[key] = params.delete(key)
+        in [[*next_keys]] # array of hashes
+          if params[key].nil?
+            skip_params[key] = params.delete(key)
+          elsif params[key].is_a?(Array)
+            skip_params[key] = []
+            params[key].each do |sub_params|
+              skip_params[key] << delete_skip_params(sub_params, next_keys)
+            end
+          end
+        in [*] | {**} # hash
+          if params[key].nil?
+            skip_params[key] = params.delete(key)
+          else
+            skip_params[key] = delete_skip_params(params[key], permitted)
+          end
+        end
+      end
+    end
+    skip_params
   end
 end

@@ -8,7 +8,6 @@ class NetworksProcessor < ApplicationProcessor
     :ipv6_network,  :ipv6_gateway, {ipv6_dns_servers: [], ipv6_pools: []},
     :note,
   ]
-  allow_nil_keys [:domain_search, :ipv4_dns_servers, :ipv6_dns_servers]
 
   converter :domain_search, :domain_search_data
 
@@ -18,7 +17,7 @@ class NetworksProcessor < ApplicationProcessor
   converter :ipv4_pools, set: ->(record, value) {
     # record.ipv4_pools = value.map { |identifier| Ipv4Pool.new_identifier(identifier) }
     record.ipv4_pools.clear
-    value.each do |identifier|
+    value&.each do |identifier|
       record.ipv4_pools << Ipv4Pool.new_identifier(identifier)
     end
   }
@@ -29,7 +28,7 @@ class NetworksProcessor < ApplicationProcessor
   converter :ipv6_pools, set: ->(record, value) {
     # record.ipv6_pools = value.map { |identifier| Ipv6Pool.new_identifier(identifier) }
     record.ipv6_pools.clear
-    value.each do |identifier|
+    value&.each do |identifier|
       record.ipv6_pools << Ipv6Pool.new_identifier(identifier)
     end
   }
