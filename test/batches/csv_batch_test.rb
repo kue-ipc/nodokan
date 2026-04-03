@@ -20,7 +20,7 @@ class CsvBatchTest < ActiveSupport::TestCase
         id: 1,
         string: "test1",
         boolean: "t",
-        number: "42",
+        number: 42,
         list: ["a", "b"],
         dict: {key1: "value1", key2: "value2"},
         dict_list: [
@@ -84,6 +84,23 @@ class CsvBatchTest < ActiveSupport::TestCase
         2,,f,,,,,,,,
         3,,,,,,,,,,
         CSV
+    end
+  end
+
+  test "nested number keys" do
+    input = StringIO.new <<~CSV
+      id,data[][number],data[][x]
+      1,1,a
+      2,!2,b
+      3,!,c
+      4,,d
+    CSV
+    @batch.open_input(input) do |desc|
+      assert_equal({id: 1, data: [{number: 1, x: "a"}]}, @batch.gets_params(desc))
+      assert_equal({id: 2, data: [{number: 2, x: "b", _destroy: true}],}, @batch.gets_params(desc))
+      assert_equal({id: 3, data: [{number: nil, x: "c"}],}, @batch.gets_params(desc))
+      assert_equal({id: 4, data: [{x: "d"}],}, @batch.gets_params(desc))
+      assert_nil @batch.gets_params(desc)
     end
   end
 end

@@ -67,7 +67,19 @@ class CsvBatch < ApplicationBatch
         case keys
         in []
           # a
-          cur_params[cur_key] = value
+          if cur_key == :number
+            case value&.strip
+            when /\A\d+\z/
+              cur_params[cur_key] = value.to_i
+            when /\A!\d+\z/
+              cur_params[cur_key] = value.delete_prefix("!").to_i
+              cur_params[:_destroy] = true
+            else
+              cur_params[cur_key] = value
+            end
+          else
+            cur_params[cur_key] = value
+          end
         in [nil]
           # a[]
           keys.shift
@@ -78,7 +90,7 @@ class CsvBatch < ApplicationBatch
           cur_params[cur_key] = []
           cur_params[cur_key][number] = value
         in [nil | Integer, Symbol, *]
-          # a[][c] or  a[0][c]
+          # a[][b] or  a[0][b]
           number = keys.shift.to_i
           cur_params[cur_key] ||= []
           cur_params[cur_key][number] ||= {}
