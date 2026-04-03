@@ -6,7 +6,7 @@ module Ipv4Config
     reserved: "r",
     static: "s",
     manual: "m",
-    disabled: "!",
+    disabled: "x",
   }.freeze
 
   included do

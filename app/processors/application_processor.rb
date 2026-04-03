@@ -230,6 +230,12 @@ class ApplicationProcessor
   end
 
   private def permit_params(params)
-    StrictParameters.new(params).permit(keys)
+    nil_keys = allow_nil_keys.select do |key|
+      params.key?(key) && params[key].nil?
+    end
+    params = params.except(*nil_keys) if nil_keys.present?
+    permitted_params = StrictParameters.new(params).permit(keys)
+    permitted_params.merge!(nil_keys.index_with { |_| nil }) if nil_keys.present?
+    permitted_params
   end
 end

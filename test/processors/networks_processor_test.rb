@@ -89,7 +89,7 @@ class NetworksProcessorTest < ActiveSupport::TestCase
       ipv4_pools: ["d192.168.42.1-192.168.42.10"],
       ipv6_network: "fd00:42::/64",
       ipv6_gateway: "fd00:42::1",
-      ipv6_pools: ["dfd00:42::2-fd00:42::10"],
+      ipv6_pools: ["sfd00:42::2-fd00:42::10"],
     })
     # assert_equal "", params
     assert_difference("Network.count") do
@@ -104,10 +104,10 @@ class NetworksProcessorTest < ActiveSupport::TestCase
       vlan: 2,
       ipv4_network: "192.168.42.0/24",
       ipv4_gateway: "192.168.42.254",
-      ipv4_pools: ["d192.168.42.1-192.168.42.10"],
+      ipv4_pools: ["d[192.168.42.1-192.168.42.10]"],
       ipv6_network: "fd00:42::/64",
       ipv6_gateway: "fd00:42::1",
-      ipv6_pools: ["dfd00:42::2-fd00:42::10"],
+      ipv6_pools: ["s[fd00:42::2-fd00:42::10]"],
     })
     assert_no_difference("Network.count") do
       @processor.update(@network.id, params)

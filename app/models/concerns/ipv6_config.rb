@@ -7,7 +7,7 @@ module Ipv6Config
     static: "s",
     mapped: "p",
     manual: "m",
-    disabled: "!",
+    disabled: "x",
   }.freeze
 
   included do
