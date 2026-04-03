@@ -6,19 +6,19 @@ class ConfirmationsProcessorTest < ActiveSupport::TestCase
       name: node.name,
       address: node_address(node),
       os_category: node.operating_system&.os_category&.name,
-      status: node.confirmation.status,
-      existence: node.confirmation.existence,
-      content: node.confirmation.content,
-      os_update: node.confirmation.os_update,
-      app_update: node.confirmation.app_update,
-      software: node.confirmation.software,
-      security_hardwares: node.confirmation.security_hardwares,
+      status: node.solid_confirmation.status,
+      existence: node.solid_confirmation.existence,
+      content: node.solid_confirmation.content,
+      os_update: node.solid_confirmation.os_update,
+      app_update: node.solid_confirmation.app_update,
+      software: node.solid_confirmation.software,
+      security_hardwares: node.solid_confirmation.security_hardwares,
       security_software: {
-        installation_method: node.confirmation.security_software.installation_method,
-        name: node.confirmation.security_software.name,
+        installation_method: node.solid_confirmation.security_software&.installation_method,
+        name: node.solid_confirmation.security_software&.name,
       },
-      security_update: node.confirmation.security_update,
-      security_scan: node.confirmation.security_scan,
+      security_update: node.solid_confirmation.security_update,
+      security_scan: node.solid_confirmation.security_scan,
     }
   end
 
@@ -77,6 +77,15 @@ class ConfirmationsProcessorTest < ActiveSupport::TestCase
     @node.reload
     assert_in_delta Time.current, @node.confirmation.confirmed_at, 1.minute
   end
+
+  test "update confirmation of other" do
+    @node = nodes(:other_desktop)
+    params = node_to_confirmation_params(@node)
+    assert_raise Pundit::NotAuthorizedError do
+      @processor.update(@node.id, params)
+    end
+  end
+
 
   test "desroy confirmation" do
     assert_raise do

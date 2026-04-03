@@ -117,6 +117,30 @@ class NodesProcessorTest < ActiveSupport::TestCase
     assert_equal "Updated OS Name", @node.operating_system.name
   end
 
+  test "update node add nic" do
+    params = node_to_params(@node)
+    params[:nics] = [{
+      **params[:nics][0],
+      number: 2,
+      mac_address: "00-11-22-33-44-FF",
+    }]
+    assert_difference("Nic.count") do
+      @processor.update(@node.id, params)
+    end
+    @node.reload
+    assert_equal 2, @node.nics.count
+  end
+
+  test "update node delete nic" do
+    params = node_to_params(@node)
+    params[:nics][0][:_destroy] = true
+    assert_difference("Nic.count", -1) do
+      @processor.update(@node.id, params)
+    end
+    @node.reload
+    assert_equal 0, @node.nics.count
+  end
+
   test "desroy node" do
     assert_difference("Node.count", -1) do
       @processor.destroy(@node.id)
