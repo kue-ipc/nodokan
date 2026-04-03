@@ -7,6 +7,7 @@ class ConfirmationsProcessor < ApplicationProcessor
   keys [
     :name,
     :address,
+    :os_category,
     :status,
     :existence,
     :content,
@@ -23,13 +24,24 @@ class ConfirmationsProcessor < ApplicationProcessor
 
   converter :address,
     get: ->(record) {
-      (record.fqdn if record.domain.present?) ||
-        record.nics.find(&:has_ipv4?)&.ipv4_address ||
-        record.nics.find(&:has_ipv6?)&.ipv6_address ||
-        record.nics.find(&:has_mac_address?)&.mac_address ||
-        # record.duid ||
+      if record.domain.present?
+        record.fqdn
+      elsif (nic = record.nics.find(&:has_ipv4?))
+        nic.ipv4_address
+      elsif (nic = record.nics.find(&:has_ipv6?))
+        nic.ipv6_address
+      elsif (nic = record.nics.find(&:has_mac_address?))
+        nic.mac_address
+      elsif record.duid.present?
+        record.duid
+      else
         ""
+      end
     },
+    set: ->(record, value) { }
+
+  converter :os_category,
+    get: ->(record) { record.operating_system&.os_category&.name },
     set: ->(record, value) { }
 
   converter :status,
