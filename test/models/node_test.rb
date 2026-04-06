@@ -172,7 +172,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_not @node.should_destroy?
   end
 
-    test "should not destroy specific node" do
+  test "should not destroy specific node" do
     @node.nics.update!(auth_at: (1.year + 2.months).ago)
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.reload

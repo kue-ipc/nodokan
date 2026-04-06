@@ -80,7 +80,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
     assert_no_enqueued_emails do
       NodeCheckPerUserJob.perform_now(@user)
     end
- end
+  end
 
 
   test "should disable node that expired a long time ago" do

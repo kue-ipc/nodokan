@@ -61,10 +61,6 @@ class ApplicationProcessor
       end.map { |key, _| key }
     end
 
-    def array_of_hashes_keys
-
-    end
-
     def converter(key, original_key = nil, get: nil, set: nil, nested: nil)
       converters[key] = Converter.new(original_key || key, get:, set:)
       nested&.each do |nested_key, nested_option|

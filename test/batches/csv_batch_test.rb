@@ -97,9 +97,9 @@ class CsvBatchTest < ActiveSupport::TestCase
     CSV
     @batch.open_input(input) do |desc|
       assert_equal({id: 1, data: [{number: 1, x: "a"}]}, @batch.gets_params(desc))
-      assert_equal({id: 2, data: [{number: 2, x: "b", _destroy: true}],}, @batch.gets_params(desc))
-      assert_equal({id: 3, data: [{number: nil, x: "c"}],}, @batch.gets_params(desc))
-      assert_equal({id: 4, data: [{x: "d"}],}, @batch.gets_params(desc))
+      assert_equal({id: 2, data: [{number: 2, x: "b", _destroy: true}]}, @batch.gets_params(desc))
+      assert_equal({id: 3, data: [{number: nil, x: "c"}]}, @batch.gets_params(desc))
+      assert_equal({id: 4, data: [{x: "d"}]}, @batch.gets_params(desc))
       assert_nil @batch.gets_params(desc)
     end
   end

@@ -48,5 +48,4 @@ class UsersProcessor < ApplicationProcessor
     assignment.use_flag = m[1]
     assignment
   end
-
 end

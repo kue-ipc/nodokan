@@ -119,14 +119,13 @@ class User < ApplicationRecord
       conf[:group].nil? || conf[:group] == "*" ||
         ldap_groups.include?(conf[:group])
     end.select do |conf|
-      conf[:attribute].nil? ||
-        conf[:attribute].all? do |k, v|
-          if v == "*"
-            !ldap_entry.first(k).nil?
-          else
-            ldap_entry[k].include?(v)
-          end
-       end
+      conf[:attribute].nil? || conf[:attribute].all? do |k, v|
+        if v == "*"
+          !ldap_entry.first(k).nil?
+        else
+          ldap_entry[k].include?(v)
+        end
+      end
     end
 
     config = {
