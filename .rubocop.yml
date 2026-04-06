@@ -1,6 +1,11 @@
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
+# plugins
+plugins:
+  - rubocop-minitest
+  - rubocop-rake
+
 # Overwrite or add rules to create your own house style
 
 AllCops:

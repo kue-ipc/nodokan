@@ -107,6 +107,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  ## Other gems
+  gem "rubocop-minitest", require: false
+  gem "rubocop-rake", require: false
 end
 
 group :development do
