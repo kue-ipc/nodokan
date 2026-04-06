@@ -130,6 +130,16 @@ class Nic < ApplicationRecord
     end
   end
 
+  def connected_at
+    [
+        ipv4_resolved_at,
+        ipv6_discovered_at,
+        ipv4_leased_at,
+        ipv6_leased_at,
+        auth_at,
+    ].compact.max
+  end
+
   private def auto_assign_ipv4
     if network.nil?
       self.ipv4 = nil

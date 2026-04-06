@@ -174,15 +174,7 @@ class Node < ApplicationRecord
   end
 
   def connected_at
-    nics.flat_map do |nic|
-      [
-        :ipv4_resolved_at,
-        :ipv6_discovered_at,
-        :ipv4_leased_at,
-        :ipv6_leased_at,
-        :auth_at,
-      ].map { |name| nic[name] }
-    end.compact.max
+    nics.map(&:connected_at).compact.max
   end
 
   def solid_confirmation
