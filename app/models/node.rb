@@ -174,9 +174,7 @@ class Node < ApplicationRecord
   end
 
   def connected_at
-    return @connected_at if @connected_at_checked
-
-    @connected_at = nics.flat_map do |nic|
+    nics.flat_map do |nic|
       [
         :ipv4_resolved_at,
         :ipv6_discovered_at,
@@ -185,8 +183,6 @@ class Node < ApplicationRecord
         :auth_at,
       ].map { |name| nic[name] }
     end.compact.max
-    @connected_at_checked = true
-    @connected_at
   end
 
   def solid_confirmation

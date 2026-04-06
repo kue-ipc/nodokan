@@ -86,9 +86,9 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   test "should disable node that expired a long time ago" do
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.reload
-    assert_equal :expired, @node.confirmation.status
-    assert_operator @node.confirmation.expiration, :<, 1.year.ago
     assert_operator @node.connected_at, :>, 1.year.ago
+    assert_operator @node.confirmation.expiration, :<, 1.year.ago
+    assert_equal :expired, @node.confirmation.status
     assert @node.should_disable?
 
     assert_enqueued_email_with NoticeNodesMailer, :expired, params: {user: @user, nodes: [@node]} do
@@ -118,12 +118,12 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   end
 
   test "should destroy node that expired and connected a long time ago" do
+    @node.nics.update!(auth_at: (1.year + 2.months).ago)
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
-    @node.nics.first.update!(auth_at: (1.year + 2.months).ago)
     @node.reload
-    assert_equal :expired, @node.confirmation.status
-    assert_operator @node.confirmation.expiration, :<, 1.year.ago
     assert_operator @node.connected_at, :<, 1.year.ago
+    assert_operator @node.confirmation.expiration, :<, 1.year.ago
+    assert_equal :expired, @node.confirmation.status
     assert @node.should_disable?
     assert @node.should_destroy?
 
