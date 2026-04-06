@@ -188,6 +188,8 @@ class Node < ApplicationRecord
   def should_destroy?(time: Time.current)
     # should not destroy node if it is permanent
     return false if permanent?
+    # should not destroy node if it is specific
+    return false if Settings.feature.specific_node && specific?
     # sholud not destroy node with nics connected to unverifeable newtworks
     return false if nics.any? { |nic| nic.network&.unverifiable }
     if connected_at
@@ -209,6 +211,8 @@ class Node < ApplicationRecord
     return false unless Settings.feature.confirmation
     # should not disable node if it is permanent
     return false if permanent?
+    # should not disable node if it is specific
+    return false if Settings.feature.specific_node && specific?
 
     confirmation_or_build.should_disable_node?(time:)
   end

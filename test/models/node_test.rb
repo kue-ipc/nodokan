@@ -168,6 +168,22 @@ class NodeTest < ActiveSupport::TestCase
 
     @node.update!(permanent: true)
     @node.reload
+    assert @node.permanent?
+    assert_not @node.should_destroy?
+  end
+
+    test "should not destroy specific node" do
+    @node.nics.update!(auth_at: (1.year + 2.months).ago)
+    @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
+    @node.reload
+    assert_operator @node.connected_at, :<, 1.year.ago
+    assert_operator @node.confirmation.expiration, :<, 1.year.ago
+    assert_equal :expired, @node.confirmation_status
+    assert @node.should_destroy?
+
+    @node.update!(specific: true)
+    @node.reload
+    assert @node.specific?
     assert_not @node.should_destroy?
   end
 
@@ -218,6 +234,18 @@ class NodeTest < ActiveSupport::TestCase
 
     @node.update!(permanent: true)
     assert @node.permanent?
+    assert_not @node.should_disable?
+  end
+
+  test "should not disable specific node" do
+    @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
+    @node.reload
+    assert_operator @node.confirmation.expiration, :<, 1.year.ago
+    assert_equal :expired, @node.confirmation_status
+    assert @node.should_disable?
+
+    @node.update!(specific: true)
+    assert @node.specific?
     assert_not @node.should_disable?
   end
 end
