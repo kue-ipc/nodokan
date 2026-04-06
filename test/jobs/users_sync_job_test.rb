@@ -58,7 +58,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     adapter.verify
 
     User.find_each do |user|
-      assert_equal true, user.deleted
+      assert user.deleted
     end
   end
 
@@ -224,7 +224,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
 
       assert_equal "dummy@example.jp", user.email
       assert_equal "dummy full", user.fullname
-      assert_equal false, user.deleted
+      assert_not user.deleted
     end
   end
 end

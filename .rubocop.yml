@@ -271,3 +271,14 @@ Rails/FilePath:
 Rails/HasAndBelongsToMany:
   Enabled: false
 
+# Minitset
+# https://docs.rubocop.org/rubocop-minitest/latest/cops_minitest.html
+
+# TODO: テストはもっと分割すべき
+Minitest/MultipleAssertions:
+  Enabled: false
+
+# Rake
+
+Rake/Desc:
+  Enabled: false
