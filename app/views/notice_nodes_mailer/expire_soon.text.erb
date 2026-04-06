@@ -3,5 +3,5 @@
 <%= t(".message") %>
 <%= t(".action_to_taken") %>
 <%= render "node_list", nodes: @nodes do |node| -%>
-<%= Confirmation.human_attribute_name(:expiration) %>: <%= l(node.solid_confirmation.expiration, format: :long) %>
+<%= Confirmation.human_attribute_name(:expiration) %>: <%= l(node.confirmation_or_build.expiration, format: :long) %>
 <% end %>

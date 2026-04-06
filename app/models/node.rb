@@ -177,8 +177,12 @@ class Node < ApplicationRecord
     nics.map(&:connected_at).compact.max
   end
 
-  def solid_confirmation
+  def confirmation_or_build
     confirmation || build_confirmation
+  end
+
+  def confirmation_status(time: Time.current)
+    confirmation_or_build.status(time:)
   end
 
   def should_destroy?(time: Time.current)
@@ -197,7 +201,7 @@ class Node < ApplicationRecord
     # always destroy node if confirmation is disabled
     return true unless Settings.feature.confirmation
 
-    solid_confirmation.should_destory_node?(time:)
+    confirmation_or_build.should_destory_node?(time:)
   end
 
   def should_disable?(time: Time.current)
@@ -206,7 +210,7 @@ class Node < ApplicationRecord
     # should not disable node if it is permanent
     return false if permanent?
 
-    solid_confirmation.should_disable_node?(time:)
+    confirmation_or_build.should_disable_node?(time:)
   end
 
   def need_notice?(name, time: Time.current)

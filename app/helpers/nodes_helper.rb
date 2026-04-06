@@ -88,7 +88,7 @@ module NodesHelper
   end
 
   def init_confirmation(node)
-    confirmation = node.solid_confirmation
+    confirmation = node.confirmation_or_build
     # check os
     if node.operating_system.nil?
       confirmation.security_software = nil
@@ -136,7 +136,7 @@ module NodesHelper
   end
 
   def node_confirmation_decorated(node)
-    case node.solid_confirmation.status
+    case node.confirmation_status
     when :unconfirmed
       tag.i(class: "fas fa-times-circle text-danger-emphasis") +
         tag.span(t("messages.unconfirmed"), class: "text-danger-emphasis")

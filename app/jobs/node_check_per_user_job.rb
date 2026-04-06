@@ -104,7 +104,7 @@ class NodeCheckPerUserJob < ApplicationJob
         end
       elsif Settings.feature.confirmation
         @update_dict[:reset_execution] << node
-        case (status = node.solid_confirmation.status(time: @time))
+        case (status = node.confirmation_status(time: @time))
         when :unconfirmed, :expired, :expire_soon
           @notice_dict[status] << node
         else

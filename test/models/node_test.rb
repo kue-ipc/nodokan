@@ -121,7 +121,7 @@ class NodeTest < ActiveSupport::TestCase
     @node.reload
     assert_operator @node.connected_at, :<, 1.year.ago
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
-    assert_equal :expired, @node.confirmation.status
+    assert_equal :expired, @node.confirmation_status
     assert @node.should_destroy?
 
     # not connected and expired -> destroy
@@ -131,7 +131,7 @@ class NodeTest < ActiveSupport::TestCase
     assert_operator @node.created_at, :<, 1.month.ago
     assert_nil @node.connected_at
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
-    assert_equal :expired, @node.confirmation.status
+    assert_equal :expired, @node.confirmation_status
     assert @node.should_destroy?
 
     # not connected and uncofirmed -> destroy
@@ -139,19 +139,19 @@ class NodeTest < ActiveSupport::TestCase
     @node.reload
     assert_operator @node.created_at, :<, 1.month.ago
     assert_nil @node.connected_at
-    assert_equal :unconfirmed, @node.solid_confirmation.status
+    assert_equal :unconfirmed, @node.confirmation_status
     assert @node.should_destroy?
 
     # last connection and uncofirmed -> destroy
     @node.nics.update!(auth_at: (1.year + 2.months).ago)
     @node.reload
     assert_operator @node.connected_at, :<, 1.year.ago
-    assert_equal :unconfirmed, @node.solid_confirmation.status
+    assert_equal :unconfirmed, @node.confirmation_status
     assert @node.should_destroy?
   end
 
   test "should not destroy node" do
-    assert_equal :approved, @node.confirmation.status
+    assert_equal :approved, @node.confirmation_status
     assert_operator @node.confirmation.expiration, :>, 1.year.ago
     assert_operator @node.connected_at, :>, 1.year.ago
     assert_not @node.should_destroy?
@@ -163,7 +163,7 @@ class NodeTest < ActiveSupport::TestCase
     @node.reload
     assert_operator @node.connected_at, :<, 1.year.ago
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
-    assert_equal :expired, @node.confirmation.status
+    assert_equal :expired, @node.confirmation_status
     assert @node.should_destroy?
 
     @node.update!(permanent: true)
@@ -178,7 +178,7 @@ class NodeTest < ActiveSupport::TestCase
     @node.reload
     assert_operator @node.created_at, :<, 1.month.ago
     assert_nil @node.connected_at
-    assert_equal :unconfirmed, @node.solid_confirmation.status
+    assert_equal :unconfirmed, @node.confirmation_status
     assert @node.should_destroy?
 
     Network.all.update!(unverifiable: true)
@@ -192,7 +192,7 @@ class NodeTest < ActiveSupport::TestCase
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.reload
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
-    assert_equal :expired, @node.confirmation.status
+    assert_equal :expired, @node.confirmation_status
     assert @node.should_disable?
 
     # uncofirmed -> disable
@@ -200,12 +200,12 @@ class NodeTest < ActiveSupport::TestCase
     @node.confirmation.destroy!
     @node.reload
     assert_operator @node.created_at, :<, 1.year.ago
-    assert_equal :unconfirmed, @node.solid_confirmation.status
+    assert_equal :unconfirmed, @node.confirmation_status
     assert @node.should_disable?
   end
 
   test "should not disable node" do
-    assert_equal :approved, @node.confirmation.status
+    assert_equal :approved, @node.confirmation_status
     assert_not @node.should_disable?
   end
 
@@ -213,7 +213,7 @@ class NodeTest < ActiveSupport::TestCase
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.reload
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
-    assert_equal :expired, @node.confirmation.status
+    assert_equal :expired, @node.confirmation_status
     assert @node.should_disable?
 
     @node.update!(permanent: true)

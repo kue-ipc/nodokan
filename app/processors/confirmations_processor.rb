@@ -45,51 +45,51 @@ class ConfirmationsProcessor < ApplicationProcessor
     set: ->(record, value) { }
 
   converter :status,
-    get: ->(record) { record.solid_confirmation.status },
+    get: ->(record) { record.confirmation_status },
     set: ->(record, value) { }
 
   converter :existence,
-    get: ->(record) { record.solid_confirmation.existence },
-    set: ->(record, value) { record.solid_confirmation.existence = value }
+    get: ->(record) { record.confirmation_or_build.existence },
+    set: ->(record, value) { record.confirmation_or_build.existence = value }
 
   converter :content,
-    get: ->(record) { record.solid_confirmation.content },
-    set: ->(record, value) { record.solid_confirmation.content = value }
+    get: ->(record) { record.confirmation_or_build.content },
+    set: ->(record, value) { record.confirmation_or_build.content = value }
 
   converter :os_update,
-    get: ->(record) { record.solid_confirmation.os_update },
-    set: ->(record, value) { record.solid_confirmation.os_update = value }
+    get: ->(record) { record.confirmation_or_build.os_update },
+    set: ->(record, value) { record.confirmation_or_build.os_update = value }
 
   converter :app_update,
-    get: ->(record) { record.solid_confirmation.app_update },
-    set: ->(record, value) { record.solid_confirmation.app_update = value }
+    get: ->(record) { record.confirmation_or_build.app_update },
+    set: ->(record, value) { record.confirmation_or_build.app_update = value }
 
   converter :software,
-    get: ->(record) { record.solid_confirmation.software },
-    set: ->(record, value) { record.solid_confirmation.software = value }
+    get: ->(record) { record.confirmation_or_build.software },
+    set: ->(record, value) { record.confirmation_or_build.software = value }
 
   converter :security_update,
-    get: ->(record) { record.solid_confirmation.security_update },
-    set: ->(record, value) { record.solid_confirmation.security_update = value }
+    get: ->(record) { record.confirmation_or_build.security_update },
+    set: ->(record, value) { record.confirmation_or_build.security_update = value }
 
   converter :security_scan,
-    get: ->(record) { record.solid_confirmation.security_scan },
-    set: ->(record, value) { record.solid_confirmation.security_scan = value }
+    get: ->(record) { record.confirmation_or_build.security_scan },
+    set: ->(record, value) { record.confirmation_or_build.security_scan = value }
 
   converter :security_hardwares,
-    get: ->(record) { record.solid_confirmation.security_hardwares },
+    get: ->(record) { record.confirmation_or_build.security_hardwares },
     set: ->(record, value) {
-      record.solid_confirmation.security_hardware = Confirmation.security_hardware_list_to_bitwise(value)
+      record.confirmation_or_build.security_hardware = Confirmation.security_hardware_list_to_bitwise(value)
     }
 
   converter :security_software,
-    get: ->(record) { record.solid_confirmation.security_software },
+    get: ->(record) { record.confirmation_or_build.security_software },
     set: ->(record, value) {
       return unless record.operating_system
 
       security_software_params = {os_category_id: record.operating_system.os_category_id, **value}
-      record.solid_confirmation.security_software =
-        find_or_new_security_software(security_software_params, record.solid_confirmation.security_software)
+      record.confirmation_or_build.security_software =
+        find_or_new_security_software(security_software_params, record.confirmation_or_build.security_software)
     }
 
   def create(params)
@@ -100,9 +100,9 @@ class ConfirmationsProcessor < ApplicationProcessor
     user_process(id, __method__) do |record|
       record.transaction do
         assign_params(record, params)
-        record.solid_confirmation.security_software = nil unless record.operating_system
-        record.solid_confirmation.approve!
-        record.solid_confirmation.save!
+        record.confirmation_or_build.security_software = nil unless record.operating_system
+        record.confirmation_or_build.approve!
+        record.confirmation_or_build.save!
       end
     end
   end

@@ -246,7 +246,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     assert_equal bulk.user.nodes.count, output.size
     node = Node.find(output[0][:id])
     assert_equal node.name, output[0][:name]
-    assert_equal node.solid_confirmation.status.to_s, output[0][:status]
+    assert_equal node.confirmation_status.to_s, output[0][:status]
   end
 
   # Network
