@@ -1,7 +1,7 @@
 # class method
-#   class_name
-#   params_permit
-#   convert_map
+#   model_name "Model"
+#   keys [:key, array: [], hash: [:key], hashes: [[:key]]]
+#   converter key, original_key, get: ..., set: ..., nested: {nested_key: {get: ..., set: ...}}
 class ApplicationProcessor
   include Pundit::Authorization
 
