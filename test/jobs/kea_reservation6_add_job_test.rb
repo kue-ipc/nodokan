@@ -14,6 +14,7 @@ class KeaReservation6AddJobTest < ActiveJob::TestCase
       end
     end
     host = Kea::Host.last
+
     assert_equal @nic.network_id, host.dhcp6_subnet_id
     assert_equal @nic.node.duid_data, host.dhcp_identifier
     assert_equal @nic.ipv6.to_s, host.ipv6_reservation.ipv6.to_s
@@ -33,6 +34,7 @@ class KeaReservation6AddJobTest < ActiveJob::TestCase
       end
     end
     host = Kea::Host.last
+
     assert_equal @nic.network_id, host.dhcp6_subnet_id
     assert_equal @nic.node.duid_data, host.dhcp_identifier
     assert_equal @nic.ipv6.succ.to_s, host.ipv6_reservation.ipv6.to_s

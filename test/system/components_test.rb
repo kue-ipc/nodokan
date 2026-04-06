@@ -7,6 +7,7 @@ class ComponentsTest < ApplicationSystemTestCase
 
   test "visiting the index" do
     visit components_url
+
     assert_selector "h1", text: "Components"
   end
 

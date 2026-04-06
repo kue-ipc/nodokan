@@ -12,6 +12,7 @@ class KeaReservation4AddJobTest < ActiveJob::TestCase
       end
     end
     host = Kea::Host.last
+
     assert_equal @nic.network_id, host.dhcp4_subnet_id
     assert_equal @nic.mac_address_data, host.dhcp_identifier
     assert_equal @nic.ipv4.to_i, host.ipv4_address
@@ -28,6 +29,7 @@ class KeaReservation4AddJobTest < ActiveJob::TestCase
       end
     end
     host = Kea::Host.last
+
     assert_equal @nic.network_id, host.dhcp4_subnet_id
     assert_equal @nic.mac_address_data, host.dhcp_identifier
     assert_equal @nic.ipv4.succ.to_i, host.ipv4_address

@@ -6,6 +6,7 @@ class OperatingSystemsControllerTest < ActionDispatch::IntegrationTest
   test "admin should get index" do
     sign_in users(:admin)
     get operating_systems_url
+
     assert_response :success
   end
 end

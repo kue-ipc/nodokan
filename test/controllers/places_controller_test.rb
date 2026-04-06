@@ -6,17 +6,20 @@ class PlacesControllerTest < ActionDispatch::IntegrationTest
   test "admin should get index" do
     sign_in users(:admin)
     get places_url
+
     assert_response :success
   end
 
   test "user should get index" do
     sign_in users(:staff)
     get places_url
+
     assert_response :success
   end
 
   test "redirect to login INSTEAD OF get index" do
     get places_url
+
     assert_response :unauthorized
   end
 

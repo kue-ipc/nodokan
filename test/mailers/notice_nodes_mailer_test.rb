@@ -24,6 +24,7 @@ class NoticeNodesMailerTest < ActionMailer::TestCase
 
   test "unowned" do
     mail = NoticeNodesMailer.with(nodes: [nodes(:desktop)]).unowned
+
     assert_equal "所有者なしの端末 - 端末管理システム(test)", mail.subject
     assert_equal ["no-reply@example.jp"], mail.from
     assert_equal ["admin@example.jp"], mail.to

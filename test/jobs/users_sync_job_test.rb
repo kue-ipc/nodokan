@@ -56,6 +56,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       end
     end
     adapter.verify
+
     User.find_each do |user|
       assert_equal true, user.deleted
     end
@@ -78,6 +79,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       adapter.expect(:get_group_list, ["admin"],
         [username])
     end
+
     Devise::LDAP.stub_const :Adapter, adapter do
       assert_difference("User.count", new_users.size) do
         perform_enqueued_jobs do
@@ -88,6 +90,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     adapter.verify
     new_users.each do |username|
       new_user = User.find_by(username:)
+
       assert_nil new_user.auth_network
       assert_empty new_user.use_networks
       assert_nil new_user.limit
@@ -111,6 +114,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       adapter.expect(:get_group_list, ["staff"],
         [username])
     end
+
     Devise::LDAP.stub_const :Adapter, adapter do
       assert_difference("User.count", new_users.size) do
         perform_enqueued_jobs do
@@ -121,6 +125,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     adapter.verify
     new_users.each do |username|
       new_user = User.find_by(username:)
+
       assert_equal 102, new_user.auth_network&.vlan
       assert_equal [101, 102], new_user.use_networks&.map(&:vlan)&.sort
       assert_nil new_user.limit
@@ -144,6 +149,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       adapter.expect(:get_group_list, ["user"],
         [username])
     end
+
     Devise::LDAP.stub_const :Adapter, adapter do
       assert_difference("User.count", new_users.size) do
         perform_enqueued_jobs do
@@ -155,6 +161,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     new_users.each do |username|
       new_user = User.find_by(username:)
       auth_vlan = new_user.auth_network&.vlan
+
       assert_kind_of Integer, auth_vlan
       assert_equal [auth_vlan], new_user.use_networks&.map(&:vlan)&.sort
       assert_equal 1, new_user.limit
@@ -173,6 +180,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     new_users.each do |username|
       adapter.expect(:authorizable?, false, [username])
     end
+
     Devise::LDAP.stub_const :Adapter, adapter do
       assert_no_difference("User.count") do
         perform_enqueued_jobs do
@@ -181,6 +189,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
       end
     end
     adapter.verify
+
     new_users.each do |username|
       assert_nil User.find_by(username:)
     end
@@ -201,6 +210,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
         fullname: "dummy full")
       adapter.expect(:get_ldap_entry, user2entry(user), [username])
     end
+
     Devise::LDAP.stub_const :Adapter, adapter do
       assert_no_difference("User.count") do
         perform_enqueued_jobs do
@@ -211,6 +221,7 @@ class UsersSyncJobTest < ActiveJob::TestCase
     adapter.verify
     new_users.each do |username|
       user = User.find_by(username:)
+
       assert_equal "dummy@example.jp", user.email
       assert_equal "dummy full", user.fullname
       assert_equal false, user.deleted

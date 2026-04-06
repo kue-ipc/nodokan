@@ -7,6 +7,7 @@ class BulksTest < ApplicationSystemTestCase
 
   test "visiting the index" do
     visit bulks_url
+
     assert_selector "h1", text: "Bulks"
   end
 

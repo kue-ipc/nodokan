@@ -4,6 +4,7 @@ class AdminMailerTest < ActionMailer::TestCase
   test "job_failure" do
     mail = AdminMailer.with(job: "job", job_id: "job_id", time: "time",
       exception: "exception").job_failure
+
     assert_equal "ジョブ失敗 - 端末管理システム(test)", mail.subject
     assert_equal ["no-reply@example.jp"], mail.from
     assert_equal ["admin@example.jp"], mail.to

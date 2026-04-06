@@ -33,6 +33,7 @@ class NetworksProcessorTest < ActiveSupport::TestCase
 
   test "idx" do
     ids = @processor.ids
+
     assert_equal [@network.id], ids
   end
 
@@ -40,6 +41,7 @@ class NetworksProcessorTest < ActiveSupport::TestCase
 
   test "index networks" do
     networks = @processor.index
+
     assert_equal [@network], networks
   end
 
@@ -76,6 +78,7 @@ class NetworksProcessorTest < ActiveSupport::TestCase
   test "admin: index networks" do
     @processor = NetworksProcessor.new(users(:admin))
     networks = @processor.index
+
     assert_includes networks, @network
   end
 

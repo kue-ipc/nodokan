@@ -25,6 +25,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   test "do not notice node that unapproved" do
     @node.confirmation.update!(approved: false, confirmed_at: 1.week.ago)
     @node.reload
+
     assert_equal :unapproved, @node.confirmation_status
 
     assert_no_enqueued_emails do
@@ -36,6 +37,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   test "notic node that is about to expire" do
     @node.confirmation.update!(confirmed_at: (1.year + 1.month - 1.week).ago)
     @node.reload
+
     assert_equal :expire_soon, @node.confirmation_status
 
     assert_enqueued_email_with NoticeNodesMailer, :expire_soon, params: {user: @user, nodes: [@node]} do
@@ -52,6 +54,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   test "notic node that has recently expired" do
     @node.confirmation.update!(confirmed_at: (1.year + 2.months).ago)
     @node.reload
+
     assert_equal :expired, @node.confirmation_status
     assert_operator @node.confirmation.expiration, :>, 1.year.ago
 
@@ -69,7 +72,8 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   test "notic node that has disabled" do
     @node.update!(disabled: true)
     @node.reload
-    assert @node.disabled?
+
+    assert_predicate @node, :disabled?
 
     assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
       NodeCheckPerUserJob.perform_now(@user)
@@ -86,10 +90,11 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
   test "should disable node that expired a long time ago" do
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.reload
+
     assert_operator @node.connected_at, :>, 1.year.ago
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
     assert_equal :expired, @node.confirmation_status
-    assert @node.should_disable?
+    assert_predicate @node, :should_disable?
 
     assert_enqueued_email_with NoticeNodesMailer, :expired, params: {user: @user, nodes: [@node]} do
       NodeCheckPerUserJob.perform_now(@user)
@@ -120,7 +125,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
         NodeCheckPerUserJob.perform_now(@user)
       end
-      assert @node.reload.disabled?
+      assert_predicate @node.reload, :disabled?
     end
   end
 
@@ -128,11 +133,12 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
     @node.nics.update!(auth_at: (1.year + 2.months).ago)
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.reload
+
     assert_operator @node.connected_at, :<, 1.year.ago
     assert_operator @node.confirmation.expiration, :<, 1.year.ago
     assert_equal :expired, @node.confirmation_status
-    assert @node.should_disable?
-    assert @node.should_destroy?
+    assert_predicate @node, :should_disable?
+    assert_predicate @node, :should_destroy?
 
     assert_enqueued_email_with NoticeNodesMailer, :expired, params: {user: @user, nodes: [@node]} do
       NodeCheckPerUserJob.perform_now(@user)
@@ -150,7 +156,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
         NodeCheckPerUserJob.perform_now(@user)
       end
-      assert @node.reload.disabled?
+      assert_predicate @node.reload, :disabled?
     end
     @node.update!(disabled: false, notice: nil, noticed_at: nil, execution_at: nil)
 
@@ -181,6 +187,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       end
 
       mail = enqueued_jobs.last
+
       assert_equal "NoticeNodesMailer", mail[:args][0]
       assert_equal "destroyed", mail[:args][1]
       assert_equal "gid://nodokan/User/#{@user.id}", mail[:args][3]["params"]["user"]["_aj_globalid"]
@@ -193,8 +200,9 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
     @node.nics.update!(auth_at: (1.year + 2.months).ago)
     @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
     @node.update!(notice: :disable_soon, noticed_at: 1.day.ago, execution_at: 1.day.since)
-    assert @node.should_disable?
-    assert @node.should_destroy?
+
+    assert_predicate @node, :should_disable?
+    assert_predicate @node, :should_destroy?
 
     Settings.config.stub(:auto_disable_node, true) do
       # disable notice should not be sent

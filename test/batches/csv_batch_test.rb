@@ -77,6 +77,7 @@ class CsvBatchTest < ActiveSupport::TestCase
         })
         @batch.puts_params(desc, {id: 3})
       end
+
       assert_equal <<~CSV, output.string
         \u{feff}id,string,boolean,number,list[],dict[key1],dict[key2],dict_list[][k1],dict_list[][k2],_result,_message
         1,test1,t,42,a b,value1,value2,a1,a2,value,

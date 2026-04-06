@@ -104,6 +104,7 @@ class YamlBatchTest < ActiveSupport::TestCase
         })
         @batch.puts_params(desc, {id: 3})
       end
+
       assert_equal <<~YAML, output.string
         ---
         - id: 1

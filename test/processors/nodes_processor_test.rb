@@ -71,12 +71,14 @@ class NodesProcessorTest < ActiveSupport::TestCase
 
   test "ids" do
     ids = @processor.ids
+
     assert_includes ids, @node.id
     assert_not_includes ids, nodes(:other_desktop).id
   end
 
   test "index nodes" do
     nodes = @processor.index
+
     assert_includes nodes, @node
     assert_not_includes nodes, nodes(:other_desktop)
   end
@@ -111,6 +113,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
       @processor.update(@node.id, params)
     end
     @node.reload
+
     assert_equal "Updated Name", @node.name
     assert_equal "Updated Room", @node.place.room
     assert_equal "Updated Product Name", @node.hardware.product_name
@@ -128,6 +131,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
       @processor.update(@node.id, params)
     end
     @node.reload
+
     assert_equal 2, @node.nics.count
     assert_equal 2, Nic.last.number
   end
@@ -139,6 +143,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
       @processor.update(@node.id, params)
     end
     @node.reload
+
     assert_equal 0, @node.nics.count
   end
 
@@ -153,12 +158,14 @@ class NodesProcessorTest < ActiveSupport::TestCase
   test "admin: index nodes" do
     @processor = NodesProcessor.new(users(:admin))
     nodes = @processor.index
+
     assert_includes nodes, @node
     assert_includes nodes, nodes(:other_desktop)
   end
 
   test "admin: show node" do
     @processor = NodesProcessor.new(users(:admin))
+
     assert_equal @node.name, @processor.show(@node.id)[:name]
   end
 
@@ -190,6 +197,7 @@ class NodesProcessorTest < ActiveSupport::TestCase
       @processor.update(@node.id, params)
     end
     @node.reload
+
     assert_equal "Updated Name", @node.name
     assert_equal "Updated Room", @node.place.room
     assert_equal "Updated Product Name", @node.hardware.product_name

@@ -108,6 +108,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     sign_in users(:staff)
     get nodes_url
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
@@ -116,6 +117,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should get index" do
     sign_in users(:admin)
     get nodes_url
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]"
@@ -124,6 +126,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should get index" do
     sign_in users(:other)
     get nodes_url
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]", false
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]"
@@ -131,12 +134,14 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "guest redirect to login INSTEAD OF get index" do
     get nodes_url
+
     assert_redirected_to new_user_session_path
   end
 
   test "should get index with query name" do
     sign_in users(:staff)
     get nodes_url(query: @node.name)
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
@@ -145,6 +150,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get index with query duid" do
     sign_in users(:staff)
     get nodes_url(query: @node.duid)
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
@@ -153,6 +159,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get index with query ipv4 address" do
     sign_in users(:staff)
     get nodes_url(query: @node.nics.first.ipv4_address)
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
@@ -161,6 +168,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get index with query ipv6 address" do
     sign_in users(:staff)
     get nodes_url(query: @node.nics.first.ipv6_address)
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
@@ -169,6 +177,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get index with query mac address" do
     sign_in users(:staff)
     get nodes_url(query: @node.nics.first.mac_address)
+
     assert_response :success
     assert_select "a[href=\"#{node_path(@node)}\"]"
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
@@ -179,23 +188,27 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should show node" do
     sign_in users(:staff)
     get node_url(@node)
+
     assert_response :success
   end
 
   test "admin should show node" do
     sign_in users(:admin)
     get node_url(@node)
+
     assert_response :success
   end
 
   test "other should NOT show" do
     sign_in users(:other)
     get node_url(@node)
+
     assert_response :not_found
   end
 
   test "guest redirect to login INSTEAD OF show node" do
     get node_url(@node)
+
     assert_redirected_to new_user_session_path
   end
 
@@ -204,6 +217,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     sign_in users(:staff)
     get new_node_url
+
     assert_response :success
     assert_select "div#node_nics_attributes_0"
   end
@@ -211,18 +225,21 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should get new" do
     sign_in users(:admin)
     get new_node_url
+
     assert_response :success
     assert_select "div#node_nics_attributes_0"
   end
 
   test "guest redirect to login INSTEAD OF get new" do
     get new_node_url
+
     assert_redirected_to new_user_session_path
   end
 
   test "other should get new" do
     sign_in users(:other)
     get new_node_url
+
     assert_response :success
     assert_select "div#node_nics_attributes_0"
   end
@@ -230,6 +247,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "less should NOT get new" do
     sign_in users(:less)
     get new_node_url
+
     assert_response :forbidden
   end
 
@@ -237,6 +255,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     users(:other).nodes << nodes(:desktop)
     sign_in users(:other)
     get new_node_url
+
     assert_response :forbidden
   end
 
@@ -245,23 +264,27 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should get edit" do
     sign_in users(:staff)
     get edit_node_url(@node)
+
     assert_response :success
   end
 
   test "admin should get edit" do
     sign_in users(:admin)
     get edit_node_url(@node)
+
     assert_response :success
   end
 
   test "other should NOT get edit" do
     sign_in users(:other)
     get edit_node_url(@node)
+
     assert_response :not_found
   end
 
   test "guest redirect to login INSTEAD OF get edit" do
     get edit_node_url(@node)
+
     assert_redirected_to new_user_session_path
   end
 
@@ -435,6 +458,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create node with same hostname and without domain" do
     sign_in users(:staff)
+
     assert_nil nodes(:note).domain
     assert_difference("Node.count") do
       post nodes_url, params: {node: {
@@ -734,6 +758,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to node_url(Node.last)
     assert_equal 1, Node.last.nics.count
     nic = Node.last.nics.first
+
     assert_equal "00-11-22-33-44-FF", nic.mac_address
     assert_not nic.auth
     assert_equal "disabled", nic.ipv4_config
@@ -1430,6 +1455,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update node" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {name: "name"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
   end
@@ -1437,6 +1463,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should update node" do
     sign_in users(:admin)
     patch node_url(@node), params: {node: {name: "name"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
   end
@@ -1444,11 +1471,13 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "other should NOT update node" do
     sign_in users(:other)
     patch node_url(@node), params: {node: {name: "name"}}
+
     assert_response :not_found
   end
 
   test "guest redirect to login INSTEAD OF update node" do
     patch node_url(@node), params: {node: {name: "name"}}
+
     assert_redirected_to new_user_session_path
     assert_equal get_message(:unauthenticated), flash[:alert]
   end
@@ -1456,6 +1485,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update node all attributes" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: node_to_params(@node)}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
   end
@@ -1463,6 +1493,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update node without name" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {hostname: "hostname"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
   end
@@ -1473,6 +1504,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       hostname: nodes(:server).hostname,
       domain: nodes(:server).domain,
     }}
+
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
     assert_equal @node.hostname, Node.find(@node.id).hostname
@@ -1485,6 +1517,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       hostname: "hostname",
       domain: nodes(:server).domain,
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert_equal "hostname", Node.find(@node.id).hostname
@@ -1497,6 +1530,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       hostname: nodes(:server).hostname,
       domain: "test.example.jp",
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert_equal nodes(:server).hostname, Node.find(@node.id).hostname
@@ -1509,6 +1543,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       hostname: nodes(:note).hostname,
       domain: nil,
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert_equal nodes(:note).hostname, Node.find(@node.id).hostname
@@ -1518,6 +1553,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT update node with hostname without domain" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {hostname: nil, domain: @node.domain}}
+
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
     assert_equal @node.hostname, Node.find(@node.id).hostname
@@ -1527,6 +1563,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update node without hostname, domain" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {hostname: nil, domain: nil}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert_nil Node.find(@node.id).hostname
@@ -1536,6 +1573,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should NOT update node with same duid" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {duid: nodes(:note).duid}}
+
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
     assert_equal @node.duid, Node.find(@node.id).duid
@@ -1544,6 +1582,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update normal node to mobile" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {node_type: "mobile"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "mobile", Node.find(@node.id).node_type
@@ -1557,6 +1596,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       node_type: "virtual",
       host_id: nodes(:server).id,
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "virutal", Node.find(@node.id).node_type
@@ -1571,6 +1611,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       node_type: "logical",
       component_ids: [nodes(:note).id],
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "logical", Node.find(@node.id).node_type
@@ -1585,6 +1626,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:staff)
     @node = nodes(:tablet)
     patch node_url(@node), params: {node: {node_type: "normal"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "mobile", Node.find(@node.id).node_type
@@ -1597,6 +1639,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       node_type: "virtual",
       host_id: nodes(:server).id,
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "virutal", Node.find(@node.id).node_type
@@ -1610,6 +1653,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       node_type: "logical",
       component_ids: [nodes(:note).id],
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "logical", Node.find(@node.id).node_type
@@ -1623,6 +1667,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:staff)
     @node = nodes(:virtual_desktop)
     patch node_url(@node), params: {node: {node_type: "normal"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "normal", Node.find(@node.id).node_type
@@ -1634,6 +1679,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:staff)
     @node = nodes(:virtual_desktop)
     patch node_url(@node), params: {node: {node_type: "mobile"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "mobile", Node.find(@node.id).node_type
@@ -1648,6 +1694,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       node_type: "logical",
       component_ids: [nodes(:note).id],
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "logical", Node.find(@node.id).node_type
@@ -1660,6 +1707,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:staff)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {node_type: "normal"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "normal", Node.find(@node.id).node_type
@@ -1671,6 +1719,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:staff)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {node_type: "mobile"}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "mobile", Node.find(@node.id).node_type
@@ -1685,6 +1734,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       node_type: "virtual",
       host_id: nodes(:server).id,
     }}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     assert "virutal", Node.find(@node.id).node_type
@@ -1697,6 +1747,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:staff)
     patch node_url(@node),
       params: {node: {specific: true, public: true, dns: true}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
@@ -1710,6 +1761,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     @node = nodes(:server)
     patch node_url(@node),
       params: {node: {specific: false, public: false, dns: false}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
@@ -1722,6 +1774,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:admin)
     patch node_url(@node),
       params: {node: {specific: true, public: true, dns: true}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
@@ -1735,6 +1788,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     @node = nodes(:server)
     patch node_url(@node),
       params: {node: {specific: false, public: false, dns: false}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
@@ -1746,6 +1800,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "should update node set user_id, but ignore flags" do
     sign_in users(:staff)
     patch node_url(@node), params: {node: {user_id: users(:other).id}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
@@ -1755,6 +1810,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
   test "admin should update node set user_id" do
     sign_in users(:admin)
     patch node_url(@node), params: {node: {user_id: users(:other).id}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     # unchaneg attributes
@@ -1870,6 +1926,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node), params: {node: {nics_attributes: [{
       id: nodes(:note).nic_ids.first,
     }]}}
+
     assert_response :not_found
   end
 
@@ -1878,6 +1935,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     patch node_url(@node), params: {node: {nics_attributes: [{
       id: 42,
     }]}}
+
     assert_response :not_found
   end
 
@@ -1887,6 +1945,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       **nic_to_params(@node.nics.first),
       network_id: nil,
     }]}}
+
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
     assert_not_nil Node.find(@node.id).nics.first.network_id
@@ -1900,9 +1959,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "disabled",
       ipv6_config: "disabled",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     nic = Node.find(@node.id).nics.first
+
     assert_not nic.auth
     assert_equal "disabled", nic.ipv4_config
     assert_equal "disabled", nic.ipv6_config
@@ -1917,9 +1978,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       network_id: nil,
       mac_address: nodes(:note).nics.first.mac_address,
     }]}}
+
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal @node.nics.first.mac_address_data, new_nic.mac_address_data
   end
 
@@ -2015,9 +2078,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       **nic_to_params(@node.nics.first),
       locked: true,
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_not new_nic.locked
   end
 
@@ -2028,9 +2093,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       **nic_to_params(@node.nics.first),
       locked: false,
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert new_nic.locked
   end
 
@@ -2040,9 +2107,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       **nic_to_params(@node.nics.first),
       locked: true,
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert new_nic.locked
   end
 
@@ -2053,9 +2122,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       **nic_to_params(@node.nics.first),
       locked: false,
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_not new_nic.locked
   end
 
@@ -2069,9 +2140,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "dynamic",
       ipv6_config: "dynamic",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert new_nic.locked
     assert_equal old_nic.network_id, new_nic.network_id
     assert_equal old_nic.ipv4_config, new_nic.ipv4_config
@@ -2089,9 +2162,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "dynamic",
       ipv6_config: "dynamic",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert new_nic.locked
     assert_equal networks(:client).id, new_nic.network_id
     assert_equal "dynamic", new_nic.ipv4_config
@@ -2111,9 +2186,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       **nic_to_params(@node.nics.first),
       network_id: networks(:server).id,
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
@@ -2133,9 +2210,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "dynamic",
       ipv6_config: "dynamic",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "dynamic", new_nic.ipv4_config
     assert_equal "dynamic", new_nic.ipv6_config
     assert_nil new_nic.ipv4_data
@@ -2152,9 +2231,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "reserved",
       ipv6_config: "reserved",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
@@ -2172,9 +2253,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "reserved",
       ipv6_config: "reserved",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
@@ -2194,9 +2277,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "static",
       ipv6_config: "static",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
@@ -2214,9 +2299,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "static",
       ipv6_config: "static",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
     assert_not_equal old_nic.ipv4_data, new_nic.ipv4_data
@@ -2234,6 +2321,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "manual",
       ipv6_config: "manual",
     }]}}
+
     assert_response :success
     assert_equal get_message(:update_failure), flash[:alert]
   end
@@ -2247,9 +2335,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "disabled",
       ipv6_config: "disabled",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "disabled", new_nic.ipv4_config
     assert_equal "disabled", new_nic.ipv6_config
     assert_nil new_nic.ipv4_data
@@ -2271,9 +2361,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "reserved",
       ipv6_config: "reserved",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "reserved", new_nic.ipv4_config
     assert_equal "reserved", new_nic.ipv6_config
     # same ip
@@ -2291,9 +2383,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_address: "192.168.2.10",
       ipv6_address: "fd00:2::1:0:a",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "static", new_nic.ipv4_config
     assert_equal "static", new_nic.ipv6_config
     assert_equal "192.168.2.10", new_nic.ipv4_address
@@ -2310,9 +2404,11 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
       ipv4_config: "manual",
       ipv6_config: "manual",
     }]}}
+
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
     new_nic = Node.find(@node.id).nics.first
+
     assert_equal "manual", new_nic.ipv4_config
     assert_equal "manual", new_nic.ipv6_config
     # same ip

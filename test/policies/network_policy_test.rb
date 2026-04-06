@@ -17,6 +17,7 @@ class NetworkPolicyTest < ActiveSupport::TestCase
     assert_equal Network.count, policy_scope(@admin, Network).count
     # user is assigned to some networks
     user_networks = policy_scope(@user, Network)
+
     assert_operator 0, :<, user_networks.count
     assert user_networks.all? { |network| network.users.include?(@user) }
   end

@@ -14,6 +14,7 @@ class NicsControllerTest < ActionDispatch::IntegrationTest
   test "user should show nice" do
     sign_in users(:admin)
     get node_url(@nic)
+
     assert_response :success
   end
 

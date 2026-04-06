@@ -50,12 +50,14 @@ class ConfirmationsProcessorTest < ActiveSupport::TestCase
 
   test "ids" do
     ids = @processor.ids
+
     assert_includes ids, @node.id
     assert_not_includes ids, nodes(:other_desktop).id
   end
 
   test "index confirmations" do
     nodes = @processor.index
+
     assert_includes nodes, @node
     assert_not_includes nodes, nodes(:other_desktop)
   end
@@ -75,6 +77,7 @@ class ConfirmationsProcessorTest < ActiveSupport::TestCase
     params = node_to_confirmation_params(@node)
     @processor.update(@node.id, params)
     @node.reload
+
     assert_in_delta Time.current, @node.confirmation.confirmed_at, 1.minute
   end
 
@@ -98,12 +101,14 @@ class ConfirmationsProcessorTest < ActiveSupport::TestCase
   test "admin: index confirmations" do
     @processor = ConfirmationsProcessor.new(users(:admin))
     nodes = @processor.index
+
     assert_includes nodes, @node
     assert_includes nodes, nodes(:other_desktop)
   end
 
   test "admin: show confirmation" do
     @processor = ConfirmationsProcessor.new(users(:admin))
+
     assert_equal @node.name, @processor.show(@node.id)[:name]
   end
 
@@ -119,6 +124,7 @@ class ConfirmationsProcessorTest < ActiveSupport::TestCase
     params = node_to_confirmation_params(@node)
     @processor.update(@node.id, params)
     @node.reload
+
     assert_in_delta Time.current, @node.confirmation.confirmed_at, 1.minute
   end
 

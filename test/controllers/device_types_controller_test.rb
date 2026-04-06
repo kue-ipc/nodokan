@@ -10,11 +10,13 @@ class DeviceTypesControllerTest < ActionDispatch::IntegrationTest
 
   test "should get index" do
     get device_types_url
+
     assert_response :success
   end
 
   test "should get show" do
     get device_type_url(@device_type)
+
     assert_response :success
   end
 

@@ -17,6 +17,7 @@ class NodePolicyTest < ActiveSupport::TestCase
     assert_equal Node.count, policy_scope(@admin, Node).count
     # user can see only their nodes
     user_nodes = policy_scope(@user, Node)
+
     assert_operator 0, :<, user_nodes.count
     assert user_nodes.all? { |node| node.user == @user }
   end
@@ -36,6 +37,7 @@ class NodePolicyTest < ActiveSupport::TestCase
 
   test "create" do
     user_node = Node.new(user: @user)
+
     assert_permit(@admin, user_node, :create)
     assert_permit(@user, user_node, :create)
     assert_not_permit(@other, user_node, :create)

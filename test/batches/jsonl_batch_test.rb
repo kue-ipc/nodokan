@@ -77,6 +77,7 @@ class JsonlBatchTest < ActiveSupport::TestCase
         })
         @batch.puts_params(desc, {id: 3})
       end
+
       assert_equal <<~JSONL, output.string
         {"id":1,"string":"test1","boolean":true,"number":42,"list":["a","b"],"dict":{"key1":"value1","key2":"value2"},"dict_list":[{"k1":"a1","k2":"a2"},{"k1":"b1","k2":"b2"}],"_result":"value"}
         {"id":2,"string":"","boolean":false,"number":null,"list":[],"dict":{},"dict_list":[{}],"_result":null}

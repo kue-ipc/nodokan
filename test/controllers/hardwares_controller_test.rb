@@ -12,6 +12,7 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
   test "admin should get index" do
     sign_in users(:admin)
     get hardwares_url
+
     assert_response :success
   end
 
@@ -30,6 +31,7 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
   test "user should get index" do
     sign_in users(:staff)
     get hardwares_url
+
     assert_response :success
   end
 
@@ -37,6 +39,7 @@ class HardwaresControllerTest < ActionDispatch::IntegrationTest
 
   test "redirect to login INSTEAD OF get index" do
     get hardwares_url
+
     assert_response :unauthorized
   end
 end

@@ -23,6 +23,7 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
     assert_performed_jobs 1, only: KeaReservation4AddJob
 
     subnet = Kea::Dhcp4Subnet.last
+
     assert_equal @network.id, subnet.subnet_id
     assert_equal @network.ipv4_network_cidr, subnet.subnet_prefix
     assert_equal [Kea::Dhcp4Server.default], subnet.dhcp4_servers
@@ -50,6 +51,7 @@ class KeaSubnet4AddJobTest < ActiveJob::TestCase
       end
     end
     subnet = Kea::Dhcp4Subnet.last
+
     assert_equal @network.id, subnet.subnet_id
     assert_equal "172.16.1.0/24", subnet.subnet_prefix
     assert_equal [Kea::Dhcp4Server.default], subnet.dhcp4_servers

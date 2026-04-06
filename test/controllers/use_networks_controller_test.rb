@@ -20,6 +20,7 @@ class UseNetworksControllerTest < ActionDispatch::IntegrationTest
   test "admin should get destroy" do
     sign_in users(:admin)
     delete user_use_network_url(@assignment.user, @assignment.network)
+
     assert_redirected_to user_url(@assignment.user)
   end
 end

@@ -16,6 +16,7 @@ class NicPolicyTest < ActiveSupport::TestCase
     assert_equal Nic.count, policy_scope(@admin, Nic).count
     # user can see only their nics
     user_nics = policy_scope(@user, Nic)
+
     assert_operator 0, :<, user_nics.count
     assert user_nics.all? { |nic| nic.node&.user == @user }
   end
@@ -35,6 +36,7 @@ class NicPolicyTest < ActiveSupport::TestCase
 
   test "create" do
     user_nic = Nic.new(node: nodes(:desktop))
+
     assert_permit(@admin, user_nic, :create)
     assert_permit(@user, user_nic, :create)
     assert_not_permit(@other, user_nic, :create)

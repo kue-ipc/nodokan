@@ -75,6 +75,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal input_size, output.size
 
     output.each do |result|
@@ -104,6 +105,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal input_size, output.size
 
     output.each do |result|
@@ -133,6 +135,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal input_size, output.size
 
     output.each do |result|
@@ -173,6 +176,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
     output = bulk.output.open do |file|
       assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
@@ -180,6 +184,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     node_and_nic_count = bulk.user.nodes.sum { |node| [node.nics.count, 1].max }
+
     assert_equal node_and_nic_count, output.size
     assert_equal Node.find(output[0][:id]).name, output[0][:name]
   end
@@ -192,6 +197,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
     output = bulk.output.open do |file|
       assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
@@ -199,6 +205,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
     node_and_nic_count = Node.all.sum { |node| [node.nics.count, 1].max }
+
     assert_equal node_and_nic_count, output.size
     assert_equal Node.find(output[0][:id]).name, output[0][:name]
   end
@@ -226,6 +233,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal input_size, output.size
   end
 
@@ -236,6 +244,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
     output = bulk.output.open do |file|
       assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
@@ -245,6 +254,7 @@ class BulkRunJobTest < ActiveJob::TestCase
 
     assert_equal bulk.user.nodes.count, output.size
     node = Node.find(output[0][:id])
+
     assert_equal node.name, output[0][:name]
     assert_equal node.confirmation_status.to_s, output[0][:status]
   end
@@ -258,6 +268,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "failed", bulk.status
   end
 
@@ -302,6 +313,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
 
     updated_network = Network.find(network.id)
@@ -343,6 +355,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
 
     updated_network = Network.find(network.id)
@@ -371,6 +384,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
 
     output = bulk.output.open do |file|
@@ -378,6 +392,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal bulk.user.networks.count, output.size
     assert_equal Network.find(output[0][:id]).name, output[0][:name]
   end
@@ -390,6 +405,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
 
     output = bulk.output.open do |file|
@@ -397,6 +413,7 @@ class BulkRunJobTest < ActiveJob::TestCase
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal Network.count, output.size
     assert_equal Network.find(output[0][:id]).name, output[0][:name]
   end
@@ -410,6 +427,7 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "failed", bulk.status
   end
 
@@ -444,12 +462,14 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
     output = bulk.output.open do |file|
       assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal 1, output.size
   end
 
@@ -461,12 +481,14 @@ class BulkRunJobTest < ActiveJob::TestCase
     end
 
     bulk = Bulk.find(bulk.id)
+
     assert_equal "succeeded", bulk.status
     output = bulk.output.open do |file|
       assert_equal String.new("\u{feff}", encoding: "ASCII-8BIT"), file.read(3)
       file.rewind
       CSV.table(file, encoding: "BOM|UTF-8").map(&:to_hash)
     end
+
     assert_equal User.count, output.size
   end
 end

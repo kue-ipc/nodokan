@@ -26,6 +26,7 @@ class UsersProcessorTest < ActiveSupport::TestCase
 
   test "idx" do
     ids = @processor.ids
+
     assert_equal [@user.id], ids
   end
 
@@ -33,6 +34,7 @@ class UsersProcessorTest < ActiveSupport::TestCase
 
   test "index users" do
     users = @processor.index
+
     assert_equal [@user], users
   end
 
@@ -69,6 +71,7 @@ class UsersProcessorTest < ActiveSupport::TestCase
   test "admin: index users" do
     @processor = UsersProcessor.new(users(:admin))
     users = @processor.index
+
     assert_includes users, @user
   end
 

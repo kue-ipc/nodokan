@@ -15,6 +15,7 @@ class Ipv4PoolPolicyTest < ActiveSupport::TestCase
     assert_equal Ipv4Pool.count, policy_scope(@admin, Ipv4Pool).count
     # userはclientネットワークに所属しているため、clientのpoolが見える
     user_pools = policy_scope(@user, Ipv4Pool)
+
     assert_operator 0, :<, user_pools.count
     assert user_pools.all? { |pool| @user.networks.include?(pool.network) }
   end

@@ -23,6 +23,7 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
     assert_performed_jobs 1, only: KeaReservation6AddJob
 
     subnet = Kea::Dhcp6Subnet.last
+
     assert_equal @network.id, subnet.subnet_id
     assert_equal @network.ipv6_network_cidr, subnet.subnet_prefix
     assert_equal [Kea::Dhcp6Server.default], subnet.dhcp6_servers
@@ -50,6 +51,7 @@ class KeaSubnet6AddJobTest < ActiveJob::TestCase
       end
     end
     subnet = Kea::Dhcp6Subnet.last
+
     assert_equal @network.id, subnet.subnet_id
     assert_equal "fd11:22:33:44::/64", subnet.subnet_prefix
     assert_equal [Kea::Dhcp6Server.default], subnet.dhcp6_servers
