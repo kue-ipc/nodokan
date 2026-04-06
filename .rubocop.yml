@@ -13,6 +13,37 @@ AllCops:
     - db/*_schema.rb
     - vender/**/*
 
+# Core cops
+
+Bundler:
+  Enabled: true
+Gemspec:
+  Enabled: true
+# Layout:
+#   Enabled: true
+# Lint:
+#   Enabled: true
+# Metrics:
+#   Enabled: true
+# Migration:
+#   Enabled: true
+# Naming:
+#   Enabled: true
+Security:
+  Enabled: true
+# Style:
+#   Enabled: true
+
+# rubocop-performance
+# Performance:
+#   Enabled: true
+#   Exclude:
+#     - "test/**/*"
+
+# rubocop-rails
+Rails:
+  Enabled: true
+
 # Layout
 
 Layout/ArgumentAlignment:
@@ -214,9 +245,6 @@ Bundler/OrderedGems:
 
 # Rails
 # https://docs.rubocop.org/rubocop-rails/cops_rails.html
-
-Rails:
-  Enabled: true
 
 Rails/BulkChangeTable:
   Enabled: false
