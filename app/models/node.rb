@@ -119,6 +119,11 @@ class Node < ApplicationRecord
     @notice_interval ||= period(Settings.config.notice_interval)
   end
 
+  def self.notice_final
+    @notice_final = nil unless Rails.env.production?
+    @notice_final ||= period(Settings.config.notice_final)
+  end
+
   # rubocop: disable Lint/UnusedMethodArgument
   def self.ransackable_attributes(auth_object = nil)
     %w[
@@ -221,7 +226,11 @@ class Node < ApplicationRecord
     return true if notice != name.to_s
     return true if noticed_at.nil?
 
-    time - noticed_at >= Node.notice_interval
+    if (notice_destroy_soon? || notice_disable_soon?) && execution_at && execution_at - time <= Node.notice_final
+      time - noticed_at >= Node.notice_final
+    else
+      time - noticed_at >= Node.notice_interval
+    end
   end
 
   def reflect_nic

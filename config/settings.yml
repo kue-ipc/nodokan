@@ -59,6 +59,7 @@ config:
     unconfirmed: P1Y
     expired: P1Y
   notice_interval: P1M
+  notice_final: P1W
   enable_node_by_user: false
   enable_node_upon_confirmation: false
   max_retry_count: 10

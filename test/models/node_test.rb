@@ -248,4 +248,31 @@ class NodeTest < ActiveSupport::TestCase
     assert @node.specific?
     assert_not @node.should_disable?
   end
+
+  test "need_notice" do
+    assert @node.need_notice?(:expired)
+    @node.update!(notice: :expired, noticed_at: 2.weeks.ago)
+    @node.reload
+    assert_not @node.need_notice?(:expired)
+    assert @node.need_notice?(:disabled)
+
+    @node.update!(noticed_at: (1.month + 1.day).ago)
+    @node.reload
+    assert @node.need_notice?(:expired)
+  end
+
+  test "need_notice_final" do
+    assert @node.need_notice?(:disable_soon)
+    @node.update!(notice: :disable_soon, noticed_at: 2.weeks.ago, execution_at: 1.month.since)
+    @node.reload
+    assert_not @node.need_notice?(:disable_soon)
+
+    @node.update!(execution_at: (1.week - 1.day).since)
+    @node.reload
+    assert @node.need_notice?(:disable_soon)
+
+    @node.update!(noticed_at: 1.day.ago)
+    @node.reload
+    assert_not @node.need_notice?(:disable_soon)
+  end
 end

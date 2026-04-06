@@ -161,7 +161,7 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       assert_in_delta 1.month.since, @node.reload.execution_at, 1.day
 
       # second notice should not be sent before exectuion time
-      @node.update!(notice: :disable_soon, noticed_at: (1.month - 1.day).ago)
+      @node.update!(notice: :destroy_soon, noticed_at: (1.month - 1.day).ago)
       assert_no_enqueued_emails do
         NodeCheckPerUserJob.perform_now(@user)
       end
