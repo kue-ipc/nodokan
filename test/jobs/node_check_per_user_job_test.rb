@@ -101,15 +101,22 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
         NodeCheckPerUserJob.perform_now(@user)
       end
       assert_not @node.reload.disabled?
+      assert_in_delta 1.month.since, @node.reload.execution_at, 1.day
 
       # second notice should not be sent before exectuion time
-      @node.update!(notice: :disable_soon, noticed_at: Time.current, execution_at: 1.month.since)
+      @node.update!(notice: :disable_soon, noticed_at: (1.month - 1.day).ago)
       assert_no_enqueued_emails do
         NodeCheckPerUserJob.perform_now(@user)
       end
 
+      # final notice should be sent just before exectuion time
+      @node.update!(execution_at: (1.week - 1.day).since)
+      assert_enqueued_email_with NoticeNodesMailer, :disable_soon, params: {user: @user, nodes: [@node]} do
+        NodeCheckPerUserJob.perform_now(@user)
+      end
+
       # disable node afuter exectuion time
-      @node.update!(execution_at: 1.month.ago)
+      @node.update!(execution_at: 1.day.ago)
       assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
         NodeCheckPerUserJob.perform_now(@user)
       end
@@ -137,8 +144,9 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
         NodeCheckPerUserJob.perform_now(@user)
       end
       assert_not @node.reload.disabled?
+      assert_in_delta 1.month.since, @node.reload.execution_at, 1.day
 
-      @node.update!(notice: :disable_soon, noticed_at: Time.current, execution_at: Time.current)
+      @node.update!(notice: :disable_soon, noticed_at: 1.day.ago, execution_at: 1.day.ago)
       assert_enqueued_email_with NoticeNodesMailer, :disabled, params: {user: @user, nodes: [@node]} do
         NodeCheckPerUserJob.perform_now(@user)
       end
@@ -150,14 +158,22 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       assert_enqueued_email_with NoticeNodesMailer, :destroy_soon, params: {user: @user, nodes: [@node]} do
         NodeCheckPerUserJob.perform_now(@user)
       end
+      assert_in_delta 1.month.since, @node.reload.execution_at, 1.day
 
       # second notice should not be sent before exectuion time
-      @node.update!(notice: :destroy_soon, noticed_at: Time.current, execution_at: 1.month.since)
+      @node.update!(notice: :disable_soon, noticed_at: (1.month - 1.day).ago)
       assert_no_enqueued_emails do
         NodeCheckPerUserJob.perform_now(@user)
       end
 
-      @node.update!(execution_at: 1.month.ago)
+      # final notice should be sent just before exectuion time
+      @node.update!(execution_at: (1.week - 1.day).since)
+      assert_enqueued_email_with NoticeNodesMailer, :destroy_soon, params: {user: @user, nodes: [@node]} do
+        NodeCheckPerUserJob.perform_now(@user)
+      end
+
+      # destroy node afuter exectuion time
+      @node.update!(execution_at: 1.day.ago)
       assert_difference("Bulk.count") do
         assert_enqueued_emails 1 do
           NodeCheckPerUserJob.perform_now(@user)
@@ -170,6 +186,28 @@ class NodeCheckPerUserJobTest < ActiveJob::TestCase
       assert_equal "gid://nodokan/User/#{@user.id}", mail[:args][3]["params"]["user"]["_aj_globalid"]
       assert_equal "gid://nodokan/Bulk/#{Bulk.last.id}", mail[:args][3]["params"]["bulk"]["_aj_globalid"]
       assert_equal [{**@node.as_json, "_aj_symbol_keys"=>[]}], mail[:args][3]["params"]["nodes"]
+    end
+  end
+
+  test "reset execution time for disbale to destroy" do
+    @node.nics.update!(auth_at: (1.year + 2.months).ago)
+    @node.confirmation.update!(confirmed_at: (2.years + 2.months).ago)
+    @node.update!(notice: :disable_soon, noticed_at: 1.day.ago, execution_at: 1.day.since)
+    assert @node.should_disable?
+    assert @node.should_destroy?
+
+    Settings.config.stub(:auto_disable_node, true) do
+      # disable notice should not be sent
+      assert_no_enqueued_emails do
+        NodeCheckPerUserJob.perform_now(@user)
+      end
+
+      Settings.config.stub(:auto_destroy_node, true) do
+        # destroy notice should be sent instead of disable notice
+        assert_enqueued_email_with NoticeNodesMailer, :destroy_soon, params: {user: @user, nodes: [@node]} do
+          NodeCheckPerUserJob.perform_now(@user)
+        end
+      end
     end
   end
 end
