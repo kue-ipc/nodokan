@@ -19,7 +19,7 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.day, at: "9:00 am" do
+every 1.day, at: "6:00 am" do
   rake "node:check"
 end
 
