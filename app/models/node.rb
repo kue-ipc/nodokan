@@ -226,15 +226,12 @@ class Node < ApplicationRecord
     return true if notice != name.to_s
     return true if noticed_at.nil?
 
-<<<<<<< HEAD
     if (notice_destroy_soon? || notice_disable_soon?) && execution_at && execution_at - time <= Node.notice_final
       time - noticed_at >= Node.notice_final
     else
       time - noticed_at >= Node.notice_interval
     end
-=======
     time - noticed_at >= Node.notice_interval
->>>>>>> b46e78b (時刻比較の部分をわかりやすいように見直し)
   end
 
   def reflect_nic
