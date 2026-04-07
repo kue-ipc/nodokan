@@ -491,6 +491,7 @@ ja:
         locked: ロック
         disabled: 無効
         unverifiable: 検証不可
+        separated: 分離
         global: 外部
         dhcp: DHCP
         ra: ルーター広告

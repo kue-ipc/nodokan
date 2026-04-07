@@ -16,7 +16,7 @@ class Network < ApplicationRecord
   identifiers "k", :ipv6_network_address,
     find: ->(value) { find_ip_address(value, ipv4: :ipv4_network, ipv6: :ipv6_network) }
 
-  flag :flag, {disabled: "x", unverifiable: "u", auth: "a", locked: "l", dhcp: "d"}
+  flag :flag, {disabled: "x", unverifiable: "u", separated: "s", auth: "a", locked: "l", dhcp: "d"}
 
   enum :ra, {
     disabled: -1,

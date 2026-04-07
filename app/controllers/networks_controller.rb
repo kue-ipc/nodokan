@@ -114,6 +114,7 @@ class NetworksController < ApplicationController
       :domain_search,
       :disabled,
       :unverifiable,
+      :separated,
       :auth,
       :locked,
       :dhcp,

@@ -19,6 +19,7 @@ module HtmlHelper
     public: "danger",
     dns: "success",
     unverifiable: "warning",
+    separated: "info",
     dhcp: "secondary",
     router: "dark",
     unmanaged: "warning",

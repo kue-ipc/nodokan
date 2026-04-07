@@ -7,6 +7,7 @@ all:
   domain_search_data: <%= ["service.example.jp", "example.jp"].to_json.inspect %>
   disabled: false
   unverifiable: false
+  separated: false
   auth: false
   locked: true
   dhcp: true
@@ -24,6 +25,7 @@ network:
   vlan: 1
   disabled: false
   unverifiable: false
+  separated: false
   auth: true
   locked: false
   dhcp: true
