@@ -376,8 +376,8 @@ class User < ApplicationRecord
       if !deleted? && auth_network.present?
         RadiusUserDelJob.perform_later(username)
       end
-    elsif deleted_previously_changed? || auth_network_previously_changed?
-      if !deleted? && auth_network.present?
+    elsif persisted?
+      if !deleted? && auth_network&.auth_enabled?
         RadiusUserAddJob.perform_later(username, auth_network.vlan)
       else
         RadiusUserDelJob.perform_later(username)

@@ -175,9 +175,11 @@ class Network < ApplicationRecord
     update(disabled: true)
   end
 
-  def auth_enabled? = enabled? && vlan && auth
-  def dhcpv4_enabled? = enabled? && has_ipv4? && dhcpv4?
-  def dhcpv6_enabled? = enabled? && has_ipv6? && dhcpv6?
+  def connected? = !separated?
+
+  def auth_enabled? = enabled? && connected? && vlan && auth
+  def dhcpv4_enabled? = enabled? && connected? && has_ipv4? && dhcpv4?
+  def dhcpv6_enabled? = enabled? && connected? && has_ipv6? && dhcpv6?
 
   # IPv4
 
@@ -338,8 +340,9 @@ class Network < ApplicationRecord
   # callback
 
   def radius_net
-    if %i[disabled vlan auth].any? { |attr| saved_change_to_attribute(attr) }
+    if %i[disabled separated vlan auth].any? { |attr| saved_change_to_attribute(attr) }
       nics.where.not(mac_address_data: nil).find_each(&:radius_mac)
+      auth_users.find_each(&:radius_user)
     end
   end
 
@@ -355,7 +358,7 @@ class Network < ApplicationRecord
           {}
         end
       KeaDhcp4OptionJob.perform_later(options)
-    elsif persisted? && enabled? && has_ipv4? && dhcpv4?
+    elsif persisted? && dhcpv4_enabled?
       options = dhcpv4_options
       pools = ipv4_pools.where(ipv4_config: "dynamic").map(&:ipv4_range)
       KeaSubnet4AddJob.perform_later(id, ipv4_network_prefix, options, pools)
@@ -376,7 +379,7 @@ class Network < ApplicationRecord
           {}
         end
       KeaDhcp6OptionJob.perform_later(options)
-    elsif persisted? && enabled? && has_ipv6? && dhcpv6?
+    elsif persisted? && dhcpv6_enabled?
       options = dhcpv6_options
       pools = ipv6_pools.where(ipv6_config: "dynamic").map(&:ipv6_range)
       KeaSubnet6AddJob.perform_later(id, ipv6_network_prefix, options, pools)
