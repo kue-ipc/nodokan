@@ -1599,7 +1599,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
-    assert_equal "virutal", Node.find(@node.id).node_type
+    assert_equal "virtual", Node.find(@node.id).node_type
     assert_equal nodes(:server).id, Node.find(@node.id).host_id
     # reset attributes
     assert_nil Node.find(@node.id).place
@@ -1629,7 +1629,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
-    assert_equal "mobile", Node.find(@node.id).node_type
+    assert_equal "normal", Node.find(@node.id).node_type
   end
 
   test "should update mobile node to virtual" do
@@ -1642,7 +1642,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to node_url(@node)
     assert_equal get_message(:update_success), flash[:notice]
-    assert_equal "virutal", Node.find(@node.id).node_type
+    assert_equal "virtual", Node.find(@node.id).node_type
     assert_equal nodes(:server).id, Node.find(@node.id).host_id
   end
 
@@ -1727,7 +1727,7 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_empty Node.find(@node.id).component_ids
   end
 
-  test "should update logical node to virutal" do
+  test "should update logical node to virtual" do
     sign_in users(:staff)
     @node = nodes(:cluster)
     patch node_url(@node), params: {node: {

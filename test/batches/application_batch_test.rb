@@ -24,20 +24,31 @@ class ApplicationBatchTest < ActiveSupport::TestCase
   end
 
   test "load and run" do
-    input = [{id: 1}, {id: 2, name: "test"}, {name: "hoge"}, {id: 3, _destroy: true}]
+    input = [
+      {id: nodes(:node).id},
+      {id: nodes(:desktop), name: "test"},
+      {name: "hoge"},
+      {id: nodes(:note), _destroy: true},
+    ]
     @batch.load(input)
     output = []
     @batch.run(output)
 
-    # assert_equal input, output
+    assert_equal nodes(:node).name, output[0][:name]
   end
 
-  test "error load and run" do
+  test "error load and run with invalid input" do
     input = [{id: 1, hoge: "fuga"}]
-    assert_raises(ApplicationBatch::InvalidParamsError) do
+    assert_raises ApplicationBatch::InvalidInputError do
       @batch.load(input)
     end
+  end
 
-    # assert_equal input, output
+  test "load_ids and run" do
+    @batch.load_ids
+    output = []
+    @batch.run(output)
+
+    assert_equal Node.count, output.size
   end
 end

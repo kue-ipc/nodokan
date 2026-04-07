@@ -7,6 +7,8 @@ class ApplicationBatch
   #   def open_output(output) do |desc|
   #   def puts_params(desc, params)
 
+  class InvalidInputError < StandardError; end
+
   def self.content_type(str = nil)
     if str.nil?
       @mime_type.to_s
@@ -34,25 +36,29 @@ class ApplicationBatch
   delegate :count, to: :input_params_list
 
   def each_params(desc)
-    returtn enum_for(:each_params, desc) unless block_given?
+    return enum_for(:each_params, desc) unless block_given?
 
     while (params = gets_params(desc))
       yield params
     end
   end
 
-  def load(input = nil)
-    if input
-      @input_params_list = []
-      open_input(input) do |desc|
-        each_params(desc) do |params|
-          @input_params_list << params.except(:_result, :_message)
-        end
+  def load(input)
+    @input_params_list = []
+    open_input(input) do |desc|
+      each_params(desc).with_index do |params, idx|
+        params = delete_meta_params(params)
+        @processor.validate_params(params)
+        @input_params_list << params.except(:_result, :_message)
+      rescue ActionController::UnpermittedParameters => e
+        raise InvalidInputError, "Invalid parameters for item #{idx + 1}: #{e.params.join(", ")}"
       end
-    else
-      @input_params_list = @processor.ids.map { |id| {id:} }
     end
     @input_params_list.freeze
+  end
+
+  def load_ids
+    @input_params_list = @processor.ids.map { |id| {id:} }
   end
 
   def run(output)
@@ -149,8 +155,16 @@ class ApplicationBatch
     {**params, _result: "error", _message: message}
   end
 
-  private def delete_meta_params(params)
-    params.reject! { |key, _| key.start_with?("_") }
+  private def delete_meta_params(params, except_keys: [:_destroy])
+    if params.is_a?(Hash)
+      params
+        .reject { |key, _| except_keys.exclude?(key) && key.start_with?("_") }
+        .transform_values { |value| delete_meta_params(value, except_keys:) }
+    elsif params.is_a?(Array)
+      params.map { |value| delete_meta_params(value, except_keys:) }
+    else
+      params
+    end
   end
 
   private def compact_params(obj)
@@ -162,7 +176,7 @@ class ApplicationBatch
     in Array
       obj.map { |value| compact_params(value) }.compact_blank
     in Hash
-      obj.to_h { |key, value| [key.to_s, compact_params(value)] }.compact_blank
+      obj.transform_values { |value| compact_params(value) }.compact_blank
     else
       Rails.logger.warn("Unknown type in compact_params: #{obj.class}, value: #{obj.inspect}")
       obj.to_s

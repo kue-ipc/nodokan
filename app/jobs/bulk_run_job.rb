@@ -97,7 +97,7 @@ class BulkRunJob < ApplicationJob
         batch.load(file)
       end
     else
-      batch.load
+      batch.load_ids
     end
 
     bulk.update!(number: batch.count)

@@ -153,6 +153,10 @@ class ApplicationProcessor
     user_process(id, __method__, &:destroy!)
   end
 
+  def validate_params(params)
+    permit_params(params.except(:id))
+  end
+
   private def get_param(record, key, converters)
     instance_exec(record, &converters[key].get)
   end
