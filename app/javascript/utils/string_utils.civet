@@ -1,35 +1,35 @@
 // String Utils
 
 // ["abc", "xyz"] -> "abcXyz"
-export listToCamel: (...list: string[]) => string := (...list) ->
+export listToCamel := (...list: string[]): string ->
   (list[0]?.toLowerCase() ?? "") +
     (capitalize(str) for str of list[1..]).join("")
 
 // ["abc", "xyz"] -> "AbcXyz"
-export listToPascal: (...list: string[]) => string := (...list) ->
+export listToPascal := (...list: string[]): string ->
   (capitalize(str) for str of list).join("")
 
 // ["abc", "xyz"] -> "abc_xyz"
-export listToSnake: (...list: string[]) => string := (...list) ->
+export listToSnake := (...list: string[]): string ->
   (str.toLowerCase().replace(/-/g, "_") for str of list).join("_")
 
 // ["abc", "xyz"] -> "abc-xyz"
-export listToKebab: (...list: string[]) => string := (...list) ->
+export listToKebab := (...list: string[]): string ->
   (str.toLowerCase().replace(/_/g, "-") for str of list).join("-")
 
 // ["abc", "xyz"] -> "abc[xyz]"
-export listToField: (...list: string[]) => string := (...list) ->
+export listToField := (...list: string[]): string ->
   (list[0] ?? "") +
     (`[${str}]` for str of list[1..]).join("")
 
 // "abc_xyz" -> ["abc", "xyz"]
-export strToList: (str: string) => string[] := (str) ->
+export strToList := (str: string): string[] ->
   str.replace(/([A-Z\d]+)([A-Z][a-z])/g, "$1 $2")
     .replace(/([a-z\d])([A-Z])/g, "$1 $2")
     .toLowerCase().split(/[-_\s]+/)
 
 // Capital
-export capitalize: (str: string) => string := (str) ->
+export capitalize := (str: string): string ->
   return str if str.# is 0
 
   firstCode := str.codePointAt(0)
@@ -39,21 +39,21 @@ export capitalize: (str: string) => string := (str) ->
   String.fromCodePoint(firstCode).toUpperCase() + str.slice(firstLength)
 
 // camelCase
-export camelize: (str: string) => string := (str) ->
+export camelize := (str: string): string ->
   listToCamel(...strToList(str))
 
 // PascalCase
-export pascalize: (str: string) => string := (str) ->
+export pascalize := (str: string): string ->
   listToPascal(...strToList(str))
 
 // snake_case
-export snakize: (str: string) => string := (str) ->
+export snakize := (str: string): string ->
   listToSnake(...strToList(str))
 
 // kebab-case
-export kebabize: (str: string) => string := (str) ->
+export kebabize := (str: string): string ->
   listToKebab(...strToList(str))
 
 // form[field][name]
-export fieldize: (str: string) => string := (str) ->
+export fieldize := (str: string): string ->
   listToField(...strToList(str))

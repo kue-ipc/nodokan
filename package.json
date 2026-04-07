@@ -22,7 +22,7 @@
     "rails_admin": "github:jdufresne/rails_admin#security"
   },
   "devDependencies": {
-    "@danielx/civet": "^0.11.5",
+    "@danielx/civet": "^0.11.6",
     "@eslint/js": "^10.0.1",
     "@types/bootstrap": "^5.2.10",
     "@types/hotwired__turbo": "^8.0.9",

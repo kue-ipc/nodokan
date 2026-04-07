@@ -21,7 +21,7 @@ bootstrapComponentSelectors: ComponentSelector[] := [
 
 LOADED_ELEMENTS := new WeakSet()
 
-export loadBootstrapComponents: (element?: Element) => void := (element) ->
+export loadBootstrapComponents := (element?: Element): void ->
   element ?= document.documentElement
   for componentSelector of bootstrapComponentSelectors
     for el of element.querySelectorAll(componentSelector.selector)

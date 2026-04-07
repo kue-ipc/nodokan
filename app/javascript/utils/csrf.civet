@@ -1,10 +1,10 @@
-getMetaElementContent: (name: string) => string? := (name) ->
+getMetaElementContent := (name: string): string? ->
   for el of Array.from(document.getElementsByTagName<"meta">("meta"))
     if el.name is name
       return el.content
   return
 
-export default csrf: () => {[key: string]: string?} := ->
+export default csrf := (): {[key: string]: string?} ->
   param := getMetaElementContent("csrf-param")
   token := getMetaElementContent("csrf-token")
   if param?

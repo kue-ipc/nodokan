@@ -81,13 +81,13 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-6.0.0.tgz#ef28e27c1ded1d8e5c54879a9399e7055aed1920"
   integrity sha512-4sSgl78OtOXEX/2d++8A83zHNTgwCJMaR24FvsYL7Uf/VS8HZk9PTwR51elTbGqMuwH3szLvvOXEaVnqn0Z3zA==
 
-"@danielx/civet@^0.11.5":
-  version "0.11.5"
-  resolved "https://registry.yarnpkg.com/@danielx/civet/-/civet-0.11.5.tgz#7345bccc9a8aa471df5024f268fe0a4734ef7061"
-  integrity sha512-VEh+UV1kxOcPgchOKB21TWUhPilZuJS/P8F8hhvbto6LEaxoPyWwZJGWcBRSEBdVlj3zARKiQ5f7Z0ybQjNCaA==
+"@danielx/civet@^0.11.6":
+  version "0.11.6"
+  resolved "https://registry.yarnpkg.com/@danielx/civet/-/civet-0.11.6.tgz#7aa5b970dbd1f2a436b3e2963d7ed3a450eb2f9f"
+  integrity sha512-KPCF4ngJsabPzEBdUxk7FcONwT+rP/yvwJChfDfzLXJYwCqvMRW2c7yQ31Ve6dAz2tSHya3NhTS1BDbmGInxMQ==
   dependencies:
     "@cspotcode/source-map-support" "^0.8.1"
-    unplugin "^2.3.2"
+    unplugin "2.3.11"
 
 "@esbuild/aix-ppc64@0.28.0":
   version "0.28.0"
@@ -1832,7 +1832,7 @@ unicorn-magic@^0.4.0:
   resolved "https://registry.yarnpkg.com/unicorn-magic/-/unicorn-magic-0.4.0.tgz#78c6a090fd6d07abd2468b83b385603e00dfdb24"
   integrity sha512-wH590V9VNgYH9g3lH9wWjTrUoKsjLF6sGLjhR4sH1LWpLmCOH0Zf7PukhDA8BiS7KHe4oPNkcTHqYkj7SOGUOw==
 
-unplugin@^2.3.2:
+unplugin@2.3.11:
   version "2.3.11"
   resolved "https://registry.yarnpkg.com/unplugin/-/unplugin-2.3.11.tgz#411e020dd2ba90e2fbe1e7bd63a5a399e6ee3b54"
   integrity sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==

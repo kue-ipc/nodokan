@@ -7,7 +7,7 @@ type HTMLFormControlElement = HTMLInputElement | HTMLSelectElement |
 // document.addEventListener "turbo:load", ->
 // LOADED_ELEMENTS := new WeakSet()
 
-export loadApplySpecifiNode: (element?: Element) => void := (element) ->
+export loadApplySpecifiNode := (element?: Element): void ->
   reasonText := document.getElementById("specific_node_application_reason")
   return unless reasonText?
 
@@ -48,28 +48,28 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
     console.warn "[apply_specific_node] fqdn text not fonud"
     return
 
-  labelFor: (el: HTMLElement) => HTMLLabelElement | null := (el) ->
+  labelFor := (el: HTMLElement): HTMLLabelElement | null ->
     document.querySelector<HTMLLabelElement>(`label[for="${el.id}"]`)
 
-  setRequired: (...list: HTMLFormControlElement[]) => void := (...list) ->
+  setRequired := (...list: HTMLFormControlElement[]): void ->
     for el of list
       el.required = true
       labelFor(el)?.classList?.add("required")
 
-  unsetRequired: (...list: HTMLFormControlElement[]) => void := (...list) ->
+  unsetRequired := (...list: HTMLFormControlElement[]): void ->
     for el of list
       el.required = false
       labelFor(el)?.classList?.remove("required")
 
-  setDisabled: (...list: HTMLFormControlElement[]) => void := (...list) ->
+  setDisabled := (...list: HTMLFormControlElement[]): void ->
     for el of list
       el.disabled = true
 
-  unsetDisabled: (...list: HTMLFormControlElement[]) => void := (...list) ->
+  unsetDisabled := (...list: HTMLFormControlElement[]): void ->
     for el of list
       el.disabled = false
 
-  checkAction: () => void := ->
+  checkAction := (): void ->
     if actionRadioMap.get("release")?.checked
       setDisabled(
         ...ruleSetRadioMap.values(),
@@ -88,7 +88,7 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
       )
     checkRuleSet()
 
-  checkRuleSet: () => void := ->
+  checkRuleSet := (): void ->
     for el of ruleSetRadioMap.values()
       continue unless el.checked
 
@@ -130,7 +130,7 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
 
       checkDns()
 
-  checkExternal: () => void := ->
+  checkExternal := (): void ->
     if ["none", "direct"].includes(externalSelect.value)
       ruleListTextArea.value = ""
       ruleListTextArea.readOnly = true
@@ -139,7 +139,7 @@ export loadApplySpecifiNode: (element?: Element) => void := (element) ->
       ruleListTextArea.readOnly = false
       setRequired(ruleListTextArea)
 
-  checkDns: () => void := ->
+  checkDns := (): void ->
     if registerDnsCheckBox.checked
       setRequired(fqdnText)
     else
