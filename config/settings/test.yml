@@ -4,7 +4,7 @@ theme:
   navbar: '#343a40'
 ldap:
   username: cn=admin,dc=example,dc=jp
-  password: admin_password
+  password: password
   base: dc=example,dc=jp
   user:
     dn: uid

@@ -147,7 +147,7 @@ sudo dnf module install 389-directory-server:stable/default
 
 ```
 sudo dscreate from-file ds389.inf
-ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password -f user_group.ldif
+ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w password -f user_group.ldif
 ```
 
 ### nginx

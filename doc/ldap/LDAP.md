@@ -20,6 +20,6 @@ sudo apt install ldap-utils
 
 DNS ドメイン名: example.jp
 組織名: example
-管理者パスワード: admin_password
+管理者パスワード: password
 
 ou.ldifとuser_group.ldifをldapadd

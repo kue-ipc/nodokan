@@ -15,7 +15,7 @@ development:
   port: 389
   allow_unauthenticated_bind: false
   admin_user: cn=admin,dc=example,dc=jp
-  admin_password: admin_password
+  admin_password: password
   base: <%= "#{Settings.ldap.user.ou},dc=example,dc=jp" %>
   group_base: <%= "#{Settings.ldap.group.ou},dc=example,dc=jp" %>
   <<: *AUTHORIZATIONS
@@ -25,7 +25,7 @@ test:
   port: 1389
   allow_unauthenticated_bind: false
   admin_user: cn=admin,dc=example,dc=jp
-  admin_password: admin_password
+  admin_password: password
   base: <%= "#{Settings.ldap.user.ou},dc=example,dc=jp" %>
   group_base: <%= "#{Settings.ldap.group.ou},dc=example,dc=jp" %>
   <<: *AUTHORIZATIONS

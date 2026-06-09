@@ -1,5 +1,5 @@
 # OpenLdap and DS389
-# ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w admin_password -f user_group.ldif
+# ldapadd -x -h localhost -p 389 -D "cn=admin,dc=example,dc=jp" -w password -f user_group.ldif
 
 version: 1
 
