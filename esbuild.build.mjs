@@ -1,6 +1,6 @@
 import process from 'node:process';
 import * as esbuild from 'esbuild';
-import civetPlugin from '@danielx/civet/esbuild-plugin';
+import civetPlugin from '@danielx/civet/esbuild';
 
 const esbuildOptions = {
   entryPoints: ['app/javascript/*.*'],
