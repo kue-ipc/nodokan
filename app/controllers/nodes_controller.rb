@@ -197,7 +197,7 @@ class NodesController < ApplicationController
   private def set_node
     @node = policy_scope(Node)
       .includes(:user, :place, :hardware, :operating_system, nics: :network)
-      .find(params[:id])
+      .find(params.expect(:id))
     authorize @node
   end
 

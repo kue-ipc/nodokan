@@ -55,12 +55,12 @@ class UseNetworksController < ApplicationController
   end
 
   private def set_user
-    @user = User.find(params[:user_id])
+    @user = User.find(params.expect(:user_id))
     authorize @user, :update?
   end
 
   private def set_network
-    @network = Network.find(params[:id])
+    @network = Network.find(params.expect(:id))
   end
 
   private def use_network_params

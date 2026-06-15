@@ -81,7 +81,7 @@ class OperatingSystemsController < ApplicationController
   end
 
   private def set_operating_system
-    @operating_system = policy_scope(OperatingSystem).find(params[:id])
+    @operating_system = policy_scope(OperatingSystem).find(params.expect(:id))
     authorize @operating_system
   end
 

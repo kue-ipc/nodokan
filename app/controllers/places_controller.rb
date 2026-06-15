@@ -79,7 +79,7 @@ class PlacesController < ApplicationController
   end
 
   private def set_place
-    @place = policy_scope(Place).find(params[:id])
+    @place = policy_scope(Place).find(params.expect(:id))
     authorize @place
   end
 

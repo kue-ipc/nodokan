@@ -44,7 +44,7 @@ class UsersController < ApplicationController
   private def set_user
     @user =
       if params[:id]
-        User.includes(:auth_networks, :use_networks).find(params[:id])
+        User.includes(:auth_networks, :use_networks).find(params.expect(:id))
       else
         current_user
       end

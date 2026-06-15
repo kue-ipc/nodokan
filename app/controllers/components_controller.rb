@@ -33,12 +33,12 @@ class ComponentsController < ApplicationController
       if params[:node_id] == "new"
         Node.new(user: current_user)
       else
-        Node.find(params[:node_id])
+        Node.find(params.expect(:node_id))
       end
     authorize @node
   end
 
   private def set_component
-    @component = Node.find(params[:id])
+    @component = Node.find(params.expect(:id))
   end
 end

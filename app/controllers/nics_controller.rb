@@ -50,7 +50,7 @@ class NicsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   private def set_nic
-    @nic = policy_scope(Nic).includes(:node, :network).find(params[:id])
+    @nic = policy_scope(Nic).includes(:node, :network).find(params.expect(:id))
     authorize @nic
   end
 end

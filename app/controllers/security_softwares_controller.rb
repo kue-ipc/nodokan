@@ -84,7 +84,7 @@ class SecuritySoftwaresController < ApplicationController
   end
 
   private def set_security_software
-    @security_software = policy_scope(SecuritySoftware).find(params[:id])
+    @security_software = policy_scope(SecuritySoftware).find(params.expect(:id))
     authorize @security_software
   end
 

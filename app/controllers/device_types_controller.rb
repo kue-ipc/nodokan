@@ -42,7 +42,7 @@ class DeviceTypesController < ApplicationController
   end
 
   private def set_device_type
-    @device_type = policy_scope(DeviceType).find(params[:id])
+    @device_type = policy_scope(DeviceType).find(params.expect(:id))
     authorize @device_type
   end
 

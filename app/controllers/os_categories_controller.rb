@@ -42,7 +42,7 @@ class OsCategoriesController < ApplicationController
   end
 
   private def set_os_category
-    @os_category = policy_scope(OsCategory).find(params[:id])
+    @os_category = policy_scope(OsCategory).find(params.expect(:id))
     authorize @os_category
   end
 

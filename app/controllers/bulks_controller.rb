@@ -101,7 +101,7 @@ class BulksController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   private def set_bulk
-    @bulk = Bulk.find(params[:id])
+    @bulk = Bulk.find(params.expect(:id))
     authorize @bulk
   end
 

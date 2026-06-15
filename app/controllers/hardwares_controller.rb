@@ -77,7 +77,7 @@ class HardwaresController < ApplicationController
   end
 
   private def set_hardware
-    @hardware = policy_scope(Hardware).includes(:device_type).find(params[:id])
+    @hardware = policy_scope(Hardware).includes(:device_type).find(params.expect(:id))
     authorize @hardware
   end
 

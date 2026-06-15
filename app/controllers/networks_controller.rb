@@ -101,7 +101,7 @@ class NetworksController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   private def set_network
-    @network = policy_scope(Network).find(params[:id])
+    @network = policy_scope(Network).find(params.expect(:id))
     authorize @network
   end
 

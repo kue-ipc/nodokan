@@ -44,7 +44,7 @@ class HostsController < ApplicationController
       if params[:node_id] == "new"
         Node.new(user: current_user)
       else
-        Node.find(params[:node_id])
+        Node.find(params.expect(:node_id))
       end
     authorize @node
   end
