@@ -1,6 +1,7 @@
 # use ransack
 module Search
   extend ActiveSupport::Concern
+  # TODO: paginationは分離すべきだと思われる。
   include Page
 
   class_methods do
