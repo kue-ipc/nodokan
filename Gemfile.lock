@@ -1,14 +1,14 @@
 GIT
-  remote: https://github.com/jdufresne/rails_admin.git
-  revision: 83c3223ed0b3decdb18617f8632ae46b237ca235
-  branch: security
+  remote: https://github.com/railsadminteam/rails_admin.git
+  revision: e8dec57ac718d6f141f39fa5b9e2d1048af17511
+  ref: e8dec57ac718d6f141f39fa5b9e2d1048af17511
   specs:
-    rails_admin (3.3.0)
+    rails_admin (4.0.0.alpha)
       activemodel-serializers-xml (>= 1.0)
       csv
       kaminari (>= 0.14, < 2.0)
       nested_form (~> 0.3)
-      rails (>= 6.0, < 9)
+      rails (>= 7.0, < 9)
       turbo-rails (>= 1.0, < 3)
 
 GEM
@@ -100,7 +100,7 @@ GEM
     bcrypt_pbkdf (1.1.2)
     bigdecimal (4.1.2)
     bindex (0.8.1)
-    bootsnap (1.25.0)
+    bootsnap (1.26.0)
       msgpack (~> 1.5)
     bootstrap_form (5.6.1)
       actionpack (>= 7.2)
@@ -153,7 +153,7 @@ GEM
     ed25519 (1.4.0)
     erb (6.0.7)
     erubi (1.13.1)
-    et-orbi (1.4.0)
+    et-orbi (1.4.2)
       tzinfo
     fugit (1.13.0)
       et-orbi (~> 1.4)
@@ -162,7 +162,7 @@ GEM
       activesupport (>= 6.1)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    io-console (0.8.2)
+    io-console (0.9.2)
     irb (1.18.0)
       pp (>= 0.6.0)
       prism (>= 1.3.0)
@@ -232,7 +232,7 @@ GEM
       ostruct
     net-pop (0.1.2)
       net-protocol
-    net-protocol (0.2.2)
+    net-protocol (0.3.0)
       timeout
     net-scp (4.1.0)
       net-ssh (>= 2.6.5, < 8.0.0)
@@ -251,7 +251,7 @@ GEM
       request_store (~> 1.4)
     paper_trail-association_tracking (2.3.0)
       paper_trail (>= 12.0)
-    parallel (2.1.0)
+    parallel (2.2.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
@@ -341,11 +341,11 @@ GEM
     redis-namespace (1.11.0)
       redis (>= 4)
     regexp_parser (2.12.0)
-    reline (0.6.3)
+    reline (0.7.0)
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
-    responders (3.2.0)
+    responders (3.2.1)
       actionpack (>= 7.0)
       railties (>= 7.0)
     resque (3.0.2)
@@ -382,15 +382,15 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
-    rubocop-performance (1.26.1)
+    rubocop-performance (1.27.0)
       lint_roller (~> 1.1)
-      rubocop (>= 1.75.0, < 2.0)
+      rubocop (>= 1.89.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.36.0)
+    rubocop-rails (2.37.0)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
-      rubocop (>= 1.75.0, < 2.0)
+      rubocop (>= 1.89.0, < 2.0)
       rubocop-ast (>= 1.44.0, < 2.0)
     rubocop-rails-omakase (1.1.0)
       rubocop (>= 1.72)
