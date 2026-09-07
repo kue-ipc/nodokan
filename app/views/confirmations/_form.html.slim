@@ -21,7 +21,9 @@
         = confirmation_question_enum(form, name, count:, excludes: ["unnecessary"],
           action: "change#{name.to_s.camelize}")
         .collapse data-node-confirmation-target="collapse#{name.to_s.camelize}Secured"
-          .card: .card-body.text-danger-emphasis: = t("messages.update_secured")
+          .card
+            .card-body.text-danger-emphasis
+              == t("messages.update_secured")
         - count += 1
 
       = confirmation_question_bitwise(form, :security_hardwares, count:, required: true,
