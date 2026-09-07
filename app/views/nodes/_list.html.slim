@@ -1,6 +1,15 @@
 = turbo_frame_tag "nodes-list" do
   .mb-2
     .row.row-cols-md-auto.g-3
+      - if Settings.feature.confirmation
+        .col-12
+          - if @confirmation_required
+            = link_to nodes_path(controller.search_params), class: "btn btn-sm btn-light"
+              i.far.fa-check-square
+          - else
+            = link_to nodes_path(**controller.search_params, confirmation_required: true), class: "btn btn-sm btn-light"
+              i.fas.fa-filter
+          | 確認必要な端末
       - if Settings.feature.specific_node
         .col-12
           => filter_link(:specific)

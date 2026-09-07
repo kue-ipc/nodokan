@@ -13,11 +13,13 @@ class NodesController < ApplicationController
   # GET /nodes.csv
   def index
     set_search
-    unless params[:require_confirmation]
+    unless params[:confirmation_required]
       @nodes = search(policy_scope(Node))
         .includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
       return
     end
+
+    @confirmation_required = true
 
     q = search_ransack(policy_scope(Node))
 
