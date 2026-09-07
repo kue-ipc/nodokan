@@ -95,6 +95,27 @@ export default class NodeConfirmationController < Controller<HTMLFormElement>
       @collapse?.hide()
       @setRequiredAll(false)
 
+  changeSoftware(event: Event): void
+    target := event.target
+    unless target <? HTMLInputElement
+      console.warn `target is not HTMLInptuElement: ${target}`
+      return
+
+    if target.value is "os_only"
+      for e of @appUpdateTargets
+        if e.value is "not_implemented"
+          e.checked = true
+          e.disabled = false
+        else
+          e.disabled = true
+    else
+      for e of @appUpdateTargets
+        if e.value is "not_implemented"
+          e.checked = false
+          e.disabled = true
+        else
+          e.disabled = false
+
   changeOsUpdate(event: Event): void
     target := event.target
     unless target <? HTMLInputElement
