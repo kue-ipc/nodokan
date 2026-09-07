@@ -142,7 +142,7 @@ class Node < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[nics]
+    ["confirmation", "nics"]
   end
   # rubocop: enable Lint/UnusedMethodArgument
 

@@ -13,8 +13,28 @@ class NodesController < ApplicationController
   # GET /nodes.csv
   def index
     set_search
-    @nodes = search(policy_scope(Node)).includes(:user, :place, :hardware,
-      :operating_system, :confirmation, nics: :network)
+    unless params[:require_confirmation]
+      @nodes = search(policy_scope(Node))
+        .includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
+      return
+    end
+
+    q = search_ransack(policy_scope(Node))
+
+    context = q.context
+    search_unconfirmed = Node.ransack(
+      {confirmation_id_null: true}, context:)
+    search_expried_approved = Node.ransack(
+      {confirmation_approved_eq: true, confirmation_confirmed_at_lt: Time.current - Confirmation.approved_period},
+      context:)
+    search_expried_unapproved = Node.ransack(
+      {confirmation_approved_eq: false, confirmation_confirmed_at_lt: Time.current - Confirmation.unapproved_period},
+      context:)
+    shared_conditions = [search_unconfirmed, search_expried_approved, search_expried_unapproved].map do |search|
+      Ransack::Visitor.new.accept(search.base)
+    end
+    nodes = q.result.where(shared_conditions.inject(:or))
+    @nodes = paginate(nodes).includes(:user, :place, :hardware, :operating_system, :confirmation, nics: :network)
   end
 
   # GET /nodes/1

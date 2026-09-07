@@ -140,6 +140,20 @@ class Confirmation < ApplicationRecord
     @disable_node_expired_period ||= period(Settings.config.disable_node_period.expired)
   end
 
+  # rubocop: disable Lint/UnusedMethodArgument
+  def self.ransackable_attributes(auth_object = nil)
+    %w[
+      id
+      confirmed_at
+      approved
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+  # rubocop: enable Lint/UnusedMethodArgument
+
   def check(num)
     if num.nil? || num.negative?
       :unknown

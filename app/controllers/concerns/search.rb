@@ -47,6 +47,15 @@ module Search
     paginate(q.result.distinct)
   end
 
+  private def search_ransack(scope)
+    ransack_q = {}
+    ransack_q.merge!(search_ransack_query(@query, matcher: "cont"))
+    ransack_q.merge!(search_ransack_condition(@condition))
+    q = scope.ransack(ransack_q, auth_object: current_user.role)
+    q.sorts = search_sorts_order(@order) if @order.present?
+    q
+  end
+
   ## query
 
   private def search_ransack_query(query, matcher: "cont")
@@ -108,10 +117,31 @@ module Search
     return {} if condition.blank?
 
     condition.compact_blank.to_h do |key, value|
-      type = search_model.type_for_attribute(key)
+      parent, child_key = split_association_key(key)
+      type = if parent
+        search_model.reflect_on_association(parent).klass.type_for_attribute(child_key)
+      else
+        search_model.type_for_attribute(key)
+      end
+
       case type.type
       when :string, :text, :integer, :float, :decimal, :datetime, :date, :time
-        ["#{key}_eq", value]
+        case split_comp_value(value)
+        in [nil | "=" | "==", v]
+          ["#{key}_eq", v]
+        in ["!", "!=", v]
+          ["#{key}_not_eq", v]
+        in ["<", v]
+          ["#{key}_lt", v]
+        in ["<=", v]
+          ["#{key}_lteq", v]
+        in [">", v]
+          ["#{key}_gt", v]
+        in [">=", v]
+          ["#{key}_gteq", v]
+        else
+          ["#{key}_eq", value]
+        end
       when :binary
         ["#{key}_eq", [value].pack("H*")]
       when :boolean
@@ -122,6 +152,26 @@ module Search
       end
     end
   end
+
+  private def split_association_key(key)
+    search_model.ransackable_associations.each do |association|
+      if key == association
+        return [association, nil]
+      elsif key.start_with?("#{association}_")
+        return [association, key.delete_prefix("#{association}_")]
+      end
+    end
+    [nil, key]
+  end
+
+  private def split_comp_value(value)
+    if (m = value.match(/\A([=!<>]=?)(.+)\z/))
+      [m[1], m[2]]
+    else
+      [nil, value]
+    end
+  end
+
   private def search_attributes_by_type
     @search_attributes_by_type ||= model_attributes_by_type(search_model)
   end

@@ -183,6 +183,15 @@ class NodesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=\"#{node_path(nodes(:other_desktop))}\"]", false
   end
 
+  test "should get index when specific is true" do
+    sign_in users(:staff)
+    get nodes_url(condition: {specific: true})
+
+    assert_response :success
+    assert_select "a[href=\"#{node_path(@node)}\"]", false
+    assert_select "a[href=\"#{node_path(nodes(:server))}\"]"
+  end
+
   # show
 
   test "should show node" do
