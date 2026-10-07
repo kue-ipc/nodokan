@@ -288,6 +288,7 @@ export default class NodeNicController < Controller<HTMLElement>
     else if selectedOption !<? HTMLOptionElement or
         selectedOption.disabled or
         selectedOption.value is "disabled"
+      // TODO: staticよりもmappedを優先的に選択されるようにしたいが、コードが複雑になるので、保留。
       target.selectedIndex =
         ([...target.options].findIndex (el) -> !el.disabled) ??
         ([...target.options].findIndex (el) -> el.value is "disabled") ??
