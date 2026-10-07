@@ -288,11 +288,23 @@ export default class NodeNicController < Controller<HTMLElement>
     else if selectedOption !<? HTMLOptionElement or
         selectedOption.disabled or
         selectedOption.value is "disabled"
-      // TODO: staticよりもmappedを優先的に選択されるようにしたいが、コードが複雑になるので、保留。
-      target.selectedIndex =
-        ([...target.options].findIndex (el) -> !el.disabled) ??
-        ([...target.options].findIndex (el) -> el.value is "disabled") ??
-        -1
+      if ip is "ipv4"
+        target.selectedIndex =
+          ([...target.options].findIndex (el) -> !el.disabled) ??
+          ([...target.options].findIndex (el) -> el.value is "disabled") ??
+          -1
+      else
+        // select same value of ipv4Config, but if static or manual, select mapped
+        ipv4Config := @ipv4ConfigTarget.value
+        mappedOption := [...target.options].find (el) -> el.value is "mapped"
+        target.selectedIndex =
+          if ipv4Config is "static" or ipv4Config is "manual" and mappedOption? and !mappedOption.disabled
+            [...target.options].indexOf(mappedOption!)
+          else
+            ([...target.options].findIndex (el) -> !el.disabled and el.value is ipv4Config) ??
+            ([...target.options].findIndex (el) -> !el.disabled) ??
+            ([...target.options].findIndex (el) -> el.value is "disabled") ??
+            -1
 
     @adjustAddress(ip)
 
