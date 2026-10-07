@@ -73,12 +73,7 @@ gem "paper_trail"
 gem "paper_trail-association_tracking"
 
 # Rails Admin
-# FIXME: rails_adminのセキュリティ問題に対処したパッチがマージされたが、未リリースのため、commitで参照する。
-#   https://github.com/railsadminteam/rails_admin/pull/3734
-#   修正時はpackage.jsonのrails_adminも更新すること。
-gem "rails_admin",
-  git: "https://github.com/railsadminteam/rails_admin.git",
-  ref: "e8dec57ac718d6f141f39fa5b9e2d1048af17511"
+gem "rails_admin", "~> 3.3.1"
 gem "rails_admin-i18n"
 
 # Bootstrap
