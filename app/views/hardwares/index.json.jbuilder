@@ -15,6 +15,8 @@ in :device_type_id
   json.ignore_nil!
   json.data do
     json.array! @hardwares do |hardware|
+      next if hardware.device_type.nil?
+
       json.device_type_id hardware.device_type_id
       json.name hardware.device_type.name
       json.description hardware.device_type.description
