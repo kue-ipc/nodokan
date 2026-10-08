@@ -49,6 +49,8 @@ export default class NodeController < Controller<HTMLFormElement>
   ] as const
 
   @targets := [
+    "hostname"
+    "domain"
     ...@selectTargets
     ...@flagTargets
     ...@collapseTargets
@@ -58,6 +60,9 @@ export default class NodeController < Controller<HTMLFormElement>
   @values := {
     confirmNoNetwork: String
   }
+
+  declare readonly hostnameTarget: HTMLInputElement
+  declare readonly domainTarget: HTMLInputElement
 
   declare readonly nodeTypeTarget: HTMLSelectElement
 
@@ -113,6 +118,16 @@ export default class NodeController < Controller<HTMLFormElement>
   connect(): void
     for name of NodeController.collapseTargets
       @[name] = new Collapse(@[`${name}Target`], toggle: false)
+
+  changeDomain(event?: Event): void
+    return unless event?.target <? HTMLInputElement
+
+    if event.target.value is ""
+      @hostnameTarget.required = false
+      @hostnameTarget.nextElementSibling?.classList?.remove("required")
+    else
+      @hostnameTarget.required = true
+      @hostnameTarget.nextElementSibling?.classList?.add("required")
 
   changeNodeType(event?: Event): Promise<void>
     @dispatch("changeNodeType", {detail: {nodeType: @nodeTypeTarget.value}})

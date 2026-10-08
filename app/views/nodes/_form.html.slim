@@ -14,9 +14,11 @@
         .col-md-4
           = f.text_field :name, floating: true
         .col-md-3
-          = f.text_field :hostname, pattern: "[0-9A-Za-z\\-]*", floating: true
+          = f.text_field :hostname, pattern: "[0-9A-Za-z\\-]*", floating: true,
+            data: {node_target: "hostname"}
         .col-md-5
-          = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*", floating: true
+          = f.text_field :domain, pattern: "[0-9A-Za-z\\-.]*", floating: true,
+            data: {node_target: "domain", action: "node#changeDomain"}
       .row
         .col-md-2
           = f.collection_select :node_type,
