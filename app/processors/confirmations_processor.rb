@@ -87,7 +87,8 @@ class ConfirmationsProcessor < ApplicationProcessor
     set: ->(record, value) {
       return unless record.operating_system
 
-      security_software_params = {os_category_id: record.operating_system.os_category_id, **value}
+      # value is a parameter hash, so must use "merge" method to add os_category_id to it
+      security_software_params = value.merge({os_category_id: record.operating_system.os_category_id})
       record.confirmation_or_build.security_software =
         find_or_new_security_software(security_software_params, record.confirmation_or_build.security_software)
     }
