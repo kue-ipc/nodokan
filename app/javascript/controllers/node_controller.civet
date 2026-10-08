@@ -3,8 +3,6 @@ import {Collapse} from "bootstrap"
 
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
-  @selectTargets = ["nodeType"] as const
-
   @flagTargets = [
     "disabled"
     "permanent"
@@ -47,18 +45,16 @@ export default class NodeController < Controller<HTMLFormElement>
     ...@collapseSubFormTargets
   ] as const
 
-  @targets := [
+  @targets := []
     "hostname"
     "domain"
-    ...@selectTargets
+    "nodeType"
     ...@flagTargets
     ...@collapseTargets
     "nicNetworkId"
-  ]
 
-  @values := {
+  @values := {}
     confirmNoNetwork: String
-  }
 
   declare readonly hostnameTarget: HTMLInputElement
   declare readonly domainTarget: HTMLInputElement
@@ -206,7 +202,7 @@ export default class NodeController < Controller<HTMLFormElement>
       collapseHelp?.hide()
 
   submit(event?: Event): void
-    console.debug @confirmNoNetworkValue
-    if @nicNetworkIdTargets.every (target) -> not target.value
-      if not confirm(@confirmNoNetworkValue)
-        event?.preventDefault()
+    return unless @nicNetworkIdTargets.every (target) -> not target.value
+
+    if not confirm(@confirmNoNetworkValue)
+      event?.preventDefault()
