@@ -131,8 +131,6 @@ export default class NodeController < Controller<HTMLFormElement>
       @hostnameTarget.nextElementSibling?.classList?.add("required")
 
   changeNodeType(event?: Event): Promise<void>
-    @dispatch("changeNodeType", {detail: {nodeType: @nodeTypeTarget.value}})
-
     await @waitCollapsing()
 
     switch @nodeTypeTarget.value
@@ -176,6 +174,9 @@ export default class NodeController < Controller<HTMLFormElement>
         @collapseSubFormComponents?.show()
         @collapseSubFormHardware?.hide()
         @collapseSubFormOperatingSystem?.hide()
+
+    for each nodeNic of @nodeNicOutlets when nodeNic?
+      nodeNic.changeNodeType(@nodeTypeTarget.value)
 
   waitCollapsing(delay: number = 200): Promise<void>
     new Promise (resolve) =>

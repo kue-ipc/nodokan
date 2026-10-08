@@ -95,7 +95,7 @@ export default class NodeNicController < Controller<HTMLElement>
       console.warn "[NodeNicController] node type not found"
       return
 
-    @changeNodeType({detail: {nodeType: nodeTypeNode.value}})
+    @changeNodeType(nodeTypeNode.value)
 
   change(): Promise<void>
     if @destroyTarget.checked
@@ -365,7 +365,7 @@ export default class NodeNicController < Controller<HTMLElement>
       duidNode.required = false
       @removeMessage("helps.require_duid")
 
-  changeNodeType({detail: {nodeType}}: {detail: {nodeType: string}}): void
+  changeNodeType(nodeType: string): void
     return if @interfaceTypeTarget.options[@initValue?.interfaceType ?? -1]?.value
 
     options := [...@interfaceTypeTarget.options]
