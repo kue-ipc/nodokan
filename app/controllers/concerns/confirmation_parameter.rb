@@ -30,6 +30,11 @@ module ConfirmationParameter
 
     return if [:os_category_id, :installation_method, :name].any? { |key| find_params[key].nil? }
 
-    SecuritySoftware.find_or_initialize_by(find_params)
+    if ["purchased", "free"].include?(find_params[:installation_method])
+      SecuritySoftware.find_or_initialize_by(find_params)
+    else
+      # do not create new record except for purchased/free software
+      SecuritySoftware.find_by(find_params)
+    end
   end
 end
