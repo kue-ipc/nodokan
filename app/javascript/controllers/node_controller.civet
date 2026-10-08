@@ -52,6 +52,7 @@ export default class NodeController < Controller<HTMLFormElement>
     "nodeType"
     ...@flagTargets
     ...@collapseTargets
+    "lockedNic"
 
   @outlets := []
     "node-nic"
@@ -93,6 +94,8 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly hasCollapseSubFormComponentsTarget: boolean
   declare readonly hasCollapseSubFormHardwareTarget: boolean
   declare readonly hasCollapseSubFormOperatingSystemTarget: boolean
+
+  declare readonly hasLockedNicTarget: boolean
 
   declare readonly nodeNicOutlets: NodeNicController[]
 
@@ -205,6 +208,9 @@ export default class NodeController < Controller<HTMLFormElement>
       collapseHelp?.hide()
 
   submit(event?: Event): void
+    if @hasLockedNicTarget
+      return
+
     for each nodeNic of @nodeNicOutlets when nodeNic? and not nodeNic.destroyTarget.checked
       if nodeNic.networkIdTarget.value
         return

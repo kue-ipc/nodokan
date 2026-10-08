@@ -14,7 +14,7 @@
       - if current_user.admin? || !field.object.locked
         = render "nics/form", form: field
       - else
-        .rounded.border.p-2.mb-2
+        .rounded.border.p-2.mb-2 data-node-target="lockedNic"
           .row.mb-2: .col
             small.text-muted< = t("messages.node_nic_locked")
           .row: .col.px-3
