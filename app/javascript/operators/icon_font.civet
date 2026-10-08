@@ -1,3 +1,1 @@
-import "@fortawesome/fontawesome-free/js/all.js"
-declare var FontAwesome: {config: {mutateApproach: "async" | "sync"}}
-FontAwesome.config.mutateApproach = "sync"
+import "./font_awesome.civet"

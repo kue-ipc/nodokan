@@ -1,7 +1,3 @@
-"civet coffeeCompat"
-import 'rails_admin/src/rails_admin/base'
+import "rails_admin/src/rails_admin/base"
 
-// import './operators/bootstrap_components.civet'
-// import './operators/icon_font.civet'
-
-import './application.civet'
+import "./operators/font_awesome.civet"
