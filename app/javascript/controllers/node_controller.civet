@@ -1,6 +1,5 @@
 import {Controller} from "@hotwired/stimulus"
 import {Collapse} from "bootstrap"
-import {capitalize} from "../utils/string_utils.civet"
 
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
@@ -210,4 +209,4 @@ export default class NodeController < Controller<HTMLFormElement>
     console.debug @confirmNoNetworkValue
     if @nicNetworkIdTargets.every (target) -> not target.value
       if not confirm(@confirmNoNetworkValue)
-        event.preventDefault()
+        event?.preventDefault()
