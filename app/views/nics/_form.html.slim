@@ -1,5 +1,5 @@
 - nic = form.object
-.rounded.border.p-2.mb-2[id="node_nics_attributes_#{form.index}"
+.rounded.border.p-2.mb-2.node-nic[id="node_nics_attributes_#{form.index}"
   data-controller="node-nic"]
   div data-action="node:changeNodeType@window->node-nic#changeNodeType"
   = form.hidden_field :id
@@ -22,7 +22,7 @@
           prompt: (t("messages.prompt_required_selection") if require_network),
           include_blank: (t("messages.prompt_no_network") unless require_network),
         }.compact,
-        data: {node_nic_target: "networkId", node_target: "nicNetworkId", action: "node-nic#change"},
+        data: {node_nic_target: "networkId", action: "node-nic#change"},
         required: require_network
 
     .col-md-4

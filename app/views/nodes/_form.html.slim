@@ -6,6 +6,7 @@
   = bootstrap_form_with model: node, data: { \
     controller: "node", action: "node#submit",
     node_confirm_no_network_value: t("messages.confirm_no_network"),
+    node_node_nic_outlet: ".node-nic",
   } do |f|
     .rounded.border.p-2.mb-2
       h4 = t("forms.node.base.title")

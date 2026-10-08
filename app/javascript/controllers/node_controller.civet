@@ -1,5 +1,6 @@
 import {Controller} from "@hotwired/stimulus"
 import {Collapse} from "bootstrap"
+import NodeNicController from "./node_nic_controller"
 
 // Connects to data-controller="node"
 export default class NodeController < Controller<HTMLFormElement>
@@ -51,7 +52,9 @@ export default class NodeController < Controller<HTMLFormElement>
     "nodeType"
     ...@flagTargets
     ...@collapseTargets
-    "nicNetworkId"
+
+  @outlets := []
+    "node-nic"
 
   @values := {}
     confirmNoNetwork: String
@@ -76,8 +79,6 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly collapseSubFormHardwareTarget: HTMLDivElement
   declare readonly collapseSubFormOperatingSystemTarget: HTMLDivElement
 
-  declare readonly nicNetworkIdTargets: HTMLSelectElement[]
-
   declare readonly hasCollapseHelpNormalTarget: boolean
   declare readonly hasCollapseHelpMobileTarget: boolean
   declare readonly hasCollapseHelpVirtualTarget: boolean
@@ -92,6 +93,8 @@ export default class NodeController < Controller<HTMLFormElement>
   declare readonly hasCollapseSubFormComponentsTarget: boolean
   declare readonly hasCollapseSubFormHardwareTarget: boolean
   declare readonly hasCollapseSubFormOperatingSystemTarget: boolean
+
+  declare readonly nodeNicOutlets: NodeNicController[]
 
   declare readonly confirmNoNetworkValue: string
 
@@ -202,7 +205,9 @@ export default class NodeController < Controller<HTMLFormElement>
       collapseHelp?.hide()
 
   submit(event?: Event): void
-    return unless @nicNetworkIdTargets.every (target) -> not target.value
+    for each nodeNic of @nodeNicOutlets when nodeNic? and not nodeNic.destroyTarget.checked
+      if nodeNic.networkIdTarget.value
+        return
 
     if not confirm(@confirmNoNetworkValue)
       event?.preventDefault()
