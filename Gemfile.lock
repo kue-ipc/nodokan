@@ -350,7 +350,7 @@ GEM
       redis (>= 4.0)
       redis-namespace (~> 1.6)
       sinatra (>= 2.0)
-    resque-scheduler (5.0.0)
+    resque-scheduler (5.0.1)
       base64 (~> 0.1)
       logger
       mono_logger (~> 1.0)
