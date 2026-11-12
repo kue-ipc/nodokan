@@ -229,7 +229,7 @@ GEM
       net-protocol
     net-ssh (7.3.6)
     nio4r (2.7.5)
-    nokogiri (1.19.4-x86_64-linux-gnu)
+    nokogiri (1.19.5-x86_64-linux-gnu)
       racc (~> 1.4)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
