@@ -3,7 +3,7 @@
 ## システム要件
 
 * Ruby >= 3.3
-* Node.js >= 20
+* Node.js >= 22
 * MariaDB >= 10.5
 * Redis >= 6, <= 7.2 or Valkey >= 8
 * Kea >= 2.6
